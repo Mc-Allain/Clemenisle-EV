@@ -46,18 +46,24 @@ public class LoggedInUserProfileFragment extends Fragment {
     FirebaseAuth firebaseAuth;
     FirebaseUser firebaseUser;
 
-    ConstraintLayout fullNameLayout;
-    TextView tvGreet, tvUserId, tvLastName, tvFirstName, tvMiddleName, tvUpdateFullName;
-    ImageView updateFullNameImage;
     ProgressBar progressBar;
+    TextView tvGreet;
+
+    ConstraintLayout fullNameLayout;
+    TextView tvLastName, tvFirstNameMiddleName;
+    ImageView updateFullNameImage;
+
+    ConstraintLayout accountDetailsLayout;
+    TextView tvEmailAddress2, tvPassword2;
+    ImageView updateEmailAddressImage, updatePasswordImage;
 
     Context myContext;
     Resources myResources;
 
-    int colorGreen, colorRed, colorInitial, colorBlack;
+    int colorGreen, colorRed, colorInitial, colorBlack, colorWhite;
     ColorStateList cslInitial, cslBlue, cslRed;
 
-    String defaultGreetText = "こんにちは (Hello)", greetText, lastName, firstName, middleName;
+    String defaultGreetText = "こんにちは (Hello)", lastName, firstName, middleName;
 
     User user;
 
@@ -70,6 +76,8 @@ public class LoggedInUserProfileFragment extends Fragment {
     ScrollView fullNameScrollView;
     Button fullNameUpdateButton;
     ProgressBar fullNameDialogProgressBar;
+
+    DatabaseReference usersRef;
 
     EditText etLastName, etFirstName, etMiddleName, etPassword, etConfirmPassword, etEmailAddress;
     TextInputLayout tlLastName, tlFirstName, tlMiddleName, tlPassword, tlConfirmPassword, tlEmailAddress;
@@ -105,12 +113,15 @@ public class LoggedInUserProfileFragment extends Fragment {
 
         fullNameLayout = view.findViewById(R.id.fullNameLayout);
         tvGreet = view.findViewById(R.id.tvGreet);
-        tvUserId = view.findViewById(R.id.tvUserId);
         tvLastName = view.findViewById(R.id.tvLastName);
-        tvFirstName = view.findViewById(R.id.tvFirstName);
-        tvMiddleName = view.findViewById(R.id.tvMiddleName);
-        tvUpdateFullName = view.findViewById(R.id.tvUpdateFullName);
+        tvFirstNameMiddleName = view.findViewById(R.id.tvFirstNameMiddleName);
         updateFullNameImage = view.findViewById(R.id.updateFullNameImage);
+
+        accountDetailsLayout = view.findViewById(R.id.accountDetailsLayout);
+        tvEmailAddress2 = view.findViewById(R.id.tvEmailAddress2);
+        tvPassword2 = view.findViewById(R.id.tvPassword2);
+        updateEmailAddressImage = view.findViewById(R.id.updateEmailAddressImage);
+        updatePasswordImage = view.findViewById(R.id.updatePasswordImage);
 
         progressBar = view.findViewById(R.id.progressBar);
 
@@ -125,6 +136,7 @@ public class LoggedInUserProfileFragment extends Fragment {
         colorRed = myResources.getColor(R.color.red);
         colorInitial = myResources.getColor(R.color.initial);
         colorBlack = myResources.getColor(R.color.black);
+        colorWhite = myResources.getColor(R.color.white);
 
         initSharedPreferences();
 
@@ -149,9 +161,10 @@ public class LoggedInUserProfileFragment extends Fragment {
 
         initFullNameDialog();
 
+        usersRef = firebaseDatabase.getReference("users").child(userId);
+
         getCurrentUser();
 
-        tvUpdateFullName.setOnClickListener(view1 -> showFullNameDialog());
         updateFullNameImage.setOnClickListener(view1 -> showFullNameDialog());
 
         return view;
@@ -284,12 +297,7 @@ public class LoggedInUserProfileFragment extends Fragment {
             }
         });
 
-        fullNameUpdateButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-            }
-        });
+        fullNameUpdateButton.setOnClickListener(view -> updateFullName());
 
         fullNameDialogCloseImage.setOnClickListener(view -> fullNameDialog.dismiss());
 
@@ -367,13 +375,91 @@ public class LoggedInUserProfileFragment extends Fragment {
                 break;
         }
 
-        fullNameUpdateButton.setEnabled(vLN && vFN && vMN);
+        fullNameUpdateButton.setEnabled(
+                vLN && vFN && vMN &&
+                (
+                    !newLastName.equals(lastName) ||
+                    !newFirstName.equals(firstName) ||
+                    !newMiddleName.equals(middleName)
+                )
+        );
+    }
+
+    private void setFullNameDialogScreenEnabled(boolean value) {
+        fullNameDialogCloseImage.setEnabled(value);
+        tlLastName.setEnabled(value);
+        tlFirstName.setEnabled(value);
+        tlMiddleName.setEnabled(value);
+
+        if(value) fullNameDialogCloseImage.setColorFilter(colorRed);
+        else fullNameDialogCloseImage.setColorFilter(colorInitial);
+    }
+
+    private void setFullNameUpdateStatus(boolean value) {
+        isLastNameUpdated = value;
+        isFirstNameUpdated = value;
+        isMiddleNameUpdated = value;
+    }
+
+    boolean isLastNameUpdated = false, isFirstNameUpdated = false, isMiddleNameUpdated = false;
+    private void updateFullName() {
+        setFullNameUpdateStatus(false);
+        setFullNameDialogScreenEnabled(false);
+        fullNameDialogProgressBar.setVisibility(View.VISIBLE);
+
+        usersRef.child("lastName").setValue(newLastName).addOnCompleteListener(task -> {
+            if(task.isSuccessful()) {
+                isLastNameUpdated = true;
+                finishFullNameUpdate();
+            }
+            else errorFullNameUpdate();
+        });
+        usersRef.child("firstName").setValue(newFirstName).addOnCompleteListener(task -> {
+            if(task.isSuccessful()) {
+                isFirstNameUpdated = true;
+                finishFullNameUpdate();
+            }
+            else errorFullNameUpdate();
+        });
+        usersRef.child("middleName").setValue(newMiddleName).addOnCompleteListener(task -> {
+            if(task.isSuccessful()) {
+                isMiddleNameUpdated = true;
+                finishFullNameUpdate();
+            }
+            else errorFullNameUpdate();
+        });
+    }
+
+    private void finishFullNameUpdate() {
+        if(isLastNameUpdated && isFirstNameUpdated && isMiddleNameUpdated) {
+            Toast.makeText(
+                    myContext,
+                    "Successfully updated the Full Name",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            fullNameDialog.dismiss();
+            setFullNameDialogScreenEnabled(true);
+            fullNameDialogProgressBar.setVisibility(View.GONE);
+        }
+    }
+
+    private void errorFullNameUpdate() {
+        Toast.makeText(
+                myContext,
+                "Failed to update the Full Name, please try again",
+                Toast.LENGTH_SHORT
+        ).show();
+
+        setFullNameDialogScreenEnabled(true);
+        fullNameDialogProgressBar.setVisibility(View.GONE);
     }
 
     private void getCurrentUser() {
+        progressBar.setVisibility(View.VISIBLE);
         fullNameLayout.setVisibility(View.GONE);
+        accountDetailsLayout.setVisibility(View.GONE);
 
-        DatabaseReference usersRef = firebaseDatabase.getReference("users").child(userId);
         usersRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -394,30 +480,48 @@ public class LoggedInUserProfileFragment extends Fragment {
 
     private void finishLoading() {
         showFullName();
+        showAccountDetails();
 
-        tvGreet.setTextColor(colorBlack);
+        tvGreet.setText(defaultGreetText);
+        tvGreet.setTextColor(colorWhite);
+
         progressBar.setVisibility(View.GONE);
     }
 
     private void errorLoading(String error) {
         tvGreet.setText(error);
-        progressBar.setVisibility(View.GONE);
         tvGreet.setTextColor(colorRed);
+
+        progressBar.setVisibility(View.GONE);
     }
 
     private void showFullName() {
         fullNameLayout.setVisibility(View.VISIBLE);
 
-        greetText = defaultGreetText + ", ";
-        tvGreet.setText(greetText);
-
         lastName = user.getLastName();
         firstName = user.getFirstName();
         middleName = user.getMiddleName();
 
-        tvUserId.setText(userId);
-        tvLastName.setText(lastName + ", ");
-        tvFirstName.setText(firstName);
-        tvMiddleName.setText(middleName);
+        String formattedLastName = lastName + ", ";
+        String formattedFirstName = firstName;
+        if(middleName.length() > 0) formattedFirstName += " " + middleName;
+
+        tvLastName.setText(formattedLastName);
+        tvFirstNameMiddleName.setText(formattedFirstName);
+    }
+
+    private void showAccountDetails() {
+        accountDetailsLayout.setVisibility(View.VISIBLE);
+
+        String emailAddress = user.getEmailAddress();
+        StringBuilder password = new StringBuilder(user.getPassword().substring(0, 2));
+
+        for(int i = 0; i<user.getPassword().length() - 3; i++) {
+            password.append("•");
+        }
+        password.append(user.getPassword().charAt(password.length()));
+
+        tvEmailAddress2.setText(emailAddress);
+        tvPassword2.setText(password.toString());
     }
 }

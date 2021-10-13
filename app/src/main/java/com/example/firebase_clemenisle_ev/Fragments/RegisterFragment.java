@@ -434,14 +434,7 @@ public class RegisterFragment extends Fragment {
                         setScreenEnabled(true);
                         progressBar.setVisibility(View.GONE);
                     }
-                    else {
-                        tlEmailAddress.setErrorEnabled(false);
-                        tlEmailAddress.setError(null);
-                        tlEmailAddress.setStartIconTintList(cslInitial);
-                        vEA = true;
-
-                        registerAccount();
-                    }
+                    else registerAccount();
                 }
             }
 
@@ -460,6 +453,11 @@ public class RegisterFragment extends Fragment {
     }
 
     private void registerAccount() {
+        tlEmailAddress.setErrorEnabled(false);
+        tlEmailAddress.setError(null);
+        tlEmailAddress.setStartIconTintList(cslInitial);
+        vEA = true;
+
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseAuth.createUserWithEmailAndPassword(emailAddress, password)
                 .addOnCompleteListener(task -> {

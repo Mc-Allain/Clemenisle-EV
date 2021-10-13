@@ -33,6 +33,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import androidx.annotation.NonNull;
@@ -81,7 +82,8 @@ public class PostRegisterActivity extends AppCompatActivity {
     String userId;
     String newEmailAddress;
 
-    boolean userUpdated = false, dbUserUpdated = false;
+    Query usersQuery;
+    boolean isUserUpdated = false, isDBUserUpdated = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -242,44 +244,23 @@ public class PostRegisterActivity extends AppCompatActivity {
         setScreenEnabled(false);
         dialogProgressBar.setVisibility(View.VISIBLE);
 
-        DatabaseReference usersRef = firebaseDatabase.getReference("users");
-        usersRef.addValueEventListener(new ValueEventListener() {
+        isUserUpdated = false;
+        usersQuery = firebaseDatabase.getReference("users")
+                .orderByChild("emailAddress").equalTo(emailAddress);
+        usersQuery.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if(snapshot.exists()) {
-                    boolean eaExisting = false;
-                    for(DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                        DataSnapshot ea = dataSnapshot.child("emailAddress");
-                        if(ea.exists()) {
-                            String eaValue = ea.getValue(String.class);
-                            if(newEmailAddress.equals(eaValue)) {
-                                eaExisting = true;
-                            }
-                        }
+                if(!isUserUpdated) {
+                    if(snapshot.exists()) {
+                        tlEmailAddress.setErrorEnabled(true);
+                        tlEmailAddress.setError("This Email Address is already registered");
+                        tlEmailAddress.setStartIconTintList(cslRed);
+                        vEA = false;
+
+                        setScreenEnabled(true);
+                        progressBar.setVisibility(View.GONE);
                     }
-
-                    if(!userUpdated) {
-                        if(eaExisting) {
-                            tlEmailAddress.setErrorEnabled(true);
-                            tlEmailAddress.setError("This Email Address is already registered");
-                            tlEmailAddress.setStartIconTintList(cslRed);
-                            vEA = false;
-
-                            setScreenEnabled(true);
-                            progressBar.setVisibility(View.GONE);
-                        }
-                        else {
-                            tlEmailAddress.setErrorEnabled(false);
-                            tlEmailAddress.setError(null);
-                            tlEmailAddress.setStartIconTintList(cslInitial);
-                            vEA = true;
-
-                            updateAccount();
-                        }
-                    }
-                }
-                else {
-                    updateAccount();
+                    else updateAccount();
                 }
             }
 
@@ -298,10 +279,15 @@ public class PostRegisterActivity extends AppCompatActivity {
     }
 
     private void updateAccount() {
+        tlEmailAddress.setErrorEnabled(false);
+        tlEmailAddress.setError(null);
+        tlEmailAddress.setStartIconTintList(cslInitial);
+        vEA = true;
+
         firebaseUser.updateEmail(newEmailAddress)
                 .addOnCompleteListener(task -> {
                     if(task.isSuccessful()) {
-                        userUpdated = true;
+                        isUserUpdated = true;
                         updateDatabase();
                     }
                     else {
@@ -312,13 +298,13 @@ public class PostRegisterActivity extends AppCompatActivity {
 
     private void updateDatabase() {
         if(firebaseUser != null) {
-            if(!dbUserUpdated) {
+            if(!isDBUserUpdated) {
                 DatabaseReference usersRef = firebaseDatabase.getReference("users")
                         .child(userId).child("emailAddress");
                 usersRef.setValue(newEmailAddress)
                         .addOnCompleteListener(task -> {
                             if(task.isSuccessful()) {
-                                dbUserUpdated = true;
+                                isDBUserUpdated = true;
                                 emailAddress = newEmailAddress;
                                 sendEmailVerificationLink();
                             }
