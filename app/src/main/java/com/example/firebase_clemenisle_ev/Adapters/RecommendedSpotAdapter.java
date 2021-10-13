@@ -84,7 +84,8 @@ public class RecommendedSpotAdapter extends RecyclerView.Adapter<RecommendedSpot
                 String countText =  "+" + hiddenSpots.size();
                 String img = hiddenSpots.get(position).getImg();
 
-                Glide.with(myContext).load(img).override(Target.SIZE_ORIGINAL).into(viewAllThumbnail);
+                Glide.with(myContext).load(img).placeholder(R.drawable.image_loading_placeholder).
+                        override(Target.SIZE_ORIGINAL).into(viewAllThumbnail);
                 tvSpotCount.setText(countText);
 
                 viewButton.setOnClickListener(view -> onButtonClickListener.viewAll());
@@ -102,7 +103,8 @@ public class RecommendedSpotAdapter extends RecyclerView.Adapter<RecommendedSpot
             String name = recommendedSpot.getName();
             String img = recommendedSpot.getImg();
 
-            Glide.with(myContext).load(img).override(Target.SIZE_ORIGINAL).into(thumbnail);
+            Glide.with(myContext).load(img).placeholder(R.drawable.image_loading_placeholder).
+                    override(Target.SIZE_ORIGINAL).into(thumbnail);
             tvName.setText(name);
 
             String buttonText;

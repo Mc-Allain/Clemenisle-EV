@@ -94,7 +94,7 @@
             app:layout_constraintBottom_toBottomOf="@+id/tvPrice"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvBookingId"
-            app:srcCompat="@drawable/intramuros_drone_shot" />
+            app:srcCompat="@drawable/image_loading_placeholder" />
 
         <ImageView
             android:id="@+id/moreImage"

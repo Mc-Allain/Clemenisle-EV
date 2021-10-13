@@ -11,14 +11,8 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.Target;
-import com.example.firebase_clemenisle_ev.Classes.FirebaseURL;
-import com.example.firebase_clemenisle_ev.Classes.Route;
 import com.example.firebase_clemenisle_ev.Classes.SimpleTouristSpot;
 import com.example.firebase_clemenisle_ev.R;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.List;
 
@@ -75,7 +69,8 @@ public class AllSpotAdapter extends RecyclerView.Adapter<AllSpotAdapter.ViewHold
         String name = touristSpot.getName();
         String img = touristSpot.getImg();
 
-        Glide.with(myContext).load(img).override(Target.SIZE_ORIGINAL).into(thumbnail);
+        Glide.with(myContext).load(img).placeholder(R.drawable.image_loading_placeholder).
+                override(Target.SIZE_ORIGINAL).into(thumbnail);
         tvName.setText(name);
 
         String buttonText;

@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.firebase_clemenisle_ev.Classes.FirebaseURL;
@@ -93,8 +92,8 @@ public class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.ViewHolder> 
 
         String spotId = routeList.get(position).getRouteId();
 
-        Glide.with(myContext)
-                .load(routeList.get(position).getImg())
+        Glide.with(myContext).load(routeList.get(position).getImg())
+                .placeholder(R.drawable.image_loading_placeholder)
                 .into(routeThumbnail);
 
         tvName.setText(routeList.get(position).getName());

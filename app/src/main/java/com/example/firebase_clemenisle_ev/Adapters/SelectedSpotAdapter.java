@@ -63,7 +63,9 @@ public class SelectedSpotAdapter extends RecyclerView.Adapter<SelectedSpotAdapte
 
         SimpleTouristSpot spot = spots.get(position);
 
-        Glide.with(myContext).load(spot.getImg()).into(spotThumbnail);
+        Glide.with(myContext).load(spot.getImg())
+                .placeholder(R.drawable.image_loading_placeholder)
+                .into(spotThumbnail);
 
         name.setText(spot.getName());
 

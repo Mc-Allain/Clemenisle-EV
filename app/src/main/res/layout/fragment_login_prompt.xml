@@ -23,7 +23,7 @@
         android:id="@+id/fragmentIconImage"
         android:layout_width="256dp"
         android:layout_height="256dp"
-        android:src="@drawable/ic_baseline_book_24"
+        android:src="@drawable/image_loading_placeholder"
         app:layout_constraintBottom_toTopOf="@+id/tvCaption"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
