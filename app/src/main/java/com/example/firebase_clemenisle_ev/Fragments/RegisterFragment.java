@@ -125,11 +125,11 @@ public class RegisterFragment extends Fragment {
         colorRed = myResources.getColor(R.color.red);
         colorInitial = myResources.getColor(R.color.initial);
 
-        tvSteps.setText(stepText());
-
         cslInitial = ColorStateList.valueOf(myResources.getColor(R.color.initial));
         cslBlue = ColorStateList.valueOf(myResources.getColor(R.color.blue));
         cslRed = ColorStateList.valueOf(myResources.getColor(R.color.red));
+
+        tvSteps.setText(stepText());
 
         continueButton.setOnClickListener(view1 -> {
             if(currentStep == 1) {

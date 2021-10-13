@@ -187,7 +187,7 @@ public class PostRegisterActivity extends AppCompatActivity {
     }
 
     private void showUpdateEmailDialog() {
-        dialog = new Dialog(this);
+        dialog = new Dialog(myContext);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.dialog_update_email_layout);
 

@@ -1220,7 +1220,7 @@ public class BookingActivity extends AppCompatActivity implements
     }
 
     private void initBookingInformationDialog() {
-        dialog = new Dialog(this);
+        dialog = new Dialog(myContext);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.dialog_booking_information_layout);
 
@@ -1266,9 +1266,7 @@ public class BookingActivity extends AppCompatActivity implements
         tvLocate2.setOnClickListener(view -> openMap2());
         locateImage2.setOnClickListener(view -> openMap2());
 
-        submitButton.setOnClickListener(view -> {
-            generateBookingId();
-        });
+        submitButton.setOnClickListener(view -> generateBookingId());
 
         dialogCloseImage.setOnClickListener(view -> dialog.dismiss());
 
@@ -1484,7 +1482,7 @@ public class BookingActivity extends AppCompatActivity implements
     }
 
     private void initAllSpotsDialog() {
-        dialog2 = new Dialog(this);
+        dialog2 = new Dialog(myContext);
         dialog2.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog2.setContentView(R.layout.dialog_all_spot_layout);
 
