@@ -72,7 +72,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
         Booking booking = bookingList.get(position);
 
         String bookingId = booking.getId();
-        String schedule = booking.getFormattedSchedule();
+        String schedule = booking.getSchedule();
 
         Station startStation = booking.getStartStation();
         String startStationName = startStation.getName();
@@ -86,7 +86,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
         String typeName = bookingType.getName();
         String price = "₱" + bookingType.getPrice();
 
-        String img = "";
+        String img;
         List<Route> routeList = bookingList.get(position).getRouteList();
         if(routeList.size() > 0) {
              img = routeList.get(0).getImg();
@@ -193,12 +193,8 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
         intent.putExtra("typeName", booking.getBookingType().getName());
         intent.putExtra("price", "₱" + booking.getBookingType().getPrice());
 
-        if(bookingList.get(0).getId().equals(booking.getId()) && booking.getStatus().equals("Completed")) {
-            intent.putExtra("latest", true);
-        }
-        else {
-            intent.putExtra("latest", false);
-        }
+        intent.putExtra("latest",
+                bookingList.get(0).getId().equals(booking.getId()) && booking.getStatus().equals("Completed"));
 
         myContext.startActivity(intent);
     }
@@ -264,7 +260,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
         return bookingList.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView thumbnail, moreImage, openImage, locateImage, locateEndImage;
         TextView tvBookingId, tvSchedule, tvTypeName, tvPrice,
                 tvStartStation, tvStartStation2, tvEndStation, tvEndStation2,

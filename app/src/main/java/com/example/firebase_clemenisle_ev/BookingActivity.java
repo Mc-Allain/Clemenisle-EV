@@ -1,6 +1,5 @@
 package com.example.firebase_clemenisle_ev;
 
-import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -51,8 +50,6 @@ import com.example.firebase_clemenisle_ev.Classes.ScheduleTime;
 import com.example.firebase_clemenisle_ev.Classes.SimpleTouristSpot;
 import com.example.firebase_clemenisle_ev.Classes.Station;
 import com.example.firebase_clemenisle_ev.Classes.User;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -135,7 +132,7 @@ public class BookingActivity extends AppCompatActivity implements
     Context myContext;
     Resources myResources;
 
-    int colorBlack, colorRed;
+    int colorBlack, colorRed, colorBlue, colorInitial;
     ColorStateList cslInitial, cslBlue;
 
     String defaultCaptionText = "Please select one by tapping your desired item.",
@@ -259,6 +256,9 @@ public class BookingActivity extends AppCompatActivity implements
     String userId;
 
     boolean loggedIn = false;
+
+    DatabaseReference usersRef;
+    boolean isGeneratingBookingId = false;
 
     private void initSharedPreferences() {
         SharedPreferences sharedPreferences = myContext
@@ -397,6 +397,8 @@ public class BookingActivity extends AppCompatActivity implements
 
         colorBlack = myResources.getColor(R.color.black);
         colorRed = myResources.getColor(R.color.red);
+        colorBlue = myResources.getColor(R.color.blue);
+        colorInitial = myResources.getColor(R.color.initial);
 
         initBookingInformationDialog();
         initAllSpotsDialog();
@@ -587,9 +589,7 @@ public class BookingActivity extends AppCompatActivity implements
                     rawScheduleDate = calendarYear + "-" + calendarMonth + "-" + calendarDay;
 
                     dateTimeToString.setDateToSplit(rawScheduleDate);
-                    String scheduleDate = dateTimeToString.getDate();
-
-                    tvScheduleDate2.setText(scheduleDate);
+                    tvScheduleDate2.setText(dateTimeToString.getDate());
                     tvScheduleDate2.setTextColor(colorRed);
                     vSD = false;
 
@@ -873,9 +873,7 @@ public class BookingActivity extends AppCompatActivity implements
                     rawScheduleDate = year + "-" + month + "-" + day;
 
                     dateTimeToString.setDateToSplit(rawScheduleDate);
-                    String scheduleDate = dateTimeToString.getDate();
-
-                    tvScheduleDate2.setText(scheduleDate);
+                    tvScheduleDate2.setText(dateTimeToString.getDate());
                     if(year < calendarYear ||
                             (month < calendarMonth + 1 && year == calendarYear) ||
                             (day < calendarDay + scheduleDateAllowance && month == calendarMonth + 1 &&
@@ -892,12 +890,9 @@ public class BookingActivity extends AppCompatActivity implements
                         vSD = true;
                     }
 
-                    if(scheduleTime != null) {
-                        dateTimeToString.setTimeToSplit(scheduleTime.getTime());
-
-                        bookingScheduleText = tvScheduleDate2.getText().toString() + " | " +
-                                dateTimeToString.getTime();
-                    }
+                    if(scheduleTime != null)
+                        bookingScheduleText =
+                                dateTimeToString.getDate() + " | " + scheduleTime.getTime();
 
                     checkScheduleContinueButton();
                 }, calendarYear, calendarMonth, calendarDay );
@@ -1272,8 +1267,6 @@ public class BookingActivity extends AppCompatActivity implements
         locateImage2.setOnClickListener(view -> openMap2());
 
         submitButton.setOnClickListener(view -> {
-            setDialogScreenEnabled(false);
-            dialogProgressBar.setVisibility(View.VISIBLE);
             generateBookingId();
         });
 
@@ -1286,9 +1279,11 @@ public class BookingActivity extends AppCompatActivity implements
         dialog.getWindow().setGravity(Gravity.BOTTOM);
     }
 
-    DatabaseReference usersRef;
-    boolean isGeneratingBookingId = false;
     private void generateBookingId() {
+        setDialogScreenEnabled(false);
+        dialogProgressBar.setVisibility(View.VISIBLE);
+
+        isGeneratingBookingId = false;
         usersRef = firebaseDatabase.getReference("users");
         usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -1332,7 +1327,17 @@ public class BookingActivity extends AppCompatActivity implements
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(
+                        myContext,
+                        "Failed to book a tour, please try again",
+                        Toast.LENGTH_LONG
+                ).show();
 
+                isGeneratingBookingId = false;
+                usersRef = null;
+
+                setDialogScreenEnabled(true);
+                dialogProgressBar.setVisibility(View.GONE);
             }
         });
     }
@@ -1361,8 +1366,7 @@ public class BookingActivity extends AppCompatActivity implements
 
         Booking booking =
                 new Booking(bookingType, endStation, bookingId, message,
-                        rawScheduleDate + " " + scheduleTime.getTime(),
-                        station, "Processing");
+                        bookingScheduleText, station, "Processing");
 
         DatabaseReference bookingListRef = firebaseDatabase.getReference("users")
                 .child(userId).child("bookingList").child(bookingId);
@@ -1414,8 +1418,8 @@ public class BookingActivity extends AppCompatActivity implements
     private void proceedToNextActivity(Booking booking) {
         Intent intent = new Intent(myContext, MainActivity.class);
 
-        myContext.startActivity(intent);
-        ((Activity) myContext).finishAffinity();
+        startActivity(intent);
+        finishAffinity();
 
         intent = new Intent(myContext, RouteActivity.class);
         intent.putExtra("bookingId", booking.getId());
@@ -1429,7 +1433,7 @@ public class BookingActivity extends AppCompatActivity implements
         intent.putExtra("price", "₱" + booking.getBookingType().getPrice());
         intent.putExtra("latest", false);
 
-        myContext.startActivity(intent);
+        startActivity(intent);
 
         Toast.makeText(
                 myContext,
@@ -1442,6 +1446,21 @@ public class BookingActivity extends AppCompatActivity implements
         dialog.setCanceledOnTouchOutside(value);
         dialogCloseImage.setEnabled(value);
         submitButton.setEnabled(value);
+
+        if(value) {
+            dialogCloseImage.setColorFilter(colorRed);
+            locateImage.setColorFilter(colorBlue);
+            locateImage2.setColorFilter(colorBlue);
+            tvLocate.setTextColor(colorBlue);
+            tvLocate2.setTextColor(colorBlue);
+        }
+        else {
+            dialogCloseImage.setColorFilter(colorInitial);
+            locateImage.setColorFilter(colorInitial);
+            locateImage2.setColorFilter(colorInitial);
+            tvLocate.setTextColor(colorInitial);
+            tvLocate2.setTextColor(colorInitial);
+        }
     }
 
     private void openMap() {
@@ -2054,11 +2073,7 @@ public class BookingActivity extends AppCompatActivity implements
     @Override
     public void sendScheduleTime(ScheduleTime scheduleTime) {
         this.scheduleTime = scheduleTime;
-
-        dateTimeToString.setTimeToSplit(scheduleTime.getTime());
-
-        bookingScheduleText = tvScheduleDate2.getText().toString() + " | " +
-                dateTimeToString.getTime();
+        bookingScheduleText = dateTimeToString.getDate() + " | " + scheduleTime.getTime();
 
         checkScheduleContinueButton();
     }

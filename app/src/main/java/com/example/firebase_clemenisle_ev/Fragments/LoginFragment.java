@@ -20,12 +20,18 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.firebase_clemenisle_ev.Classes.Credentials;
+import com.example.firebase_clemenisle_ev.Classes.FirebaseURL;
 import com.example.firebase_clemenisle_ev.MainActivity;
 import com.example.firebase_clemenisle_ev.PostRegisterActivity;
 import com.example.firebase_clemenisle_ev.R;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -33,6 +39,8 @@ import androidx.fragment.app.Fragment;
 
 public class LoginFragment extends Fragment {
 
+    private final static String firebaseURL = FirebaseURL.getFirebaseURL();
+    FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance(firebaseURL);
     FirebaseAuth firebaseAuth;
     FirebaseUser firebaseUser;
 
@@ -49,9 +57,13 @@ public class LoginFragment extends Fragment {
 
     String emailAddress, password;
 
+    int colorBlue, colorInitial;
     ColorStateList cslInitial, cslBlue, cslRed;
 
     TabPosInterface tabPosInterface;
+
+    Query usersQuery;
+    boolean isSearchingForUser = false;
 
     public interface TabPosInterface {
         void sendTabPos(int pos);
@@ -77,6 +89,9 @@ public class LoginFragment extends Fragment {
         myContext = inflater.getContext();
         myResources = myContext.getResources();
 
+        colorBlue = myResources.getColor(R.color.blue);
+        colorInitial = myResources.getColor(R.color.initial);
+
         cslInitial = ColorStateList.valueOf(myResources.getColor(R.color.initial));
         cslBlue = ColorStateList.valueOf(myResources.getColor(R.color.blue));
         cslRed = ColorStateList.valueOf(myResources.getColor(R.color.red));
@@ -92,7 +107,7 @@ public class LoginFragment extends Fragment {
             tlEmailAddress.setStartIconTintList(cslInitial);
             tlPassword.setStartIconTintList(cslInitial);
 
-            loginAccount(emailAddress, password);
+            searchUser();
         });
 
         etEmailAddress.setOnFocusChangeListener((view1, b) -> {
@@ -154,9 +169,36 @@ public class LoginFragment extends Fragment {
         return view;
     }
 
-    private void loginAccount(String emailAddress, String password) {
+    private void searchUser() {
         setScreenEnabled(false);
         progressBar.setVisibility(View.VISIBLE);
+
+        isSearchingForUser = false;
+        usersQuery = firebaseDatabase.getReference("users")
+                .orderByChild("emailAddress").equalTo(emailAddress);
+        usersQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(!isSearchingForUser) {
+                    isSearchingForUser = true;
+                    usersQuery = null;
+
+                    if(snapshot.exists()) loginAccount();
+                    else loginFailed("Unregistered account");
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                isSearchingForUser = false;
+                usersQuery = null;
+
+                loginFailed("Network error");
+            }
+        });
+    }
+
+    private void loginAccount() {
         firebaseAuth.signInWithEmailAndPassword(emailAddress, password)
                 .addOnCompleteListener(task -> {
                     if(task.isSuccessful()) {
@@ -182,12 +224,11 @@ public class LoginFragment extends Fragment {
                                 startActivity(intent);
                             }
                         }
-                        else {
-                            loginFailed("Failed to get current user");
-                        }
+                        else loginFailed("Failed to get the current user");
                     }
                     else {
-                        loginFailed(task.getException().toString());
+                        if(task.getException() != null)
+                            loginFailed(task.getException().toString());
                     }
                 });
     }
@@ -267,6 +308,15 @@ public class LoginFragment extends Fragment {
         continueButton.setEnabled(value);
         tvRegister.setEnabled(value);
         tvForgot.setEnabled(value);
+
+        if(value) {
+            tvRegister.setTextColor(colorBlue);
+            tvForgot.setTextColor(colorBlue);
+        }
+        else {
+            tvRegister.setTextColor(colorInitial);
+            tvForgot.setTextColor(colorInitial);
+        }
     }
 
     @Override

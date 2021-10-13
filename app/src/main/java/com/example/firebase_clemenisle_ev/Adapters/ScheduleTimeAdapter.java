@@ -7,7 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.example.firebase_clemenisle_ev.Classes.DateTimeToString;
 import com.example.firebase_clemenisle_ev.Classes.ScheduleTime;
 import com.example.firebase_clemenisle_ev.R;
 
@@ -71,10 +70,7 @@ public class ScheduleTimeAdapter extends RecyclerView.Adapter<ScheduleTimeAdapte
         String time = scheduleTimeList.get(position).getTime();
         boolean deactivated = scheduleTimeList.get(position).isDeactivated();
 
-        DateTimeToString dateTimeToString = new DateTimeToString();
-        dateTimeToString.setTimeToSplit(time);
-
-        tvScheduleTime.setText(dateTimeToString.getTime());
+        tvScheduleTime.setText(time);
 
         boolean isSelected = false;
         if(scheduleTimeId != null)

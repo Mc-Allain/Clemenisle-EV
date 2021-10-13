@@ -22,6 +22,7 @@ import android.widget.Toast;
 import com.example.firebase_clemenisle_ev.Classes.Credentials;
 import com.example.firebase_clemenisle_ev.Classes.FirebaseURL;
 import com.example.firebase_clemenisle_ev.Classes.User;
+import com.example.firebase_clemenisle_ev.MainActivity;
 import com.example.firebase_clemenisle_ev.PostRegisterActivity;
 import com.example.firebase_clemenisle_ev.R;
 import com.google.android.material.textfield.TextInputLayout;
@@ -31,6 +32,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import androidx.annotation.NonNull;
@@ -68,7 +70,9 @@ public class RegisterFragment extends Fragment {
     ColorStateList cslInitial, cslBlue, cslRed;
 
     public int currentStep = 1, endStep = 3;
-    boolean registered = false, added = false;
+
+    Query usersQuery;
+    boolean isRegistered = false, isAdded = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -405,49 +409,39 @@ public class RegisterFragment extends Fragment {
         return "Step " + currentStep + " out of " + endStep;
     }
 
+    public void backPressed() {
+        backButton.performClick();
+    }
+
     private void checkEmailAddressIfExisting() {
         tlEmailAddress.setStartIconTintList(cslInitial);
         setScreenEnabled(false);
         progressBar.setVisibility(View.VISIBLE);
 
-        DatabaseReference usersRef = firebaseDatabase.getReference("users");
-        usersRef.addValueEventListener(new ValueEventListener() {
+        isRegistered = false;
+        usersQuery = firebaseDatabase.getReference("users")
+                .orderByChild("emailAddress").equalTo(emailAddress);
+        usersQuery.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if(snapshot.exists()) {
-                    boolean eaExisting = false;
-                    for(DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                        DataSnapshot ea = dataSnapshot.child("emailAddress");
-                        if(ea.exists()) {
-                            String eaValue = ea.getValue(String.class);
-                            if(emailAddress.equals(eaValue)) {
-                                eaExisting = true;
-                            }
-                        }
+                if(!isRegistered) {
+                    if(snapshot.exists()) {
+                        tlEmailAddress.setErrorEnabled(true);
+                        tlEmailAddress.setError("This Email Address is already isRegistered");
+                        tlEmailAddress.setStartIconTintList(cslRed);
+                        vEA = false;
+
+                        setScreenEnabled(true);
+                        progressBar.setVisibility(View.GONE);
                     }
+                    else {
+                        tlEmailAddress.setErrorEnabled(false);
+                        tlEmailAddress.setError(null);
+                        tlEmailAddress.setStartIconTintList(cslInitial);
+                        vEA = true;
 
-                    if(!registered) {
-                        if(eaExisting) {
-                            tlEmailAddress.setErrorEnabled(true);
-                            tlEmailAddress.setError("This Email Address is already registered");
-                            tlEmailAddress.setStartIconTintList(cslRed);
-                            vEA = false;
-
-                            setScreenEnabled(true);
-                            progressBar.setVisibility(View.GONE);
-                        }
-                        else {
-                            tlEmailAddress.setErrorEnabled(false);
-                            tlEmailAddress.setError(null);
-                            tlEmailAddress.setStartIconTintList(cslInitial);
-                            vEA = true;
-
-                            registerAccount();
-                        }
+                        registerAccount();
                     }
-                }
-                else {
-                    registerAccount();
                 }
             }
 
@@ -465,16 +459,12 @@ public class RegisterFragment extends Fragment {
         });
     }
 
-    public void backPressed() {
-        backButton.performClick();
-    }
-
     private void registerAccount() {
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseAuth.createUserWithEmailAndPassword(emailAddress, password)
                 .addOnCompleteListener(task -> {
                     if(task.isSuccessful()) {
-                        registered = true;
+                        isRegistered = true;
                         addToDatabase();
                     }
                     else {
@@ -490,12 +480,12 @@ public class RegisterFragment extends Fragment {
             User user = new User(emailAddress, firstName, userId,
                     lastName, middleName, password);
 
-            if(!added) {
+            if(!isAdded) {
                 DatabaseReference usersRef = firebaseDatabase.getReference("users");
                 usersRef.child(userId).setValue(user)
                         .addOnCompleteListener(task -> {
                             if(task.isSuccessful()) {
-                                added = true;
+                                isAdded = true;
                                 sendEmailVerificationLink();
                             }
                             else {
@@ -526,13 +516,18 @@ public class RegisterFragment extends Fragment {
     }
 
     private void proceedToNextActivity(boolean success) {
-        Intent intent = new Intent(myContext, PostRegisterActivity.class);
-        ((Activity) myContext).onBackPressed();
+        Intent intent = new Intent(myContext, MainActivity.class);
+
+        startActivity(intent);
+        ((Activity) myContext).finishAffinity();
+
+        intent = new Intent(myContext, PostRegisterActivity.class);
         intent.putExtra("emailAddress", emailAddress);
         intent.putExtra("password", password);
         intent.putExtra("remember", false);
         intent.putExtra("success", success);
         intent.putExtra("fromRegister", true);
+
         startActivity(intent);
     }
 

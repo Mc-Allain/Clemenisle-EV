@@ -63,7 +63,7 @@ public class PostRegisterActivity extends AppCompatActivity {
     boolean success, remember, fromRegister;
     String name, caption, resend, update;
 
-    int colorRed, colorBlack, colorGreen, selectedColor;
+    int colorRed, colorBlack, colorGreen, colorInitial, selectedColor;
     ColorStateList cslInitial, cslBlue, cslRed;
 
     CountDownTimer countDownTimer, autoLoginTimer;
@@ -116,6 +116,7 @@ public class PostRegisterActivity extends AppCompatActivity {
         colorRed = myResources.getColor(R.color.red);
         colorBlack = myResources.getColor(R.color.black);
         colorGreen = myResources.getColor(R.color.green);
+        colorInitial = myResources.getColor(R.color.initial);
 
         startTime = getMSec(startMin, startSec);
 
@@ -504,6 +505,7 @@ public class PostRegisterActivity extends AppCompatActivity {
         super.onDestroy();
         if(countDownTimer != null) countDownTimer.cancel();
         if(autoLoginTimer != null) autoLoginTimer.cancel();
+        firebaseAuth.signOut();
     }
 
     private void runTime() {
@@ -579,8 +581,16 @@ public class PostRegisterActivity extends AppCompatActivity {
         closeImage.setEnabled(value);
         resendButton.setEnabled(value);
         updateEAButton.setEnabled(value);
+        if(dialog != null) dialog.setCanceledOnTouchOutside(value);
         if(tlEmailAddress != null) tlEmailAddress.setEnabled(value);
         if(updateButton != null) updateButton.setEnabled(value);
         if(dialogCloseImage != null) dialogCloseImage.setEnabled(value);
+
+        if(value) {
+            if (dialogCloseImage != null) dialogCloseImage.setColorFilter(colorRed);
+        }
+        else {
+            if (dialogCloseImage != null) dialogCloseImage.setColorFilter(colorInitial);
+        }
     }
 }

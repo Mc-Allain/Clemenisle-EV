@@ -73,11 +73,6 @@ public class Booking {
         return schedule;
     }
 
-    public String getFormattedSchedule() {
-        DateTimeToString converter = new DateTimeToString(schedule);
-        return converter.getDate() + " | " + converter.getTime();
-    }
-
     public Station getStartStation() {
         return startStation;
     }
