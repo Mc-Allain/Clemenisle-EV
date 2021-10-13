@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Firebase-Clemenisle-EV</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="FirebaseURL">
+        https://fir-clemenisle-ev-default-rtdb.asia-southeast1.firebasedatabase.app/
+    </string>
+</resources>

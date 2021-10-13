@@ -1,0 +1,515 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Fragments.MapSettingsFragment">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <ImageView
+                    android:id="@+id/msSatImage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_baseline_satellite_24"
+                    app:layout_constraintBottom_toBottomOf="@+id/tvMSDefault"
+                    app:layout_constraintEnd_toStartOf="@+id/tvMSSat"
+                    app:layout_constraintTop_toTopOf="@+id/tvMSDefault" />
+
+                <TextView
+                    android:id="@+id/tvMSSat"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_marginEnd="16dp"
+                    android:gravity="center_vertical"
+                    android:text="Satellite"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="@+id/msSatImage"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/msSatImage" />
+
+                <ImageView
+                    android:id="@+id/msDefaultImage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_baseline_map_24"
+                    app:layout_constraintBottom_toBottomOf="@+id/tvMapType"
+                    app:layout_constraintEnd_toStartOf="@+id/tvMSDefault"
+                    app:layout_constraintTop_toTopOf="@+id/tvMapType"
+                    app:tint="@color/blue" />
+
+                <TextView
+                    android:id="@+id/tvMSDefault"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_marginEnd="8dp"
+                    android:gravity="center_vertical"
+                    android:text="Default"
+                    android:textColor="@color/blue"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="@+id/msDefaultImage"
+                    app:layout_constraintEnd_toStartOf="@+id/msSatImage"
+                    app:layout_constraintTop_toTopOf="@+id/msDefaultImage" />
+
+                <TextView
+                    android:id="@+id/tvMapType"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:text="Map Type"
+                    android:textColor="@color/black"
+                    app:layout_constraintStart_toStartOf="@+id/tvSMarkIcon"
+                    app:layout_constraintTop_toBottomOf="@+id/tvSMarkIcon" />
+
+                <ImageView
+                    android:id="@+id/sDefaultImage"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_baseline_ev_station_24"
+                    app:layout_constraintBottom_toBottomOf="@+id/tvSMarkIcon"
+                    app:layout_constraintEnd_toStartOf="@+id/tvSDefault"
+                    app:layout_constraintStart_toStartOf="@+id/msDefaultImage"
+                    app:layout_constraintTop_toTopOf="@+id/tvSMarkIcon"
+                    app:tint="@color/blue" />
+
+                <TextView
+                    android:id="@+id/tvSDefault"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:gravity="center_vertical|end"
+                    android:text="Default"
+                    android:textColor="@color/blue"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="@+id/sDefaultImage"
+                    app:layout_constraintEnd_toEndOf="@+id/tvMSDefault"
+                    app:layout_constraintStart_toStartOf="@+id/tvMSDefault"
+                    app:layout_constraintTop_toTopOf="@+id/sDefaultImage" />
+
+                <ImageView
+                    android:id="@+id/sMapPinImage"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_baseline_location_on_24"
+                    app:layout_constraintBottom_toBottomOf="@+id/tvSDefault"
+                    app:layout_constraintEnd_toStartOf="@+id/tvSMapPin"
+                    app:layout_constraintStart_toStartOf="@+id/msSatImage"
+                    app:layout_constraintTop_toTopOf="@+id/tvSDefault" />
+
+                <TextView
+                    android:id="@+id/tvSMapPin"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_marginStart="2dp"
+                    android:gravity="center_vertical|end"
+                    android:text="Regular"
+                    android:textAlignment="textStart"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="@+id/sMapPinImage"
+                    app:layout_constraintEnd_toEndOf="@+id/tvMSSat"
+                    app:layout_constraintStart_toStartOf="@+id/tvMSSat"
+                    app:layout_constraintTop_toTopOf="@+id/sMapPinImage" />
+
+                <TextView
+                    android:id="@+id/tvSMarkIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:text="Station Mark Icon"
+                    android:textColor="@color/black"
+                    app:layout_constraintStart_toStartOf="@+id/tvTSMarkIcon"
+                    app:layout_constraintTop_toBottomOf="@+id/tvTSMarkIcon" />
+
+                <ImageView
+                    android:id="@+id/tsMapPinImage"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_baseline_location_on_24"
+                    app:layout_constraintBottom_toBottomOf="@+id/tvTSDefault"
+                    app:layout_constraintEnd_toStartOf="@+id/tvTSMapPin"
+                    app:layout_constraintStart_toStartOf="@+id/sMapPinImage"
+                    app:layout_constraintTop_toTopOf="@+id/tvTSDefault" />
+
+                <TextView
+                    android:id="@+id/tvTSMapPin"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:gravity="center_vertical|end"
+                    android:text="Regular"
+                    android:textAlignment="textStart"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="@+id/tsMapPinImage"
+                    app:layout_constraintEnd_toEndOf="@+id/tvSMapPin"
+                    app:layout_constraintStart_toStartOf="@+id/tvSMapPin"
+                    app:layout_constraintTop_toTopOf="@+id/tsMapPinImage" />
+
+                <ImageView
+                    android:id="@+id/tsDefaultImage"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_baseline_tour_24"
+                    app:layout_constraintBottom_toBottomOf="@+id/tvTSMarkIcon"
+                    app:layout_constraintEnd_toStartOf="@+id/tvTSDefault"
+                    app:layout_constraintStart_toStartOf="@+id/sDefaultImage"
+                    app:layout_constraintTop_toTopOf="@+id/tvTSMarkIcon"
+                    app:tint="@color/blue" />
+
+                <TextView
+                    android:id="@+id/tvTSDefault"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:gravity="center_vertical|end"
+                    android:text="Default"
+                    android:textColor="@color/blue"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="@+id/tsDefaultImage"
+                    app:layout_constraintEnd_toEndOf="@+id/tvSDefault"
+                    app:layout_constraintStart_toStartOf="@+id/tvSDefault"
+                    app:layout_constraintTop_toTopOf="@+id/tsDefaultImage" />
+
+                <TextView
+                    android:id="@+id/tvTSMarkIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="14dp"
+                    android:text="Tourist Spot Mark Icon"
+                    android:textColor="@color/black"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/sColorLayout" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/mapAutoFocusLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginTop="10dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tvMapType">
+
+                    <TextView
+                        android:id="@+id/tvMapAutoFocus"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:text="Map Auto Focus"
+                        android:textColor="@color/black"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <com.google.android.material.switchmaterial.SwitchMaterial
+                        android:id="@+id/swMapAutoFocus"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="16dp"
+                        android:checked="true"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/tsColorLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <ImageView
+                        android:id="@+id/tsColorImage"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="16dp"
+                        android:background="@color/blue"
+                        android:src="@drawable/ic_baseline_color_lens_24"
+                        app:layout_constraintBottom_toBottomOf="@+id/tvTSMarkColor"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/tvTSMarkColor"
+                        app:tint="@color/blue" />
+
+                    <TextView
+                        android:id="@+id/tvTSMarkColor"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:text="Tourist Spot Mark Color"
+                        android:textColor="@color/black"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/tsColorsLayout"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:background="@color/white"
+                        android:visibility="visible"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="@+id/tsColorImage"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <HorizontalScrollView
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent">
+
+                            <androidx.constraintlayout.widget.ConstraintLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent">
+
+                                <ImageView
+                                    android:id="@+id/tsBlueImage"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginEnd="8dp"
+                                    android:background="@color/blue"
+                                    android:src="@drawable/ic_baseline_color_lens_24"
+                                    android:visibility="gone"
+                                    app:layout_constraintBottom_toBottomOf="parent"
+                                    app:layout_constraintEnd_toStartOf="@+id/tsRedImage"
+                                    app:layout_constraintTop_toTopOf="parent"
+                                    app:tint="@color/blue" />
+
+                                <ImageView
+                                    android:id="@+id/tsRedImage"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginEnd="8dp"
+                                    android:background="@color/red"
+                                    android:src="@drawable/ic_baseline_color_lens_24"
+                                    android:visibility="gone"
+                                    app:layout_constraintBottom_toBottomOf="@+id/tsBlueImage"
+                                    app:layout_constraintEnd_toStartOf="@+id/tsGreenImage"
+                                    app:layout_constraintTop_toTopOf="@+id/tsBlueImage"
+                                    app:tint="@color/red" />
+
+                                <ImageView
+                                    android:id="@+id/tsGreenImage"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginEnd="8dp"
+                                    android:background="@color/green"
+                                    android:src="@drawable/ic_baseline_color_lens_24"
+                                    android:visibility="gone"
+                                    app:layout_constraintBottom_toBottomOf="@+id/tsBlueImage"
+                                    app:layout_constraintEnd_toStartOf="@+id/tsOrangeImage"
+                                    app:layout_constraintTop_toTopOf="@+id/tsBlueImage"
+                                    app:layout_constraintVertical_bias="0.0"
+                                    app:tint="@color/green" />
+
+                                <ImageView
+                                    android:id="@+id/tsOrangeImage"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginEnd="8dp"
+                                    android:background="@color/orange"
+                                    android:src="@drawable/ic_baseline_color_lens_24"
+                                    android:visibility="gone"
+                                    app:layout_constraintBottom_toBottomOf="@+id/tsBlueImage"
+                                    app:layout_constraintEnd_toStartOf="@+id/tsDarkVioletImage"
+                                    app:layout_constraintTop_toTopOf="@+id/tsBlueImage"
+                                    app:layout_constraintVertical_bias="0.0"
+                                    app:tint="@color/orange" />
+
+                                <ImageView
+                                    android:id="@+id/tsDarkVioletImage"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginEnd="8dp"
+                                    android:background="@color/dark_violet"
+                                    android:src="@drawable/ic_baseline_color_lens_24"
+                                    android:visibility="gone"
+                                    app:layout_constraintBottom_toBottomOf="@+id/tsBlueImage"
+                                    app:layout_constraintEnd_toStartOf="@+id/tsBlackImage"
+                                    app:layout_constraintTop_toTopOf="@+id/tsBlueImage"
+                                    app:tint="@color/dark_violet" />
+
+                                <ImageView
+                                    android:id="@+id/tsBlackImage"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:background="@color/black"
+                                    android:src="@drawable/ic_baseline_color_lens_24"
+                                    android:visibility="gone"
+                                    app:layout_constraintBottom_toBottomOf="@+id/tsBlueImage"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintTop_toTopOf="@+id/tsBlueImage"
+                                    app:layout_constraintVertical_bias="0.0"
+                                    app:tint="@color/black" />
+
+                            </androidx.constraintlayout.widget.ConstraintLayout>
+
+                        </HorizontalScrollView>
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/sColorLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tsColorLayout">
+
+                    <ImageView
+                        android:id="@+id/sColorImage"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="16dp"
+                        android:background="@color/blue"
+                        android:src="@drawable/ic_baseline_color_lens_24"
+                        app:layout_constraintBottom_toBottomOf="@+id/tvSMarkColor"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/tvSMarkColor"
+                        app:tint="@color/blue" />
+
+                    <TextView
+                        android:id="@+id/tvSMarkColor"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:text="Station Mark Color"
+                        android:textColor="@color/black"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/sColorsLayout"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:background="@color/white"
+                        android:visibility="visible"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="@+id/sColorImage"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <HorizontalScrollView
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent">
+
+                            <androidx.constraintlayout.widget.ConstraintLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent">
+
+                                <ImageView
+                                    android:id="@+id/sBlueImage"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginEnd="8dp"
+                                    android:background="@color/blue"
+                                    android:src="@drawable/ic_baseline_color_lens_24"
+                                    android:visibility="gone"
+                                    app:layout_constraintBottom_toBottomOf="parent"
+                                    app:layout_constraintEnd_toStartOf="@+id/sRedImage"
+                                    app:layout_constraintTop_toTopOf="parent"
+                                    app:tint="@color/blue" />
+
+                                <ImageView
+                                    android:id="@+id/sRedImage"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginEnd="8dp"
+                                    android:background="@color/red"
+                                    android:src="@drawable/ic_baseline_color_lens_24"
+                                    android:visibility="gone"
+                                    app:layout_constraintBottom_toBottomOf="@+id/sBlueImage"
+                                    app:layout_constraintEnd_toStartOf="@+id/sGreenImage"
+                                    app:layout_constraintTop_toTopOf="@+id/sBlueImage"
+                                    app:tint="@color/red" />
+
+                                <ImageView
+                                    android:id="@+id/sGreenImage"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginEnd="8dp"
+                                    android:background="@color/green"
+                                    android:src="@drawable/ic_baseline_color_lens_24"
+                                    android:visibility="gone"
+                                    app:layout_constraintBottom_toBottomOf="@+id/sBlueImage"
+                                    app:layout_constraintEnd_toStartOf="@+id/sOrangeImage"
+                                    app:layout_constraintTop_toTopOf="@+id/sBlueImage"
+                                    app:tint="@color/green" />
+
+                                <ImageView
+                                    android:id="@+id/sOrangeImage"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginEnd="8dp"
+                                    android:background="@color/orange"
+                                    android:src="@drawable/ic_baseline_color_lens_24"
+                                    android:visibility="gone"
+                                    app:layout_constraintBottom_toBottomOf="@+id/sBlueImage"
+                                    app:layout_constraintEnd_toStartOf="@+id/sDarkVioletImage"
+                                    app:layout_constraintTop_toTopOf="@+id/sBlueImage"
+                                    app:tint="@color/orange" />
+
+                                <ImageView
+                                    android:id="@+id/sDarkVioletImage"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginEnd="8dp"
+                                    android:background="@color/dark_violet"
+                                    android:src="@drawable/ic_baseline_color_lens_24"
+                                    android:visibility="gone"
+                                    app:layout_constraintBottom_toBottomOf="@+id/sBlueImage"
+                                    app:layout_constraintEnd_toStartOf="@+id/sBlackImage"
+                                    app:layout_constraintTop_toTopOf="@+id/sBlueImage"
+                                    app:tint="@color/dark_violet" />
+
+                                <ImageView
+                                    android:id="@+id/sBlackImage"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:background="@color/black"
+                                    android:src="@drawable/ic_baseline_color_lens_24"
+                                    android:visibility="gone"
+                                    app:layout_constraintBottom_toBottomOf="@+id/sBlueImage"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintTop_toTopOf="@+id/sBlueImage"
+                                    app:tint="@color/black" />
+
+                            </androidx.constraintlayout.widget.ConstraintLayout>
+
+                        </HorizontalScrollView>
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

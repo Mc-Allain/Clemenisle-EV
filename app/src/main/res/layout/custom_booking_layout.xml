@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/backgroundLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:background="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/thumbnail"
+            android:layout_width="110dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="8dp"
+            android:scaleType="centerCrop"
+            app:layout_constraintBottom_toBottomOf="@+id/tvPrice"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvBookingId"
+            app:srcCompat="@drawable/intramuros_drone_shot" />
+
+        <TextView
+            android:id="@+id/tvStartStation2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:text="Start Station"
+            android:textColor="@color/black"
+            app:layout_constraintBottom_toBottomOf="@+id/tvStartStation"
+            app:layout_constraintEnd_toStartOf="@+id/moreImage"
+            app:layout_constraintStart_toEndOf="@+id/tvStartStation"
+            app:layout_constraintTop_toTopOf="@+id/tvStartStation" />
+
+        <TextView
+            android:id="@+id/tvEndStation2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="End Station"
+            android:textColor="@color/black"
+            app:layout_constraintBottom_toBottomOf="@+id/tvEndStation"
+            app:layout_constraintEnd_toEndOf="@+id/tvStartStation2"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="@+id/tvStartStation2"
+            app:layout_constraintTop_toTopOf="@+id/tvEndStation" />
+
+        <TextView
+            android:id="@+id/tvStartStation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Start Station"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="@+id/tvSchedule"
+            app:layout_constraintTop_toBottomOf="@+id/tvSchedule" />
+
+        <TextView
+            android:id="@+id/tvEndStation"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="End Station"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="@+id/tvStartStation"
+            app:layout_constraintStart_toStartOf="@+id/tvStartStation"
+            app:layout_constraintTop_toBottomOf="@+id/tvStartStation" />
+
+        <TextView
+            android:id="@+id/tvBookingId"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:background="@color/blue"
+            android:padding="4dp"
+            android:text="B21-0101-00"
+            android:textAlignment="center"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="@+id/thumbnail"
+            app:layout_constraintStart_toStartOf="@+id/thumbnail"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tvTypeName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:text="Type Name"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/thumbnail"
+            app:layout_constraintTop_toTopOf="@+id/tvBookingId" />
+
+        <TextView
+            android:id="@+id/tvSchedule"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:text="Schedule"
+            android:textColor="@color/black"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/tvTypeName"
+            app:layout_constraintTop_toBottomOf="@+id/tvTypeName" />
+
+        <TextView
+            android:id="@+id/tvPrice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:gravity="bottom"
+            android:text="₱0"
+            android:textColor="@color/blue"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/tvSchedule"
+            app:layout_constraintTop_toBottomOf="@+id/tvEndStation" />
+
+        <TextView
+            android:id="@+id/tvOption"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:shadowColor="@color/black"
+            android:text="false"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/moreImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:padding="4dp"
+            app:tint="@color/black"
+            app:layout_constraintBottom_toBottomOf="@+id/tvPrice"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/tvPrice"
+            app:srcCompat="@drawable/ic_baseline_more_horiz_24" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/buttonLayout"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/border_layout"
+            app:layout_constraintEnd_toStartOf="@+id/moreImage"
+            app:layout_constraintTop_toBottomOf="parent">
+
+            <ImageView
+                android:id="@+id/locateEndImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="4dp"
+                android:padding="4dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/locateImage"
+                app:layout_constraintTop_toBottomOf="@+id/locateImage"
+                app:srcCompat="@drawable/ic_baseline_location_searching_24"
+                app:tint="@color/blue" />
+
+            <ImageView
+                android:id="@+id/openImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="4dp"
+                android:padding="4dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_baseline_library_books_24"
+                app:tint="@color/blue" />
+
+            <ImageView
+                android:id="@+id/locateImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:padding="4dp"
+                app:layout_constraintStart_toStartOf="@+id/openImage"
+                app:layout_constraintTop_toBottomOf="@+id/openImage"
+                app:srcCompat="@drawable/ic_baseline_location_searching_24"
+                app:tint="@color/blue" />
+
+            <TextView
+                android:id="@+id/tvLocateEnd"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:gravity="center_vertical"
+                android:text="Locate End Station"
+                android:textColor="@color/blue"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@+id/locateEndImage"
+                app:layout_constraintEnd_toEndOf="@+id/tvLocate"
+                app:layout_constraintStart_toEndOf="@+id/locateEndImage"
+                app:layout_constraintTop_toTopOf="@+id/locateEndImage" />
+
+            <TextView
+                android:id="@+id/tvOpen"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:gravity="center_vertical"
+                android:text="Open"
+                android:textColor="@color/blue"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@+id/openImage"
+                app:layout_constraintEnd_toEndOf="@+id/tvLocate"
+                app:layout_constraintStart_toEndOf="@+id/openImage"
+                app:layout_constraintTop_toTopOf="@+id/openImage" />
+
+            <TextView
+                android:id="@+id/tvLocate"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_marginEnd="8dp"
+                android:gravity="center_vertical"
+                android:text="Locate Start Station"
+                android:textColor="@color/blue"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@+id/locateImage"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/locateImage"
+                app:layout_constraintTop_toTopOf="@+id/locateImage" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

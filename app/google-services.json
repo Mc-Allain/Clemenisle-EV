@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "765671494579",
+    "project_id": "fir-clemenisle-ev",
+    "storage_bucket": "fir-clemenisle-ev.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:765671494579:android:20faf701d07893702871c6",
+        "android_client_info": {
+          "package_name": "com.example.firebase_clemenisle_ev"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "765671494579-04nl0ddf0v624squvjg2jgrvrfgv1vc9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBGh1E0U9R20LNBWDlTpRooP6_EkRG3QLA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "765671494579-04nl0ddf0v624squvjg2jgrvrfgv1vc9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
