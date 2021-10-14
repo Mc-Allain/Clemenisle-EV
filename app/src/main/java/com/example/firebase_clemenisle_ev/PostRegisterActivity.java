@@ -25,24 +25,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.firebase_clemenisle_ev.Classes.Credentials;
-import com.example.firebase_clemenisle_ev.Classes.FirebaseURL;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class PostRegisterActivity extends AppCompatActivity {
 
-    private final static String firebaseURL = FirebaseURL.getFirebaseURL();
-    FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance(firebaseURL);
     FirebaseAuth firebaseAuth;
     FirebaseUser firebaseUser;
 
@@ -67,8 +57,6 @@ public class PostRegisterActivity extends AppCompatActivity {
     int colorRed, colorBlack, colorGreen, colorInitial, selectedColor;
     ColorStateList cslInitial, cslBlue, cslRed;
 
-    DatabaseReference usersRef;
-
     CountDownTimer countDownTimer, autoLoginTimer;
     int startMin = 3, startSec = 0;
     long startTime ;
@@ -84,7 +72,7 @@ public class PostRegisterActivity extends AppCompatActivity {
     String userId;
     String newEmailAddress;
 
-    boolean isUserUpdated = false, isVerified = false;
+    boolean isVerified = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -171,7 +159,6 @@ public class PostRegisterActivity extends AppCompatActivity {
 
         if(firebaseUser != null) {
             userId = firebaseUser.getUid();
-            usersRef = firebaseDatabase.getReference("users").child(userId).child("emailAddress");
 
             if(!firebaseUser.isEmailVerified()) {
                 resendButton.setOnClickListener(view -> resendEmailVerificationLink());
@@ -245,7 +232,7 @@ public class PostRegisterActivity extends AppCompatActivity {
             }
         });
 
-        updateButton.setOnClickListener(view -> checkEmailAddressIfExisting());
+        updateButton.setOnClickListener(view -> updateAccount());
 
         dialogCloseImage.setOnClickListener(view -> dialog.dismiss());
 
@@ -256,65 +243,34 @@ public class PostRegisterActivity extends AppCompatActivity {
         dialog.getWindow().setGravity(Gravity.BOTTOM);
     }
 
-    private void setEmailAddressUpdateStatusToFalse() {
-        isUserUpdated = false;
-
-        tlEmailAddress.setStartIconTintList(cslInitial);
-    }
-
-    private void checkEmailAddressIfExisting() {
-        setEmailAddressUpdateStatusToFalse();
+    private void updateAccount() {
         setScreenEnabled(false);
         dialogProgressBar.setVisibility(View.VISIBLE);
-
-        Query usersQuery = firebaseDatabase.getReference("users")
-                .orderByChild("emailAddress").equalTo(newEmailAddress);
-        usersQuery.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if(!isUserUpdated) {
-                    if(snapshot.exists()) {
-                        tlEmailAddress.setErrorEnabled(true);
-                        tlEmailAddress.setError("This Email Address is already registered");
-                        tlEmailAddress.setStartIconTintList(cslRed);
-
-                        setScreenEnabled(true);
-                        updateButton.setEnabled(false);
-                        dialogProgressBar.setVisibility(View.GONE);
-                    }
-                    else updateAccount();
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(
-                        myContext,
-                        error.toString(),
-                        Toast.LENGTH_SHORT
-                ).show();
-
-                setScreenEnabled(true);
-                dialogProgressBar.setVisibility(View.GONE);
-            }
-        });
-    }
-
-    private void updateAccount() {
-        tlEmailAddress.setErrorEnabled(false);
-        tlEmailAddress.setError(null);
         tlEmailAddress.setStartIconTintList(cslInitial);
 
         firebaseUser.updateEmail(newEmailAddress)
                 .addOnCompleteListener(task -> {
                     if(task.isSuccessful()) {
-                        isUserUpdated = true;
-                        
                         emailAddress = newEmailAddress;
                         sendEmailVerificationLink();
                     }
                     else {
-                        updateFailed();
+                        String error = "";
+                        if(task.getException() != null)
+                            error = task.getException().toString();
+
+                        if(error.contains("UserCollision")) {
+                            error = "This Email Address is already registered";
+
+                            tlEmailAddress.setErrorEnabled(true);
+                            tlEmailAddress.setError(error);
+                            tlEmailAddress.setStartIconTintList(cslRed);
+
+                            setScreenEnabled(true);
+                            updateButton.setEnabled(false);
+                            dialogProgressBar.setVisibility(View.GONE);
+                        }
+                        else updateFailed();
                     }
                 });
     }
@@ -324,6 +280,7 @@ public class PostRegisterActivity extends AppCompatActivity {
                 "Update failed, please try again.",
                 Toast.LENGTH_LONG
         ).show();
+
         setScreenEnabled(true);
         dialogProgressBar.setVisibility(View.GONE);
     }

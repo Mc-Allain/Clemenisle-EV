@@ -37,7 +37,6 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import androidx.annotation.NonNull;
@@ -88,8 +87,6 @@ public class LoggedInUserProfileFragment extends Fragment {
     ImageView emailAddressDialogCloseImage;
     Button emailAddressUpdateButton;
     ProgressBar emailAddressDialogProgressBar;
-
-    boolean isUserUpdated = false;
 
     DatabaseReference usersRef;
 
@@ -524,7 +521,7 @@ public class LoggedInUserProfileFragment extends Fragment {
             }
         });
 
-        emailAddressUpdateButton.setOnClickListener(view -> checkEmailAddressIfExisting());
+        emailAddressUpdateButton.setOnClickListener(view -> updateAccount());
 
         emailAddressDialogCloseImage.setOnClickListener(view -> emailAddressDialog.dismiss());
 
@@ -545,65 +542,21 @@ public class LoggedInUserProfileFragment extends Fragment {
         else emailAddressDialogCloseImage.setColorFilter(colorInitial);
     }
 
-    private void setEmailAddressUpdateStatusToFalse() {
-        isUserUpdated = false;
-
-        tlEmailAddress.setStartIconTintList(cslInitial);
-    }
-
-    private void checkEmailAddressIfExisting() {
-        setEmailAddressUpdateStatusToFalse();
+    private void updateAccount() {
         setEmailAddressDialogScreenEnabled(false);
         emailAddressDialogProgressBar.setVisibility(View.VISIBLE);
-
-        Query usersQuery = firebaseDatabase.getReference("users")
-                .orderByChild("emailAddress").equalTo(newEmailAddress);
-        usersQuery.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if(!isUserUpdated) {
-                    if(snapshot.exists()) {
-                        tlEmailAddress.setErrorEnabled(true);
-                        tlEmailAddress.setError("This Email Address is already registered");
-                        tlEmailAddress.setStartIconTintList(cslRed);
-
-                        setEmailAddressDialogScreenEnabled(true);
-                        emailAddressUpdateButton.setEnabled(false);
-                        emailAddressDialogProgressBar.setVisibility(View.GONE);
-                    }
-                    else updateAccount();
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(
-                        myContext,
-                        error.toString(),
-                        Toast.LENGTH_SHORT
-                ).show();
-
-                setEmailAddressDialogScreenEnabled(true);
-                emailAddressDialogProgressBar.setVisibility(View.GONE);
-            }
-        });
-    }
-
-    private void updateAccount() {
-        tlEmailAddress.setErrorEnabled(false);
-        tlEmailAddress.setError(null);
         tlEmailAddress.setStartIconTintList(cslInitial);
 
         firebaseUser.updateEmail(newEmailAddress)
                 .addOnCompleteListener(task -> {
                     if(task.isSuccessful()) {
-                        isUserUpdated = true;
-
                         emailAddress = newEmailAddress;
                         sendEmailVerificationLink();
                     }
                     else {
-                        String error = task.getException().toString();
+                        String error = "";
+                        if(task.getException() != null)
+                            error = task.getException().toString();
 
                         if(error.contains("RecentLogin")) {
                             proceedToMainActivity();
@@ -614,6 +567,17 @@ public class LoggedInUserProfileFragment extends Fragment {
                                     "Log in again before trying this request.",
                                     Toast.LENGTH_LONG
                             ).show();
+                        }
+                        else if(error.contains("UserCollision")) {
+                            error = "This Email Address is already registered";
+
+                            tlEmailAddress.setErrorEnabled(true);
+                            tlEmailAddress.setError(error);
+                            tlEmailAddress.setStartIconTintList(cslRed);
+
+                            setEmailAddressDialogScreenEnabled(true);
+                            emailAddressUpdateButton.setEnabled(false);
+                            emailAddressDialogProgressBar.setVisibility(View.GONE);
                         }
                         else updateFailed();
                     }

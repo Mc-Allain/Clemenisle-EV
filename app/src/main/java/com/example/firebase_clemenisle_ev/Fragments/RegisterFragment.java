@@ -28,14 +28,9 @@ import com.example.firebase_clemenisle_ev.R;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
 
-import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
@@ -71,7 +66,6 @@ public class RegisterFragment extends Fragment {
 
     public int currentStep = 1, endStep = 3;
 
-    Query usersQuery;
     boolean isRegistered = false, isAdded = false;
 
     @Override
@@ -156,7 +150,7 @@ public class RegisterFragment extends Fragment {
                 continueButton.setEnabled(false);
             }
             else if(currentStep == 3) {
-                checkEmailAddressIfExisting();
+                registerAccount();
             }
 
             if(currentStep < endStep) {
@@ -413,48 +407,9 @@ public class RegisterFragment extends Fragment {
         backButton.performClick();
     }
 
-    private void checkEmailAddressIfExisting() {
-        tlEmailAddress.setStartIconTintList(cslInitial);
+    private void registerAccount() {
         setScreenEnabled(false);
         progressBar.setVisibility(View.VISIBLE);
-
-        isRegistered = false;
-        usersQuery = firebaseDatabase.getReference("users")
-                .orderByChild("emailAddress").equalTo(emailAddress);
-        usersQuery.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if(!isRegistered) {
-                    if(snapshot.exists()) {
-                        tlEmailAddress.setErrorEnabled(true);
-                        tlEmailAddress.setError("This Email Address is already isRegistered");
-                        tlEmailAddress.setStartIconTintList(cslRed);
-
-                        setScreenEnabled(true);
-                        continueButton.setEnabled(false);
-                        progressBar.setVisibility(View.GONE);
-                    }
-                    else registerAccount();
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(
-                        myContext,
-                        error.toString(),
-                        Toast.LENGTH_SHORT
-                ).show();
-
-                setScreenEnabled(true);
-                progressBar.setVisibility(View.GONE);
-            }
-        });
-    }
-
-    private void registerAccount() {
-        tlEmailAddress.setErrorEnabled(false);
-        tlEmailAddress.setError(null);
         tlEmailAddress.setStartIconTintList(cslInitial);
 
         firebaseAuth = FirebaseAuth.getInstance();
@@ -465,7 +420,22 @@ public class RegisterFragment extends Fragment {
                         addToDatabase();
                     }
                     else {
-                        registerFailed();
+                        String error = "";
+                        if(task.getException() != null)
+                            error = task.getException().toString();
+
+                        if(error.contains("UserCollision")) {
+                            error = "This Email Address is already registered";
+
+                            tlEmailAddress.setErrorEnabled(true);
+                            tlEmailAddress.setError(error);
+                            tlEmailAddress.setStartIconTintList(cslRed);
+
+                            setScreenEnabled(true);
+                            continueButton.setEnabled(false);
+                            progressBar.setVisibility(View.GONE);
+                        }
+                        else registerFailed();
                     }
                 });
     }
