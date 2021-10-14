@@ -51,6 +51,9 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 
         myContext = inflater.getContext();
 
+        int colorRed = myContext.getResources().getColor(R.color.red);
+        int colorBlack = myContext.getResources().getColor(R.color.black);
+
         int settingIcon = settings.get(position).getSettingIcon();
         String settingName = settings.get(position).getSettingName();
 
@@ -58,9 +61,12 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
         tvSettingName.setText(settingName);
 
         if(settingName.equals("Log out")) {
-            int colorRed = myContext.getResources().getColor(R.color.red);
             settingIconImage.setColorFilter(colorRed);
             tvSettingName.setTextColor(colorRed);
+        }
+        else {
+            settingIconImage.setColorFilter(colorBlack);
+            tvSettingName.setTextColor(colorBlack);
         }
 
         int bottom = dpToPx(4);

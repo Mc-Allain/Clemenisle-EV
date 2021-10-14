@@ -5,14 +5,18 @@ import android.content.res.Resources;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.Target;
-import com.example.firebase_clemenisle_ev.Classes.BookingTypeRoute;
+import com.example.firebase_clemenisle_ev.Classes.FirebaseURL;
 import com.example.firebase_clemenisle_ev.Classes.SimpleTouristSpot;
 import com.example.firebase_clemenisle_ev.R;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.List;
 
@@ -20,27 +24,32 @@ import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class BookingSpotAdapter extends RecyclerView.Adapter<BookingSpotAdapter.ViewHolder> {
+public class LikedSpotAdapter extends RecyclerView.Adapter<LikedSpotAdapter.ViewHolder> {
 
-    List<SimpleTouristSpot> spots;
-    BookingTypeRoute bookingTypeRoute;
+    private final static String firebaseURL = FirebaseURL.getFirebaseURL();
+    FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance(firebaseURL);
+
+    List<SimpleTouristSpot> likedSpots;
+    String userId;
     LayoutInflater inflater;
 
     Context myContext;
     Resources myResources;
 
-    OnItemClickListener onItemClickListener;
+    long unlikePressedTime;
+    Toast unlikeToast;
+    boolean isUnliked = false;
 
-    public BookingSpotAdapter(Context context, List<SimpleTouristSpot> spots, BookingTypeRoute bookingTypeRoute) {
-        this.spots = spots;
-        this.bookingTypeRoute = bookingTypeRoute;
+    public LikedSpotAdapter(Context context, List<SimpleTouristSpot> likedSpots, String userId) {
+        this.likedSpots = likedSpots;
+        this.userId = userId;
         this.inflater = LayoutInflater.from(context);
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = inflater.inflate(R.layout.custom_near_spot_layout, parent, false);
+        View view = inflater.inflate(R.layout.custom_liked_spot_layout, parent, false);
         return new ViewHolder(view);
     }
 
@@ -48,13 +57,17 @@ public class BookingSpotAdapter extends RecyclerView.Adapter<BookingSpotAdapter.
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         ImageView thumbnail = holder.thumbnail;
         TextView tvName = holder.tvName;
+        Button unlikeButton = holder.unlikeButton;
         ConstraintLayout backgroundLayout = holder.backgroundLayout;
 
         myContext = inflater.getContext();
         myResources = myContext.getResources();
 
-        String name = spots.get(position).getName();
-        String img = spots.get(position).getImg();
+        SimpleTouristSpot likedSpot = likedSpots.get(position);
+
+        String id = likedSpot.getId();
+        String name = likedSpot.getName();
+        String img = likedSpot.getImg();
 
         Glide.with(myContext).load(img).placeholder(R.drawable.image_loading_placeholder).
                 override(Target.SIZE_ORIGINAL).into(thumbnail);
@@ -79,17 +92,26 @@ public class BookingSpotAdapter extends RecyclerView.Adapter<BookingSpotAdapter.
         layoutParams.setMarginEnd(end);
         backgroundLayout.setLayoutParams(layoutParams);
 
-        backgroundLayout.setOnClickListener(view -> {
-            if(onItemClickListener != null) onItemClickListener.itemClicked(spots, bookingTypeRoute);
+        unlikeButton.setOnClickListener(view -> {
+            if(unlikePressedTime + 2500 > System.currentTimeMillis() && !isUnliked) {
+                unlikeToast.cancel();
+
+                DatabaseReference usersRef = firebaseDatabase.getReference("users")
+                        .child(userId).child("likedSpots");
+                usersRef.child(id).setValue(null);
+
+                isUnliked = true;
+            }
+            else {
+                unlikeToast = Toast.makeText(myContext,
+                        "Press again to unlike", Toast.LENGTH_SHORT);
+                unlikeToast.show();
+
+                unlikePressedTime = System.currentTimeMillis();
+
+                isUnliked = false;
+            }
         });
-    }
-
-    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
-        this.onItemClickListener = onItemClickListener;
-    }
-
-    public interface OnItemClickListener {
-        void itemClicked(List<SimpleTouristSpot> spots, BookingTypeRoute bookingTypeRoute);
     }
 
     private int dpToPx(int dp) {
@@ -99,29 +121,23 @@ public class BookingSpotAdapter extends RecyclerView.Adapter<BookingSpotAdapter.
 
     @Override
     public int getItemCount() {
-        return spots.size();
+        return likedSpots.size();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView thumbnail;
         TextView tvName;
+        Button unlikeButton;
         ConstraintLayout backgroundLayout;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
+
+            backgroundLayout = itemView.findViewById(R.id.backgroundLayout);
+
             thumbnail = itemView.findViewById(R.id.thumbnail);
             tvName = itemView.findViewById(R.id.tvName);
-            backgroundLayout = itemView.findViewById(R.id.backgroundLayout);
+            unlikeButton = itemView.findViewById(R.id.unlikeButton);
         }
-    }
-
-    public void setBookingTypeRoute(BookingTypeRoute bookingTypeRoute) {
-        this.bookingTypeRoute = bookingTypeRoute;
-    }
-
-    public void setSpots(List<SimpleTouristSpot> spots) {
-        this.spots.clear();
-        this.spots.addAll(spots);
-        notifyDataSetChanged();
     }
 }

@@ -119,9 +119,7 @@ public class RecommendedSpotAdapter extends RecyclerView.Adapter<RecommendedSpot
                 addButton.setEnabled(true);
             }
 
-            addButton.setOnClickListener(view -> {
-                onButtonClickListener.addSpot(recommendedSpot);
-            });
+            addButton.setOnClickListener(view -> onButtonClickListener.addSpot(recommendedSpot));
         }
 
         int start = dpToPx(4), end = dpToPx(4);
@@ -137,6 +135,8 @@ public class RecommendedSpotAdapter extends RecyclerView.Adapter<RecommendedSpot
 
         ConstraintLayout.LayoutParams layoutParams =
                 (ConstraintLayout.LayoutParams) backgroundLayout.getLayoutParams();
+        layoutParams.setMargins(layoutParams.leftMargin, layoutParams.topMargin,
+                layoutParams.rightMargin, layoutParams.bottomMargin);
         layoutParams.setMarginStart(start);
         layoutParams.setMarginEnd(end);
         backgroundLayout.setLayoutParams(layoutParams);

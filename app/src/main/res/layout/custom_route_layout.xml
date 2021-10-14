@@ -18,17 +18,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <Button
-            android:id="@+id/visitButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="Mark as visited"
-            android:textAllCaps="false"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@+id/routeThumbnail"
-            app:layout_constraintStart_toStartOf="@+id/routeThumbnail"
-            app:layout_constraintTop_toBottomOf="@+id/routeThumbnail" />
-
         <ImageView
             android:id="@+id/routeThumbnail"
             android:layout_width="0dp"
@@ -42,6 +31,34 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/image_loading_placeholder" />
+
+        <TextView
+            android:id="@+id/tvRouteSpotNoBadge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="4dp"
+            android:background="@drawable/corner_layout"
+            android:backgroundTint="@color/blue"
+            android:minWidth="28dp"
+            android:padding="4dp"
+            android:text="0"
+            android:textAlignment="center"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="@+id/routeThumbnail"
+            app:layout_constraintTop_toTopOf="@+id/routeThumbnail" />
+
+        <Button
+            android:id="@+id/visitButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Mark as visited"
+            android:textAllCaps="false"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/routeThumbnail"
+            app:layout_constraintStart_toStartOf="@+id/routeThumbnail"
+            app:layout_constraintTop_toBottomOf="@+id/routeThumbnail" />
 
 
         <TextView

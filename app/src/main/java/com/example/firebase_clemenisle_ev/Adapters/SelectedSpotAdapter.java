@@ -54,7 +54,7 @@ public class SelectedSpotAdapter extends RecyclerView.Adapter<SelectedSpotAdapte
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         ImageView spotThumbnail = holder.spotThumbnail;
-        TextView name = holder.name;
+        TextView name = holder.name, tvRouteSpotNoBadge = holder.tvRouteSpotNoBadge;
         Button removeButton = holder.removeButton;
         ConstraintLayout backgroundLayout = holder.backgroundLayout;
 
@@ -68,6 +68,7 @@ public class SelectedSpotAdapter extends RecyclerView.Adapter<SelectedSpotAdapte
                 .into(spotThumbnail);
 
         name.setText(spot.getName());
+        tvRouteSpotNoBadge.setText(String.valueOf(position + 1));
 
         int start = dpToPx(4), top = dpToPx(4), end = dpToPx(4), bottom = dpToPx(4);
 
@@ -109,7 +110,7 @@ public class SelectedSpotAdapter extends RecyclerView.Adapter<SelectedSpotAdapte
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView spotThumbnail;
-        TextView name;
+        TextView name, tvRouteSpotNoBadge;
         Button removeButton;
         ConstraintLayout backgroundLayout;
 
@@ -118,6 +119,7 @@ public class SelectedSpotAdapter extends RecyclerView.Adapter<SelectedSpotAdapte
 
             spotThumbnail = itemView.findViewById(R.id.spotThumbnail);
             name = itemView.findViewById(R.id.tvName);
+            tvRouteSpotNoBadge = itemView.findViewById(R.id.tvRouteSpotNoBadge);
             removeButton = itemView.findViewById(R.id.removeButton);
             backgroundLayout = itemView.findViewById(R.id.backgroundLayout);
         }

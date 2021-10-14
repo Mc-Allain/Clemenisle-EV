@@ -28,8 +28,10 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.firebase_clemenisle_ev.Adapters.LikedSpotAdapter;
 import com.example.firebase_clemenisle_ev.Classes.Credentials;
 import com.example.firebase_clemenisle_ev.Classes.FirebaseURL;
+import com.example.firebase_clemenisle_ev.Classes.SimpleTouristSpot;
 import com.example.firebase_clemenisle_ev.Classes.User;
 import com.example.firebase_clemenisle_ev.MainActivity;
 import com.example.firebase_clemenisle_ev.R;
@@ -42,9 +44,14 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 public class LoggedInUserProfileFragment extends Fragment {
 
@@ -64,15 +71,18 @@ public class LoggedInUserProfileFragment extends Fragment {
     TextView tvEmailAddress2;
     ImageView updateEmailAddressImage, updatePasswordImage;
 
+    TextView tvLikedSpotBadge;
+    RecyclerView likedSpotView;
+
     Context myContext;
     Resources myResources;
 
     int colorGreen, colorRed, colorInitial, colorBlack, colorWhite;
     ColorStateList cslInitial, cslBlue, cslRed;
 
-    String defaultGreetText = "こんにちは (Hello)<br>"+
-            "Welcome to Clemenisle-EV<br>"+
-            "<font face='fredoka_one'>iBooking</font>",
+    String defaultGreetText = "<font face='sans_seif'>こんにちは (Hello)<br>"+
+            "Welcome to Clemenisle-EV</font><br>"+
+            "<big>iBooking</big>",
             lastName, firstName, middleName;
     String emailAddress;
 
@@ -113,6 +123,9 @@ public class LoggedInUserProfileFragment extends Fragment {
     boolean vPWL = false, vPWU = false, vPWLw = false, vPWN = false, vPWS = false, vCPW = false;
     boolean vEA = false;
 
+    LikedSpotAdapter likedSpotAdapter;
+    List<SimpleTouristSpot> likedSpots = new ArrayList<>();
+
     private void initSharedPreferences() {
         SharedPreferences sharedPreferences = myContext
                 .getSharedPreferences("login", Context.MODE_PRIVATE);
@@ -145,6 +158,9 @@ public class LoggedInUserProfileFragment extends Fragment {
         tvEmailAddress2 = view.findViewById(R.id.tvEmailAddress2);
         updateEmailAddressImage = view.findViewById(R.id.updateEmailAddressImage);
         updatePasswordImage = view.findViewById(R.id.updatePasswordImage);
+
+        tvLikedSpotBadge = view.findViewById(R.id.tvLikedSpotBadge);
+        likedSpotView = view.findViewById(R.id.likedSpotView);
 
         progressBar = view.findViewById(R.id.progressBar);
 
@@ -193,6 +209,12 @@ public class LoggedInUserProfileFragment extends Fragment {
         updateFullNameImage.setOnClickListener(view1 -> showFullNameDialog());
         updateEmailAddressImage.setOnClickListener(view1 -> showEmailAddressDialog());
         updatePasswordImage.setOnClickListener(view1 -> showPasswordDialog());
+        
+        LinearLayoutManager linearLayout1 =
+                new LinearLayoutManager(myContext, LinearLayoutManager.HORIZONTAL, false);
+        likedSpotView.setLayoutManager(linearLayout1);
+        likedSpotAdapter = new LikedSpotAdapter(myContext, likedSpots, userId);
+        likedSpotView.setAdapter(likedSpotAdapter);
 
         return view;
     }
@@ -1012,6 +1034,15 @@ public class LoggedInUserProfileFragment extends Fragment {
         showFullName();
         showAccountDetails();
 
+        likedSpots.clear();
+        likedSpots.addAll(user.getLikedSpots());
+        likedSpotAdapter.notifyDataSetChanged();
+
+        if(likedSpots.size() > 0) likedSpotView.setVisibility(View.VISIBLE);
+        else likedSpotView.setVisibility(View.GONE);
+
+        tvLikedSpotBadge.setText(String.valueOf(likedSpots.size()));
+
         tvGreet.setText(fromHtml(defaultGreetText));
         tvGreet.setTextColor(colorWhite);
 
@@ -1021,6 +1052,13 @@ public class LoggedInUserProfileFragment extends Fragment {
     private void errorLoading(String error) {
         tvGreet.setText(error);
         tvGreet.setTextColor(colorRed);
+
+        likedSpots.clear();
+        likedSpotAdapter.notifyDataSetChanged();
+
+        likedSpotView.setVisibility(View.GONE);
+
+        tvLikedSpotBadge.setText(String.valueOf(likedSpots.size()));
 
         progressBar.setVisibility(View.GONE);
     }

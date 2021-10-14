@@ -31,6 +31,7 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:background="@drawable/custom_fade_background"
+            android:fontFamily="@font/fredoka_one"
             android:gravity="center_horizontal|fill_vertical"
             android:text="こんにちは (Hello)\nWelcome to Clemenisle-EV\niBooking"
             android:textColor="@color/white"
@@ -55,6 +56,76 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:paddingBottom="88dp">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/likedSpotLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@color/white"
+                app:layout_constraintEnd_toEndOf="@+id/accountDetailsLayout"
+                app:layout_constraintStart_toStartOf="@+id/accountDetailsLayout"
+                app:layout_constraintTop_toBottomOf="@+id/accountDetailsLayout">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/likedSpotTitleLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <TextView
+                        android:id="@+id/tvLikedSpotBadge"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:background="@drawable/corner_layout"
+                        android:backgroundTint="@color/blue"
+                        android:minWidth="28dp"
+                        android:padding="4dp"
+                        android:text="0"
+                        android:textAlignment="center"
+                        android:textColor="@color/white"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toBottomOf="@+id/tvLikedSpotTitle"
+                        app:layout_constraintStart_toEndOf="@+id/tvLikedSpotTitle"
+                        app:layout_constraintTop_toTopOf="@+id/tvLikedSpotTitle" />
+
+                    <TextView
+                        android:id="@+id/tvLikedSpotTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginBottom="8dp"
+                        android:text="Liked Spots"
+                        android:textColor="@color/black"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <View
+                        style="@style/line_color"
+                        android:layout_width="0dp"
+                        android:layout_height="1dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/likedSpotView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/likedSpotTitleLayout" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/accountDetailsLayout"

@@ -74,7 +74,7 @@ public class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.ViewHolder> 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         ImageView routeThumbnail = holder.routeThumbnail;
-        TextView tvName = holder.tvName;
+        TextView tvName = holder.tvName, tvRouteSpotNoBadge = holder.tvRouteSpotNoBadge;
         Button visitButton = holder.visitButton;
         ConstraintLayout backgroundLayout = holder.backgroundLayout;
 
@@ -97,6 +97,7 @@ public class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.ViewHolder> 
                 .into(routeThumbnail);
 
         tvName.setText(routeList.get(position).getName());
+        tvRouteSpotNoBadge.setText(String.valueOf(position + 1));
         
         int colorBlue = myResources.getColor(R.color.blue);
         int colorRed = myResources.getColor(R.color.red);
@@ -177,7 +178,7 @@ public class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.ViewHolder> 
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView routeThumbnail;
-        TextView tvName;
+        TextView tvName, tvRouteSpotNoBadge;
         Button visitButton;
         ConstraintLayout backgroundLayout;
 
@@ -186,6 +187,7 @@ public class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.ViewHolder> 
 
             routeThumbnail = itemView.findViewById(R.id.routeThumbnail);
             tvName = itemView.findViewById(R.id.tvName);
+            tvRouteSpotNoBadge = itemView.findViewById(R.id.tvRouteSpotNoBadge);
             visitButton = itemView.findViewById(R.id.visitButton);
             backgroundLayout = itemView.findViewById(R.id.backgroundLayout);
         }
