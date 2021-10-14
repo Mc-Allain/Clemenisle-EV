@@ -61,6 +61,7 @@ public class PostRegisterActivity extends AppCompatActivity {
     int startMin = 3, startSec = 0;
     long startTime ;
     long currentTime, loginTime;
+    long remainingTime, currentMS;
 
     Dialog dialog;
     EditText etEmailAddress;
@@ -75,6 +76,14 @@ public class PostRegisterActivity extends AppCompatActivity {
 
     boolean isVerified = false;
 
+    private void initSharedPreferences() {
+        SharedPreferences sharedPreferences = myContext
+                .getSharedPreferences("timer", Context.MODE_PRIVATE);
+        remainingTime = sharedPreferences.getLong("buttonTimer", getMSec(startMin, startSec));
+        currentMS = sharedPreferences.getLong("currentMS", System.currentTimeMillis());
+        remainingTime -= (System.currentTimeMillis() - currentMS);
+    }
+
     private void sendLoginPreferences() {
         SharedPreferences sharedPreferences = myContext.getSharedPreferences(
                 "login", Context.MODE_PRIVATE);
@@ -84,6 +93,16 @@ public class PostRegisterActivity extends AppCompatActivity {
         editor.putBoolean("remember", false);
         editor.putString("emailAddress", null);
         editor.putString("password", null);
+        editor.apply();
+    }
+
+    private void sendTimerPreferences(long value) {
+        SharedPreferences sharedPreferences = myContext.getSharedPreferences(
+                "timer", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        editor.putLong("buttonTimer", value);
+        editor.putLong("currentMS", System.currentTimeMillis());
         editor.apply();
     }
 
@@ -102,6 +121,8 @@ public class PostRegisterActivity extends AppCompatActivity {
 
         myContext = PostRegisterActivity.this;
         myResources = myContext.getResources();
+
+        initSharedPreferences();
 
         cslInitial = ColorStateList.valueOf(myResources.getColor(R.color.initial));
         cslBlue = ColorStateList.valueOf(myResources.getColor(R.color.blue));
@@ -148,6 +169,8 @@ public class PostRegisterActivity extends AppCompatActivity {
             updateEAButton.setEnabled(false);
             selectedColor = colorBlack;
 
+            remainingTime = 0;
+
             runTime();
             autoLoginTime();
         }
@@ -156,16 +179,27 @@ public class PostRegisterActivity extends AppCompatActivity {
                 name = "Email Error";
                 caption = "Failed to send the email verification link";
                 selectedColor = colorRed;
+
+                resendButton.setEnabled(true);
+                updateEAButton.setEnabled(true);
             }
             else {
                 name = "Unverified Account";
                 caption = "Please verify your account\nusing email verification link";
                 selectedColor = colorBlack;
 
+                if(remainingTime > 0) {
+                    runTime();
+
+                    resendButton.setEnabled(false);
+                    updateEAButton.setEnabled(false);
+                }
+                else{
+                    resendButton.setEnabled(true);
+                    updateEAButton.setEnabled(true);
+                }
                 autoLoginTime();
             }
-            resendButton.setEnabled(true);
-            updateEAButton.setEnabled(true);
         }
 
         updateInfo();
@@ -441,10 +475,15 @@ public class PostRegisterActivity extends AppCompatActivity {
             firebaseAuth.signOut();
             sendLoginPreferences();
         }
+
+        remainingTime = currentTime;
+        sendTimerPreferences(remainingTime);
     }
 
     private void runTime() {
-        currentTime = startTime;
+        if(remainingTime > 0) currentTime = remainingTime;
+        else currentTime = startTime;
+
         countDownTimer = new CountDownTimer(currentTime, 1000) {
             @Override
             public void onTick(long l) {
@@ -461,6 +500,7 @@ public class PostRegisterActivity extends AppCompatActivity {
                 updateEAButton.setEnabled(true);
                 resendButton.setText(defaultResendText);
                 updateEAButton.setText(defaultUpdateText);
+                currentTime = 0;
             }
         }.start();
     }
@@ -497,6 +537,8 @@ public class PostRegisterActivity extends AppCompatActivity {
                         resendButton.setEnabled(false);
                         updateEAButton.setEnabled(false);
                         selectedColor = colorBlack;
+
+                        remainingTime = 0;
 
                         runTime();
                         autoLoginTimer.cancel();
