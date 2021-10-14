@@ -247,7 +247,7 @@ public class SelectedSpotActivity extends AppCompatActivity {
                 else {
                     Toast.makeText(
                             myContext,
-                            "No Virtual Reality Image",
+                            "No Street View Record",
                             Toast.LENGTH_SHORT
                     ).show();
                 }

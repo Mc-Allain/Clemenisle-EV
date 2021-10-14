@@ -314,7 +314,7 @@ public class TouristSpotAdapter extends RecyclerView.Adapter<TouristSpotAdapter.
                 else {
                     Toast.makeText(
                             myContext,
-                            "No Virtual Reality Image",
+                            "No Street View Record",
                             Toast.LENGTH_SHORT
                     ).show();
                 }

@@ -1,7 +1,9 @@
 package com.example.firebase_clemenisle_ev.Fragments;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
@@ -23,8 +25,10 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.firebase_clemenisle_ev.Classes.Credentials;
 import com.example.firebase_clemenisle_ev.Classes.FirebaseURL;
 import com.example.firebase_clemenisle_ev.Classes.User;
+import com.example.firebase_clemenisle_ev.MainActivity;
 import com.example.firebase_clemenisle_ev.R;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
@@ -33,6 +37,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import androidx.annotation.NonNull;
@@ -54,7 +59,7 @@ public class LoggedInUserProfileFragment extends Fragment {
     ImageView updateFullNameImage;
 
     ConstraintLayout accountDetailsLayout;
-    TextView tvEmailAddress2, tvPassword2;
+    TextView tvEmailAddress2;
     ImageView updateEmailAddressImage, updatePasswordImage;
 
     Context myContext;
@@ -64,6 +69,7 @@ public class LoggedInUserProfileFragment extends Fragment {
     ColorStateList cslInitial, cslBlue, cslRed;
 
     String defaultGreetText = "こんにちは (Hello)", lastName, firstName, middleName;
+    String emailAddress;
 
     User user;
 
@@ -71,11 +77,19 @@ public class LoggedInUserProfileFragment extends Fragment {
     boolean loggedIn = false;
 
     Dialog fullNameDialog;
-
     ImageView fullNameDialogCloseImage;
     ScrollView fullNameScrollView;
     Button fullNameUpdateButton;
     ProgressBar fullNameDialogProgressBar;
+
+    boolean isLastNameUpdated = false, isFirstNameUpdated = false, isMiddleNameUpdated = false;
+
+    Dialog emailAddressDialog;
+    ImageView emailAddressDialogCloseImage;
+    Button emailAddressUpdateButton;
+    ProgressBar emailAddressDialogProgressBar;
+
+    boolean isUserUpdated = false;
 
     DatabaseReference usersRef;
 
@@ -96,7 +110,7 @@ public class LoggedInUserProfileFragment extends Fragment {
 
     private void sendLoginPreferences() {
         SharedPreferences sharedPreferences = myContext.getSharedPreferences(
-                "logIn", Context.MODE_PRIVATE);
+                "login", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
         editor.putBoolean("loggedIn", false);
@@ -119,7 +133,6 @@ public class LoggedInUserProfileFragment extends Fragment {
 
         accountDetailsLayout = view.findViewById(R.id.accountDetailsLayout);
         tvEmailAddress2 = view.findViewById(R.id.tvEmailAddress2);
-        tvPassword2 = view.findViewById(R.id.tvPassword2);
         updateEmailAddressImage = view.findViewById(R.id.updateEmailAddressImage);
         updatePasswordImage = view.findViewById(R.id.updatePasswordImage);
 
@@ -159,13 +172,15 @@ public class LoggedInUserProfileFragment extends Fragment {
             }
         }
 
-        initFullNameDialog();
-
         usersRef = firebaseDatabase.getReference("users").child(userId);
+
+        initFullNameDialog();
+        initEmailAddressDialog();
 
         getCurrentUser();
 
         updateFullNameImage.setOnClickListener(view1 -> showFullNameDialog());
+        updateEmailAddressImage.setOnClickListener(view1 -> showEmailAddressDialog());
 
         return view;
     }
@@ -179,9 +194,19 @@ public class LoggedInUserProfileFragment extends Fragment {
         tlFirstName.setStartIconTintList(cslInitial);
         tlMiddleName.setStartIconTintList(cslInitial);
 
+        etLastName.clearFocus();
         etLastName.requestFocus();
 
         fullNameDialog.show();
+    }
+
+    private void showEmailAddressDialog() {
+        etEmailAddress.setText(emailAddress);
+        tlEmailAddress.setStartIconTintList(cslInitial);
+        etEmailAddress.clearFocus();
+        etEmailAddress.requestFocus();
+
+        emailAddressDialog.show();
     }
 
     private void initFullNameDialog() {
@@ -386,7 +411,9 @@ public class LoggedInUserProfileFragment extends Fragment {
     }
 
     private void setFullNameDialogScreenEnabled(boolean value) {
+        fullNameDialog.setCanceledOnTouchOutside(value);
         fullNameDialogCloseImage.setEnabled(value);
+        fullNameUpdateButton.setEnabled(value);
         tlLastName.setEnabled(value);
         tlFirstName.setEnabled(value);
         tlMiddleName.setEnabled(value);
@@ -395,15 +422,18 @@ public class LoggedInUserProfileFragment extends Fragment {
         else fullNameDialogCloseImage.setColorFilter(colorInitial);
     }
 
-    private void setFullNameUpdateStatus(boolean value) {
-        isLastNameUpdated = value;
-        isFirstNameUpdated = value;
-        isMiddleNameUpdated = value;
+    private void setFullNameUpdateStatusToFalse() {
+        isLastNameUpdated = false;
+        isFirstNameUpdated = false;
+        isMiddleNameUpdated = false;
+
+        tlLastName.setStartIconTintList(cslInitial);
+        tlFirstName.setStartIconTintList(cslInitial);
+        tlMiddleName.setStartIconTintList(cslInitial);
     }
 
-    boolean isLastNameUpdated = false, isFirstNameUpdated = false, isMiddleNameUpdated = false;
     private void updateFullName() {
-        setFullNameUpdateStatus(false);
+        setFullNameUpdateStatusToFalse();
         setFullNameDialogScreenEnabled(false);
         fullNameDialogProgressBar.setVisibility(View.VISIBLE);
 
@@ -447,12 +477,223 @@ public class LoggedInUserProfileFragment extends Fragment {
     private void errorFullNameUpdate() {
         Toast.makeText(
                 myContext,
-                "Failed to update the Full Name, please try again",
-                Toast.LENGTH_SHORT
+                "Failed to update the Full Name, please try again.",
+                Toast.LENGTH_LONG
         ).show();
 
         setFullNameDialogScreenEnabled(true);
         fullNameDialogProgressBar.setVisibility(View.GONE);
+    }
+
+    private void initEmailAddressDialog() {
+        emailAddressDialog = new Dialog(myContext);
+        emailAddressDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        emailAddressDialog.setContentView(R.layout.dialog_update_email_address_layout);
+
+        etEmailAddress = emailAddressDialog.findViewById(R.id.etEmailAddress);
+        tlEmailAddress = emailAddressDialog.findViewById(R.id.tlEmailAddress);
+        emailAddressUpdateButton = emailAddressDialog.findViewById(R.id.updateButton);
+        emailAddressDialogCloseImage = emailAddressDialog.findViewById(R.id.dialogCloseImage);
+        emailAddressDialogProgressBar = emailAddressDialog.findViewById(R.id.dialogProgressBar);
+
+        etEmailAddress.setOnFocusChangeListener((view1, b) -> {
+            if(!tlEmailAddress.isErrorEnabled()) {
+                if(b) {
+                    tlEmailAddress.setStartIconTintList(cslBlue);
+                }
+                else {
+                    tlEmailAddress.setStartIconTintList(cslInitial);
+                }
+            }
+        });
+
+        etEmailAddress.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                checkEmailAddressInput();
+            }
+        });
+
+        emailAddressUpdateButton.setOnClickListener(view -> checkEmailAddressIfExisting());
+
+        emailAddressDialogCloseImage.setOnClickListener(view -> emailAddressDialog.dismiss());
+
+        emailAddressDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT);
+        emailAddressDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+        emailAddressDialog.getWindow().getAttributes().windowAnimations = R.style.animBottomSlide;
+        emailAddressDialog.getWindow().setGravity(Gravity.BOTTOM);
+    }
+
+    private void setEmailAddressDialogScreenEnabled(boolean value) {
+        emailAddressDialog.setCanceledOnTouchOutside(value);
+        emailAddressDialogCloseImage.setEnabled(value);
+        emailAddressUpdateButton.setEnabled(value);
+        tlEmailAddress.setEnabled(value);
+
+        if(value) emailAddressDialogCloseImage.setColorFilter(colorRed);
+        else emailAddressDialogCloseImage.setColorFilter(colorInitial);
+    }
+
+    private void setEmailAddressUpdateStatusToFalse() {
+        isUserUpdated = false;
+
+        tlEmailAddress.setStartIconTintList(cslInitial);
+    }
+
+    private void checkEmailAddressIfExisting() {
+        setEmailAddressUpdateStatusToFalse();
+        setEmailAddressDialogScreenEnabled(false);
+        emailAddressDialogProgressBar.setVisibility(View.VISIBLE);
+
+        Query usersQuery = firebaseDatabase.getReference("users")
+                .orderByChild("emailAddress").equalTo(newEmailAddress);
+        usersQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(!isUserUpdated) {
+                    if(snapshot.exists()) {
+                        tlEmailAddress.setErrorEnabled(true);
+                        tlEmailAddress.setError("This Email Address is already registered");
+                        tlEmailAddress.setStartIconTintList(cslRed);
+
+                        setEmailAddressDialogScreenEnabled(true);
+                        emailAddressUpdateButton.setEnabled(false);
+                        emailAddressDialogProgressBar.setVisibility(View.GONE);
+                    }
+                    else updateAccount();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(
+                        myContext,
+                        error.toString(),
+                        Toast.LENGTH_SHORT
+                ).show();
+
+                setEmailAddressDialogScreenEnabled(true);
+                emailAddressDialogProgressBar.setVisibility(View.GONE);
+            }
+        });
+    }
+
+    private void updateAccount() {
+        tlEmailAddress.setErrorEnabled(false);
+        tlEmailAddress.setError(null);
+        tlEmailAddress.setStartIconTintList(cslInitial);
+
+        firebaseUser.updateEmail(newEmailAddress)
+                .addOnCompleteListener(task -> {
+                    if(task.isSuccessful()) {
+                        isUserUpdated = true;
+
+                        emailAddress = newEmailAddress;
+                        sendEmailVerificationLink();
+                    }
+                    else {
+                        String error = task.getException().toString();
+
+                        if(error.contains("RecentLogin")) {
+                            proceedToMainActivity();
+
+                            Toast.makeText(
+                                    myContext,
+                                    "This operation is sensitive and requires recent authentication." +
+                                    "Log in again before trying this request.",
+                                    Toast.LENGTH_LONG
+                            ).show();
+                        }
+                        else updateFailed();
+                    }
+                });
+    }
+
+    private void updateFailed() {
+        Toast.makeText(myContext,
+                "Failed to update the Email Address, please try again.",
+                Toast.LENGTH_LONG
+        ).show();
+
+        setEmailAddressDialogScreenEnabled(true);
+        emailAddressDialogProgressBar.setVisibility(View.GONE);
+    }
+
+    int tryCount = 0;
+    private void sendEmailVerificationLink() {
+        firebaseUser.sendEmailVerification()
+                .addOnCompleteListener(task -> {
+                    if(task.isSuccessful()) {
+                        finishEmailAddressUpdate();
+                    }
+                    else {
+                        if(tryCount == 5) {
+                            finishEmailAddressUpdate();
+                        }
+                        else {
+                            tryCount++;
+                            sendEmailVerificationLink();
+                        }
+                    }
+                });
+    }
+
+    private void finishEmailAddressUpdate() {
+        proceedToMainActivity();
+
+        Toast.makeText(
+                myContext,
+                "Successfully updated the Email Address",
+                Toast.LENGTH_SHORT
+        ).show();
+    }
+
+    private void proceedToMainActivity() {
+        sendLoginPreferences();
+
+        Intent intent = new Intent(myContext, MainActivity.class);
+        myContext.startActivity(intent);
+        ((Activity) myContext).finishAffinity();
+    }
+
+
+    boolean vEA = false;
+    private void checkEmailAddressInput() {
+        newEmailAddress = etEmailAddress.getText().toString();
+
+        if (!newEmailAddress.equals(emailAddress)) {
+            if (Credentials.validEmailAddress(newEmailAddress)) {
+                tlEmailAddress.setErrorEnabled(false);
+                tlEmailAddress.setError(null);
+                tlEmailAddress.setStartIconTintList(cslBlue);
+                vEA = true;
+            }
+            else {
+                tlEmailAddress.setErrorEnabled(true);
+                tlEmailAddress.setError("Invalid Email Address");
+                tlEmailAddress.setStartIconTintList(cslRed);
+                vEA = false;
+            }
+        }
+        else {
+            tlEmailAddress.setErrorEnabled(false);
+            tlEmailAddress.setError(null);
+            tlEmailAddress.setStartIconTintList(cslBlue);
+            vEA = false;
+        }
+
+        emailAddressUpdateButton.setEnabled(vEA);
     }
 
     private void getCurrentUser() {
@@ -513,15 +754,8 @@ public class LoggedInUserProfileFragment extends Fragment {
     private void showAccountDetails() {
         accountDetailsLayout.setVisibility(View.VISIBLE);
 
-        String emailAddress = user.getEmailAddress();
-        StringBuilder password = new StringBuilder(user.getPassword().substring(0, 2));
-
-        for(int i = 0; i<user.getPassword().length() - 3; i++) {
-            password.append("•");
-        }
-        password.append(user.getPassword().charAt(password.length()));
+        emailAddress = firebaseUser.getEmail();
 
         tvEmailAddress2.setText(emailAddress);
-        tvPassword2.setText(password.toString());
     }
 }

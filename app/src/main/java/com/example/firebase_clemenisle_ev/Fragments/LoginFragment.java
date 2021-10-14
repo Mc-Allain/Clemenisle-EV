@@ -27,11 +27,7 @@ import com.example.firebase_clemenisle_ev.R;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -61,9 +57,6 @@ public class LoginFragment extends Fragment {
     ColorStateList cslInitial, cslBlue, cslRed;
 
     TabPosInterface tabPosInterface;
-
-    Query usersQuery;
-    boolean isSearchingForUser = false;
 
     public interface TabPosInterface {
         void sendTabPos(int pos);
@@ -107,7 +100,7 @@ public class LoginFragment extends Fragment {
             tlEmailAddress.setStartIconTintList(cslInitial);
             tlPassword.setStartIconTintList(cslInitial);
 
-            searchUser();
+            loginAccount();
         });
 
         etEmailAddress.setOnFocusChangeListener((view1, b) -> {
@@ -169,36 +162,10 @@ public class LoginFragment extends Fragment {
         return view;
     }
 
-    private void searchUser() {
+    private void loginAccount() {
         setScreenEnabled(false);
         progressBar.setVisibility(View.VISIBLE);
 
-        isSearchingForUser = false;
-        usersQuery = firebaseDatabase.getReference("users")
-                .orderByChild("emailAddress").equalTo(emailAddress);
-        usersQuery.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if(!isSearchingForUser) {
-                    isSearchingForUser = true;
-                    usersQuery = null;
-
-                    if(snapshot.exists()) loginAccount();
-                    else loginFailed("Unregistered account");
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                isSearchingForUser = false;
-                usersQuery = null;
-
-                loginFailed("Network error");
-            }
-        });
-    }
-
-    private void loginAccount() {
         firebaseAuth.signInWithEmailAndPassword(emailAddress, password)
                 .addOnCompleteListener(task -> {
                     if(task.isSuccessful()) {
@@ -239,8 +206,11 @@ public class LoginFragment extends Fragment {
                 error.toLowerCase().contains("password is invalid")) {
             caption = "Unregistered account";
         }
-        else if(error.toLowerCase().contains("a network error")) {
-            caption = "Network error";
+        else if(error.toLowerCase().contains("network error")) {
+            caption = "Network error, please try again.";
+        }
+        else if(error.toLowerCase().contains("internal error")) {
+            caption = "Internal error, please try again.";
         }
         else {
             caption = error;

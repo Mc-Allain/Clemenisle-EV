@@ -268,7 +268,7 @@ public class BookingActivity extends AppCompatActivity implements
 
     private void sendLoginPreferences() {
         SharedPreferences sharedPreferences = myContext.getSharedPreferences(
-                "logIn", Context.MODE_PRIVATE);
+                "login", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
         editor.putBoolean("loggedIn", false);
@@ -1327,7 +1327,7 @@ public class BookingActivity extends AppCompatActivity implements
             public void onCancelled(@NonNull DatabaseError error) {
                 Toast.makeText(
                         myContext,
-                        "Failed to book a tour, please try again",
+                        "Failed to book a tour, please try again.",
                         Toast.LENGTH_LONG
                 ).show();
 
@@ -1374,7 +1374,7 @@ public class BookingActivity extends AppCompatActivity implements
             else {
                 Toast.makeText(
                         myContext,
-                        "Failed to book a tour, please try again",
+                        "Failed to book a tour, please try again.",
                         Toast.LENGTH_LONG
                 ).show();
 
@@ -1401,7 +1401,7 @@ public class BookingActivity extends AppCompatActivity implements
                         else {
                             Toast.makeText(
                                     myContext,
-                                    "Failed to book a tour, please try again",
+                                    "Failed to book a tour, please try again.",
                                     Toast.LENGTH_LONG
                             ).show();
 
@@ -2114,7 +2114,8 @@ public class BookingActivity extends AppCompatActivity implements
 
         Toast.makeText(
                 myContext,
-                "There has been changes in the database that might affect your booking",
+                "There has been changes in the database " +
+                        "that might affect your booking.",
                 Toast.LENGTH_LONG
         ).show();
     }

@@ -7,20 +7,18 @@ import java.util.List;
 
 public class User {
 
-    private String emailAddress, firstName, id, lastName, middleName, password;
-    List<SimpleTouristSpot> likedSpots = new ArrayList<>();
-    List<Booking> bookingList = new ArrayList<>();
+    private String firstName, id, lastName, middleName;
+    private List<SimpleTouristSpot> likedSpots = new ArrayList<>();
+    private List<Booking> bookingList = new ArrayList<>();
 
     public User() {
     }
 
     public User(DataSnapshot dataSnapshot) {
-        emailAddress = dataSnapshot.child("emailAddress").getValue(String.class);
         firstName = dataSnapshot.child("firstName").getValue(String.class);
         id = dataSnapshot.child("id").getValue(String.class);
         lastName = dataSnapshot.child("lastName").getValue(String.class);
         middleName = dataSnapshot.child("middleName").getValue(String.class);
-        password = dataSnapshot.child("password").getValue(String.class);
 
         likedSpots.clear();
         DataSnapshot likedSpotSnapshot = dataSnapshot.child("likedSpots");
@@ -47,17 +45,11 @@ public class User {
         }
     }
 
-    public User(String emailAddress, String firstName, String id, String lastName, String middleName, String password) {
-        this.emailAddress = emailAddress;
+    public User(String firstName, String id, String lastName, String middleName) {
         this.firstName = firstName;
         this.id = id;
         this.lastName = lastName;
         this.middleName = middleName;
-        this.password = password;
-    }
-
-    public String getEmailAddress() {
-        return emailAddress;
     }
 
     public String getFirstName() {
@@ -74,10 +66,6 @@ public class User {
 
     public String getMiddleName() {
         return middleName;
-    }
-
-    public String getPassword() {
-        return password;
     }
 
     public List<SimpleTouristSpot> getLikedSpots() {

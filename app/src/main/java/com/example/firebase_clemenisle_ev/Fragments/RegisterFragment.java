@@ -429,9 +429,9 @@ public class RegisterFragment extends Fragment {
                         tlEmailAddress.setErrorEnabled(true);
                         tlEmailAddress.setError("This Email Address is already isRegistered");
                         tlEmailAddress.setStartIconTintList(cslRed);
-                        vEA = false;
 
                         setScreenEnabled(true);
+                        continueButton.setEnabled(false);
                         progressBar.setVisibility(View.GONE);
                     }
                     else registerAccount();
@@ -456,7 +456,6 @@ public class RegisterFragment extends Fragment {
         tlEmailAddress.setErrorEnabled(false);
         tlEmailAddress.setError(null);
         tlEmailAddress.setStartIconTintList(cslInitial);
-        vEA = true;
 
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseAuth.createUserWithEmailAndPassword(emailAddress, password)
@@ -475,8 +474,7 @@ public class RegisterFragment extends Fragment {
         firebaseUser = firebaseAuth.getCurrentUser();
         if(firebaseUser != null) {
             String userId = firebaseUser.getUid();
-            User user = new User(emailAddress, firstName, userId,
-                    lastName, middleName, password);
+            User user = new User(firstName, userId, lastName, middleName);
 
             if(!isAdded) {
                 DatabaseReference usersRef = firebaseDatabase.getReference("users");
@@ -550,8 +548,8 @@ public class RegisterFragment extends Fragment {
 
     private void registerFailed() {
         Toast.makeText(myContext,
-                "Registration failed, please try again",
-                Toast.LENGTH_SHORT
+                "Registration failed, please try again.",
+                Toast.LENGTH_LONG
         ).show();
         setScreenEnabled(true);
         progressBar.setVisibility(View.GONE);

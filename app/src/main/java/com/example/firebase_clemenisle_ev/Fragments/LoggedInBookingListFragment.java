@@ -83,7 +83,7 @@ public class LoggedInBookingListFragment extends Fragment {
 
     private void sendLoginPreferences() {
         SharedPreferences sharedPreferences = myContext.getSharedPreferences(
-                "logIn", Context.MODE_PRIVATE);
+                "login", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
         editor.putBoolean("loggedIn", false);
