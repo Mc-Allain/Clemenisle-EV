@@ -135,8 +135,6 @@ public class RecommendedSpotAdapter extends RecyclerView.Adapter<RecommendedSpot
 
         ConstraintLayout.LayoutParams layoutParams =
                 (ConstraintLayout.LayoutParams) backgroundLayout.getLayoutParams();
-        layoutParams.setMargins(layoutParams.leftMargin, layoutParams.topMargin,
-                layoutParams.rightMargin, layoutParams.bottomMargin);
         layoutParams.setMarginStart(start);
         layoutParams.setMarginEnd(end);
         backgroundLayout.setLayoutParams(layoutParams);

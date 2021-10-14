@@ -6,6 +6,7 @@ public class Route {
     private boolean deactivated = false;
     private String id, img, name, routeId;
     private boolean visited = false;
+    private int books, visits;
 
     public Route() {
     }
@@ -52,5 +53,21 @@ public class Route {
 
     public boolean isVisited() {
         return visited;
+    }
+
+    public int getBooks() {
+        return books;
+    }
+
+    public void setBooks(int books) {
+        this.books = books;
+    }
+
+    public int getVisits() {
+        return visits;
+    }
+
+    public void setVisits(int visits) {
+        this.visits = visits;
     }
 }

@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".AboutActivity">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolsLayout">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/developersLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <TextView
+                    android:id="@+id/atvMainDeveloperTitle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="16dp"
+                    android:text="Client Side Developer and Main Designer"
+                    android:textColor="@color/initial"
+                    android:textStyle="italic"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="@+id/tvMainDeveloper"
+                    app:layout_constraintTop_toBottomOf="@+id/tvMainDeveloper" />
+
+                <TextView
+                    android:id="@+id/tvDevelopers"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
+                    android:text="Developers"
+                    android:textColor="@color/black"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/tvMainDeveloper"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="16dp"
+                    android:text="Casindad, Mc Allain S."
+                    android:textColor="@color/black"
+                    app:layout_constraintStart_toStartOf="@+id/tvDevelopers"
+                    app:layout_constraintTop_toBottomOf="@+id/tvDevelopers" />
+
+                <TextView
+                    android:id="@+id/tvAdminDeveloper"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="Dela Torre, Emmanuel B."
+                    android:textColor="@color/black"
+                    app:layout_constraintStart_toStartOf="@+id/tvMainDeveloper"
+                    app:layout_constraintTop_toBottomOf="@+id/atvMainDeveloperTitle" />
+
+                <TextView
+                    android:id="@+id/tvAdminDeveloperTitle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="Admin Side Developer and Product Representative"
+                    android:textColor="@color/initial"
+                    android:textStyle="italic"
+                    app:layout_constraintEnd_toEndOf="@+id/atvMainDeveloperTitle"
+                    app:layout_constraintStart_toStartOf="@+id/atvMainDeveloperTitle"
+                    app:layout_constraintTop_toBottomOf="@+id/tvAdminDeveloper" />
+
+                <TextView
+                    android:id="@+id/tvDocumentMainEditor"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="Ruiz, Jehiele Jeff J."
+                    android:textColor="@color/black"
+                    app:layout_constraintStart_toStartOf="@+id/tvAdminDeveloper"
+                    app:layout_constraintTop_toBottomOf="@+id/tvAdminDeveloperTitle" />
+
+                <TextView
+                    android:id="@+id/tvDocumentMainEditorTitle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="Main Document Editor and Team Leader"
+                    android:textStyle="italic"
+                    app:layout_constraintEnd_toEndOf="@+id/tvAdminDeveloperTitle"
+                    app:layout_constraintStart_toStartOf="@+id/tvAdminDeveloperTitle"
+                    app:layout_constraintTop_toBottomOf="@+id/tvDocumentMainEditor" />
+
+                <TextView
+                    android:id="@+id/tvDocumentSecondaryEditor"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="Florez, Jaizel Ann N."
+                    android:textColor="@color/black"
+                    app:layout_constraintStart_toStartOf="@+id/tvDocumentMainEditor"
+                    app:layout_constraintTop_toBottomOf="@+id/tvDocumentMainEditorTitle" />
+
+                <TextView
+                    android:id="@+id/tvDocumentSecondaryEditorTitle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="8dp"
+                    android:text="Document Secondary Editor, Literate and Resource Artist"
+                    android:textStyle="italic"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="@+id/tvDocumentMainEditorTitle"
+                    app:layout_constraintStart_toStartOf="@+id/tvDocumentMainEditorTitle"
+                    app:layout_constraintTop_toBottomOf="@+id/tvDocumentSecondaryEditor" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </ScrollView>
+
+    <ImageView
+        android:id="@+id/appIconImage"
+        android:layout_width="0dp"
+        android:layout_height="256dp"
+        android:adjustViewBounds="true"
+        android:background="@color/white"
+        android:src="@drawable/splashscreen"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/toolsLayout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/appIconImage">
+
+        <ImageView
+            android:id="@+id/googleMapLogoImage"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_marginStart="8dp"
+            android:adjustViewBounds="true"
+            app:layout_constraintBottom_toBottomOf="@+id/androidStudioLogoImage"
+            app:layout_constraintStart_toEndOf="@+id/fireBaseLogoImage"
+            app:layout_constraintTop_toTopOf="@+id/androidStudioLogoImage"
+            app:srcCompat="@drawable/google_map_logo" />
+
+        <ImageView
+            android:id="@+id/googleStreetViewImage"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_marginStart="8dp"
+            android:adjustViewBounds="true"
+            app:layout_constraintBottom_toBottomOf="@+id/androidStudioLogoImage"
+            app:layout_constraintStart_toEndOf="@+id/googleMapLogoImage"
+            app:layout_constraintTop_toTopOf="@+id/androidStudioLogoImage"
+            app:srcCompat="@drawable/google_street_view" />
+
+        <ImageView
+            android:id="@+id/fireBaseLogoImage"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_marginStart="8dp"
+            android:adjustViewBounds="true"
+            app:layout_constraintBottom_toBottomOf="@+id/androidStudioLogoImage"
+            app:layout_constraintStart_toEndOf="@+id/androidStudioLogoImage"
+            app:layout_constraintTop_toTopOf="@+id/androidStudioLogoImage"
+            app:srcCompat="@drawable/firebase_logo" />
+
+        <ImageView
+            android:id="@+id/androidStudioLogoImage"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:adjustViewBounds="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/tvPoweredBy"
+            app:layout_constraintTop_toBottomOf="@+id/tvPoweredBy"
+            app:srcCompat="@drawable/android_studio_logo" />
+
+        <TextView
+            android:id="@+id/tvPoweredBy"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="8dp"
+            android:text="Powered by"
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <View
+            style="@style/line_color"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <View
+            style="@style/line_color"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

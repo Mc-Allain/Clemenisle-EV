@@ -29,8 +29,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.firebase_clemenisle_ev.Adapters.LikedSpotAdapter;
+import com.example.firebase_clemenisle_ev.Adapters.SpotWithCounterAdapter;
+import com.example.firebase_clemenisle_ev.Classes.Booking;
 import com.example.firebase_clemenisle_ev.Classes.Credentials;
 import com.example.firebase_clemenisle_ev.Classes.FirebaseURL;
+import com.example.firebase_clemenisle_ev.Classes.Route;
 import com.example.firebase_clemenisle_ev.Classes.SimpleTouristSpot;
 import com.example.firebase_clemenisle_ev.Classes.User;
 import com.example.firebase_clemenisle_ev.MainActivity;
@@ -73,6 +76,12 @@ public class LoggedInUserProfileFragment extends Fragment {
 
     TextView tvLikedSpotBadge;
     RecyclerView likedSpotView;
+
+    TextView tvBookedSpotBadge;
+    RecyclerView bookedSpotView;
+
+    TextView tvVisitedSpotBadge;
+    RecyclerView visitedSpotView;
 
     Context myContext;
     Resources myResources;
@@ -126,6 +135,12 @@ public class LoggedInUserProfileFragment extends Fragment {
     LikedSpotAdapter likedSpotAdapter;
     List<SimpleTouristSpot> likedSpots = new ArrayList<>();
 
+    SpotWithCounterAdapter bookedSpotAdapter;
+    List<Route> bookedSpots = new ArrayList<>();
+
+    SpotWithCounterAdapter visitedSpotAdapter;
+    List<Route> visitedSpots = new ArrayList<>();
+
     private void initSharedPreferences() {
         SharedPreferences sharedPreferences = myContext
                 .getSharedPreferences("login", Context.MODE_PRIVATE);
@@ -161,6 +176,12 @@ public class LoggedInUserProfileFragment extends Fragment {
 
         tvLikedSpotBadge = view.findViewById(R.id.tvLikedSpotBadge);
         likedSpotView = view.findViewById(R.id.likedSpotView);
+
+        tvBookedSpotBadge = view.findViewById(R.id.tvBookedSpotBadge);
+        bookedSpotView = view.findViewById(R.id.bookedSpotView);
+
+        tvVisitedSpotBadge = view.findViewById(R.id.tvVisitedSpotBadge);
+        visitedSpotView = view.findViewById(R.id.visitedSpotView);
 
         progressBar = view.findViewById(R.id.progressBar);
 
@@ -215,6 +236,18 @@ public class LoggedInUserProfileFragment extends Fragment {
         likedSpotView.setLayoutManager(linearLayout1);
         likedSpotAdapter = new LikedSpotAdapter(myContext, likedSpots, userId);
         likedSpotView.setAdapter(likedSpotAdapter);
+
+        LinearLayoutManager linearLayout2 =
+                new LinearLayoutManager(myContext, LinearLayoutManager.HORIZONTAL, false);
+        bookedSpotView.setLayoutManager(linearLayout2);
+        bookedSpotAdapter = new SpotWithCounterAdapter(myContext, bookedSpots, 0);
+        bookedSpotView.setAdapter(bookedSpotAdapter);
+
+        LinearLayoutManager linearLayout3 =
+                new LinearLayoutManager(myContext, LinearLayoutManager.HORIZONTAL, false);
+        visitedSpotView.setLayoutManager(linearLayout3);
+        visitedSpotAdapter = new SpotWithCounterAdapter(myContext, visitedSpots, 1);
+        visitedSpotView.setAdapter(visitedSpotAdapter);
 
         return view;
     }
@@ -1037,16 +1070,92 @@ public class LoggedInUserProfileFragment extends Fragment {
         likedSpots.clear();
         likedSpots.addAll(user.getLikedSpots());
         likedSpotAdapter.notifyDataSetChanged();
-
         if(likedSpots.size() > 0) likedSpotView.setVisibility(View.VISIBLE);
         else likedSpotView.setVisibility(View.GONE);
-
         tvLikedSpotBadge.setText(String.valueOf(likedSpots.size()));
+
+
+        bookedSpots.clear(); visitedSpots.clear();
+        for(Booking booking : user.getBookingList()) {
+            List<Route> routeSpots = booking.getRouteList();
+            if(routeSpots.size() > 0) {
+                for(Route route : routeSpots) {
+                    if(!isInBookedSpot(route)) {
+                        route.setBooks(1);
+                        bookedSpots.add(route);
+                    }
+                    else {
+                        bookedSpotAddCounter(route);
+                    }
+
+                    if(route.isVisited()) {
+                        if(!isInVisitedSpot(route)) {
+                            route.setVisits(1);
+                            visitedSpots.add(route);
+                        }
+                        else {
+                            visitedSpotAddCounter(route);
+                        }
+                    }
+                }
+            }
+        }
+        bookedSpotAdapter.notifyDataSetChanged();
+        if(bookedSpots.size() > 0) bookedSpotView.setVisibility(View.VISIBLE);
+        else bookedSpotView.setVisibility(View.GONE);
+        tvBookedSpotBadge.setText(String.valueOf(bookedSpots.size()));
+
+        visitedSpotAdapter.notifyDataSetChanged();
+        if(visitedSpots.size() > 0) visitedSpotView.setVisibility(View.VISIBLE);
+        else visitedSpotView.setVisibility(View.GONE);
+        tvVisitedSpotBadge.setText(String.valueOf(visitedSpots.size()));
 
         tvGreet.setText(fromHtml(defaultGreetText));
         tvGreet.setTextColor(colorWhite);
 
         progressBar.setVisibility(View.GONE);
+    }
+
+    private void bookedSpotAddCounter(Route route) {
+        if(bookedSpots.size() > 0) {
+            for(Route bookedSpot : bookedSpots) {
+                if(bookedSpot.getId().equals(route.getId())) {
+                    bookedSpot.setBooks(bookedSpot.getBooks() + 1);
+                }
+            }
+        }
+    }
+
+    private boolean isInBookedSpot(Route targetRoute) {
+        if(bookedSpots.size() > 0) {
+            for(Route bookedSpot : bookedSpots) {
+                if(bookedSpot.getId().equals(targetRoute.getId())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private void visitedSpotAddCounter(Route route) {
+        if(visitedSpots.size() > 0) {
+            for(Route visitedSpot : visitedSpots) {
+                if(visitedSpot.getId().equals(route.getId())) {
+                    visitedSpot.setVisits(visitedSpot.getVisits() + 1);
+                }
+            }
+        }
+    }
+
+    private boolean isInVisitedSpot(Route targetRoute) {
+        if(visitedSpots.size() > 0) {
+            for(Route visitedSpot : visitedSpots) {
+                if(visitedSpot.getId().equals(targetRoute.getId())) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     private void errorLoading(String error) {
@@ -1055,10 +1164,18 @@ public class LoggedInUserProfileFragment extends Fragment {
 
         likedSpots.clear();
         likedSpotAdapter.notifyDataSetChanged();
-
         likedSpotView.setVisibility(View.GONE);
-
         tvLikedSpotBadge.setText(String.valueOf(likedSpots.size()));
+
+        bookedSpots.clear();
+        bookedSpotAdapter.notifyDataSetChanged();
+        bookedSpotView.setVisibility(View.GONE);
+        tvBookedSpotBadge.setText(String.valueOf(bookedSpots.size()));
+
+        visitedSpots.clear();
+        visitedSpotAdapter.notifyDataSetChanged();
+        visitedSpotView.setVisibility(View.GONE);
+        tvVisitedSpotBadge.setText(String.valueOf(visitedSpots.size()));
 
         progressBar.setVisibility(View.GONE);
     }

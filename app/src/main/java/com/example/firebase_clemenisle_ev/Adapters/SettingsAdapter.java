@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.firebase_clemenisle_ev.AboutActivity;
 import com.example.firebase_clemenisle_ev.Classes.Setting;
 import com.example.firebase_clemenisle_ev.MainActivity;
 import com.example.firebase_clemenisle_ev.R;
@@ -100,6 +101,10 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
                 }
 
                 logoutPressedTime = System.currentTimeMillis();
+            }
+            else if(settingName.equals("About")) {
+                Intent intent = new Intent(myContext, AboutActivity.class);
+                myContext.startActivity(intent);
             }
         });
     }

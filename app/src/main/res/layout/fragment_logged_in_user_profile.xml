@@ -7,50 +7,13 @@
     android:background="@color/gainsboro"
     tools:context=".Fragments.LoggedInUserProfileFragment">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/coverImageLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <ImageView
-            android:id="@+id/coverImage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:adjustViewBounds="true"
-            android:src="@drawable/intramuros_drone_shot"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/tvGreet"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:background="@drawable/custom_fade_background"
-            android:fontFamily="@font/fredoka_one"
-            android:gravity="center_horizontal|fill_vertical"
-            android:text="こんにちは (Hello)\nWelcome to Clemenisle-EV\niBooking"
-            android:textColor="@color/white"
-            android:textSize="26sp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@+id/coverImage"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/coverImage" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/coverImageLayout">
+        app:layout_constraintTop_toTopOf="parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -58,17 +21,17 @@
             android:paddingBottom="88dp">
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/likedSpotLayout"
+                android:id="@+id/visitedSpotLayout"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:background="@color/white"
-                app:layout_constraintEnd_toEndOf="@+id/accountDetailsLayout"
-                app:layout_constraintStart_toStartOf="@+id/accountDetailsLayout"
-                app:layout_constraintTop_toBottomOf="@+id/accountDetailsLayout">
+                app:layout_constraintEnd_toEndOf="@+id/bookedSpotLayout"
+                app:layout_constraintStart_toStartOf="@+id/bookedSpotLayout"
+                app:layout_constraintTop_toBottomOf="@+id/bookedSpotLayout">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/likedSpotTitleLayout"
+                    android:id="@+id/visitedSpotTitleLayout"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -76,7 +39,7 @@
                     app:layout_constraintTop_toTopOf="parent">
 
                     <TextView
-                        android:id="@+id/tvLikedSpotBadge"
+                        android:id="@+id/tvVisitedSpotBadge"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
@@ -88,18 +51,211 @@
                         android:textAlignment="center"
                         android:textColor="@color/white"
                         android:textStyle="bold"
-                        app:layout_constraintBottom_toBottomOf="@+id/tvLikedSpotTitle"
-                        app:layout_constraintStart_toEndOf="@+id/tvLikedSpotTitle"
-                        app:layout_constraintTop_toTopOf="@+id/tvLikedSpotTitle" />
+                        app:layout_constraintBottom_toBottomOf="@+id/tvVisitedSpotTitle"
+                        app:layout_constraintStart_toEndOf="@+id/tvVisitedSpotTitle"
+                        app:layout_constraintTop_toTopOf="@+id/tvVisitedSpotTitle" />
 
                     <TextView
-                        android:id="@+id/tvLikedSpotTitle"
+                        android:id="@+id/tvVisitedSpotTitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
                         android:layout_marginTop="8dp"
                         android:layout_marginBottom="8dp"
-                        android:text="Liked Spots"
+                        android:text="Visited Spots"
+                        android:textColor="@color/black"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <View
+                        style="@style/line_color"
+                        android:layout_width="0dp"
+                        android:layout_height="1dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/visitedSpotView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/visitedSpotTitleLayout" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/bookedSpotLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@color/white"
+                app:layout_constraintEnd_toEndOf="@+id/likedSpotLayout"
+                app:layout_constraintStart_toStartOf="@+id/likedSpotLayout"
+                app:layout_constraintTop_toBottomOf="@+id/likedSpotLayout">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/bookedSpotTitleLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <TextView
+                        android:id="@+id/tvBookedSpotBadge"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:background="@drawable/corner_layout"
+                        android:backgroundTint="@color/blue"
+                        android:minWidth="28dp"
+                        android:padding="4dp"
+                        android:text="0"
+                        android:textAlignment="center"
+                        android:textColor="@color/white"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toBottomOf="@+id/tvBookedSpotTitle"
+                        app:layout_constraintStart_toEndOf="@+id/tvBookedSpotTitle"
+                        app:layout_constraintTop_toTopOf="@+id/tvBookedSpotTitle" />
+
+                    <TextView
+                        android:id="@+id/tvBookedSpotTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginBottom="8dp"
+                        android:text="Booked Spots"
+                        android:textColor="@color/black"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <View
+                        style="@style/line_color"
+                        android:layout_width="0dp"
+                        android:layout_height="1dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/bookedSpotView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/bookedSpotTitleLayout" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/coverImageLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <ImageView
+                    android:id="@+id/coverImage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:adjustViewBounds="true"
+                    android:src="@drawable/intramuros_drone_shot"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/tvGreet"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:background="@drawable/custom_fade_background"
+                    android:fontFamily="@font/fredoka_one"
+                    android:gravity="center_horizontal|fill_vertical"
+                    android:text="こんにちは (Hello)\nWelcome to Clemenisle-EV\niBooking"
+                    android:textColor="@color/white"
+                    android:textSize="26sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="@+id/coverImage"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/coverImage" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/fullNameLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:background="@color/white"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/coverImageLayout">
+
+                <TextView
+                    android:id="@+id/tvFullName2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:text="Full Name"
+                    android:textColor="@color/black"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/fullNameTitleLayout" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/fullNameTitleLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <ImageView
+                        android:id="@+id/updateFullNameImage"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:padding="4dp"
+                        android:src="@drawable/ic_baseline_edit_24"
+                        app:layout_constraintBottom_toBottomOf="@+id/tvFullname"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/tvFullname"
+                        app:tint="@color/blue" />
+
+                    <TextView
+                        android:id="@+id/tvFullname"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginBottom="8dp"
+                        android:text="Full Name"
                         android:textColor="@color/black"
                         android:textSize="16sp"
                         android:textStyle="bold"
@@ -116,15 +272,6 @@
                         app:layout_constraintStart_toStartOf="parent" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/likedSpotView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/likedSpotTitleLayout" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -296,58 +443,48 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/fullNameLayout"
+                android:id="@+id/likedSpotLayout"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="16dp"
+                android:layout_marginTop="8dp"
                 android:background="@color/white"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <TextView
-                    android:id="@+id/tvFullName2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="24dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginBottom="8dp"
-                    android:text="Full Name"
-                    android:textColor="@color/black"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/fullNameTitleLayout" />
+                app:layout_constraintEnd_toEndOf="@+id/accountDetailsLayout"
+                app:layout_constraintStart_toStartOf="@+id/accountDetailsLayout"
+                app:layout_constraintTop_toBottomOf="@+id/accountDetailsLayout">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/fullNameTitleLayout"
+                    android:id="@+id/likedSpotTitleLayout"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
 
-                    <ImageView
-                        android:id="@+id/updateFullNameImage"
+                    <TextView
+                        android:id="@+id/tvLikedSpotBadge"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="8dp"
+                        android:layout_marginStart="8dp"
+                        android:background="@drawable/corner_layout"
+                        android:backgroundTint="@color/blue"
+                        android:minWidth="28dp"
                         android:padding="4dp"
-                        android:src="@drawable/ic_baseline_edit_24"
-                        app:layout_constraintBottom_toBottomOf="@+id/tvFullname"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="@+id/tvFullname"
-                        app:tint="@color/blue" />
+                        android:text="0"
+                        android:textAlignment="center"
+                        android:textColor="@color/white"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toBottomOf="@+id/tvLikedSpotTitle"
+                        app:layout_constraintStart_toEndOf="@+id/tvLikedSpotTitle"
+                        app:layout_constraintTop_toTopOf="@+id/tvLikedSpotTitle" />
 
                     <TextView
-                        android:id="@+id/tvFullname"
+                        android:id="@+id/tvLikedSpotTitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
                         android:layout_marginTop="8dp"
                         android:layout_marginBottom="8dp"
-                        android:text="Full Name"
+                        android:text="Liked Spots"
                         android:textColor="@color/black"
                         android:textSize="16sp"
                         android:textStyle="bold"
@@ -364,7 +501,18 @@
                         app:layout_constraintStart_toStartOf="parent" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/likedSpotView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/likedSpotTitleLayout" />
+
             </androidx.constraintlayout.widget.ConstraintLayout>
+
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 

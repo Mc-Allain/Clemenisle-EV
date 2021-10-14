@@ -10,8 +10,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.Target;
-import com.example.firebase_clemenisle_ev.Classes.BookingTypeRoute;
-import com.example.firebase_clemenisle_ev.Classes.SimpleTouristSpot;
+import com.example.firebase_clemenisle_ev.Classes.Route;
 import com.example.firebase_clemenisle_ev.R;
 
 import java.util.List;
@@ -20,45 +19,53 @@ import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class BookingSpotAdapter extends RecyclerView.Adapter<BookingSpotAdapter.ViewHolder> {
+public class SpotWithCounterAdapter extends RecyclerView.Adapter<SpotWithCounterAdapter.ViewHolder> {
 
-    List<SimpleTouristSpot> spots;
-    BookingTypeRoute bookingTypeRoute;
+    List<Route> bookedSpots;
+    int type;
     LayoutInflater inflater;
 
     Context myContext;
     Resources myResources;
 
-    OnItemClickListener onItemClickListener;
-
-    public BookingSpotAdapter(Context context, List<SimpleTouristSpot> spots, BookingTypeRoute bookingTypeRoute) {
-        this.spots = spots;
-        this.bookingTypeRoute = bookingTypeRoute;
+    public SpotWithCounterAdapter(Context context, List<Route> bookedSpots, int type) {
+        this.bookedSpots = bookedSpots;
+        this.type = type;
         this.inflater = LayoutInflater.from(context);
     }
 
     @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = inflater.inflate(R.layout.custom_near_spot_layout, parent, false);
+    public SpotWithCounterAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = inflater.inflate(R.layout.custom_spot_with_counter_layout, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull SpotWithCounterAdapter.ViewHolder holder, int position) {
         ImageView thumbnail = holder.thumbnail;
-        TextView tvName = holder.tvName;
+        TextView tvName = holder.tvName, tvCounterBadge = holder.tvCounterBadge;
         ConstraintLayout backgroundLayout = holder.backgroundLayout;
 
         myContext = inflater.getContext();
         myResources = myContext.getResources();
 
-        String name = spots.get(position).getName();
-        String img = spots.get(position).getImg();
+        String id = bookedSpots.get(position).getId();
+        String name = bookedSpots.get(position).getName();
+        String img = bookedSpots.get(position).getImg();
+        String count = "0";
+
+        if(type == 0) {
+            count = bookedSpots.get(position).getBooks() + "×";
+        }
+        else if(type == 1) {
+            count = bookedSpots.get(position).getVisits() + "×";
+        }
 
         Glide.with(myContext).load(img).placeholder(R.drawable.image_loading_placeholder).
                 override(Target.SIZE_ORIGINAL).into(thumbnail);
         tvName.setText(name);
+        tvCounterBadge.setText(count);
 
         int start = dpToPx(4), end = dpToPx(4);
 
@@ -76,18 +83,6 @@ public class BookingSpotAdapter extends RecyclerView.Adapter<BookingSpotAdapter.
         layoutParams.setMarginStart(start);
         layoutParams.setMarginEnd(end);
         backgroundLayout.setLayoutParams(layoutParams);
-
-        backgroundLayout.setOnClickListener(view -> {
-            if(onItemClickListener != null) onItemClickListener.itemClicked(spots, bookingTypeRoute);
-        });
-    }
-
-    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
-        this.onItemClickListener = onItemClickListener;
-    }
-
-    public interface OnItemClickListener {
-        void itemClicked(List<SimpleTouristSpot> spots, BookingTypeRoute bookingTypeRoute);
     }
 
     private int dpToPx(int dp) {
@@ -97,29 +92,20 @@ public class BookingSpotAdapter extends RecyclerView.Adapter<BookingSpotAdapter.
 
     @Override
     public int getItemCount() {
-        return spots.size();
+        return bookedSpots.size();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView thumbnail;
-        TextView tvName;
+        TextView tvName, tvCounterBadge;
         ConstraintLayout backgroundLayout;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             thumbnail = itemView.findViewById(R.id.thumbnail);
             tvName = itemView.findViewById(R.id.tvName);
+            tvCounterBadge = itemView.findViewById(R.id.tvCounterBadge);
             backgroundLayout = itemView.findViewById(R.id.backgroundLayout);
         }
-    }
-
-    public void setBookingTypeRoute(BookingTypeRoute bookingTypeRoute) {
-        this.bookingTypeRoute = bookingTypeRoute;
-    }
-
-    public void setSpots(List<SimpleTouristSpot> spots) {
-        this.spots.clear();
-        this.spots.addAll(spots);
-        notifyDataSetChanged();
     }
 }
