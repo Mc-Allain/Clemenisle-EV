@@ -386,7 +386,7 @@ public class RouteActivity extends AppCompatActivity implements
                     }
                     else {
                         errorToast = Toast.makeText(myContext,
-                                "Failed to cancel the booking, please try again.",
+                                "Failed to cancel the booking. Please try again.",
                                 Toast.LENGTH_LONG);
                         errorToast.show();
 

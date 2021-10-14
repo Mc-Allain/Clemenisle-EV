@@ -9,8 +9,12 @@ import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.Html;
+import android.text.SpannableString;
+import android.text.Spanned;
 import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -53,7 +57,7 @@ public class LoggedInUserProfileFragment extends Fragment {
     TextView tvGreet;
 
     ConstraintLayout fullNameLayout;
-    TextView tvLastName, tvFirstNameMiddleName;
+    TextView tvFullName2;
     ImageView updateFullNameImage;
 
     ConstraintLayout accountDetailsLayout;
@@ -66,7 +70,10 @@ public class LoggedInUserProfileFragment extends Fragment {
     int colorGreen, colorRed, colorInitial, colorBlack, colorWhite;
     ColorStateList cslInitial, cslBlue, cslRed;
 
-    String defaultGreetText = "こんにちは (Hello)", lastName, firstName, middleName;
+    String defaultGreetText = "こんにちは (Hello)<br>"+
+            "Welcome to Clemenisle-EV<br>"+
+            "<font face='fredoka_one'>iBooking</font>",
+            lastName, firstName, middleName;
     String emailAddress;
 
     User user;
@@ -93,16 +100,14 @@ public class LoggedInUserProfileFragment extends Fragment {
 
     DatabaseReference usersRef;
 
-    EditText etLastName, etFirstName, etMiddleName,
-            etPassword, etConfirmPassword, etCurrentPassword, etEmailAddress;
-    TextInputLayout tlLastName, tlFirstName, tlMiddleName,
-            tlPassword, tlConfirmPassword, tlCurrentPassword, tlEmailAddress;
+    EditText etLastName, etFirstName, etMiddleName, etPassword, etConfirmPassword, etEmailAddress;
+    TextInputLayout tlLastName, tlFirstName, tlMiddleName, tlPassword, tlConfirmPassword, tlEmailAddress;
 
     ImageView pwLengthCheckImage, pwUpperCheckImage, pwLowerCheckImage, pwNumberCheckImage, pwSymbolCheckImage;
     TextView tvPWLength, tvPWUpper, tvPWLower, tvPWNumber, tvPWSymbol;
 
     String newLastName = "", newFirstName = "", newMiddleName = "",
-            newPassword = "", newConfirmPassword = "", newCurrentPassword = "", newEmailAddress = "";
+            newPassword = "", newConfirmPassword = "", newEmailAddress = "";
 
     boolean vLN = false, vFN = false, vMN = true;
     boolean vPWL = false, vPWU = false, vPWLw = false, vPWN = false, vPWS = false, vCPW = false;
@@ -133,8 +138,7 @@ public class LoggedInUserProfileFragment extends Fragment {
 
         fullNameLayout = view.findViewById(R.id.fullNameLayout);
         tvGreet = view.findViewById(R.id.tvGreet);
-        tvLastName = view.findViewById(R.id.tvLastName);
-        tvFirstNameMiddleName = view.findViewById(R.id.tvFirstNameMiddleName);
+        tvFullName2 = view.findViewById(R.id.tvFullName2);
         updateFullNameImage = view.findViewById(R.id.updateFullNameImage);
 
         accountDetailsLayout = view.findViewById(R.id.accountDetailsLayout);
@@ -228,11 +232,6 @@ public class LoggedInUserProfileFragment extends Fragment {
             tlConfirmPassword.setErrorEnabled(false);
             tlConfirmPassword.setError(null);
             tlConfirmPassword.setStartIconTintList(cslInitial);
-
-            etCurrentPassword.setText(null);
-            tlCurrentPassword.setErrorEnabled(false);
-            tlCurrentPassword.setError(null);
-            tlCurrentPassword.setStartIconTintList(cslInitial);
         }
         tlPassword.clearFocus();
         tlPassword.requestFocus();
@@ -526,7 +525,7 @@ public class LoggedInUserProfileFragment extends Fragment {
     private void errorFullNameUpdate() {
         Toast.makeText(
                 myContext,
-                "Failed to update the Full Name, please try again.",
+                "Failed to update the Full Name. Please try again.",
                 Toast.LENGTH_LONG
         ).show();
 
@@ -616,7 +615,7 @@ public class LoggedInUserProfileFragment extends Fragment {
                             Toast.makeText(
                                     myContext,
                                     "This operation is sensitive and requires recent authentication." +
-                                    "Log in again before trying this request.",
+                                    "Please log in again before trying this request.",
                                     Toast.LENGTH_LONG
                             ).show();
                         }
@@ -638,7 +637,7 @@ public class LoggedInUserProfileFragment extends Fragment {
 
     private void errorEmailAddressUpdate() {
         Toast.makeText(myContext,
-                "Failed to update the Email Address, please try again.",
+                "Failed to update the Email Address. Please try again.",
                 Toast.LENGTH_LONG
         ).show();
 
@@ -670,7 +669,7 @@ public class LoggedInUserProfileFragment extends Fragment {
 
         Toast.makeText(
                 myContext,
-                "Successfully updated the Email Address",
+                "Successfully updated the Email Address. Please log in again.",
                 Toast.LENGTH_SHORT
         ).show();
     }
@@ -721,10 +720,8 @@ public class LoggedInUserProfileFragment extends Fragment {
 
         etPassword = passwordDialog.findViewById(R.id.etPassword);
         etConfirmPassword = passwordDialog.findViewById(R.id.etConfirmPassword);
-        etCurrentPassword = passwordDialog.findViewById(R.id.etCurrentPassword);
         tlPassword = passwordDialog.findViewById(R.id.tlPassword);
         tlConfirmPassword = passwordDialog.findViewById(R.id.tlConfirmPassword);
-        tlCurrentPassword = passwordDialog.findViewById(R.id.tlCurrentPassword);
 
         pwLengthCheckImage = passwordDialog.findViewById(R.id.pwLengthCheckImage);
         pwUpperCheckImage = passwordDialog.findViewById(R.id.pwUpperCheckImage);
@@ -807,7 +804,6 @@ public class LoggedInUserProfileFragment extends Fragment {
     private void checkPasswordInput(int sender) {
         newPassword = etPassword.getText().toString();
         newConfirmPassword = etConfirmPassword.getText().toString();
-        newCurrentPassword = etCurrentPassword.getText().toString();
 
         switch(sender) {
             case 1:
@@ -937,7 +933,23 @@ public class LoggedInUserProfileFragment extends Fragment {
         firebaseUser.updatePassword(newPassword)
                 .addOnCompleteListener(task -> {
                     if(task.isSuccessful()) finishPasswordUpdate();
-                    else errorPasswordUpdate();
+                    else {
+                        String error = "";
+                        if(task.getException() != null)
+                            error = task.getException().toString();
+
+                        if(error.contains("RecentLogin")) {
+                            proceedToMainActivity();
+
+                            Toast.makeText(
+                                    myContext,
+                                    "This operation is sensitive and requires recent authentication." +
+                                            "Please log in again before trying this request.",
+                                    Toast.LENGTH_LONG
+                            ).show();
+                        }
+                        else errorPasswordUpdate();
+                    }
                 });
     }
 
@@ -947,28 +959,25 @@ public class LoggedInUserProfileFragment extends Fragment {
         passwordUpdateButton.setEnabled(value);
         tlPassword.setEnabled(value);
         tlConfirmPassword.setEnabled(value);
-        tlCurrentPassword.setEnabled(value);
 
         if(value) passwordDialogCloseImage.setColorFilter(colorRed);
         else passwordDialogCloseImage.setColorFilter(colorInitial);
     }
 
     private void finishPasswordUpdate() {
+        proceedToMainActivity();
+
         Toast.makeText(
                 myContext,
-                "Successfully updated the Password",
+                "Successfully updated the Password. Please log in again.",
                 Toast.LENGTH_SHORT
         ).show();
-
-        passwordDialog.dismiss();
-        setPasswordDialogScreenEnabled(true);
-        passwordDialogProgressBar.setVisibility(View.GONE);
     }
 
     private void errorPasswordUpdate() {
         Toast.makeText(
                 myContext,
-                "Failed to update the Password, please try again.",
+                "Failed to update the Password. Please try again.",
                 Toast.LENGTH_LONG
         ).show();
 
@@ -1003,7 +1012,7 @@ public class LoggedInUserProfileFragment extends Fragment {
         showFullName();
         showAccountDetails();
 
-        tvGreet.setText(defaultGreetText);
+        tvGreet.setText(fromHtml(defaultGreetText));
         tvGreet.setTextColor(colorWhite);
 
         progressBar.setVisibility(View.GONE);
@@ -1023,12 +1032,11 @@ public class LoggedInUserProfileFragment extends Fragment {
         firstName = user.getFirstName();
         middleName = user.getMiddleName();
 
-        String formattedLastName = lastName + ", ";
-        String formattedFirstName = firstName;
-        if(middleName.length() > 0) formattedFirstName += " " + middleName;
+        String nameFormat1 = "<b>" + lastName + "</b>, ";
+        String nameFormat2 = nameFormat1 + firstName;
+        if(middleName.length() > 0) nameFormat2 += " " + middleName;
 
-        tvLastName.setText(formattedLastName);
-        tvFirstNameMiddleName.setText(formattedFirstName);
+        tvFullName2.setText(fromHtml(nameFormat2));
     }
 
     private void showAccountDetails() {
@@ -1037,5 +1045,18 @@ public class LoggedInUserProfileFragment extends Fragment {
         emailAddress = firebaseUser.getEmail();
 
         tvEmailAddress2.setText(emailAddress);
+    }
+
+    @SuppressWarnings("deprecation")
+    public static Spanned fromHtml(String html){
+        if(html == null){
+            return new SpannableString("");
+        }
+        else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            return Html.fromHtml(html, Html.FROM_HTML_MODE_LEGACY);
+        }
+        else {
+            return Html.fromHtml(html);
+        }
     }
 }

@@ -207,10 +207,10 @@ public class LoginFragment extends Fragment {
             caption = "Unregistered account";
         }
         else if(error.toLowerCase().contains("network error")) {
-            caption = "Network error, please try again.";
+            caption = "Network error. Please try again.";
         }
         else if(error.toLowerCase().contains("internal error")) {
-            caption = "Internal error, please try again.";
+            caption = "Internal error. Please try again.";
         }
         else {
             caption = error;

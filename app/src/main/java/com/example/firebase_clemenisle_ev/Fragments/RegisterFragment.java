@@ -528,7 +528,7 @@ public class RegisterFragment extends Fragment {
 
     private void registerFailed() {
         Toast.makeText(myContext,
-                "Registration failed, please try again.",
+                "Registration failed. Please try again.",
                 Toast.LENGTH_LONG
         ).show();
         setScreenEnabled(true);

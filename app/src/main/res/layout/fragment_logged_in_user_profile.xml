@@ -32,7 +32,7 @@
             android:layout_height="0dp"
             android:background="@drawable/custom_fade_background"
             android:gravity="center_horizontal|fill_vertical"
-            android:text="こんにちは (Hello)"
+            android:text="こんにちは (Hello)\nWelcome to Clemenisle-EV\niBooking"
             android:textColor="@color/white"
             android:textSize="26sp"
             android:textStyle="bold"
@@ -79,15 +79,17 @@
 
                 <TextView
                     android:id="@+id/tvPassword2"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="24dp"
                     android:layout_marginTop="8dp"
+                    android:layout_marginEnd="24dp"
                     android:layout_marginBottom="8dp"
-                    android:text="The Password is hidden"
+                    android:text="The Password is hidden and cannot unhide"
                     android:textColor="@color/initial"
                     android:textStyle="italic"
                     app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/passwordLayout" />
 
@@ -235,28 +237,17 @@
                 app:layout_constraintTop_toTopOf="parent">
 
                 <TextView
-                    android:id="@+id/tvLastName"
+                    android:id="@+id/tvFullName2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="24dp"
                     android:layout_marginTop="8dp"
                     android:layout_marginBottom="8dp"
-                    android:text="Last Name"
+                    android:text="Full Name"
                     android:textColor="@color/black"
-                    android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/fullNameTitleLayout" />
-
-                <TextView
-                    android:id="@+id/tvFirstNameMiddleName"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="First Name | Middle Name"
-                    android:textColor="@color/black"
-                    app:layout_constraintBottom_toBottomOf="@+id/tvLastName"
-                    app:layout_constraintStart_toEndOf="@+id/tvLastName"
-                    app:layout_constraintTop_toTopOf="@+id/tvLastName" />
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/fullNameTitleLayout"

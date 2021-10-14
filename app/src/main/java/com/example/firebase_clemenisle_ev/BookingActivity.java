@@ -1327,7 +1327,7 @@ public class BookingActivity extends AppCompatActivity implements
             public void onCancelled(@NonNull DatabaseError error) {
                 Toast.makeText(
                         myContext,
-                        "Failed to book a tour, please try again.",
+                        "Failed to book a tour. Please try again.",
                         Toast.LENGTH_LONG
                 ).show();
 
@@ -1374,7 +1374,7 @@ public class BookingActivity extends AppCompatActivity implements
             else {
                 Toast.makeText(
                         myContext,
-                        "Failed to book a tour, please try again.",
+                        "Failed to book a tour. Please try again.",
                         Toast.LENGTH_LONG
                 ).show();
 
@@ -1401,7 +1401,7 @@ public class BookingActivity extends AppCompatActivity implements
                         else {
                             Toast.makeText(
                                     myContext,
-                                    "Failed to book a tour, please try again.",
+                                    "Failed to book a tour. Please try again.",
                                     Toast.LENGTH_LONG
                             ).show();
 

@@ -277,7 +277,7 @@ public class PostRegisterActivity extends AppCompatActivity {
 
     private void updateFailed() {
         Toast.makeText(myContext,
-                "Update failed, please try again.",
+                "Update failed. Please try again.",
                 Toast.LENGTH_LONG
         ).show();
 
