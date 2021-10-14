@@ -32,7 +32,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="4dp"
-                    android:layout_marginEnd="16dp"
+                    android:layout_marginEnd="24dp"
                     android:text="Client Side Developer and Main Designer"
                     android:textColor="@color/initial"
                     android:textStyle="italic"
@@ -44,7 +44,7 @@
                     android:id="@+id/tvDevelopers"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
+                    android:layout_marginStart="24dp"
                     android:layout_marginTop="8dp"
                     android:text="Developers"
                     android:textColor="@color/black"
@@ -164,7 +164,7 @@
             app:layout_constraintBottom_toBottomOf="@+id/androidStudioLogoImage"
             app:layout_constraintStart_toEndOf="@+id/fireBaseLogoImage"
             app:layout_constraintTop_toTopOf="@+id/androidStudioLogoImage"
-            app:srcCompat="@drawable/google_map_logo" />
+            app:srcCompat="@drawable/image_loading_placeholder" />
 
         <ImageView
             android:id="@+id/googleStreetViewImage"
@@ -175,7 +175,7 @@
             app:layout_constraintBottom_toBottomOf="@+id/androidStudioLogoImage"
             app:layout_constraintStart_toEndOf="@+id/googleMapLogoImage"
             app:layout_constraintTop_toTopOf="@+id/androidStudioLogoImage"
-            app:srcCompat="@drawable/google_street_view" />
+            app:srcCompat="@drawable/image_loading_placeholder" />
 
         <ImageView
             android:id="@+id/fireBaseLogoImage"
@@ -186,7 +186,7 @@
             app:layout_constraintBottom_toBottomOf="@+id/androidStudioLogoImage"
             app:layout_constraintStart_toEndOf="@+id/androidStudioLogoImage"
             app:layout_constraintTop_toTopOf="@+id/androidStudioLogoImage"
-            app:srcCompat="@drawable/firebase_logo" />
+            app:srcCompat="@drawable/image_loading_placeholder" />
 
         <ImageView
             android:id="@+id/androidStudioLogoImage"
@@ -199,7 +199,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="@+id/tvPoweredBy"
             app:layout_constraintTop_toBottomOf="@+id/tvPoweredBy"
-            app:srcCompat="@drawable/android_studio_logo" />
+            app:srcCompat="@drawable/image_loading_placeholder" />
 
         <TextView
             android:id="@+id/tvPoweredBy"
