@@ -87,9 +87,9 @@ public class LoggedInUserProfileFragment extends Fragment {
     ProgressBar emailAddressDialogProgressBar;
 
     Dialog passwordDialog;
-    ImageView passwordDialogDialogCloseImage;
-    Button passwordDialogUpdateButton;
-    ProgressBar passwordDialogDialogProgressBar;
+    ImageView passwordDialogCloseImage;
+    Button passwordUpdateButton;
+    ProgressBar passwordDialogProgressBar;
 
     DatabaseReference usersRef;
 
@@ -103,6 +103,10 @@ public class LoggedInUserProfileFragment extends Fragment {
 
     String newLastName = "", newFirstName = "", newMiddleName = "",
             newPassword = "", newConfirmPassword = "", newCurrentPassword = "", newEmailAddress = "";
+
+    boolean vLN = false, vFN = false, vMN = true;
+    boolean vPWL = false, vPWU = false, vPWLw = false, vPWN = false, vPWS = false, vCPW = false;
+    boolean vEA = false;
 
     private void initSharedPreferences() {
         SharedPreferences sharedPreferences = myContext
@@ -233,11 +237,25 @@ public class LoggedInUserProfileFragment extends Fragment {
         tlPassword.clearFocus();
         tlPassword.requestFocus();
 
+        tvPWLength.setTextColor(colorInitial);
+        tvPWUpper.setTextColor(colorInitial);
+        tvPWLower.setTextColor(colorInitial);
+        tvPWNumber.setTextColor(colorInitial);
+        tvPWSymbol.setTextColor(colorInitial);
+
+        pwLengthCheckImage.setImageResource(R.drawable.ic_baseline_check_circle_24);
+        pwUpperCheckImage.setImageResource(R.drawable.ic_baseline_check_circle_24);
+        pwLowerCheckImage.setImageResource(R.drawable.ic_baseline_check_circle_24);
+        pwNumberCheckImage.setImageResource(R.drawable.ic_baseline_check_circle_24);
+        pwSymbolCheckImage.setImageResource(R.drawable.ic_baseline_check_circle_24);
+
         pwLengthCheckImage.setColorFilter(colorInitial);
         pwUpperCheckImage.setColorFilter(colorInitial);
         pwLowerCheckImage.setColorFilter(colorInitial);
         pwNumberCheckImage.setColorFilter(colorInitial);
         pwSymbolCheckImage.setColorFilter(colorInitial);
+
+        vPWL = false; vPWU = false; vPWLw = false; vPWN = false; vPWS = false; vCPW = false;
 
         passwordDialog.show();
     }
@@ -365,7 +383,6 @@ public class LoggedInUserProfileFragment extends Fragment {
         fullNameDialog.getWindow().setGravity(Gravity.BOTTOM);
     }
 
-    boolean vLN = false, vFN = false, vMN = true;
     private void checkNameInput(int sender) {
         newLastName = etLastName.getText().toString();
         newFirstName = etFirstName.getText().toString();
@@ -614,12 +631,12 @@ public class LoggedInUserProfileFragment extends Fragment {
                             emailAddressUpdateButton.setEnabled(false);
                             emailAddressDialogProgressBar.setVisibility(View.GONE);
                         }
-                        else updateFailed();
+                        else errorEmailAddressUpdate();
                     }
                 });
     }
 
-    private void updateFailed() {
+    private void errorEmailAddressUpdate() {
         Toast.makeText(myContext,
                 "Failed to update the Email Address, please try again.",
                 Toast.LENGTH_LONG
@@ -666,8 +683,6 @@ public class LoggedInUserProfileFragment extends Fragment {
         ((Activity) myContext).finishAffinity();
     }
 
-
-    boolean vEA = false;
     private void checkEmailAddressInput() {
         newEmailAddress = etEmailAddress.getText().toString();
 
@@ -700,9 +715,9 @@ public class LoggedInUserProfileFragment extends Fragment {
         passwordDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         passwordDialog.setContentView(R.layout.dialog_update_password_layout);
 
-        passwordDialogDialogCloseImage = passwordDialog.findViewById(R.id.dialogCloseImage);
-        passwordDialogUpdateButton = passwordDialog.findViewById(R.id.updateButton);
-        passwordDialogDialogProgressBar = passwordDialog.findViewById(R.id.progressBar);
+        passwordDialogCloseImage = passwordDialog.findViewById(R.id.dialogCloseImage);
+        passwordUpdateButton = passwordDialog.findViewById(R.id.updateButton);
+        passwordDialogProgressBar = passwordDialog.findViewById(R.id.progressBar);
 
         etPassword = passwordDialog.findViewById(R.id.etPassword);
         etConfirmPassword = passwordDialog.findViewById(R.id.etConfirmPassword);
@@ -778,9 +793,9 @@ public class LoggedInUserProfileFragment extends Fragment {
             }
         });
 
-        passwordDialogUpdateButton.setOnClickListener(view -> updateFullName());
+        passwordUpdateButton.setOnClickListener(view -> updatePassword());
 
-        passwordDialogDialogCloseImage.setOnClickListener(view -> passwordDialog.dismiss());
+        passwordDialogCloseImage.setOnClickListener(view -> passwordDialog.dismiss());
 
         passwordDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -789,7 +804,6 @@ public class LoggedInUserProfileFragment extends Fragment {
         passwordDialog.getWindow().setGravity(Gravity.BOTTOM);
     }
 
-    boolean vPWL = false, vPWU = false, vPWLw = false, vPWN = false, vPWS = false, vCPW = false;
     private void checkPasswordInput(int sender) {
         newPassword = etPassword.getText().toString();
         newConfirmPassword = etConfirmPassword.getText().toString();
@@ -798,55 +812,65 @@ public class LoggedInUserProfileFragment extends Fragment {
         switch(sender) {
             case 1:
                 if(newPassword.length() >= 8) {
+                    pwLengthCheckImage.setImageResource(R.drawable.ic_baseline_check_circle_24);
                     pwLengthCheckImage.setColorFilter(colorGreen);
                     tvPWLength.setTextColor(colorGreen);
                     vPWL = true;
                 }
                 else {
+                    pwLengthCheckImage.setImageResource(R.drawable.ic_baseline_error_24);
                     pwLengthCheckImage.setColorFilter(colorRed);
                     tvPWLength.setTextColor(colorRed);
                     vPWL = false;
                 }
 
                 if(newPassword.matches(".*[A-Z].*")) {
+                    pwUpperCheckImage.setImageResource(R.drawable.ic_baseline_check_circle_24);
                     pwUpperCheckImage.setColorFilter(colorGreen);
                     tvPWUpper.setTextColor(colorGreen);
                     vPWU = true;
                 }
                 else {
+                    pwUpperCheckImage.setImageResource(R.drawable.ic_baseline_error_24);
                     pwUpperCheckImage.setColorFilter(colorRed);
                     tvPWUpper.setTextColor(colorRed);
                     vPWU = false;
                 }
 
                 if(newPassword.matches(".*[a-z].*")) {
+                    pwLowerCheckImage.setImageResource(R.drawable.ic_baseline_check_circle_24);
                     pwLowerCheckImage.setColorFilter(colorGreen);
                     tvPWLower.setTextColor(colorGreen);
                     vPWLw = true;
                 }
                 else {
+                    pwLowerCheckImage.setImageResource(R.drawable.ic_baseline_error_24);
                     pwLowerCheckImage.setColorFilter(colorRed);
                     tvPWLower.setTextColor(colorRed);
                     vPWLw = false;
                 }
 
                 if(newPassword.matches(".*[0-9].*")) {
+                    pwNumberCheckImage.setImageResource(R.drawable.ic_baseline_check_circle_24);
                     pwNumberCheckImage.setColorFilter(colorGreen);
                     tvPWNumber.setTextColor(colorGreen);
                     vPWN = true;
                 }
                 else {
+                    pwNumberCheckImage.setImageResource(R.drawable.ic_baseline_error_24);
                     pwNumberCheckImage.setColorFilter(colorRed);
                     tvPWNumber.setTextColor(colorRed);
                     vPWN = false;
                 }
 
                 if(newPassword.matches("[A-Za-z0-9]*")) {
+                    pwSymbolCheckImage.setImageResource(R.drawable.ic_baseline_check_circle_24);
                     pwSymbolCheckImage.setColorFilter(colorGreen);
                     tvPWSymbol.setTextColor(colorGreen);
                     vPWS = true;
                 }
                 else {
+                    pwSymbolCheckImage.setImageResource(R.drawable.ic_baseline_error_24);
                     pwSymbolCheckImage.setColorFilter(colorRed);
                     tvPWSymbol.setTextColor(colorRed);
                     vPWS = false;
@@ -903,7 +927,53 @@ public class LoggedInUserProfileFragment extends Fragment {
                 break;
         }
 
-        passwordDialogUpdateButton.setEnabled(vPWL && vPWU && vPWLw && vPWN && vCPW);
+        passwordUpdateButton.setEnabled(vPWL && vPWU && vPWLw && vPWN && vCPW);
+    }
+
+    private void updatePassword() {
+        setPasswordDialogScreenEnabled(false);
+        passwordDialogProgressBar.setVisibility(View.VISIBLE);
+
+        firebaseUser.updatePassword(newPassword)
+                .addOnCompleteListener(task -> {
+                    if(task.isSuccessful()) finishPasswordUpdate();
+                    else errorPasswordUpdate();
+                });
+    }
+
+    private void setPasswordDialogScreenEnabled(boolean value) {
+        passwordDialog.setCanceledOnTouchOutside(value);
+        passwordDialogCloseImage.setEnabled(value);
+        passwordUpdateButton.setEnabled(value);
+        tlPassword.setEnabled(value);
+        tlConfirmPassword.setEnabled(value);
+        tlCurrentPassword.setEnabled(value);
+
+        if(value) passwordDialogCloseImage.setColorFilter(colorRed);
+        else passwordDialogCloseImage.setColorFilter(colorInitial);
+    }
+
+    private void finishPasswordUpdate() {
+        Toast.makeText(
+                myContext,
+                "Successfully updated the Password",
+                Toast.LENGTH_SHORT
+        ).show();
+
+        passwordDialog.dismiss();
+        setPasswordDialogScreenEnabled(true);
+        passwordDialogProgressBar.setVisibility(View.GONE);
+    }
+
+    private void errorPasswordUpdate() {
+        Toast.makeText(
+                myContext,
+                "Failed to update the Password, please try again.",
+                Toast.LENGTH_LONG
+        ).show();
+
+        setPasswordDialogScreenEnabled(true);
+        passwordDialogProgressBar.setVisibility(View.GONE);
     }
 
     private void getCurrentUser() {

@@ -64,6 +64,10 @@ public class RegisterFragment extends Fragment {
     int colorGreen, colorRed, colorInitial;
     ColorStateList cslInitial, cslBlue, cslRed;
 
+    boolean vLN = false, vFN = false, vMN = true;
+    boolean vPWL = false, vPWU = false, vPWLw = false, vPWN = false, vPWS = false, vCPW = false;
+    boolean vEA = false;
+
     public int currentStep = 1, endStep = 3;
 
     boolean isRegistered = false, isAdded = false;
@@ -178,6 +182,12 @@ public class RegisterFragment extends Fragment {
                 tlConfirmPassword.setStartIconTintList(cslInitial);
 
                 vPWL = false; vPWU = false; vPWLw = false; vPWN = false; vPWS = false; vCPW = false;
+
+                pwLengthCheckImage.setImageResource(R.drawable.ic_baseline_check_circle_24);
+                pwUpperCheckImage.setImageResource(R.drawable.ic_baseline_check_circle_24);
+                pwLowerCheckImage.setImageResource(R.drawable.ic_baseline_check_circle_24);
+                pwNumberCheckImage.setImageResource(R.drawable.ic_baseline_check_circle_24);
+                pwSymbolCheckImage.setImageResource(R.drawable.ic_baseline_check_circle_24);
 
                 pwLengthCheckImage.setColorFilter(colorInitial);
                 tvPWLength.setTextColor(colorInitial);
@@ -525,7 +535,6 @@ public class RegisterFragment extends Fragment {
         progressBar.setVisibility(View.GONE);
     }
 
-    boolean vLN = false, vFN = false, vMN = true;
     private void checkNameInput(int sender) {
         lastName = etLastName.getText().toString();
         firstName = etFirstName.getText().toString();
@@ -595,7 +604,6 @@ public class RegisterFragment extends Fragment {
         continueButton.setEnabled(vLN && vFN && vMN);
     }
 
-    boolean vPWL = false, vPWU = false, vPWLw = false, vPWN = false, vPWS = false, vCPW = false;
     private void checkPasswordInput(int sender) {
         password = etPassword.getText().toString();
         confirmPassword = etConfirmPassword.getText().toString();
@@ -603,55 +611,65 @@ public class RegisterFragment extends Fragment {
         switch(sender) {
             case 1:
                 if(password.length() >= 8) {
+                    pwLengthCheckImage.setImageResource(R.drawable.ic_baseline_check_circle_24);
                     pwLengthCheckImage.setColorFilter(colorGreen);
                     tvPWLength.setTextColor(colorGreen);
                     vPWL = true;
                 }
                 else {
+                    pwLengthCheckImage.setImageResource(R.drawable.ic_baseline_error_24);
                     pwLengthCheckImage.setColorFilter(colorRed);
                     tvPWLength.setTextColor(colorRed);
                     vPWL = false;
                 }
 
                 if(password.matches(".*[A-Z].*")) {
+                    pwUpperCheckImage.setImageResource(R.drawable.ic_baseline_check_circle_24);
                     pwUpperCheckImage.setColorFilter(colorGreen);
                     tvPWUpper.setTextColor(colorGreen);
                     vPWU = true;
                 }
                 else {
+                    pwUpperCheckImage.setImageResource(R.drawable.ic_baseline_error_24);
                     pwUpperCheckImage.setColorFilter(colorRed);
                     tvPWUpper.setTextColor(colorRed);
                     vPWU = false;
                 }
 
                 if(password.matches(".*[a-z].*")) {
+                    pwLowerCheckImage.setImageResource(R.drawable.ic_baseline_check_circle_24);
                     pwLowerCheckImage.setColorFilter(colorGreen);
                     tvPWLower.setTextColor(colorGreen);
                     vPWLw = true;
                 }
                 else {
+                    pwLowerCheckImage.setImageResource(R.drawable.ic_baseline_error_24);
                     pwLowerCheckImage.setColorFilter(colorRed);
                     tvPWLower.setTextColor(colorRed);
                     vPWLw = false;
                 }
 
                 if(password.matches(".*[0-9].*")) {
+                    pwNumberCheckImage.setImageResource(R.drawable.ic_baseline_check_circle_24);
                     pwNumberCheckImage.setColorFilter(colorGreen);
                     tvPWNumber.setTextColor(colorGreen);
                     vPWN = true;
                 }
                 else {
+                    pwNumberCheckImage.setImageResource(R.drawable.ic_baseline_error_24);
                     pwNumberCheckImage.setColorFilter(colorRed);
                     tvPWNumber.setTextColor(colorRed);
                     vPWN = false;
                 }
 
                 if(password.matches("[A-Za-z0-9]*")) {
+                    pwSymbolCheckImage.setImageResource(R.drawable.ic_baseline_check_circle_24);
                     pwSymbolCheckImage.setColorFilter(colorGreen);
                     tvPWSymbol.setTextColor(colorGreen);
                     vPWS = true;
                 }
                 else {
+                    pwSymbolCheckImage.setImageResource(R.drawable.ic_baseline_error_24);
                     pwSymbolCheckImage.setColorFilter(colorRed);
                     tvPWSymbol.setTextColor(colorRed);
                     vPWS = false;
@@ -711,7 +729,6 @@ public class RegisterFragment extends Fragment {
         continueButton.setEnabled(vPWL && vPWU && vPWLw && vPWN && vCPW);
     }
 
-    boolean vEA = false;
     private void checkEmailAddressInput() {
         emailAddress = etEmailAddress.getText().toString();
 
