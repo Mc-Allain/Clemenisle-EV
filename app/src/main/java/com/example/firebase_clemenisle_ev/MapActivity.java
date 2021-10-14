@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.transition.ChangeBounds;
 import android.transition.Transition;
 import android.transition.TransitionManager;
-import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import com.example.firebase_clemenisle_ev.Adapters.MapTabFragmentAdapter;
@@ -165,7 +164,7 @@ implements MapTouristSpotFragment.OnComboBoxClickListener,
             constraintSet.connect(fabLayout.getId(), ConstraintSet.BOTTOM,
                     constraintLayout.getId(), ConstraintSet.BOTTOM);
 
-            fab.setImageResource(R.drawable.ic_baseline_place_24);
+            fab.setImageResource(R.drawable.ic_baseline_location_on_24);
             fab.setBackgroundTintList(cslBlue);
 
             bottom = dpToPx(32);

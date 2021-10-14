@@ -21,7 +21,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -77,7 +76,6 @@ public class LoggedInUserProfileFragment extends Fragment {
 
     Dialog fullNameDialog;
     ImageView fullNameDialogCloseImage;
-    ScrollView fullNameScrollView;
     Button fullNameUpdateButton;
     ProgressBar fullNameDialogProgressBar;
 
@@ -88,16 +86,23 @@ public class LoggedInUserProfileFragment extends Fragment {
     Button emailAddressUpdateButton;
     ProgressBar emailAddressDialogProgressBar;
 
+    Dialog passwordDialog;
+    ImageView passwordDialogDialogCloseImage;
+    Button passwordDialogUpdateButton;
+    ProgressBar passwordDialogDialogProgressBar;
+
     DatabaseReference usersRef;
 
-    EditText etLastName, etFirstName, etMiddleName, etPassword, etConfirmPassword, etEmailAddress;
-    TextInputLayout tlLastName, tlFirstName, tlMiddleName, tlPassword, tlConfirmPassword, tlEmailAddress;
+    EditText etLastName, etFirstName, etMiddleName,
+            etPassword, etConfirmPassword, etCurrentPassword, etEmailAddress;
+    TextInputLayout tlLastName, tlFirstName, tlMiddleName,
+            tlPassword, tlConfirmPassword, tlCurrentPassword, tlEmailAddress;
 
     ImageView pwLengthCheckImage, pwUpperCheckImage, pwLowerCheckImage, pwNumberCheckImage, pwSymbolCheckImage;
     TextView tvPWLength, tvPWUpper, tvPWLower, tvPWNumber, tvPWSymbol;
 
     String newLastName = "", newFirstName = "", newMiddleName = "",
-            newPassword = "", newConfirmPassword = "", newEmailAddress = "";
+            newPassword = "", newConfirmPassword = "", newCurrentPassword = "", newEmailAddress = "";
 
     private void initSharedPreferences() {
         SharedPreferences sharedPreferences = myContext
@@ -173,11 +178,13 @@ public class LoggedInUserProfileFragment extends Fragment {
 
         initFullNameDialog();
         initEmailAddressDialog();
+        initPasswordDialog();
 
         getCurrentUser();
 
         updateFullNameImage.setOnClickListener(view1 -> showFullNameDialog());
         updateEmailAddressImage.setOnClickListener(view1 -> showEmailAddressDialog());
+        updatePasswordImage.setOnClickListener(view1 -> showPasswordDialog());
 
         return view;
     }
@@ -206,13 +213,41 @@ public class LoggedInUserProfileFragment extends Fragment {
         emailAddressDialog.show();
     }
 
+    private void showPasswordDialog() {
+        if(newPassword != null) {
+            etPassword.setText(null);
+            tlPassword.setErrorEnabled(false);
+            tlPassword.setError(null);
+            tlPassword.setStartIconTintList(cslInitial);
+
+            etConfirmPassword.setText(null);
+            tlConfirmPassword.setErrorEnabled(false);
+            tlConfirmPassword.setError(null);
+            tlConfirmPassword.setStartIconTintList(cslInitial);
+
+            etCurrentPassword.setText(null);
+            tlCurrentPassword.setErrorEnabled(false);
+            tlCurrentPassword.setError(null);
+            tlCurrentPassword.setStartIconTintList(cslInitial);
+        }
+        tlPassword.clearFocus();
+        tlPassword.requestFocus();
+
+        pwLengthCheckImage.setColorFilter(colorInitial);
+        pwUpperCheckImage.setColorFilter(colorInitial);
+        pwLowerCheckImage.setColorFilter(colorInitial);
+        pwNumberCheckImage.setColorFilter(colorInitial);
+        pwSymbolCheckImage.setColorFilter(colorInitial);
+
+        passwordDialog.show();
+    }
+
     private void initFullNameDialog() {
         fullNameDialog = new Dialog(myContext);
         fullNameDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         fullNameDialog.setContentView(R.layout.dialog_update_full_name_layout);
 
         fullNameDialogCloseImage = fullNameDialog.findViewById(R.id.dialogCloseImage);
-        fullNameScrollView = fullNameDialog.findViewById(R.id.scrollView);
         fullNameUpdateButton = fullNameDialog.findViewById(R.id.updateButton);
         fullNameDialogProgressBar = fullNameDialog.findViewById(R.id.progressBar);
 
@@ -658,6 +693,217 @@ public class LoggedInUserProfileFragment extends Fragment {
         }
 
         emailAddressUpdateButton.setEnabled(vEA);
+    }
+
+    private void initPasswordDialog() {
+        passwordDialog = new Dialog(myContext);
+        passwordDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        passwordDialog.setContentView(R.layout.dialog_update_password_layout);
+
+        passwordDialogDialogCloseImage = passwordDialog.findViewById(R.id.dialogCloseImage);
+        passwordDialogUpdateButton = passwordDialog.findViewById(R.id.updateButton);
+        passwordDialogDialogProgressBar = passwordDialog.findViewById(R.id.progressBar);
+
+        etPassword = passwordDialog.findViewById(R.id.etPassword);
+        etConfirmPassword = passwordDialog.findViewById(R.id.etConfirmPassword);
+        etCurrentPassword = passwordDialog.findViewById(R.id.etCurrentPassword);
+        tlPassword = passwordDialog.findViewById(R.id.tlPassword);
+        tlConfirmPassword = passwordDialog.findViewById(R.id.tlConfirmPassword);
+        tlCurrentPassword = passwordDialog.findViewById(R.id.tlCurrentPassword);
+
+        pwLengthCheckImage = passwordDialog.findViewById(R.id.pwLengthCheckImage);
+        pwUpperCheckImage = passwordDialog.findViewById(R.id.pwUpperCheckImage);
+        pwLowerCheckImage = passwordDialog.findViewById(R.id.pwLowerCheckImage);
+        pwNumberCheckImage = passwordDialog.findViewById(R.id.pwNumberCheckImage);
+        pwSymbolCheckImage = passwordDialog.findViewById(R.id.pwSymbolCheckImage);
+        tvPWLength = passwordDialog.findViewById(R.id.tvPWLength);
+        tvPWUpper = passwordDialog.findViewById(R.id.tvPWUpper);
+        tvPWLower = passwordDialog.findViewById(R.id.tvPWLower);
+        tvPWNumber = passwordDialog.findViewById(R.id.tvPWNumber);
+        tvPWSymbol = passwordDialog.findViewById(R.id.tvPWSymbol);
+
+        etPassword.setOnFocusChangeListener((view1, b) -> {
+            if(!tlPassword.isErrorEnabled()) {
+                if(b) {
+                    tlPassword.setStartIconTintList(cslBlue);
+                }
+                else {
+                    tlPassword.setStartIconTintList(cslInitial);
+                }
+            }
+        });
+
+        etConfirmPassword.setOnFocusChangeListener((view1, b) -> {
+            if(!tlConfirmPassword.isErrorEnabled()) {
+                if (b) {
+                    tlConfirmPassword.setStartIconTintList(cslBlue);
+                }
+                else {
+                    tlConfirmPassword.setStartIconTintList(cslInitial);
+                }
+            }
+        });
+
+        etPassword.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                checkPasswordInput(1);
+            }
+        });
+
+        etConfirmPassword.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                checkPasswordInput(2);
+            }
+        });
+
+        passwordDialogUpdateButton.setOnClickListener(view -> updateFullName());
+
+        passwordDialogDialogCloseImage.setOnClickListener(view -> passwordDialog.dismiss());
+
+        passwordDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT);
+        passwordDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+        passwordDialog.getWindow().getAttributes().windowAnimations = R.style.animBottomSlide;
+        passwordDialog.getWindow().setGravity(Gravity.BOTTOM);
+    }
+
+    boolean vPWL = false, vPWU = false, vPWLw = false, vPWN = false, vPWS = false, vCPW = false;
+    private void checkPasswordInput(int sender) {
+        newPassword = etPassword.getText().toString();
+        newConfirmPassword = etConfirmPassword.getText().toString();
+        newCurrentPassword = etCurrentPassword.getText().toString();
+
+        switch(sender) {
+            case 1:
+                if(newPassword.length() >= 8) {
+                    pwLengthCheckImage.setColorFilter(colorGreen);
+                    tvPWLength.setTextColor(colorGreen);
+                    vPWL = true;
+                }
+                else {
+                    pwLengthCheckImage.setColorFilter(colorRed);
+                    tvPWLength.setTextColor(colorRed);
+                    vPWL = false;
+                }
+
+                if(newPassword.matches(".*[A-Z].*")) {
+                    pwUpperCheckImage.setColorFilter(colorGreen);
+                    tvPWUpper.setTextColor(colorGreen);
+                    vPWU = true;
+                }
+                else {
+                    pwUpperCheckImage.setColorFilter(colorRed);
+                    tvPWUpper.setTextColor(colorRed);
+                    vPWU = false;
+                }
+
+                if(newPassword.matches(".*[a-z].*")) {
+                    pwLowerCheckImage.setColorFilter(colorGreen);
+                    tvPWLower.setTextColor(colorGreen);
+                    vPWLw = true;
+                }
+                else {
+                    pwLowerCheckImage.setColorFilter(colorRed);
+                    tvPWLower.setTextColor(colorRed);
+                    vPWLw = false;
+                }
+
+                if(newPassword.matches(".*[0-9].*")) {
+                    pwNumberCheckImage.setColorFilter(colorGreen);
+                    tvPWNumber.setTextColor(colorGreen);
+                    vPWN = true;
+                }
+                else {
+                    pwNumberCheckImage.setColorFilter(colorRed);
+                    tvPWNumber.setTextColor(colorRed);
+                    vPWN = false;
+                }
+
+                if(newPassword.matches("[A-Za-z0-9]*")) {
+                    pwSymbolCheckImage.setColorFilter(colorGreen);
+                    tvPWSymbol.setTextColor(colorGreen);
+                    vPWS = true;
+                }
+                else {
+                    pwSymbolCheckImage.setColorFilter(colorRed);
+                    tvPWSymbol.setTextColor(colorRed);
+                    vPWS = false;
+                }
+
+                if(vPWL && vPWU && vPWLw && vPWN && vPWS) {
+                    tlPassword.setErrorEnabled(false);
+                    tlPassword.setError(null);
+                    tlPassword.setStartIconTintList(cslBlue);
+                }
+                else {
+                    tlPassword.setErrorEnabled(true);
+                    tlPassword.setError("Weak Password");
+                    tlPassword.setStartIconTintList(cslRed);
+                }
+
+                if(newConfirmPassword.length() > 0) {
+                    if(newConfirmPassword.equals(newPassword)) {
+                        tlConfirmPassword.setErrorEnabled(false);
+                        tlConfirmPassword.setError(null);
+                        tlConfirmPassword.setStartIconTintList(cslInitial);
+                        vCPW = true;
+                    }
+                    else {
+                        tlConfirmPassword.setErrorEnabled(true);
+                        tlConfirmPassword.setError("Password does not matched");
+                        tlConfirmPassword.setStartIconTintList(cslRed);
+                        vCPW = false;
+                    }
+                }
+
+                break;
+            case 2:
+                if(newConfirmPassword.length() > 0) {
+                    if(newConfirmPassword.equals(newPassword)) {
+                        tlConfirmPassword.setErrorEnabled(false);
+                        tlConfirmPassword.setError(null);
+                        tlConfirmPassword.setStartIconTintList(cslBlue);
+                        vCPW = true;
+                    }
+                    else {
+                        tlConfirmPassword.setErrorEnabled(true);
+                        tlConfirmPassword.setError("Password does not matched");
+                        tlConfirmPassword.setStartIconTintList(cslRed);
+                        vCPW = false;
+                    }
+                }
+                else {
+                    tlConfirmPassword.setErrorEnabled(true);
+                    tlConfirmPassword.setError("Please re-enter your password");
+                    tlConfirmPassword.setStartIconTintList(cslRed);
+                    vCPW = false;
+                }
+                break;
+        }
+
+        passwordDialogUpdateButton.setEnabled(vPWL && vPWU && vPWLw && vPWN && vCPW);
     }
 
     private void getCurrentUser() {

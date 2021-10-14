@@ -178,60 +178,33 @@ public class MapSettingsFragment extends Fragment {
             setSColor(6);
         });
 
-        tvTSDefault.setOnClickListener(view1 -> {
-            setTSDefault();
-        });
+        tvTSDefault.setOnClickListener(view1 -> setTSDefault());
 
-        tsDefaultImage.setOnClickListener(view1 -> {
-            setTSDefault();
-        });
+        tsDefaultImage.setOnClickListener(view1 -> setTSDefault());
 
-        tvTSMapPin.setOnClickListener(view1 -> {
-            setTSMapPin();
-        });
+        tvTSMapPin.setOnClickListener(view1 -> setTSMapPin());
 
-        tsMapPinImage.setOnClickListener(view1 -> {
-            setTSMapPin();
-        });
+        tsMapPinImage.setOnClickListener(view1 -> setTSMapPin());
 
-        tvSDefault.setOnClickListener(view1 -> {
-            setSDefault();
-        });
+        tvSDefault.setOnClickListener(view1 -> setSDefault());
 
-        sDefaultImage.setOnClickListener(view1 -> {
-            setSDefault();
-        });
+        sDefaultImage.setOnClickListener(view1 -> setSDefault());
 
-        tvSMapPin.setOnClickListener(view1 -> {
-            setSMapPin();
-        });
+        tvSMapPin.setOnClickListener(view1 -> setSMapPin());
 
-        sMapPinImage.setOnClickListener(view1 -> {
-            setSMapPin();
-        });
+        sMapPinImage.setOnClickListener(view1 -> setSMapPin());
 
-        tvMSDefault.setOnClickListener(view1 -> {
-            setMSDefault();
-        });
+        tvMSDefault.setOnClickListener(view1 -> setMSDefault());
 
-        msDefaultImage.setOnClickListener(view1 -> {
-            setMSDefault();
-        });
+        msDefaultImage.setOnClickListener(view1 -> setMSDefault());
 
-        tvMSSat.setOnClickListener(view1 -> {
-            setMSSat();
-        });
+        tvMSSat.setOnClickListener(view1 -> setMSSat());
 
-        msSatImage.setOnClickListener(view1 -> {
-            setMSSat();
-        });
+        msSatImage.setOnClickListener(view1 -> setMSSat());
 
-        swMapAutoFocus.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mapAutoFocus = swMapAutoFocus.isChecked();
-                setMapAutoFocus();
-            }
+        swMapAutoFocus.setOnClickListener(view12 -> {
+            mapAutoFocus = swMapAutoFocus.isChecked();
+            setMapAutoFocus();
         });
 
         return view;
@@ -370,7 +343,6 @@ public class MapSettingsFragment extends Fragment {
 
     private void changeSelectedTSColor() {
         tsColorImage.setColorFilter(tsMarkColor);
-        tsColorImage.setBackgroundColor(tsMarkColor);
     }
 
     private void openTSColorLayout() {
@@ -422,7 +394,6 @@ public class MapSettingsFragment extends Fragment {
 
     private void changeSelectedSColor() {
         sColorImage.setColorFilter(sMarkColor);
-        sColorImage.setBackgroundColor(sMarkColor);
     }
 
     private void openSColorLayout() {
