@@ -29,6 +29,8 @@ public class BookingSpotAdapter extends RecyclerView.Adapter<BookingSpotAdapter.
     Context myContext;
     Resources myResources;
 
+    boolean isFromNearSpot = false;
+
     OnItemClickListener onItemClickListener;
 
     public BookingSpotAdapter(Context context, List<SimpleTouristSpot> spots, BookingTypeRoute bookingTypeRoute) {
@@ -53,8 +55,10 @@ public class BookingSpotAdapter extends RecyclerView.Adapter<BookingSpotAdapter.
         myContext = inflater.getContext();
         myResources = myContext.getResources();
 
-        String name = spots.get(position).getName();
-        String img = spots.get(position).getImg();
+        SimpleTouristSpot spot = spots.get(position);
+
+        String name = spot.getName();
+        String img = spot.getImg();
 
         Glide.with(myContext).load(img).placeholder(R.drawable.image_loading_placeholder).
                 override(Target.SIZE_ORIGINAL).into(thumbnail);
@@ -78,7 +82,10 @@ public class BookingSpotAdapter extends RecyclerView.Adapter<BookingSpotAdapter.
         backgroundLayout.setLayoutParams(layoutParams);
 
         backgroundLayout.setOnClickListener(view -> {
-            if(onItemClickListener != null) onItemClickListener.itemClicked(spots, bookingTypeRoute);
+            if(onItemClickListener != null) {
+                if(isFromNearSpot) onItemClickListener.addSpot(spot);
+                else onItemClickListener.addRoute(spots, bookingTypeRoute);
+            }
         });
     }
 
@@ -87,7 +94,8 @@ public class BookingSpotAdapter extends RecyclerView.Adapter<BookingSpotAdapter.
     }
 
     public interface OnItemClickListener {
-        void itemClicked(List<SimpleTouristSpot> spots, BookingTypeRoute bookingTypeRoute);
+        void addRoute(List<SimpleTouristSpot> spots, BookingTypeRoute bookingTypeRoute);
+        void addSpot(SimpleTouristSpot spots);
     }
 
     private int dpToPx(int dp) {
@@ -120,6 +128,11 @@ public class BookingSpotAdapter extends RecyclerView.Adapter<BookingSpotAdapter.
     public void setSpots(List<SimpleTouristSpot> spots) {
         this.spots.clear();
         this.spots.addAll(spots);
+        notifyDataSetChanged();
+    }
+
+    public void setFromNearSpot(boolean fromNearSpot) {
+        isFromNearSpot = fromNearSpot;
         notifyDataSetChanged();
     }
 }

@@ -18,6 +18,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.firebase_clemenisle_ev.Adapters.BookingAdapter;
 import com.example.firebase_clemenisle_ev.Classes.Booking;
+import com.example.firebase_clemenisle_ev.Classes.DateTimeToString;
 import com.example.firebase_clemenisle_ev.Classes.FirebaseURL;
 import com.example.firebase_clemenisle_ev.R;
 import com.google.firebase.auth.FirebaseAuth;
@@ -29,6 +30,7 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 
@@ -61,6 +63,11 @@ public class LoggedInBookingListFragment extends Fragment {
 
     Context myContext;
     Resources myResources;
+
+    Calendar calendar = Calendar.getInstance();
+    int calendarYear, calendarMonth, calendarDay;
+
+    DateTimeToString dateTimeToString;
 
     String defaultLogText = "No Records";
 
@@ -139,6 +146,8 @@ public class LoggedInBookingListFragment extends Fragment {
 
         initSharedPreferences();
 
+        dateTimeToString = new DateTimeToString();
+
         firebaseAuth = FirebaseAuth.getInstance();
         if(loggedIn) {
             firebaseUser = firebaseAuth.getCurrentUser();
@@ -184,6 +193,10 @@ public class LoggedInBookingListFragment extends Fragment {
         failedView.setLayoutManager(linearLayout5);
         adapter5 = new BookingAdapter(myContext, bookingList5);
         failedView.setAdapter(adapter5);
+
+        calendarYear = calendar.get(Calendar.YEAR);
+        calendarMonth = calendar.get(Calendar.MONTH);
+        calendarDay = calendar.get(Calendar.DAY_OF_MONTH);
 
         getBookings();
 
@@ -449,7 +462,20 @@ public class LoggedInBookingListFragment extends Fragment {
                 if(snapshot.exists()) {
                     for(DataSnapshot dataSnapshot : snapshot.getChildren()) {
                         Booking booking = new Booking(dataSnapshot);
-                        bookingList1.add(booking);
+
+                        dateTimeToString.setFormattedSchedule(booking.getSchedule());
+                        int year = Integer.parseInt(dateTimeToString.getYear());
+                        int month = Integer.parseInt(dateTimeToString.getMonthNo());
+                        int day = Integer.parseInt(dateTimeToString.getDay());
+
+                        if(year < calendarYear ||
+                                (month < calendarMonth && year == calendarYear) ||
+                                (day < calendarDay && month == calendarMonth && year == calendarYear)) {
+
+                            firebaseDatabase.getReference("users").child(userId).
+                                    child("bookingList").child(booking.getId()).child("status").setValue("Failed");
+                        }
+                        else bookingList1.add(booking);
                     }
                 }
                 success1 = true;
@@ -481,7 +507,20 @@ public class LoggedInBookingListFragment extends Fragment {
                 if(snapshot.exists()) {
                     for(DataSnapshot dataSnapshot : snapshot.getChildren()) {
                         Booking booking = new Booking(dataSnapshot);
-                        bookingList2.add(booking);
+
+                        dateTimeToString.setFormattedSchedule(booking.getSchedule());
+                        int year = Integer.parseInt(dateTimeToString.getYear());
+                        int month = Integer.parseInt(dateTimeToString.getMonthNo());
+                        int day = Integer.parseInt(dateTimeToString.getDay());
+
+                        if(year < calendarYear ||
+                                (month < calendarMonth && year == calendarYear) ||
+                                (day < calendarDay && month == calendarMonth && year == calendarYear)) {
+
+                            firebaseDatabase.getReference("users").child(userId).
+                                    child("bookingList").child(booking.getId()).child("status").setValue("Failed");
+                        }
+                        else bookingList2.add(booking);
                     }
                 }
                 success2 = true;

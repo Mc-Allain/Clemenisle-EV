@@ -76,9 +76,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class BookingActivity extends AppCompatActivity implements
         BookingTypeAdapter.OnItemClickListener, BookingStationAdapter.OnItemClickListener,
-        BookingRouteAdapter.OnItemClickListener, SelectedSpotAdapter.OnRemoveClickListener,
-        RecommendedSpotAdapter.OnButtonClickListener, AllSpotAdapter.OnButtonClickListener,
-        ScheduleTimeAdapter.OnItemClickListener {
+        BookingRouteAdapter.OnItemClickListener, BookingSpotAdapter.OnItemClickListener,
+        SelectedSpotAdapter.OnRemoveClickListener, RecommendedSpotAdapter.OnButtonClickListener,
+        AllSpotAdapter.OnButtonClickListener, ScheduleTimeAdapter.OnItemClickListener {
 
     private final static String firebaseURL = FirebaseURL.getFirebaseURL();
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance(firebaseURL);
@@ -448,6 +448,8 @@ public class BookingActivity extends AppCompatActivity implements
         nearSpotView.setLayoutManager(linearLayout3p1);
         nearSpotAdapter = new BookingSpotAdapter(myContext, nearSpots, bookingTypeRoute);
         nearSpotView.setAdapter(nearSpotAdapter);
+        nearSpotAdapter.setFromNearSpot(true);
+        nearSpotAdapter.setOnItemClickListener(this);
 
         LinearLayoutManager linearLayout4p1 =
                 new LinearLayoutManager(myContext, LinearLayoutManager.HORIZONTAL, false);
@@ -533,50 +535,8 @@ public class BookingActivity extends AppCompatActivity implements
                 checkRouteContinueButton();
             }
             else if(currentStep == 3) {
-                thirdConstraint.setVisibility(View.GONE);
-                fourthConstraint.setVisibility(View.VISIBLE);
-
                 spots = new ArrayList<>(bookingTypeRoute.getSpots());
-
-                LinearLayoutManager linearLayoutD1 =
-                        new LinearLayoutManager(myContext, LinearLayoutManager.HORIZONTAL, false);
-                spotView.setLayoutManager(linearLayoutD1);
-                BookingSpotAdapter bookingSpotAdapter = new BookingSpotAdapter(myContext, spots, bookingTypeRoute);
-                spotView.setAdapter(bookingSpotAdapter);
-
-                GridLayoutManager gridLayoutManager =
-                        new GridLayoutManager(myContext, selectedSpotColumnCount, GridLayoutManager.VERTICAL, false);
-                selectedSpotView.setLayoutManager(gridLayoutManager);
-                SelectedSpotAdapter selectedSpotAdapter = new SelectedSpotAdapter(myContext, spots, selectedSpotColumnCount);
-                selectedSpotView.setAdapter(selectedSpotAdapter);
-                selectedSpotAdapter.setOnRemoveClickListener(this);
-
-                if(spots.size() == 0) {
-                    tvLog4.setText(noSelectedSpotText);
-                    tvLog4.setVisibility(View.VISIBLE);
-                    reloadImage4.setVisibility(View.VISIBLE);
-                    selectedSpotView.setVisibility(View.INVISIBLE);
-
-                    routeSpotsLayout.setVisibility(View.GONE);
-                    endStationLayout.setVisibility(View.GONE);
-                }
-                else {
-                    tvLog4.setVisibility(View.GONE);
-                    reloadImage4.setVisibility(View.GONE);
-                    selectedSpotView.setVisibility(View.VISIBLE);
-
-                    routeSpotsLayout.setVisibility(View.VISIBLE);
-                    getNearStations();
-                }
-                progressBar4.setVisibility(View.GONE);
-
-                String spotCountText = defaultSpotCountText + spots.size();
-                tvSpotCount.setText(spotCountText);
-
-                tvActivityName.setText(listOfRouteActivityText);
-
-                getRecommendedSpots();
-                checkSelectedSpotContinueButton();
+                goToStep4FromStep3();
             }
             else if(currentStep == 4) {
                 fourthConstraint.setVisibility(View.GONE);
@@ -584,7 +544,7 @@ public class BookingActivity extends AppCompatActivity implements
 
                 if(rawScheduleDate.length() == 0) {
                     calendarYear = calendar.get(Calendar.YEAR);
-                    calendarMonth = calendar.get(Calendar.MONTH) + 1;
+                    calendarMonth = calendar.get(Calendar.MONTH);
                     calendarDay = calendar.get(Calendar.DAY_OF_MONTH);
                     rawScheduleDate = calendarYear + "-" + calendarMonth + "-" + calendarDay;
 
@@ -673,6 +633,8 @@ public class BookingActivity extends AppCompatActivity implements
                 fourthConstraint.setVisibility(View.GONE);
                 thirdConstraint.setVisibility(View.VISIBLE);
 
+                spots.clear();
+
                 if(tvShowRecommendedSpots.getText().equals(hideText))
                     transition4();
 
@@ -732,50 +694,8 @@ public class BookingActivity extends AppCompatActivity implements
         locateStartingStationImage.setOnClickListener(view -> openMap());
 
         customizeButton.setOnClickListener(view -> {
-            thirdConstraint.setVisibility(View.GONE);
-            fourthConstraint.setVisibility(View.VISIBLE);
-
             spots.clear();
-
-            LinearLayoutManager linearLayout =
-                    new LinearLayoutManager(myContext, LinearLayoutManager.HORIZONTAL, false);
-            spotView.setLayoutManager(linearLayout);
-            BookingSpotAdapter bookingSpotAdapter = new BookingSpotAdapter(myContext, spots, bookingTypeRoute);
-            spotView.setAdapter(bookingSpotAdapter);
-
-            GridLayoutManager gridLayoutManager =
-                    new GridLayoutManager(myContext, selectedSpotColumnCount, GridLayoutManager.VERTICAL, false);
-            selectedSpotView.setLayoutManager(gridLayoutManager);
-            SelectedSpotAdapter selectedSpotAdapter = new SelectedSpotAdapter(myContext, spots, selectedSpotColumnCount);
-            selectedSpotView.setAdapter(selectedSpotAdapter);
-            selectedSpotAdapter.setOnRemoveClickListener(this);
-
-            if(spots.size() == 0) {
-                tvLog4.setText(noSelectedSpotText);
-                tvLog4.setVisibility(View.VISIBLE);
-                reloadImage4.setVisibility(View.VISIBLE);
-                selectedSpotView.setVisibility(View.INVISIBLE);
-
-                routeSpotsLayout.setVisibility(View.GONE);
-                endStationLayout.setVisibility(View.GONE);
-            }
-            else {
-                tvLog4.setVisibility(View.GONE);
-                reloadImage4.setVisibility(View.GONE);
-                selectedSpotView.setVisibility(View.VISIBLE);
-
-                routeSpotsLayout.setVisibility(View.VISIBLE);
-                getNearStations();
-            }
-            progressBar4.setVisibility(View.GONE);
-
-            String spotCountText = defaultSpotCountText + spots.size();
-            tvSpotCount.setText(spotCountText);
-
-            tvActivityName.setText(listOfRouteActivityText);
-
-            getRecommendedSpots();
-            checkSelectedSpotContinueButton();
+            goToStep4FromStep3();
 
             if(currentStep < endStep) {
                 currentStep++;
@@ -860,6 +780,51 @@ public class BookingActivity extends AppCompatActivity implements
         return "Step " + currentStep + " out of " + endStep;
     }
 
+    private void goToStep4FromStep3() {
+        thirdConstraint.setVisibility(View.GONE);
+        fourthConstraint.setVisibility(View.VISIBLE);
+
+        LinearLayoutManager linearLayoutD1 =
+                new LinearLayoutManager(myContext, LinearLayoutManager.HORIZONTAL, false);
+        spotView.setLayoutManager(linearLayoutD1);
+        BookingSpotAdapter bookingSpotAdapter = new BookingSpotAdapter(myContext, spots, bookingTypeRoute);
+        spotView.setAdapter(bookingSpotAdapter);
+
+        GridLayoutManager gridLayoutManager =
+                new GridLayoutManager(myContext, selectedSpotColumnCount, GridLayoutManager.VERTICAL, false);
+        selectedSpotView.setLayoutManager(gridLayoutManager);
+        SelectedSpotAdapter selectedSpotAdapter = new SelectedSpotAdapter(myContext, spots, selectedSpotColumnCount);
+        selectedSpotView.setAdapter(selectedSpotAdapter);
+        selectedSpotAdapter.setOnRemoveClickListener(this);
+
+        if(spots.size() == 0) {
+            tvLog4.setText(noSelectedSpotText);
+            tvLog4.setVisibility(View.VISIBLE);
+            reloadImage4.setVisibility(View.VISIBLE);
+            selectedSpotView.setVisibility(View.INVISIBLE);
+
+            routeSpotsLayout.setVisibility(View.GONE);
+            endStationLayout.setVisibility(View.GONE);
+        }
+        else {
+            tvLog4.setVisibility(View.GONE);
+            reloadImage4.setVisibility(View.GONE);
+            selectedSpotView.setVisibility(View.VISIBLE);
+
+            routeSpotsLayout.setVisibility(View.VISIBLE);
+            getNearStations();
+        }
+        progressBar4.setVisibility(View.GONE);
+
+        String spotCountText = defaultSpotCountText + spots.size();
+        tvSpotCount.setText(spotCountText);
+
+        tvActivityName.setText(listOfRouteActivityText);
+
+        getRecommendedSpots();
+        checkSelectedSpotContinueButton();
+    }
+
     private void showDatePickerDialog() {
         calendarYear = calendar.get(Calendar.YEAR);
         calendarMonth = calendar.get(Calendar.MONTH);
@@ -868,15 +833,15 @@ public class BookingActivity extends AppCompatActivity implements
         DatePickerDialog datePickerDialog = new DatePickerDialog(myContext,
                 (datePicker, i, i1, i2) -> {
                     int year = datePicker.getYear();
-                    int month = datePicker.getMonth() + 1;
+                    int month = datePicker.getMonth();
                     int day = datePicker.getDayOfMonth();
                     rawScheduleDate = year + "-" + month + "-" + day;
 
                     dateTimeToString.setDateToSplit(rawScheduleDate);
                     tvScheduleDate2.setText(dateTimeToString.getDate());
                     if(year < calendarYear ||
-                            (month < calendarMonth + 1 && year == calendarYear) ||
-                            (day < calendarDay + scheduleDateAllowance && month == calendarMonth + 1 &&
+                            (month < calendarMonth && year == calendarYear) ||
+                            (day < calendarDay + scheduleDateAllowance && month == calendarMonth &&
                                     year == calendarYear)) {
                         tvScheduleDate2.setTextColor(colorRed);
                         tvCaption.setText(bookingScheduleInvalidDateCaptionText);
@@ -1851,6 +1816,11 @@ public class BookingActivity extends AppCompatActivity implements
     }
 
     @Override
+    public void addRoute(List<SimpleTouristSpot> spots, BookingTypeRoute bookingTypeRoute) {
+
+    }
+
+    @Override
     public void removeSpot(SimpleTouristSpot spot) {
         List<SimpleTouristSpot> newSpots = new ArrayList<>();
 
@@ -1950,6 +1920,15 @@ public class BookingActivity extends AppCompatActivity implements
         List<SimpleTouristSpot> newSpots = new ArrayList<>(spots);
         newSpots.add(spot);
         updateSelectedSpots(newSpots);
+
+        if(currentStep != 4) {
+            goToStep4FromStep3();
+
+            if(currentStep < endStep) {
+                currentStep++;
+                tvSteps.setText(stepText());
+            }
+        }
     }
 
     @Override

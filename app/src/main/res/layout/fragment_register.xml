@@ -273,10 +273,10 @@
 
                         <TextView
                             android:id="@+id/tvPWLength"
-                            android:layout_width="wrap_content"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="8dp"
-                            android:text="Must be at least 8 characters"
+                            android:text="Must be at least 6 characters"
                             app:layout_constraintBottom_toBottomOf="@+id/pwLengthCheckImage"
                             app:layout_constraintStart_toEndOf="@+id/pwLengthCheckImage"
                             app:layout_constraintTop_toTopOf="@+id/pwLengthCheckImage" />

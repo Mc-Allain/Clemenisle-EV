@@ -862,7 +862,7 @@ public class LoggedInUserProfileFragment extends Fragment {
 
         switch(sender) {
             case 1:
-                if(newPassword.length() >= 8) {
+                if(newPassword.length() >= 6) {
                     pwLengthCheckImage.setImageResource(R.drawable.ic_baseline_check_circle_24);
                     pwLengthCheckImage.setColorFilter(colorGreen);
                     tvPWLength.setTextColor(colorGreen);
@@ -978,7 +978,7 @@ public class LoggedInUserProfileFragment extends Fragment {
                 break;
         }
 
-        passwordUpdateButton.setEnabled(vPWL && vPWU && vPWLw && vPWN && vCPW);
+        passwordUpdateButton.setEnabled(vPWL && vPWU && vPWLw && vPWN && vPWS && vCPW);
     }
 
     private void updatePassword() {

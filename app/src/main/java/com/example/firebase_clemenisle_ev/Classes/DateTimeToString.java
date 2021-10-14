@@ -14,6 +14,10 @@ public class DateTimeToString {
     private String[] dateSplit;
     private String[] timeSplit;
 
+    String[] formattedSchedule;
+    String formattedDate;
+    private String formattedMonth = null;
+
     public DateTimeToString() {
         String[] scheduleSplit = currentDateAndTime.split(" ");
         this.dateSplit = scheduleSplit[0].split("-");
@@ -54,37 +58,37 @@ public class DateTimeToString {
             String month;
 
             switch (Integer.parseInt(dateSplit[1])) {
-                case 2:
+                case 1:
                     month = "February";
                     break;
-                case 3:
+                case 2:
                     month = "March";
                     break;
-                case 4:
+                case 3:
                     month = "April";
                     break;
-                case 5:
+                case 4:
                     month = "May";
                     break;
-                case 6:
+                case 5:
                     month = "June";
                     break;
-                case 7:
+                case 6:
                     month = "July";
                     break;
-                case 8:
+                case 7:
                     month = "August";
                     break;
-                case 9:
+                case 8:
                     month = "September";
                     break;
-                case 10:
+                case 9:
                     month = "October";
                     break;
-                case 11:
+                case 10:
                     month = "November";
                     break;
-                case 12:
+                case 11:
                     month = "December";
                     break;
                 default:
@@ -102,6 +106,11 @@ public class DateTimeToString {
 
     public String getDate() {
         if(dateSplit.length == 3) return getDay() + " " + getMonth() + " " + getYear();
+        return "Invalid Date";
+    }
+
+    public String getDateNo() {
+        if(dateSplit.length == 3) return getDay() + " " + getMonthNo() + " " + getYear();
         return "Invalid Date";
     }
 
@@ -153,5 +162,62 @@ public class DateTimeToString {
 
     public String getDateAndTime() {
         return getDate() + " " + getTime();
+    }
+
+    public void setFormattedSchedule(String formattedSchedule) {
+        this.formattedSchedule = formattedSchedule.split("\\|");
+        this.formattedDate = this.formattedSchedule[0].trim();
+        this.formattedMonth = formattedDate.split(" ")[1];
+
+        String year = formattedDate.split(" ")[2];
+        String day = formattedDate.split(" ")[0];
+
+        this.setDateToSplit(year + "-" + getMonthNoFromFormattedMonth() + "-" + day);
+    }
+
+    private String getMonthNoFromFormattedMonth() {
+        if(formattedMonth != null) {
+            int month;
+
+            switch (formattedMonth) {
+                case "February":
+                    month = 1;
+                    break;
+                case "March":
+                    month = 2;
+                    break;
+                case "April":
+                    month = 3;
+                    break;
+                case "May":
+                    month = 4;
+                    break;
+                case "June":
+                    month = 5;
+                    break;
+                case "July":
+                    month = 6;
+                    break;
+                case "August":
+                    month = 7;
+                    break;
+                case "September":
+                    month = 8;
+                    break;
+                case "October":
+                    month = 9;
+                    break;
+                case "November":
+                    month = 10;
+                    break;
+                case "December":
+                    month = 11;
+                    break;
+                default:
+                    month = 0;
+            }
+            return String.valueOf(month);
+        }
+        return "Invalid Date";
     }
 }

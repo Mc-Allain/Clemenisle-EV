@@ -68,6 +68,8 @@ public class RegisterFragment extends Fragment {
     boolean vPWL = false, vPWU = false, vPWLw = false, vPWN = false, vPWS = false, vCPW = false;
     boolean vEA = false;
 
+    int tryCount = 0;
+
     public int currentStep = 1, endStep = 3;
 
     boolean isRegistered = false, isAdded = false;
@@ -472,7 +474,6 @@ public class RegisterFragment extends Fragment {
         }
     }
 
-    int tryCount = 0;
     private void sendEmailVerificationLink() {
         firebaseUser.sendEmailVerification()
                 .addOnCompleteListener(task -> {
@@ -610,7 +611,7 @@ public class RegisterFragment extends Fragment {
 
         switch(sender) {
             case 1:
-                if(password.length() >= 8) {
+                if(password.length() >= 6) {
                     pwLengthCheckImage.setImageResource(R.drawable.ic_baseline_check_circle_24);
                     pwLengthCheckImage.setColorFilter(colorGreen);
                     tvPWLength.setTextColor(colorGreen);
@@ -726,7 +727,7 @@ public class RegisterFragment extends Fragment {
                 break;
         }
 
-        continueButton.setEnabled(vPWL && vPWU && vPWLw && vPWN && vCPW);
+        continueButton.setEnabled(vPWL && vPWU && vPWLw && vPWN && vPWS && vCPW);
     }
 
     private void checkEmailAddressInput() {

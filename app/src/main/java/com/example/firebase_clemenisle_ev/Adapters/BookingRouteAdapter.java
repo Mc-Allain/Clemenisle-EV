@@ -187,12 +187,17 @@ public class BookingRouteAdapter extends RecyclerView.Adapter<BookingRouteAdapte
     }
 
     @Override
-    public void itemClicked(List<SimpleTouristSpot> spots, BookingTypeRoute bookingTypeRoute) {
+    public void addRoute(List<SimpleTouristSpot> spots, BookingTypeRoute bookingTypeRoute) {
         if(spots.size() > 0 || !zeroCountDisable) {
             routeId = bookingTypeRoute.getId();
             onItemClickListener.sendRoute(bookingTypeRoute);
             notifyDataSetChanged();
         }
+    }
+
+    @Override
+    public void addSpot(SimpleTouristSpot spots) {
+
     }
 
     public interface OnItemClickListener {

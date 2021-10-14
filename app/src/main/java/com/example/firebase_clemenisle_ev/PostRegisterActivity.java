@@ -63,7 +63,6 @@ public class PostRegisterActivity extends AppCompatActivity {
     long currentTime, loginTime;
 
     Dialog dialog;
-
     EditText etEmailAddress;
     TextInputLayout tlEmailAddress;
     Button updateButton;
@@ -71,8 +70,22 @@ public class PostRegisterActivity extends AppCompatActivity {
 
     String userId;
     String newEmailAddress;
+    boolean vEA = false;
+    int tryCount = 0;
 
     boolean isVerified = false;
+
+    private void sendLoginPreferences() {
+        SharedPreferences sharedPreferences = myContext.getSharedPreferences(
+                "login", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        editor.putBoolean("loggedIn", false);
+        editor.putBoolean("remember", false);
+        editor.putString("emailAddress", null);
+        editor.putString("password", null);
+        editor.apply();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -285,7 +298,6 @@ public class PostRegisterActivity extends AppCompatActivity {
         dialogProgressBar.setVisibility(View.GONE);
     }
 
-    int tryCount = 0;
     private void sendEmailVerificationLink() {
         firebaseUser.sendEmailVerification()
                 .addOnCompleteListener(task -> {
@@ -306,8 +318,6 @@ public class PostRegisterActivity extends AppCompatActivity {
                 });
     }
 
-
-    boolean vEA = false;
     private void checkEmailAddressInput() {
         newEmailAddress = etEmailAddress.getText().toString();
 
@@ -392,6 +402,7 @@ public class PostRegisterActivity extends AppCompatActivity {
                         sendSharedPreferences();
 
                         Intent newIntent = new Intent(myContext, MainActivity.class);
+                        newIntent.putExtra("password", password);
                         startActivity(newIntent);
                         finishAffinity();
                         progressBar.setVisibility(View.GONE);
@@ -426,7 +437,10 @@ public class PostRegisterActivity extends AppCompatActivity {
         super.onDestroy();
         if(countDownTimer != null) countDownTimer.cancel();
         if(autoLoginTimer != null) autoLoginTimer.cancel();
-        if(!isVerified) firebaseAuth.signOut();
+        if(!isVerified) {
+            firebaseAuth.signOut();
+            sendLoginPreferences();
+        }
     }
 
     private void runTime() {
