@@ -267,42 +267,31 @@ public class MainActivity extends AppCompatActivity {
             int hrDifference;
 
             if(hasBookingToday(bookingDay, bookingMonth, bookingYear)) {
-                if(bookingMin > 0) {
-                    if(bookingHour == hour + range) {
-                        minDifference = (bookingMin + 60) - min;
-                    }
-                    else if (bookingHour == hour)  minDifference = bookingMin - min;
-                    else {
-                        hrDifference = bookingHour - hour;
-                        if(min < bookingMin) minDifference = bookingMin - min;
-                        else {
-                            hrDifference--;
-                            minDifference = 60 - (min - bookingMin);
-                        }
-                        initNotificationInHours(booking, hourArray, hrDifference, minArray, minDifference, sec);
-                        return;
-                    }
-                    initNotificationInMinutes(booking, minArray, minDifference, sec);
-                }
+                if(bookingHour == hour + range) minDifference = (bookingMin + 60) - min;
+                else if (bookingHour == hour)  minDifference = bookingMin - min;
                 else {
-                    if(bookingHour > hour) {
-                        hrDifference = bookingHour - hour;
-                        minDifference = 60 - min;
-                        initNotificationInHours(booking, hourArray, hrDifference, minArray, minDifference, sec);
+                    hrDifference = bookingHour - hour;
+                    if(min < bookingMin) minDifference = bookingMin - min;
+                    else {
+                        minDifference = 60 - (min - bookingMin);
+                        if(minDifference < 60) hrDifference--;
+                        else minDifference = 0;
                     }
+
+                    initNotificationInHours(booking, hourArray, hrDifference, minArray, minDifference, sec);
+                    return;
                 }
+                if(minDifference == 60) minDifference = 0;
+                initNotificationInMinutes(booking, minArray, minDifference, sec);
             }
             else if(hasBookingTomorrow(bookingDay, bookingMonth, bookingYear)) {
                 hrDifference = (bookingHour + 24) - hour;
-
-                if(bookingMin > 0) {
-                    if(min < bookingMin) minDifference = bookingMin - min;
-                    else {
-                        hrDifference--;
-                        minDifference = 60 - (min - bookingMin);
-                    }
+                if(min < bookingMin) minDifference = bookingMin - min;
+                else {
+                    minDifference = 60 - (min - bookingMin);
+                    if(minDifference < 60) hrDifference--;
+                    else minDifference = 0;
                 }
-                else minDifference = 60 - min;
                 initNotificationInHours(booking, hourArray, hrDifference, minArray, minDifference, sec);
             }
         }
@@ -312,26 +301,26 @@ public class MainActivity extends AppCompatActivity {
                                          List<String> minArray, int minDifference, int sec) {
         if(hrDifference > 0 && hrDifference <= 23) {
             if(hourArray.contains(String.valueOf(hrDifference)) &&
-                minArray.contains(String.valueOf(minDifference)) && sec <= 5) {
+                    (minArray.contains(String.valueOf(minDifference)) || minDifference == 0) && sec >= 55) {
                 if(hrDifference == 1) showUpcomingBookingNotification(booking, hrDifference, "hour");
                 else showUpcomingBookingNotification(booking, hrDifference, "hours");
             }
         }
         else if(hrDifference == 24) {
-            if(minArray.contains(String.valueOf(minDifference)) && sec <= 5)
+            if((minArray.contains(String.valueOf(minDifference)) || minDifference == 0) && sec >= 55)
                 showUpcomingBookingNotification(booking, 1, "day");
         }
     }
 
-    private void initNotificationInMinutes(Booking booking, List<String> minArray,  int minDifference, int sec) {
+    private void initNotificationInMinutes(Booking booking, List<String> minArray, int minDifference, int sec) {
         if(minDifference > 0 && minDifference <= 59) {
-            if(minArray.contains(String.valueOf(minDifference)) && sec <= 5) {
+            if(minArray.contains(String.valueOf(minDifference)) && sec >= 55) {
                 if(minDifference == 1) showUpcomingBookingNotification(booking, minDifference, "minute");
                 else showUpcomingBookingNotification(booking, minDifference, "minutes");
             }
         }
-        else if(minDifference == 60) {
-            if(sec <= 5) showUpcomingBookingNotification(booking, 1, "hour");
+        else if(minDifference == 0) {
+            if(sec >= 55) showUpcomingBookingNotification(booking, 1, "hour");
         };
     }
 
@@ -457,7 +446,7 @@ public class MainActivity extends AppCompatActivity {
                         .setSmallIcon(R.drawable.front_icon).setLargeIcon(icon)
                         .setContentTitle("Clemenisle-EV Booking Reminder")
                         .setContentText("You only have less than " + value + " " + unit +
-                        " left before the schedule of your Booking (Id: " + booking.getId() +").")
+                        " before the schedule of your Booking (Id: " + booking.getId() +").")
                         .setCategory(NotificationCompat.CATEGORY_REMINDER)
                         .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                         .setDefaults(NotificationCompat.DEFAULT_ALL)
