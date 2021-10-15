@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
@@ -38,6 +37,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:layout_marginBottom="8dp"
+            android:fontFamily="@font/montserrat"
             android:text="Recommended Route(s): 0"
             android:textColor="@color/black"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -52,6 +52,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
+            android:fontFamily="@font/montserrat"
             android:text="Station Name"
             android:textColor="@color/black"
             android:textStyle="bold"
@@ -64,6 +65,7 @@
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:layout_marginEnd="8dp"
+            android:fontFamily="@font/montserrat"
             android:gravity="center_vertical"
             android:text="Locate"
             android:textColor="@color/blue"

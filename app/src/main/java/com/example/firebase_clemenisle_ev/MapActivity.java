@@ -4,11 +4,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.transition.ChangeBounds;
 import android.transition.Transition;
 import android.transition.TransitionManager;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 
 import com.example.firebase_clemenisle_ev.Adapters.MapTabFragmentAdapter;
 import com.example.firebase_clemenisle_ev.Classes.MapCoordinates;
@@ -25,6 +29,7 @@ import java.util.List;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.FragmentManager;
 import androidx.viewpager2.widget.ViewPager2;
 
@@ -102,6 +107,23 @@ implements MapTouristSpotFragment.OnComboBoxClickListener,
 
         ConstraintSet constraintSet = new ConstraintSet();
         constraintSet.clone(constraintLayout);
+
+        Typeface typeface = ResourcesCompat.getFont(myContext, R.font.montserrat);
+
+        ViewGroup viewGroup = (ViewGroup) tabLayout.getChildAt(0);
+        int tabCount = viewGroup.getChildCount();
+
+        for(int i = 0; i < tabCount; i++) {
+            ViewGroup viewGroup1 = (ViewGroup) viewGroup.getChildAt(i);
+            int tabChildrenCount = viewGroup1.getChildCount();
+
+            for(int j = 0; j < tabChildrenCount; j++) {
+                View view = viewGroup1.getChildAt(j);
+                if(view instanceof TextView) {
+                    ((TextView) view).setTypeface(typeface);
+                }
+            }
+        }
 
         fab.setOnClickListener(view -> {
             fab.setEnabled(false);
