@@ -1256,10 +1256,11 @@ public class BookingActivity extends AppCompatActivity implements
                     usersRef = null;
 
                     String yearId = dateTimeToString.getYear2Suffix();
-                    String monthId = dateTimeToString.getMonthNo();
-                    if(monthId.length() == 1) monthId += "0" + monthId;
+                    int month = Integer.parseInt(dateTimeToString.getMonthNo()) + 1;
+                    String monthId = String.valueOf(month);
+                    if(monthId.length() == 1) monthId = "0" + monthId;
                     String dayId = dateTimeToString.getDay();
-                    if(dayId.length() == 1) dayId += "0" + dayId;
+                    if(dayId.length() == 1) dayId = "0" + dayId;
 
                     String bookingId = "B" + yearId + "-" + monthId + dayId;
 
