@@ -18,6 +18,10 @@ public class DateTimeToString {
     String formattedDate;
     private String formattedMonth = null;
 
+    String formattedTime;
+    private int _12HrFormat;
+    private String timeMode = null;
+
     public DateTimeToString() {
         String[] scheduleSplit = currentDateAndTime.split(" ");
         this.dateSplit = scheduleSplit[0].split("-");
@@ -114,7 +118,7 @@ public class DateTimeToString {
         return "Invalid Date";
     }
 
-    private String processHour(int mode) {
+    private String formattedHour(int index) {
         if(timeSplit.length == 3) {
             int hour = Integer.parseInt(timeSplit[0]);
             String time = "AM";
@@ -130,14 +134,18 @@ public class DateTimeToString {
                     hour = 12;
                 }
             }
-            if(mode == 0) return String.valueOf(hour);
-            else if(mode == 1) return time;
+            if(index == 0) return String.valueOf(hour);
+            else if(index == 1) return time;
         }
         return "Invalid Time";
     }
 
+    public String getRawHour() {
+        return timeSplit[0];
+    }
+
     public String getHour() {
-        return processHour(0);
+        return formattedHour(0);
     }
 
     public String getMin() {
@@ -151,7 +159,7 @@ public class DateTimeToString {
     }
 
     public String getTimeMode() {
-        if(timeSplit.length == 3) return processHour(1);
+        if(timeSplit.length == 3) return formattedHour(1);
         return "Invalid Time";
     }
 
@@ -173,6 +181,27 @@ public class DateTimeToString {
         String day = formattedDate.split(" ")[0];
 
         this.setDateToSplit(year + "-" + getMonthNoFromFormattedMonth() + "-" + day);
+
+        if(this.formattedSchedule.length > 0) {
+            this.formattedTime = this.formattedSchedule[1].trim();
+            this._12HrFormat = Integer.parseInt(formattedTime.split(":")[0]);
+            this.timeMode = formattedTime.split(" ")[1];
+
+            String minute = formattedTime.split(":")[1];
+            
+            this.setTimeToSplit(
+                    getRawHourFromFormattedHour() + ":" +
+                            minute.split(" ")[0] + ":00"
+            );
+        }
+    }
+
+    private String getRawHourFromFormattedHour() {
+        if(_12HrFormat > 0) {
+            if(timeMode.equals("PM")) _12HrFormat += 12;
+            return String.valueOf(_12HrFormat);
+        }
+        return "Invalid Time";
     }
 
     private String getMonthNoFromFormattedMonth() {

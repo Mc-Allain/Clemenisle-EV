@@ -64,7 +64,7 @@ public class LoggedInUserProfileFragment extends Fragment {
     FirebaseUser firebaseUser;
 
     ProgressBar progressBar;
-    TextView tvGreet;
+    TextView tvGreet, tvGreet2;
 
     ConstraintLayout fullNameLayout;
     TextView tvFullName2;
@@ -89,11 +89,8 @@ public class LoggedInUserProfileFragment extends Fragment {
     int colorGreen, colorRed, colorInitial, colorBlack, colorWhite;
     ColorStateList cslInitial, cslBlue, cslRed;
 
-    String defaultGreetText = "<font face='sans_seif'>こんにちは (Hello)<br>"+
-            "Welcome to Clemenisle-EV</font><br>"+
-            "<big>iBooking</big>",
-            lastName, firstName, middleName;
-    String emailAddress;
+    String defaultGreetText = "こんにちは (Hello)\nWelcome to Clemenisle-EV",
+            lastName, firstName, middleName, emailAddress;
 
     User user;
 
@@ -164,8 +161,10 @@ public class LoggedInUserProfileFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_logged_in_user_profile, container, false);
 
-        fullNameLayout = view.findViewById(R.id.fullNameLayout);
         tvGreet = view.findViewById(R.id.tvGreet);
+        tvGreet2 = view.findViewById(R.id.tvGreet2);
+
+        fullNameLayout = view.findViewById(R.id.fullNameLayout);
         tvFullName2 = view.findViewById(R.id.tvFullName2);
         updateFullNameImage = view.findViewById(R.id.updateFullNameImage);
 
@@ -1110,8 +1109,10 @@ public class LoggedInUserProfileFragment extends Fragment {
         else visitedSpotView.setVisibility(View.GONE);
         tvVisitedSpotBadge.setText(String.valueOf(visitedSpots.size()));
 
-        tvGreet.setText(fromHtml(defaultGreetText));
+        tvGreet.setText(defaultGreetText);
         tvGreet.setTextColor(colorWhite);
+        tvGreet.setGravity(Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL);
+        tvGreet2.setVisibility(View.VISIBLE);
 
         progressBar.setVisibility(View.GONE);
     }
@@ -1161,6 +1162,8 @@ public class LoggedInUserProfileFragment extends Fragment {
     private void errorLoading(String error) {
         tvGreet.setText(error);
         tvGreet.setTextColor(colorRed);
+        tvGreet.setGravity(Gravity.CENTER);
+        tvGreet2.setVisibility(View.GONE);
 
         likedSpots.clear();
         likedSpotAdapter.notifyDataSetChanged();

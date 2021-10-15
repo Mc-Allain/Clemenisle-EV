@@ -11,10 +11,12 @@
         android:theme="@style/Theme.FirebaseClemenisleEV">
         <activity
             android:name=".AboutActivity"
-            android:exported="true" />
+            android:exported="true"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".BookingActivity"
-            android:exported="true" />
+            android:exported="true"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".SplashScreenActivity"
             android:exported="true"

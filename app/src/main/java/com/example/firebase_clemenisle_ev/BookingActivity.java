@@ -400,6 +400,8 @@ public class BookingActivity extends AppCompatActivity implements
         colorBlue = myResources.getColor(R.color.blue);
         colorInitial = myResources.getColor(R.color.initial);
 
+        tvSteps.setText(getStepText());
+
         initBookingInformationDialog();
         initAllSpotsDialog();
 
@@ -598,7 +600,7 @@ public class BookingActivity extends AppCompatActivity implements
 
                 if(currentStep < endStep) {
                 currentStep++;
-                tvSteps.setText(stepText());
+                tvSteps.setText(getStepText());
             }
         });
 
@@ -680,7 +682,7 @@ public class BookingActivity extends AppCompatActivity implements
 
             if(currentStep > 1) {
                 currentStep--;
-                tvSteps.setText(stepText());
+                tvSteps.setText(getStepText());
             }
         });
 
@@ -699,7 +701,7 @@ public class BookingActivity extends AppCompatActivity implements
 
             if(currentStep < endStep) {
                 currentStep++;
-                tvSteps.setText(stepText());
+                tvSteps.setText(getStepText());
             }
         });
 
@@ -776,7 +778,7 @@ public class BookingActivity extends AppCompatActivity implements
         });
     }
 
-    private String stepText() {
+    private String getStepText() {
         return "Step " + currentStep + " out of " + endStep;
     }
 
@@ -1525,6 +1527,7 @@ public class BookingActivity extends AppCompatActivity implements
                 }
                 else {
                     setLogText4p3(noRouteLogText);
+                    if(currentStep >= 4) errorLoading4p3();
                 }
             }
 
@@ -1537,6 +1540,7 @@ public class BookingActivity extends AppCompatActivity implements
                 ).show();
 
                 setLogText4p3(error.toString());
+                if(currentStep >= 4) errorLoading4p3();
             }
         });
     }
@@ -1927,7 +1931,7 @@ public class BookingActivity extends AppCompatActivity implements
 
             if(currentStep < endStep) {
                 currentStep++;
-                tvSteps.setText(stepText());
+                tvSteps.setText(getStepText());
             }
         }
     }
@@ -2348,8 +2352,19 @@ public class BookingActivity extends AppCompatActivity implements
     private void finishLoading4p3() {
         searchTouristSpot();
 
+        int targetStep = 4;
+        if(!areSelectedSpotsExisting()) {
+            checkSelectedSpotContinueButton();
+            if(currentStep > targetStep) rebootStep(targetStep);
+        }
+
+        List<String> touristSpotsText = new ArrayList<>();
+        for(SimpleTouristSpot touristSpot : touristSpotList) {
+            touristSpotsText.add(touristSpot.getName());
+        }
+
         ArrayAdapter<String> arrayAdapter =
-                new ArrayAdapter<>(myContext, R.layout.simple_list_item_layout, endStationsText);
+                new ArrayAdapter<>(myContext, R.layout.simple_list_item_layout, touristSpotsText);
         acSearch.setAdapter(arrayAdapter);
 
         tlSearch.setVisibility(View.VISIBLE);
@@ -2359,13 +2374,41 @@ public class BookingActivity extends AppCompatActivity implements
         touristSpotView.setVisibility(View.VISIBLE);
     }
 
+    private boolean areSelectedSpotsExisting() {
+        boolean result = true;
+
+        if(spots.size() > 0) {
+            for(SimpleTouristSpot selectedSpot : spots) {
+                if(!isInTouristSpots(selectedSpot)) {
+                    removeSpot(selectedSpot);
+                    result = false;
+                }
+            }
+        }
+        return result;
+    }
+
+    private boolean isInTouristSpots(SimpleTouristSpot targetSpot) {
+        for (SimpleTouristSpot touristSpot : touristSpotList) {
+            if (touristSpot.getId().equals(targetSpot.getId())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private void setLogText4p3(String value) {
         touristSpotList.clear();
         copy.clear();
         allSpotAdapter.notifyDataSetChanged();
 
+        List<String> touristSpotsText = new ArrayList<>();
+        for(SimpleTouristSpot touristSpot : touristSpotList) {
+            touristSpotsText.add(touristSpot.getName());
+        }
+
         ArrayAdapter<String> arrayAdapter =
-                new ArrayAdapter<>(myContext, R.layout.simple_list_item_layout, endStationsText);
+                new ArrayAdapter<>(myContext, R.layout.simple_list_item_layout, touristSpotsText);
         acSearch.setAdapter(arrayAdapter);
 
         tlSearch.setVisibility(View.GONE);
@@ -2374,6 +2417,21 @@ public class BookingActivity extends AppCompatActivity implements
         reloadImage4p3.setVisibility(View.VISIBLE);
         progressBar4p3.setVisibility(View.GONE);
         touristSpotView.setVisibility(View.INVISIBLE);
+    }
+
+    private void errorLoading4p3() {
+        int targetStep = 4;
+        removeAllSelectedSpots();
+        checkSelectedSpotContinueButton();
+        if(currentStep > targetStep) rebootStep(targetStep);
+    }
+
+    private void removeAllSelectedSpots() {
+        if(spots.size() > 0) {
+            for(SimpleTouristSpot selectedSpot : spots) {
+                removeSpot(selectedSpot);
+            }
+        }
     }
 
     private void finishLoading5() {

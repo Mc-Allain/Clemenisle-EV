@@ -117,7 +117,7 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="24dp"
                 android:fontFamily="@font/montserrat"
-                android:text="Step 1 out of 5"
+                android:text="Step 1 out of 6"
                 android:textColor="@color/black"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

@@ -129,7 +129,7 @@ public class RegisterFragment extends Fragment {
         cslBlue = ColorStateList.valueOf(myResources.getColor(R.color.blue));
         cslRed = ColorStateList.valueOf(myResources.getColor(R.color.red));
 
-        tvSteps.setText(stepText());
+        tvSteps.setText(getStepText());
 
         continueButton.setOnClickListener(view1 -> {
             if(currentStep == 1) {
@@ -161,7 +161,7 @@ public class RegisterFragment extends Fragment {
 
             if(currentStep < endStep) {
                 currentStep++;
-                tvSteps.setText(stepText());
+                tvSteps.setText(getStepText());
             }
         });
 
@@ -224,7 +224,7 @@ public class RegisterFragment extends Fragment {
 
             if(currentStep > 1) {
                 currentStep--;
-                tvSteps.setText(stepText());
+                tvSteps.setText(getStepText());
             }
         });
 
@@ -411,7 +411,7 @@ public class RegisterFragment extends Fragment {
         return view;
     }
 
-    private String stepText() {
+    private String getStepText() {
         return "Step " + currentStep + " out of " + endStep;
     }
 

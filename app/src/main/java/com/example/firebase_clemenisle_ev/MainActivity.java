@@ -2,14 +2,22 @@ package com.example.firebase_clemenisle_ev;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Gravity;
@@ -23,19 +31,39 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.firebase_clemenisle_ev.Classes.Booking;
+import com.example.firebase_clemenisle_ev.Classes.DateTimeToString;
+import com.example.firebase_clemenisle_ev.Classes.FirebaseURL;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
 
 public class MainActivity extends AppCompatActivity {
 
+    private final static String firebaseURL = FirebaseURL.getFirebaseURL();
+    FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance(firebaseURL);
     FirebaseAuth firebaseAuth;
     FirebaseUser firebaseUser;
 
@@ -75,6 +103,18 @@ public class MainActivity extends AppCompatActivity {
     boolean vCPWL = false, vCPWU = false, vCPWLw = false, vCPWN = false, vCPWS = false;
 
     boolean isPasswordUpdate = false;
+
+    Calendar calendar = Calendar.getInstance();
+    int calendarYear, calendarMonth, calendarDay;
+
+    List<Booking> bookingList1 = new ArrayList<>();
+    List<Booking> bookingList2 = new ArrayList<>();
+
+    boolean success1, success2;
+
+    DateTimeToString dateTimeToString;
+
+    CountDownTimer notificationTimer;
 
     private void initSharedPreferences() {
         SharedPreferences sharedPreferences = getSharedPreferences("login", Context.MODE_PRIVATE);
@@ -144,8 +184,11 @@ public class MainActivity extends AppCompatActivity {
         }
 
         navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.fragmentContainerView);
-        mainNavCtrlr = navHostFragment.getNavController();
+        if(navHostFragment != null) mainNavCtrlr = navHostFragment.getNavController();
         NavigationUI.setupWithNavController(mainNav, mainNavCtrlr);
+
+        dateTimeToString = new DateTimeToString();
+        if(userId != null) getBooking();
 
         fab = findViewById(R.id.floatingActionButton);
         fab.setColorFilter(getResources().getColor(R.color.white));
@@ -160,6 +203,286 @@ public class MainActivity extends AppCompatActivity {
             }
             startActivity(newIntent);
         });
+    }
+
+    private void startTimer() {
+        if(notificationTimer != null) notificationTimer.cancel();
+        notificationTimer = new CountDownTimer(5000, 1000) {
+            @Override
+            public void onTick(long l) {}
+
+            @Override
+            public void onFinish() {
+                for(Booking booking : bookingList1) {
+                    checkBooking(booking);
+                }
+                for(Booking booking : bookingList2) {
+                    checkBooking(booking);
+                }
+
+                start();
+            }
+        }.start();
+    }
+
+    private void checkBooking(Booking booking) {
+        dateTimeToString.setFormattedSchedule(booking.getSchedule());
+        int bookingYear = Integer.parseInt(dateTimeToString.getYear());
+        int bookingMonth = Integer.parseInt(dateTimeToString.getMonthNo());
+        int bookingDay = Integer.parseInt(dateTimeToString.getDay());
+
+        calendarYear = calendar.get(Calendar.YEAR);
+        calendarMonth = calendar.get(Calendar.MONTH);
+        calendarDay = calendar.get(Calendar.DAY_OF_MONTH);
+
+        if(bookingYear < calendarYear ||
+                (bookingMonth < calendarMonth && bookingYear == calendarYear) ||
+                (bookingDay < calendarDay && bookingMonth == calendarMonth && bookingYear == calendarYear)) {
+
+            firebaseDatabase.getReference("users").child(userId).
+                    child("bookingList").child(booking.getId()).child("status").setValue("Failed");
+        }
+
+        checkingForBookingNotification(booking, bookingDay, bookingMonth, bookingYear);
+    }
+
+    private void checkingForBookingNotification(Booking booking,
+                                                 int bookingDay, int bookingMonth, int bookingYear) {
+
+        SimpleDateFormat sdf = new SimpleDateFormat("H:mm:ss");
+        String currentTime = sdf.format(new Date().getTime());
+        int hour = Integer.parseInt(currentTime.split(":")[0]);
+        int min = Integer.parseInt(currentTime.split(":")[1]);
+        int sec = Integer.parseInt(currentTime.split(":")[2]);
+
+        int bookingHour = Integer.parseInt(dateTimeToString.getRawHour());
+        int bookingMin = Integer.parseInt(dateTimeToString.getMin());
+
+        if(booking.getStatus().equals("Booked")) {
+            List<String> hourArray = Arrays.asList("1", "8", "16");
+            List<String> minArray = Arrays.asList("1", "5", "10", "15", "20", "30", "45");
+
+            int range = 1;
+            int minDifference;
+            int hrDifference;
+
+            if(hasBookingToday(bookingDay, bookingMonth, bookingYear)) {
+                if(bookingMin > 0) {
+                    if(bookingHour == hour + range) {
+                        minDifference = (bookingMin + 60) - min;
+                    }
+                    else if (bookingHour == hour)  minDifference = bookingMin - min;
+                    else {
+                        hrDifference = bookingHour - hour;
+                        if(min < bookingMin) minDifference = bookingMin - min;
+                        else {
+                            hrDifference--;
+                            minDifference = 60 - (min - bookingMin);
+                        }
+                        initNotificationInHours(booking, hourArray, hrDifference, minArray, minDifference, sec);
+                        return;
+                    }
+                    initNotificationInMinutes(booking, minArray, minDifference, sec);
+                }
+                else {
+                    if(bookingHour > hour) {
+                        hrDifference = bookingHour - hour;
+                        minDifference = 60 - min;
+                        initNotificationInHours(booking, hourArray, hrDifference, minArray, minDifference, sec);
+                    }
+                }
+            }
+            else if(hasBookingTomorrow(bookingDay, bookingMonth, bookingYear)) {
+                hrDifference = (bookingHour + 24) - hour;
+
+                if(bookingMin > 0) {
+                    if(min < bookingMin) minDifference = bookingMin - min;
+                    else {
+                        hrDifference--;
+                        minDifference = 60 - (min - bookingMin);
+                    }
+                }
+                else minDifference = 60 - min;
+                initNotificationInHours(booking, hourArray, hrDifference, minArray, minDifference, sec);
+            }
+        }
+    }
+
+    private void initNotificationInHours(Booking booking, List<String> hourArray, int hrDifference,
+                                         List<String> minArray, int minDifference, int sec) {
+        if(hrDifference > 0 && hrDifference <= 23) {
+            if(hourArray.contains(String.valueOf(hrDifference)) &&
+                minArray.contains(String.valueOf(minDifference)) && sec <= 5) {
+                if(hrDifference == 1) showUpcomingBookingNotification(booking, hrDifference, "hour");
+                else showUpcomingBookingNotification(booking, hrDifference, "hours");
+            }
+        }
+        else if(hrDifference == 24) {
+            if(minArray.contains(String.valueOf(minDifference)) && sec <= 5)
+                showUpcomingBookingNotification(booking, 1, "day");
+        }
+    }
+
+    private void initNotificationInMinutes(Booking booking, List<String> minArray,  int minDifference, int sec) {
+        if(minDifference > 0 && minDifference <= 59) {
+            if(minArray.contains(String.valueOf(minDifference)) && sec <= 5) {
+                if(minDifference == 1) showUpcomingBookingNotification(booking, minDifference, "minute");
+                else showUpcomingBookingNotification(booking, minDifference, "minutes");
+            }
+        }
+        else if(minDifference == 60) {
+            if(sec <= 5) showUpcomingBookingNotification(booking, 1, "hour");
+        };
+    }
+
+    private boolean hasBookingToday(int bookingDay, int bookingMonth, int bookingYear) {
+        return (bookingDay == calendarDay && bookingMonth == calendarMonth && bookingYear == calendarYear);
+    }
+
+    private boolean hasBookingTomorrow(int bookingDay, int bookingMonth, int bookingYear) {
+        return (bookingDay == calendarDay + 1 && bookingMonth == calendarMonth && bookingYear == calendarYear);
+    }
+
+    private void getBooking() {
+        Query booking1Query = firebaseDatabase.getReference("users").
+                child(userId).child("bookingList").orderByChild("status").equalTo("Processing");
+
+        booking1Query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                bookingList1.clear();
+
+                if(snapshot.exists()) {
+                    for(DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        Booking booking = new Booking(dataSnapshot);
+                        bookingList1.add(booking);
+                    }
+                }
+                success1 = true;
+                finishLoading();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(
+                        myContext,
+                        error.toString(),
+                        Toast.LENGTH_SHORT
+                ).show();
+
+                success1 = false;
+                errorLoading(error.toString());
+            }
+        });
+
+        Query booking2Query = firebaseDatabase.getReference("users").
+                child(userId).child("bookingList").orderByChild("status").equalTo("Booked");
+
+        success2 = false;
+        booking2Query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                bookingList2.clear();
+
+                if(snapshot.exists()) {
+                    for(DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        Booking booking = new Booking(dataSnapshot);
+                        bookingList2.add(booking);
+                    }
+                }
+                success2 = true;
+                finishLoading();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(
+                        myContext,
+                        error.toString(),
+                        Toast.LENGTH_SHORT
+                ).show();
+
+                success2 = false;
+                errorLoading(error.toString());
+            }
+        });
+    }
+
+    private void finishLoading() {
+        if(success1 && success2) {
+            Collections.reverse(bookingList1);
+            Collections.reverse(bookingList2);
+            startTimer();
+        }
+    }
+
+    private void errorLoading(String error) {
+        if(!(success1 && success2)) {
+            bookingList1.clear();
+            bookingList2.clear();
+            startTimer();
+
+            Toast.makeText(
+                    myContext,
+                    error,
+                    Toast.LENGTH_LONG
+            ).show();
+        }
+    }
+
+    private NotificationManager getNotificationManager(String channelId) {
+        NotificationManager notificationManager =
+                (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel notificationChannel =
+                    new NotificationChannel(
+                            channelId,
+                            "Clemenisle-EV",
+                            NotificationManager.IMPORTANCE_HIGH
+                    );
+            notificationChannel.setDescription("Booking Notification");
+            notificationManager.createNotificationChannel(notificationChannel);
+        }
+
+        return notificationManager;
+    }
+
+    private void showUpcomingBookingNotification(Booking booking, int value, String unit) {
+        NotificationManager notificationManager = getNotificationManager(booking.getId());
+        Bitmap icon = BitmapFactory.decodeResource(myResources, R.drawable.front_icon);
+
+        NotificationCompat.Builder builder =
+                new NotificationCompat.Builder(myContext, booking.getId())
+                        .setSmallIcon(R.drawable.front_icon).setLargeIcon(icon)
+                        .setContentTitle("Clemenisle-EV Booking Reminder")
+                        .setContentText("You only have less than " + value + " " + unit +
+                        " left before the schedule of your Booking (Id: " + booking.getId() +").")
+                        .setCategory(NotificationCompat.CATEGORY_REMINDER)
+                        .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                        .setDefaults(NotificationCompat.DEFAULT_ALL)
+                        .setAutoCancel(false);
+
+        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
+            builder.setPriority(Notification.PRIORITY_HIGH);
+
+        Intent notificationIntent = new Intent(myContext, RouteActivity.class);
+        notificationIntent.putExtra("bookingId", booking.getId());
+        notificationIntent.putExtra("schedule", booking.getSchedule());
+        notificationIntent.putExtra("startStationId", booking.getStartStation().getId());
+        notificationIntent.putExtra("startStationName", booking.getStartStation().getName());
+        notificationIntent.putExtra("endStationId", booking.getEndStation().getId());
+        notificationIntent.putExtra("endStationName", booking.getEndStation().getName());
+        notificationIntent.putExtra("status", booking.getStatus());
+        notificationIntent.putExtra("typeName", booking.getBookingType().getName());
+        notificationIntent.putExtra("price", "₱" + booking.getBookingType().getPrice());
+
+        PendingIntent pendingIntent = PendingIntent.getActivity(
+                myContext, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT
+        );
+        builder.setContentIntent(pendingIntent);
+        builder.setFullScreenIntent(pendingIntent, true);
+        notificationManager.notify(1, builder.build());
     }
 
     @Override

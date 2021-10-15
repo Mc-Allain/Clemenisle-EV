@@ -187,21 +187,48 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <TextView
-                    android:id="@+id/tvGreet"
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/fadeLayout"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:background="@drawable/custom_fade_background"
-                    android:fontFamily="@font/fredoka_one"
-                    android:gravity="center_horizontal|fill_vertical"
-                    android:text="こんにちは (Hello)\nWelcome to Clemenisle-EV\niBooking"
-                    android:textColor="@color/white"
-                    android:textSize="26sp"
-                    android:textStyle="bold"
-                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintBottom_toBottomOf="@+id/coverImage"
                     app:layout_constraintEnd_toEndOf="@+id/coverImage"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/coverImage" />
+                    app:layout_constraintStart_toStartOf="@+id/coverImage"
+                    app:layout_constraintTop_toTopOf="@+id/coverImage">
+
+                    <TextView
+                        android:id="@+id/tvGreet"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:layout_marginTop="32dp"
+                        android:fontFamily="@font/montserrat"
+                        android:gravity="bottom|center_horizontal"
+                        android:text="こんにちは (Hello)\nWelcome to Clemenisle-EV"
+                        android:textColor="@color/white"
+                        android:textSize="26sp"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toTopOf="@+id/tvGreet2"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/tvGreet2"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:fontFamily="@font/fredoka_one"
+                        android:gravity="center_horizontal|top"
+                        android:text="iBooking"
+                        android:textColor="@color/white"
+                        android:textSize="26sp"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/tvGreet" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -274,6 +301,7 @@
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent" />
+
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
