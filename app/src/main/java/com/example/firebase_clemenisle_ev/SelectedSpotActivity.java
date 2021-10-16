@@ -113,7 +113,11 @@ public class SelectedSpotActivity extends AppCompatActivity {
     Handler optionHandler = new Handler();
     Runnable optionRunnable;
 
-    String inputComment;
+    String inputComment, commentValue;
+    boolean isUserCommentExist = true;
+
+    long deactivatePressedTime;
+    Toast deactivateToast;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -296,7 +300,10 @@ public class SelectedSpotActivity extends AppCompatActivity {
             }
         });
 
-        sendImage.setOnClickListener(view -> setComment());
+        sendImage.setOnClickListener(view -> {
+            if(isUserCommentExist) updateComment();
+            else setComment();
+        });
 
         editImage.setOnLongClickListener(view -> {
             Toast.makeText(myContext,
@@ -311,6 +318,60 @@ public class SelectedSpotActivity extends AppCompatActivity {
                     Toast.LENGTH_SHORT).show();
             return false;
         });
+
+        editImage.setOnClickListener(view -> {
+            etComment.setText(commentValue);
+            commentInputLayout.setVisibility(View.VISIBLE);
+            userCommentLayout.setVisibility(View.GONE);
+        });
+
+        deactivateImage.setOnClickListener(view -> {
+            if(deactivatePressedTime + 2500 > System.currentTimeMillis()) {
+                deactivateToast.cancel();
+
+                setDeactivatedComment();
+            }
+            else {
+                deactivateToast = Toast.makeText(myContext,
+                        "Press again to " + currentDeactivateText, Toast.LENGTH_SHORT);
+                deactivateToast.show();
+            }
+
+            deactivatePressedTime = System.currentTimeMillis();
+        });
+    }
+
+    private void setDeactivatedComment() {
+        boolean value = false;
+        if(currentDeactivateText == deactivateText) value = true;
+        commentsRef.child(id).child("deactivated").setValue(value)
+        .addOnCompleteListener(task -> {
+            if(task.isSuccessful()) {
+                String toastMessage = "Your comment is now ";
+                if(currentDeactivateText == deactivateText) toastMessage += "activated";
+                else if(currentDeactivateText == activateText) toastMessage += "deactivated";
+
+                Toast.makeText(
+                        myContext,
+                        toastMessage,
+                        Toast.LENGTH_SHORT
+                ).show();
+            }
+            else {
+                if(task.getException() != null) {
+                    String error = task.getException().toString();
+                    Toast.makeText(
+                            myContext,
+                            error,
+                            Toast.LENGTH_SHORT
+                    ).show();
+                }
+            }
+        });
+    }
+
+    private void updateComment() {
+        commentsRef.child(id).child("value").setValue(inputComment);
     }
 
     private void setComment() {
@@ -325,6 +386,7 @@ public class SelectedSpotActivity extends AppCompatActivity {
                 if(snapshot.exists()) {
                     Comment comment = snapshot.getValue(Comment.class);
 
+                    isUserCommentExist = true;
                     commentInputLayout.setVisibility(View.GONE);
                     userCommentLayout.setVisibility(View.VISIBLE);
 
@@ -332,7 +394,7 @@ public class SelectedSpotActivity extends AppCompatActivity {
                     if(user.getMiddleName().length() > 0) fullName += " " + user.getMiddleName();
                     tvUserFullName.setText(fromHtml(fullName));
 
-                    String commentValue = comment.getValue();
+                    commentValue = comment.getValue();
                     extvComment.setText(commentValue);
 
                     if(comment.isFouled()) {
@@ -358,6 +420,7 @@ public class SelectedSpotActivity extends AppCompatActivity {
                     }
                 }
                 else {
+                    isUserCommentExist = false;
                     commentInputLayout.setVisibility(View.VISIBLE);
                     userCommentLayout.setVisibility(View.GONE);
                 }
