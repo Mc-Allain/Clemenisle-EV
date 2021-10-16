@@ -4,146 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/gainsboro"
     tools:context=".AboutActivity">
-
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolsLayout">
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/developersLayout"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <TextView
-                    android:id="@+id/atvMainDeveloperTitle"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="4dp"
-                    android:layout_marginEnd="24dp"
-                    android:fontFamily="@font/montserrat"
-                    android:text="Client Side Developer and Main Designer"
-                    android:textColor="@color/initial"
-                    android:textStyle="italic"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="@+id/tvMainDeveloper"
-                    app:layout_constraintTop_toBottomOf="@+id/tvMainDeveloper" />
-
-                <TextView
-                    android:id="@+id/tvDevelopers"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="24dp"
-                    android:layout_marginTop="8dp"
-                    android:fontFamily="@font/montserrat"
-                    android:text="Developers"
-                    android:textColor="@color/black"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <TextView
-                    android:id="@+id/tvMainDeveloper"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="16dp"
-                    android:fontFamily="@font/montserrat"
-                    android:text="Casindad, Mc Allain S."
-                    android:textColor="@color/black"
-                    app:layout_constraintStart_toStartOf="@+id/tvDevelopers"
-                    app:layout_constraintTop_toBottomOf="@+id/tvDevelopers" />
-
-                <TextView
-                    android:id="@+id/tvAdminDeveloper"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:fontFamily="@font/montserrat"
-                    android:text="Dela Torre, Emmanuel B."
-                    android:textColor="@color/black"
-                    app:layout_constraintStart_toStartOf="@+id/tvMainDeveloper"
-                    app:layout_constraintTop_toBottomOf="@+id/atvMainDeveloperTitle" />
-
-                <TextView
-                    android:id="@+id/tvAdminDeveloperTitle"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:fontFamily="@font/montserrat"
-                    android:text="Admin Side Developer and Product Representative"
-                    android:textColor="@color/initial"
-                    android:textStyle="italic"
-                    app:layout_constraintEnd_toEndOf="@+id/atvMainDeveloperTitle"
-                    app:layout_constraintStart_toStartOf="@+id/atvMainDeveloperTitle"
-                    app:layout_constraintTop_toBottomOf="@+id/tvAdminDeveloper" />
-
-                <TextView
-                    android:id="@+id/tvDocumentMainEditor"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:fontFamily="@font/montserrat"
-                    android:text="Ruiz, Jehiele Jeff J."
-                    android:textColor="@color/black"
-                    app:layout_constraintStart_toStartOf="@+id/tvAdminDeveloper"
-                    app:layout_constraintTop_toBottomOf="@+id/tvAdminDeveloperTitle" />
-
-                <TextView
-                    android:id="@+id/tvDocumentMainEditorTitle"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:fontFamily="@font/montserrat"
-                    android:text="Document Main Editor and Team Leader"
-                    android:textStyle="italic"
-                    app:layout_constraintEnd_toEndOf="@+id/tvAdminDeveloperTitle"
-                    app:layout_constraintStart_toStartOf="@+id/tvAdminDeveloperTitle"
-                    app:layout_constraintTop_toBottomOf="@+id/tvDocumentMainEditor" />
-
-                <TextView
-                    android:id="@+id/tvDocumentSecondaryEditor"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:fontFamily="@font/montserrat"
-                    android:text="Flores, Jaizel Ann N."
-                    android:textColor="@color/black"
-                    app:layout_constraintStart_toStartOf="@+id/tvDocumentMainEditor"
-                    app:layout_constraintTop_toBottomOf="@+id/tvDocumentMainEditorTitle" />
-
-                <TextView
-                    android:id="@+id/tvDocumentSecondaryEditorTitle"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:layout_marginBottom="32dp"
-                    android:fontFamily="@font/montserrat"
-                    android:text="Document Secondary Editor, Literate and Resource Artist"
-                    android:textStyle="italic"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="@+id/tvDocumentMainEditorTitle"
-                    app:layout_constraintStart_toStartOf="@+id/tvDocumentMainEditorTitle"
-                    app:layout_constraintTop_toBottomOf="@+id/tvDocumentSecondaryEditor" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-    </ScrollView>
 
     <ImageView
         android:id="@+id/appIconImage"
@@ -156,89 +18,381 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/toolsLayout"
+    <View
+        style="@style/line_color"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        app:layout_constraintBottom_toBottomOf="@+id/appIconImage"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/appIconImage">
 
-        <ImageView
-            android:id="@+id/googleMapLogoImage"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginStart="8dp"
-            android:adjustViewBounds="true"
-            app:layout_constraintBottom_toBottomOf="@+id/androidStudioLogoImage"
-            app:layout_constraintStart_toEndOf="@+id/fireBaseLogoImage"
-            app:layout_constraintTop_toTopOf="@+id/androidStudioLogoImage"
-            app:srcCompat="@drawable/image_loading_placeholder" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-        <ImageView
-            android:id="@+id/googleStreetViewImage"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginStart="8dp"
-            android:adjustViewBounds="true"
-            app:layout_constraintBottom_toBottomOf="@+id/androidStudioLogoImage"
-            app:layout_constraintStart_toEndOf="@+id/googleMapLogoImage"
-            app:layout_constraintTop_toTopOf="@+id/androidStudioLogoImage"
-            app:srcCompat="@drawable/image_loading_placeholder" />
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/toolsLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:background="@color/white"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
-        <ImageView
-            android:id="@+id/fireBaseLogoImage"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginStart="8dp"
-            android:adjustViewBounds="true"
-            app:layout_constraintBottom_toBottomOf="@+id/androidStudioLogoImage"
-            app:layout_constraintStart_toEndOf="@+id/androidStudioLogoImage"
-            app:layout_constraintTop_toTopOf="@+id/androidStudioLogoImage"
-            app:srcCompat="@drawable/image_loading_placeholder" />
+                <ImageView
+                    android:id="@+id/androidStudioLogoImage"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginTop="8dp"
+                    android:adjustViewBounds="true"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/toolsTitleLayout"
+                    app:srcCompat="@drawable/image_loading_placeholder" />
 
-        <ImageView
-            android:id="@+id/androidStudioLogoImage"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            android:adjustViewBounds="true"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/tvPoweredBy"
-            app:layout_constraintTop_toBottomOf="@+id/tvPoweredBy"
-            app:srcCompat="@drawable/image_loading_placeholder" />
+                <ImageView
+                    android:id="@+id/fireBaseLogoImage"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginTop="8dp"
+                    android:adjustViewBounds="true"
+                    app:layout_constraintStart_toStartOf="@+id/androidStudioLogoImage"
+                    app:layout_constraintTop_toBottomOf="@+id/androidStudioLogoImage"
+                    app:srcCompat="@drawable/image_loading_placeholder" />
 
-        <TextView
-            android:id="@+id/tvPoweredBy"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="8dp"
-            android:fontFamily="@font/montserrat"
-            android:text="Powered by"
-            android:textColor="@color/black"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+                <ImageView
+                    android:id="@+id/googleMapLogoImage"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginTop="8dp"
+                    android:adjustViewBounds="true"
+                    app:layout_constraintStart_toStartOf="@+id/fireBaseLogoImage"
+                    app:layout_constraintTop_toBottomOf="@+id/fireBaseLogoImage"
+                    app:srcCompat="@drawable/image_loading_placeholder" />
 
-        <View
-            style="@style/line_color"
-            android:layout_width="0dp"
-            android:layout_height="1dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+                <ImageView
+                    android:id="@+id/googleStreetViewImage"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:adjustViewBounds="true"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="@+id/googleMapLogoImage"
+                    app:layout_constraintTop_toBottomOf="@+id/googleMapLogoImage"
+                    app:srcCompat="@drawable/image_loading_placeholder" />
 
-        <View
-            style="@style/line_color"
-            android:layout_width="0dp"
-            android:layout_height="1dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+                <TextView
+                    android:id="@+id/tvAndroidStudio"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:fontFamily="@font/ubuntu"
+                    android:text="Android Studio"
+                    android:textColor="@color/black"
+                    app:layout_constraintBottom_toBottomOf="@+id/androidStudioLogoImage"
+                    app:layout_constraintStart_toEndOf="@+id/androidStudioLogoImage"
+                    app:layout_constraintTop_toTopOf="@+id/androidStudioLogoImage" />
+
+                <TextView
+                    android:id="@+id/tvGoogleMap"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:fontFamily="@font/ubuntu"
+                    android:text="Google Map"
+                    android:textColor="@color/black"
+                    app:layout_constraintBottom_toBottomOf="@+id/googleMapLogoImage"
+                    app:layout_constraintStart_toEndOf="@+id/googleMapLogoImage"
+                    app:layout_constraintTop_toTopOf="@+id/googleMapLogoImage" />
+
+                <TextView
+                    android:id="@+id/tvFirebase"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:fontFamily="@font/ubuntu"
+                    android:text="Google Firebase"
+                    android:textColor="@color/black"
+                    app:layout_constraintBottom_toBottomOf="@+id/fireBaseLogoImage"
+                    app:layout_constraintStart_toEndOf="@+id/fireBaseLogoImage"
+                    app:layout_constraintTop_toTopOf="@+id/fireBaseLogoImage" />
+
+                <TextView
+                    android:id="@+id/tvGoogleStreetView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:fontFamily="@font/ubuntu"
+                    android:text="Google Street View"
+                    android:textColor="@color/black"
+                    app:layout_constraintBottom_toBottomOf="@+id/googleStreetViewImage"
+                    app:layout_constraintStart_toEndOf="@+id/googleStreetViewImage"
+                    app:layout_constraintTop_toTopOf="@+id/googleStreetViewImage" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/toolsTitleLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <TextView
+                        android:id="@+id/tvTools"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginBottom="8dp"
+                        android:fontFamily="@font/ubuntu"
+                        android:text="Powered by"
+                        android:textColor="@color/black"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <View
+                        style="@style/line_color"
+                        android:layout_width="0dp"
+                        android:layout_height="1dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/developersLayout"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
+                android:background="@color/white"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/toolsLayout"
+                app:layout_constraintStart_toStartOf="@+id/toolsLayout"
+                app:layout_constraintTop_toBottomOf="@+id/toolsLayout">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/resourceArtistLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toBottomOf="@+id/teamLeaderLayout">
+
+                    <TextView
+                        android:id="@+id/tvResourceArtist"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="8dp"
+                        android:fontFamily="@font/ubuntu"
+                        android:text="Flores, Jaizel Ann N."
+                        android:textColor="@color/black"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/tvResourceArtistTitle"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="4dp"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginBottom="8dp"
+                        android:fontFamily="@font/ubuntu"
+                        android:text="Document Secondary Editor, Literate and Resource Artist"
+                        android:textStyle="italic"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="@+id/tvResourceArtist"
+                        app:layout_constraintTop_toBottomOf="@+id/tvResourceArtist" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/teamLeaderLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toBottomOf="@+id/adminDeveloperLayout">
+
+                    <TextView
+                        android:id="@+id/tvTeamLeaderTitle"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="4dp"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginBottom="8dp"
+                        android:fontFamily="@font/ubuntu"
+                        android:text="Document Main Editor and Team Leader"
+                        android:textStyle="italic"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="@+id/tvTeamLeader"
+                        app:layout_constraintTop_toBottomOf="@+id/tvTeamLeader" />
+
+                    <TextView
+                        android:id="@+id/tvTeamLeader"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="8dp"
+                        android:fontFamily="@font/ubuntu"
+                        android:text="Ruiz, Jehiele Jeff J."
+                        android:textColor="@color/black"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <View
+                        style="@style/line_color"
+                        android:layout_width="0dp"
+                        android:layout_height="1dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/adminDeveloperLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toBottomOf="@+id/mainDeveloperLayout">
+
+                    <TextView
+                        android:id="@+id/tvAdminDeveloperTitle"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="4dp"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginBottom="8dp"
+                        android:fontFamily="@font/ubuntu"
+                        android:text="Admin Side Developer and Product Representative"
+                        android:textColor="@color/initial"
+                        android:textStyle="italic"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="@+id/tvAdminDeveloper"
+                        app:layout_constraintTop_toBottomOf="@+id/tvAdminDeveloper" />
+
+                    <TextView
+                        android:id="@+id/tvAdminDeveloper"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="8dp"
+                        android:fontFamily="@font/ubuntu"
+                        android:text="Dela Torre, Emmanuel B."
+                        android:textColor="@color/black"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <View
+                        style="@style/line_color"
+                        android:layout_width="0dp"
+                        android:layout_height="1dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/mainDeveloperLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toBottomOf="@+id/developersTitleLayout">
+
+                    <TextView
+                        android:id="@+id/tvMainDeveloper"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="8dp"
+                        android:fontFamily="@font/ubuntu"
+                        android:text="Casindad, Mc Allain S."
+                        android:textColor="@color/black"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/atvMainDeveloperTitle"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="4dp"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginBottom="8dp"
+                        android:fontFamily="@font/ubuntu"
+                        android:text="Client Side Developer and Main Designer"
+                        android:textColor="@color/initial"
+                        android:textStyle="italic"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="@+id/tvMainDeveloper"
+                        app:layout_constraintTop_toBottomOf="@+id/tvMainDeveloper" />
+
+                    <View
+                        style="@style/line_color"
+                        android:layout_width="0dp"
+                        android:layout_height="1dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/developersTitleLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <TextView
+                        android:id="@+id/tvDevelopers"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginBottom="8dp"
+                        android:fontFamily="@font/ubuntu"
+                        android:text="Developers"
+                        android:textColor="@color/black"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <View
+                        style="@style/line_color"
+                        android:layout_width="0dp"
+                        android:layout_height="1dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

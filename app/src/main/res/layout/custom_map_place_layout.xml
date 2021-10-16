@@ -19,7 +19,7 @@
             android:id="@+id/cbName"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/montserrat"
+            android:fontFamily="@font/ubuntu"
             android:text="Name"
             android:textColor="@color/black"
             app:layout_constraintBottom_toBottomOf="parent"

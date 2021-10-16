@@ -108,7 +108,7 @@ implements MapTouristSpotFragment.OnComboBoxClickListener,
         ConstraintSet constraintSet = new ConstraintSet();
         constraintSet.clone(constraintLayout);
 
-        Typeface typeface = ResourcesCompat.getFont(myContext, R.font.montserrat);
+        Typeface typeface = ResourcesCompat.getFont(myContext, R.font.ubuntu);
 
         ViewGroup viewGroup = (ViewGroup) tabLayout.getChildAt(0);
         int tabCount = viewGroup.getChildCount();

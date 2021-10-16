@@ -25,7 +25,7 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="8dp"
-            android:fontFamily="@font/montserrat"
+            android:fontFamily="@font/ubuntu"
             android:text="Schedule Time"
             android:textColor="@color/black"
             app:layout_constraintBottom_toBottomOf="parent"

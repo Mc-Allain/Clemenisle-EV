@@ -31,7 +31,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:background="@drawable/custom_name_background"
-            android:fontFamily="@font/montserrat"
+            android:fontFamily="@font/ubuntu"
             android:paddingStart="8dp"
             android:paddingEnd="8dp"
             android:text="Tourist Spot Name"
