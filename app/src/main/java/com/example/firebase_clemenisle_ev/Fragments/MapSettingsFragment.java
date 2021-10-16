@@ -349,13 +349,15 @@ public class MapSettingsFragment extends Fragment {
         ConstraintSet constraintSet = new ConstraintSet();
         constraintSet.clone(tsColorLayout);
 
+        constraintSet.clear(tsColorsLayout.getId(), ConstraintSet.START);
         constraintSet.connect(tsColorsLayout.getId(), ConstraintSet.START,
                 tvTSMarkColor.getId(), ConstraintSet.END);
+        constraintSet.connect(tsColorsLayout.getId(), ConstraintSet.END,
+                tsColorImage.getId(), ConstraintSet.END);
 
         setTransition(tsColorsLayout);
         constraintSet.applyTo(tsColorLayout);
 
-        setTSColorImagesVisibility(View.VISIBLE);
         tsColorImage.setVisibility(View.INVISIBLE);
     }
 
@@ -364,9 +366,13 @@ public class MapSettingsFragment extends Fragment {
         constraintSet.clone(tsColorLayout);
 
         constraintSet.clear(tsColorsLayout.getId(), ConstraintSet.START);
+        constraintSet.clear(tsColorsLayout.getId(), ConstraintSet.END);
+        constraintSet.connect(tsColorsLayout.getId(), ConstraintSet.START,
+                tsColorLayout.getId(), ConstraintSet.END);
+
+        setTransition(tsColorLayout);
         constraintSet.applyTo(tsColorLayout);
 
-        setTSColorImagesVisibility(View.GONE);
         tsColorImage.setVisibility(View.VISIBLE);
     }
 
@@ -374,15 +380,6 @@ public class MapSettingsFragment extends Fragment {
         Transition transition = new ChangeBounds();
         transition.setDuration(300);
         TransitionManager.beginDelayedTransition(constraintLayout, transition);
-    }
-
-    private void setTSColorImagesVisibility(int value) {
-        tsBlueImage.setVisibility(value);
-        tsRedImage.setVisibility(value);
-        tsGreenImage.setVisibility(value);
-        tsOrangeImage.setVisibility(value);
-        tsDarkVioletImage.setVisibility(value);
-        tsBlackImage.setVisibility(value);
     }
 
     private void setSColor(int color) {
@@ -400,13 +397,15 @@ public class MapSettingsFragment extends Fragment {
         ConstraintSet constraintSet = new ConstraintSet();
         constraintSet.clone(sColorLayout);
 
+        constraintSet.clear(sColorsLayout.getId(), ConstraintSet.START);
         constraintSet.connect(sColorsLayout.getId(), ConstraintSet.START,
                 tvSMarkColor.getId(), ConstraintSet.END);
+        constraintSet.connect(sColorsLayout.getId(), ConstraintSet.END,
+                sColorImage.getId(), ConstraintSet.END);
 
         setTransition(sColorsLayout);
         constraintSet.applyTo(sColorLayout);
 
-        setSColorImagesVisibility(View.VISIBLE);
         sColorImage.setVisibility(View.INVISIBLE);
     }
 
@@ -415,19 +414,14 @@ public class MapSettingsFragment extends Fragment {
         constraintSet.clone(sColorLayout);
 
         constraintSet.clear(sColorsLayout.getId(), ConstraintSet.START);
+        constraintSet.clear(sColorsLayout.getId(), ConstraintSet.END);
+        constraintSet.connect(sColorsLayout.getId(), ConstraintSet.START,
+                sColorLayout.getId(), ConstraintSet.END);
+
+        setTransition(sColorLayout);
         constraintSet.applyTo(sColorLayout);
 
-        setSColorImagesVisibility(View.GONE);
         sColorImage.setVisibility(View.VISIBLE);
-    }
-
-    private void setSColorImagesVisibility(int value) {
-        sBlueImage.setVisibility(value);
-        sRedImage.setVisibility(value);
-        sGreenImage.setVisibility(value);
-        sOrangeImage.setVisibility(value);
-        sDarkVioletImage.setVisibility(value);
-        sBlackImage.setVisibility(value);
     }
 
     private void sendTSMarkColorPreferences(int value) {

@@ -364,32 +364,27 @@ public class SelectedSpotActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 int books = 0, likes = 0, visits = 0;
+
                 if(snapshot.exists()) {
                     for(DataSnapshot dataSnapshot : snapshot.getChildren()) {
                         User thisUser = new User(dataSnapshot);
-                        List<Booking> userBookingList = thisUser.getBookingList();
-                        List<SimpleTouristSpot> userLikedSpots = thisUser.getLikedSpots();
 
-                        if(userBookingList.size() > 0) {
-                            for(Booking booking : userBookingList) {
-                                List<Route> routeList = booking.getRouteList();
-                                if(routeList.size() > 0) {
-                                    for(Route route : routeList) {
-                                        if(route.getId().equals(touristSpot.getId())) {
-                                            books++;
-                                            if(route.isVisited()) {
-                                                visits++;
-                                            }
-                                        }
-                                    }
-                                }
+                        List<SimpleTouristSpot> userLikedSpots = thisUser.getLikedSpots();
+                        for(SimpleTouristSpot likedSpot : userLikedSpots) {
+                            if(likedSpot.getId().equals(id)) {
+                                likes++;
                             }
                         }
 
-                        if(userLikedSpots.size() > 0) {
-                            for(SimpleTouristSpot userLikedSpot : userLikedSpots) {
-                                if(userLikedSpot.getId().equals(touristSpot.getId())) {
-                                    likes++;
+                        List<Booking> userBookingList = thisUser.getBookingList();
+                        for(Booking booking : userBookingList) {
+                            List<Route> routeList = booking.getRouteList();
+                            for(Route route : routeList) {
+                                if(route.getId().equals(id)) {
+                                    books++;
+                                    if(route.isVisited()) {
+                                        visits++;
+                                    }
                                 }
                             }
                         }
@@ -455,7 +450,8 @@ public class SelectedSpotActivity extends AppCompatActivity {
     }
 
     private void updateInfo() {
-        Glide.with(myContext).load(img).override(Target.SIZE_ORIGINAL).into(thumbnail);
+        Glide.with(myContext).load(img).placeholder(R.drawable.image_loading_placeholder).
+                override(Target.SIZE_ORIGINAL).into(thumbnail);
         tvName.setText(name);
         extvDescription.setText(description);
         tvStation.setText(stations);

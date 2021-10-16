@@ -131,17 +131,13 @@ public class RouteActivity extends AppCompatActivity implements
 
         Intent intent = getIntent();
         bookingId = intent.getStringExtra("bookingId");
-        schedule = intent.getStringExtra("schedule");
         startStationId = intent.getStringExtra("startStationId");
-        startStationName = intent.getStringExtra("startStationName");
-        endStationId = intent.getStringExtra("endStationId");
         endStationName = intent.getStringExtra("endStationName");
-        status = intent.getStringExtra("status");
-        typeName = intent.getStringExtra("typeName");
-        price = intent.getStringExtra("price");
         latest = intent.getBooleanExtra("latest", false);
 
         onScreen = true;
+
+        Glide.with(myContext).load(R.drawable.magnify_4s_256px).into(reloadImage);
 
         firebaseAuth = FirebaseAuth.getInstance();
         if(loggedIn) {
@@ -151,42 +147,6 @@ public class RouteActivity extends AppCompatActivity implements
                 userId = firebaseUser.getUid();
             }
         }
-
-        Glide.with(myContext).load(R.drawable.magnify_4s_256px).into(reloadImage);
-
-        tvBookingId.setText(bookingId);
-        tvSchedule.setText(schedule);
-        tvTypeName.setText(typeName);
-        tvPrice.setText(price);
-        tvStartStation2.setText(startStationName);
-        tvEndStation2.setText(endStationName);
-
-        int color = 0;
-        Drawable backgroundDrawable = myResources.getDrawable(R.color.blue);
-
-        switch (status) {
-            case "Processing":
-                color = myResources.getColor(R.color.orange);
-                backgroundDrawable = myResources.getDrawable(R.color.orange);
-                buttonLayout.setVisibility(View.VISIBLE);
-                break;
-            case "Booked":
-                color = myResources.getColor(R.color.green);
-                backgroundDrawable = myResources.getDrawable(R.color.green);
-                break;
-            case "Completed":
-                color = myResources.getColor(R.color.blue);
-                backgroundDrawable = myResources.getDrawable(R.color.blue);
-                break;
-            case "Cancelled":
-            case "Failed":
-                color = myResources.getColor(R.color.red);
-                backgroundDrawable = myResources.getDrawable(R.color.red);
-                break;
-        }
-
-        tvBookingId.setBackground(backgroundDrawable);
-        tvPrice.setTextColor(color);
 
         GridLayoutManager gridLayoutManager =
                 new GridLayoutManager(myContext, columnCount, GridLayoutManager.VERTICAL, false);
@@ -250,6 +210,42 @@ public class RouteActivity extends AppCompatActivity implements
 
         tvLocateEnd.setOnClickListener(view -> openMap(endStation));
         locateEndImage.setOnClickListener(view -> openMap(endStation));
+    }
+
+    private void updateInfo() {
+        Glide.with(myContext).load(routeList.get(0).getImg()).
+                placeholder(R.drawable.image_loading_placeholder).into(thumbnail);
+
+        tvBookingId.setText(bookingId);
+        tvStartStation2.setText(startStationName);
+        tvEndStation2.setText(endStationName);
+
+        int color = 0;
+        Drawable backgroundDrawable = myResources.getDrawable(R.color.blue);
+
+        switch (status) {
+            case "Processing":
+                color = myResources.getColor(R.color.orange);
+                backgroundDrawable = myResources.getDrawable(R.color.orange);
+                buttonLayout.setVisibility(View.VISIBLE);
+                break;
+            case "Booked":
+                color = myResources.getColor(R.color.green);
+                backgroundDrawable = myResources.getDrawable(R.color.green);
+                break;
+            case "Completed":
+                color = myResources.getColor(R.color.blue);
+                backgroundDrawable = myResources.getDrawable(R.color.blue);
+                break;
+            case "Cancelled":
+            case "Failed":
+                color = myResources.getColor(R.color.red);
+                backgroundDrawable = myResources.getDrawable(R.color.red);
+                break;
+        }
+
+        tvBookingId.setBackground(backgroundDrawable);
+        tvPrice.setTextColor(color);
     }
 
     private void openMap(Station station) {
@@ -326,6 +322,18 @@ public class RouteActivity extends AppCompatActivity implements
                     startStation = booking.getStartStation();
                     endStation = booking.getEndStation();
 
+                    startStationName = startStation.getName();
+                    endStationName = endStation.getName();
+
+                    schedule = booking.getSchedule();
+                    status = booking.getStatus();
+                    typeName = booking.getBookingType().getName();
+                    price = String.valueOf(booking.getBookingType().getPrice());
+
+                    tvSchedule.setText(schedule);
+                    tvTypeName.setText(typeName);
+                    tvPrice.setText(price);
+
                     for(Route route : booking.getRouteList()) {
                         if(!route.isDeactivated()) {
                             routeList.add(route);
@@ -358,11 +366,12 @@ public class RouteActivity extends AppCompatActivity implements
     private void finishLoading() {
         routeAdapter.notifyDataSetChanged();
 
-        if(onScreen) Glide.with(myContext).load(routeList.get(0).getImg()).into(thumbnail);
+        if(onScreen) updateInfo();
 
         tvLog.setVisibility(View.GONE);
         reloadImage.setVisibility(View.GONE);
         progressBar.setVisibility(View.GONE);
+        routeView.setVisibility(View.VISIBLE);
     }
 
     private void errorLoading(String error) {
@@ -372,6 +381,7 @@ public class RouteActivity extends AppCompatActivity implements
         tvLog.setVisibility(View.VISIBLE);
         reloadImage.setVisibility(View.VISIBLE);
         progressBar.setVisibility(View.GONE);
+        routeView.setVisibility(View.INVISIBLE);
     }
 
     private void cancelBooking() {

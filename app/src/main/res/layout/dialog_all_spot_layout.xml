@@ -25,7 +25,7 @@
         android:fontFamily="@font/ubuntu"
         android:text="No Records"
         android:textAlignment="center"
-        android:textColor="@color/black"
+        android:textColor="@color/initial"
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

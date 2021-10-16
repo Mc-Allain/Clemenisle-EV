@@ -139,8 +139,7 @@ public class BookingActivity extends AppCompatActivity implements
             routeSpotsCaptionText = "You can add another spots to your desired route.",
             threeSpotsCaptionText = "You must select at least three (3) Tourist Spots to your Route.",
             bookingScheduleCaptionText = "Please select your booking schedule.",
-            bookingScheduleInvalidDateCaptionText =
-                    "Schedule Date must be at least two (2) days from now.",
+            bookingScheduleInvalidDateCaptionText = "Date must be at least two (2) days from now.",
             messageCaptionText = "You can enter a message for this booking record.";
 
     String bookingTypeActivityText = "Booking Type", stationActivityText = "Starting E-Vehicle Station";
@@ -881,12 +880,8 @@ public class BookingActivity extends AppCompatActivity implements
         tvShowNearSpots.setEnabled(false);
         showImage.setEnabled(false);
 
-        if(tvShowNearSpots.getText().equals(showText)) {
-            transition1();
-        }
-        else if(tvShowNearSpots.getText().equals(hideText)) {
-            transition1();
-        }
+        if(tvShowNearSpots.getText().equals(showText)) transition1();
+        else if(tvShowNearSpots.getText().equals(hideText)) transition1();
     }
 
     private void transition1() {
@@ -1042,12 +1037,8 @@ public class BookingActivity extends AppCompatActivity implements
         tvShowRecommendedSpots.setEnabled(false);
         showImage2.setEnabled(false);
 
-        if(tvShowRecommendedSpots.getText().equals(showText)) {
-            transition4();
-        }
-        else if(tvShowRecommendedSpots.getText().equals(hideText)) {
-            transition4();
-        }
+        if(tvShowRecommendedSpots.getText().equals(showText)) transition4();
+        else if(tvShowRecommendedSpots.getText().equals(hideText)) transition4();
     }
 
     private void transition4() {
@@ -2098,7 +2089,7 @@ public class BookingActivity extends AppCompatActivity implements
 
         Toast.makeText(
                 myContext,
-                "There has been changes in the database " +
+                "There are changes in the database " +
                         "that might affect your booking.",
                 Toast.LENGTH_LONG
         ).show();
@@ -2116,6 +2107,7 @@ public class BookingActivity extends AppCompatActivity implements
         }
 
         progressBar1.setVisibility(View.GONE);
+        bookingTypeView.setVisibility(View.VISIBLE);
     }
 
     private boolean isInBookingTypes() {
@@ -2137,6 +2129,7 @@ public class BookingActivity extends AppCompatActivity implements
         tvLog1.setVisibility(View.VISIBLE);
         reloadImage1.setVisibility(View.VISIBLE);
         progressBar1.setVisibility(View.GONE);
+        bookingTypeView.setVisibility(View.INVISIBLE);
     }
 
     private void errorLoading1() {
@@ -2159,6 +2152,7 @@ public class BookingActivity extends AppCompatActivity implements
         }
 
         progressBar2.setVisibility(View.GONE);
+        bookingStationView.setVisibility(View.VISIBLE);
     }
 
     private boolean isInStations() {
@@ -2180,6 +2174,7 @@ public class BookingActivity extends AppCompatActivity implements
         tvLog2.setVisibility(View.VISIBLE);
         reloadImage2.setVisibility(View.VISIBLE);
         progressBar2.setVisibility(View.GONE);
+        bookingStationView.setVisibility(View.INVISIBLE);
     }
 
     private void errorLoading2() {
@@ -2202,6 +2197,7 @@ public class BookingActivity extends AppCompatActivity implements
         }
 
         progressBar3.setVisibility(View.GONE);
+        recommendedRouteView.setVisibility(View.VISIBLE);
     }
 
     private boolean isInBookingRoutes() {
@@ -2223,6 +2219,7 @@ public class BookingActivity extends AppCompatActivity implements
         tvLog3.setVisibility(View.VISIBLE);
         reloadImage3.setVisibility(View.VISIBLE);
         progressBar3.setVisibility(View.GONE);
+        recommendedRouteView.setVisibility(View.INVISIBLE);
     }
 
     private void errorLoading3() {
@@ -2252,7 +2249,13 @@ public class BookingActivity extends AppCompatActivity implements
 
         showImage.setVisibility(View.GONE);
         tvShowNearSpots.setVisibility(View.GONE);
-        tvShowNearSpots.setText(showText);
+
+        if(tvShowNearSpots.getText().equals(hideText)){
+            tvShowNearSpots.setEnabled(false);
+            showImage.setEnabled(false);
+            transition1();
+        }
+
         tvNearSpots.setPadding(0, 0, 0, 0);
 
         tvNearSpots.setText(value);
@@ -2306,7 +2309,13 @@ public class BookingActivity extends AppCompatActivity implements
 
         showImage2.setVisibility(View.GONE);
         tvShowRecommendedSpots.setVisibility(View.GONE);
-        tvShowRecommendedSpots.setText(showText);
+
+        if(tvShowRecommendedSpots.getText().equals(hideText)) {
+            tvShowRecommendedSpots.setEnabled(false);
+            showImage2.setEnabled(false);
+            transition4();
+        }
+
         tvRecommendedSpots.setPadding(0, 0, 0, 0);
 
         tvRecommendedSpots.setText(value);

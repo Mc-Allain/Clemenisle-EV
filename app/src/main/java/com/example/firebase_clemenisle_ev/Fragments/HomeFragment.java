@@ -394,16 +394,18 @@ public class HomeFragment extends Fragment implements
         ConstraintSet constraintSet = new ConstraintSet();
         constraintSet.clone(headerLayout);
 
-        constraintSet.clear(sortInputLayout.getId(), ConstraintSet.END);
+        constraintSet.clear(sortInputLayout.getId(), ConstraintSet.START);
         constraintSet.connect(sortInputLayout.getId(), ConstraintSet.START,
                 tvAppTitle.getId(), ConstraintSet.START);
         constraintSet.connect(sortInputLayout.getId(), ConstraintSet.END,
                 viewModeImage.getId(), ConstraintSet.END);
 
-        setTransition(sortInputLayout);
+        setTransition(sortInputLayout, 1, 1);
         constraintSet.applyTo(headerLayout);
 
-        cancelSortImage.setVisibility(View.VISIBLE);
+        setActionButtonEnabled(false);
+
+        acSort.requestFocus();
     }
 
     private void closeSortLayout() {
@@ -412,13 +414,14 @@ public class HomeFragment extends Fragment implements
 
         constraintSet.clear(sortInputLayout.getId(), ConstraintSet.START);
         constraintSet.clear(sortInputLayout.getId(), ConstraintSet.END);
-        constraintSet.connect(sortInputLayout.getId(), ConstraintSet.END,
-                sortImage.getId(), ConstraintSet.START);
+        constraintSet.connect(sortInputLayout.getId(), ConstraintSet.START,
+                headerLayout.getId(), ConstraintSet.END);
 
-        setTransition(sortInputLayout);
+        setTransition(sortInputLayout, 1, 0);
         constraintSet.applyTo(headerLayout);
 
-        cancelSortImage.setVisibility(View.GONE);
+        setActionButtonEnabled(true);
+
         acSort.clearFocus();
     }
 
@@ -426,17 +429,18 @@ public class HomeFragment extends Fragment implements
         ConstraintSet constraintSet = new ConstraintSet();
         constraintSet.clone(headerLayout);
 
-        constraintSet.clear(searchInputLayout.getId(), ConstraintSet.END);
+        constraintSet.clear(searchInputLayout.getId(), ConstraintSet.START);
         constraintSet.connect(searchInputLayout.getId(), ConstraintSet.START,
                 tvAppTitle.getId(), ConstraintSet.START);
         constraintSet.connect(searchInputLayout.getId(), ConstraintSet.END,
                 viewModeImage.getId(), ConstraintSet.END);
 
-        setTransition(searchInputLayout);
+        setTransition(searchInputLayout, 0, 1);
         constraintSet.applyTo(headerLayout);
 
-        cancelSearchImage.setVisibility(View.VISIBLE);
-        acSearch.setHint("Search");
+        setActionButtonEnabled(false);
+
+        acSearch.requestFocus();
     }
 
     private void closeSearchLayout() {
@@ -445,20 +449,21 @@ public class HomeFragment extends Fragment implements
 
         constraintSet.clear(searchInputLayout.getId(), ConstraintSet.START);
         constraintSet.clear(searchInputLayout.getId(), ConstraintSet.END);
-        constraintSet.connect(searchInputLayout.getId(), ConstraintSet.END,
-                searchImage.getId(), ConstraintSet.START);
+        constraintSet.connect(searchInputLayout.getId(), ConstraintSet.START,
+                headerLayout.getId(), ConstraintSet.END);
 
-        setTransition(searchInputLayout);
+        setTransition(searchInputLayout, 0, 0);
         constraintSet.applyTo(headerLayout);
 
-        cancelSearchImage.setVisibility(View.GONE);
-        acSearch.setHint(null);
+        setActionButtonEnabled(true);
+
         acSearch.clearFocus();
     }
 
-    private void setTransition(ConstraintLayout constraintLayout) {
+    private void setTransition(ConstraintLayout constraintLayout, int sender, int action) {
         Transition transition = new ChangeBounds();
         transition.setDuration(300);
+
         TransitionManager.beginDelayedTransition(constraintLayout, transition);
     }
 
@@ -578,16 +583,29 @@ public class HomeFragment extends Fragment implements
         progressBar.setVisibility(View.GONE);
         touristSpotView.setVisibility(View.VISIBLE);
 
-        searchImage.setEnabled(true);
-        sortImage.setEnabled(true);
-        viewModeImage.setEnabled(true);
-
         isResponseError = false;
 
+        setActionButtonEnabled(true);
+    }
+
+    private void setActionButtonEnabled(boolean value) {
         int colorBlack = myContext.getResources().getColor(R.color.black);
-        searchImage.setColorFilter(colorBlack);
-        sortImage.setColorFilter(colorBlack);
-        viewModeImage.setColorFilter(colorBlack);
+        int colorInitial = myContext.getResources().getColor(R.color.initial);
+
+        searchImage.setEnabled(value);
+        sortImage.setEnabled(value);
+        viewModeImage.setEnabled(value);
+
+        if(value) {
+            searchImage.setColorFilter(colorBlack);
+            sortImage.setColorFilter(colorBlack);
+            viewModeImage.setColorFilter(colorBlack);
+        }
+        else {
+            searchImage.setColorFilter(colorInitial);
+            sortImage.setColorFilter(colorInitial);
+            viewModeImage.setColorFilter(colorInitial);
+        }
     }
 
     private void errorLoading(String error) {
@@ -605,10 +623,7 @@ public class HomeFragment extends Fragment implements
 
         isResponseError = true;
 
-        int initialColor = myContext.getResources().getColor(R.color.initial);
-        searchImage.setColorFilter(initialColor);
-        sortImage.setColorFilter(initialColor);
-        viewModeImage.setColorFilter(initialColor);
+        setActionButtonEnabled(false);
     }
 
     private void notifyChangesToAdapter() {

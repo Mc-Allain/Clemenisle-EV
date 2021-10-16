@@ -79,14 +79,13 @@
             android:layout_marginBottom="8dp"
             android:background="@color/white"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/searchImage"
+            app:layout_constraintStart_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
             <ImageView
                 android:id="@+id/cancelSearchImage"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
-                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -113,6 +112,7 @@
                     android:layout_height="match_parent"
                     android:ems="10"
                     android:fontFamily="fontFamily"
+                    android:hint="Search"
                     android:inputType="text"
                     android:textColor="@color/black"
                     android:textColorHint="@color/initial"
@@ -130,14 +130,13 @@
             android:layout_marginBottom="8dp"
             android:background="@color/white"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/sortImage"
+            app:layout_constraintStart_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
             <ImageView
                 android:id="@+id/cancelSortImage"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
-                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -204,7 +203,7 @@
         android:fontFamily="fontFamily"
         android:text="No Records"
         android:textAlignment="center"
-        android:textColor="@color/black"
+        android:textColor="@color/initial"
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

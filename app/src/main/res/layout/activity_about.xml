@@ -56,7 +56,6 @@
                     android:layout_height="40dp"
                     android:layout_marginStart="24dp"
                     android:layout_marginTop="8dp"
-                    android:adjustViewBounds="true"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/toolsTitleLayout"
                     app:srcCompat="@drawable/image_loading_placeholder" />
@@ -66,7 +65,6 @@
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:layout_marginTop="8dp"
-                    android:adjustViewBounds="true"
                     app:layout_constraintStart_toStartOf="@+id/androidStudioLogoImage"
                     app:layout_constraintTop_toBottomOf="@+id/androidStudioLogoImage"
                     app:srcCompat="@drawable/image_loading_placeholder" />
@@ -76,7 +74,6 @@
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:layout_marginTop="8dp"
-                    android:adjustViewBounds="true"
                     app:layout_constraintStart_toStartOf="@+id/fireBaseLogoImage"
                     app:layout_constraintTop_toBottomOf="@+id/fireBaseLogoImage"
                     app:srcCompat="@drawable/image_loading_placeholder" />
@@ -87,7 +84,6 @@
                     android:layout_height="40dp"
                     android:layout_marginTop="8dp"
                     android:layout_marginBottom="8dp"
-                    android:adjustViewBounds="true"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="@+id/googleMapLogoImage"
                     app:layout_constraintTop_toBottomOf="@+id/googleMapLogoImage"

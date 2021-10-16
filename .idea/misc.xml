@@ -8,10 +8,14 @@
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/drawable/custom_fade_background.xml" value="0.24444444444444444" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/drawable/custom_name_background.xml" value="0.1984375" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/drawable/custom_ripple_effect.xml" value="0.23703703703703705" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/drawable/ic_arrow_bar_down.xml" value="0.2601851851851852" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/drawable/ic_arrow_bar_up.xml" value="0.2601851851851852" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/drawable/ic_baseline_360_24.xml" value="0.2462962962962963" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/drawable/ic_baseline_color_lens_24.xml" value="0.25277777777777777" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/drawable/ic_baseline_dynamic_feed_24.xml" value="0.2574074074074074" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/drawable/ic_baseline_error_outline_24.xml" value="0.2574074074074074" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/drawable/ic_baseline_ev_station_24.xml" value="0.2638888888888889" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/drawable/ic_baseline_file_download_24.xml" value="0.2462962962962963" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/drawable/ic_baseline_home_24.xml" value="0.20833333333333334" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/drawable/ic_baseline_info_24.xml" value="0.23703703703703705" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/drawable/ic_baseline_location_on_24.xml" value="0.2574074074074074" />
@@ -31,7 +35,7 @@
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/activity_map.xml" value="0.33" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/activity_post_register.xml" value="0.33" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/activity_route.xml" value="0.33" />
-        <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/activity_selected_spot.xml" value="0.33" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/activity_selected_spot.xml" value="0.25" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/activity_splash_screen.xml" value="0.2824074074074074" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/activity_street_view.xml" value="0.1859375" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/activity_street_web_view.xml" value="0.29259259259259257" />
@@ -41,6 +45,7 @@
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/custom_booking_route_layout.xml" value="0.33" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/custom_booking_station_layout.xml" value="0.32685185185185184" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/custom_booking_type_layout.xml" value="0.32685185185185184" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/custom_comment_layout.xml" value="0.33" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/custom_liked_spot_layout.xml" value="0.2916666666666667" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/custom_map_place_layout.xml" value="0.32222222222222224" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/custom_map_tourist_spot_layout.xml" value="0.33" />
@@ -52,7 +57,7 @@
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/custom_setting_layout.xml" value="0.2814814814814815" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/custom_spot_with_counter_layout.xml" value="0.2916666666666667" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/custom_tourist_spot_layout.xml" value="0.33" />
-        <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/custom_tourist_spot_layout_list.xml" value="0.67" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/custom_tourist_spot_layout_list.xml" value="0.46618705035971225" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/custom_vrs_layout.xml" value="0.1859375" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/dialog_all_spot_layout.xml" value="0.32407407407407407" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/dialog_booking_answer_layout.xml" value="0.33" />
