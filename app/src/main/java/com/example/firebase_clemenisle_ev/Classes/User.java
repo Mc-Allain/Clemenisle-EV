@@ -8,8 +8,11 @@ import java.util.List;
 public class User {
 
     private String firstName, id, lastName, middleName;
-    private List<SimpleTouristSpot> likedSpots = new ArrayList<>();
-    private List<Booking> bookingList = new ArrayList<>();
+    private final List<SimpleTouristSpot> likedSpots = new ArrayList<>();
+    private final List<Booking> bookingList = new ArrayList<>();
+    private final List<Comment> comments = new ArrayList<>();
+    private final List<Comment> upVotedComments = new ArrayList<>();
+    private final List<Comment> downVotedComments = new ArrayList<>();
 
     public User() {
     }
@@ -40,6 +43,39 @@ public class User {
                 if(dataSnapshot1.hasChildren()) {
                     Booking booking = new Booking(dataSnapshot1);
                     bookingList.add(booking);
+                }
+            }
+        }
+
+        comments.clear();
+        DataSnapshot commentSnapshot = dataSnapshot.child("comments");
+        if(commentSnapshot.exists()) {
+            for(DataSnapshot dataSnapshot1 : commentSnapshot.getChildren()) {
+                if(dataSnapshot1.hasChildren()) {
+                    Comment comment = dataSnapshot1.getValue(Comment.class);
+                    comments.add(comment);
+                }
+            }
+        }
+
+        upVotedComments.clear();
+        DataSnapshot upVotedCommentSnapshot = dataSnapshot.child("upVotedComments");
+        if(upVotedCommentSnapshot.exists()) {
+            for(DataSnapshot dataSnapshot1 : upVotedCommentSnapshot.getChildren()) {
+                if(dataSnapshot1.hasChildren()) {
+                    Comment comment = dataSnapshot1.getValue(Comment.class);
+                    upVotedComments.add(comment);
+                }
+            }
+        }
+
+        downVotedComments.clear();
+        DataSnapshot downVotedCommentSnapshot = dataSnapshot.child("downVotedComments");
+        if(downVotedCommentSnapshot.exists()) {
+            for(DataSnapshot dataSnapshot1 : downVotedCommentSnapshot.getChildren()) {
+                if(dataSnapshot1.hasChildren()) {
+                    Comment comment = dataSnapshot1.getValue(Comment.class);
+                    downVotedComments.add(comment);
                 }
             }
         }
@@ -74,5 +110,17 @@ public class User {
 
     public List<Booking> getBookingList() {
         return bookingList;
+    }
+
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public List<Comment> getUpVotedComments() {
+        return upVotedComments;
+    }
+
+    public List<Comment> getDownVotedComments() {
+        return downVotedComments;
     }
 }

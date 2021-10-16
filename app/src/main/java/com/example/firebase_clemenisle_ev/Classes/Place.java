@@ -2,8 +2,10 @@ package com.example.firebase_clemenisle_ev.Classes;
 
 public class Place {
 
-    private String id, name;
-    private double lat, lng;
+    private final String id;
+    private final String name;
+    private final double lat;
+    private final double lng;
 
     public Place(String id, String name, double lat, double lng) {
         this.id = id;

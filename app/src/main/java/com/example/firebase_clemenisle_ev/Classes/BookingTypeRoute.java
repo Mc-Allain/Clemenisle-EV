@@ -10,7 +10,7 @@ public class BookingTypeRoute {
     private Station endStation;
     private String id;
     private Station startStation;
-    private List<SimpleTouristSpot> spots = new ArrayList<>();
+    private final List<SimpleTouristSpot> spots = new ArrayList<>();
 
     public BookingTypeRoute() {
     }

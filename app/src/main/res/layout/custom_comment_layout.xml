@@ -8,9 +8,7 @@
         android:id="@+id/backgroundLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
         android:background="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -46,9 +44,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
+                android:fontFamily="@font/ubuntu"
                 android:text="User's Full Name"
                 android:textColor="@color/black"
-                android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -58,6 +56,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
+                android:fontFamily="@font/ubuntu"
                 android:text="Foul comment"
                 android:textColor="@color/red"
                 android:textStyle="italic"
@@ -69,25 +68,24 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/commentLayout"
+            android:id="@+id/voteLayout"
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_marginBottom="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@+id/actionLayout"
             app:layout_constraintStart_toStartOf="@+id/profileImage"
-            app:layout_constraintTop_toBottomOf="@+id/profileImage">
+            app:layout_constraintTop_toBottomOf="@+id/extvComment">
 
             <ImageView
                 android:id="@+id/upVoteImage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
                 android:padding="4dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/extvComment"
+                app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_arrow_bar_up"
                 app:tint="@color/black" />
 
@@ -122,40 +120,6 @@
                 app:layout_constraintStart_toEndOf="@+id/downVoteImage"
                 app:layout_constraintTop_toTopOf="@+id/downVoteImage" />
 
-            <com.ms.square.android.expandabletextview.ExpandableTextView
-                android:id="@+id/extvComment"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                app:animAlphaStart="1"
-                app:animDuration="200"
-                app:collapseDrawable="@drawable/ic_baseline_expand_less_24"
-                app:expandDrawable="@drawable/ic_baseline_expand_more_24"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:maxCollapsedLines="3">
-
-                <ImageButton
-                    android:id="@id/expand_collapse"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="right|bottom"
-                    android:background="@android:color/transparent"
-                    android:paddingEnd="8dp"
-                    app:tint="@color/black" />
-
-                <TextView
-                    android:id="@+id/expandable_text"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/ubuntu"
-                    android:textColor="@color/initial" />
-
-            </com.ms.square.android.expandabletextview.ExpandableTextView>
-
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -187,8 +151,54 @@
                 app:layout_constraintEnd_toStartOf="@+id/reportImage"
                 app:layout_constraintTop_toTopOf="@+id/reportImage"
                 app:srcCompat="@drawable/ic_baseline_comments_disabled_24"
-                app:tint="@color/black" />
+                app:tint="@color/red" />
+
+            <ImageView
+                android:id="@+id/editImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="4dp"
+                app:layout_constraintBottom_toBottomOf="@+id/deactivateImage"
+                app:layout_constraintEnd_toStartOf="@+id/deactivateImage"
+                app:layout_constraintTop_toTopOf="@+id/deactivateImage"
+                app:srcCompat="@drawable/ic_baseline_edit_24"
+                app:tint="@color/blue" />
         </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <com.ms.square.android.expandabletextview.ExpandableTextView
+            android:id="@+id/extvComment"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp"
+            app:animAlphaStart="1"
+            app:animDuration="200"
+            app:collapseDrawable="@drawable/ic_baseline_expand_less_24"
+            app:expandDrawable="@drawable/ic_baseline_expand_more_24"
+            app:layout_constraintBottom_toTopOf="@+id/voteLayout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/commentHeaderLayout"
+            app:layout_constraintTop_toBottomOf="@id/commentHeaderLayout"
+            app:maxCollapsedLines="1">
+
+            <TextView
+                android:id="@id/expandable_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/ubuntu"
+                android:textColor="@color/initial" />
+
+            <ImageButton
+                android:id="@id/expand_collapse"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right|bottom"
+                android:background="@android:color/transparent"
+                android:paddingEnd="8dp"
+                app:tint="@color/black" />
+
+        </com.ms.square.android.expandabletextview.ExpandableTextView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
