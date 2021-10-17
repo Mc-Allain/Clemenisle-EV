@@ -87,14 +87,14 @@ public class MapStationFragment extends Fragment implements MapPlaceAdapter.OnIt
     }
     
     public interface OnComboBoxClickListener {
-        void sendSelectedStations(List<Place> places, boolean selectAction);
+        void sendSelectedStations(List<Place> places, boolean isSelectAction);
         void sendSelectedStation(Place selectedPlace);
     }
 
     @Override
-    public void sendDataSet(List<Place> places, int type, boolean selectAction) {
+    public void sendDataSet(List<Place> places, int type, boolean isSelectAction) {
         if(type == 1) {
-            onComboBoxClickListener.sendSelectedStations(places, selectAction);
+            onComboBoxClickListener.sendSelectedStations(places, isSelectAction);
 
             cbStation.setChecked(places.size() == placeList.size());
         }

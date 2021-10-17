@@ -82,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
     Toast backToast;
 
     String userId;
-    boolean loggedIn = false;
+    boolean isLoggedIn = false;
     String password = null;
 
     Dialog passwordDialog;
@@ -102,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
     boolean vPWL = false, vPWU = false, vPWLw = false, vPWN = false, vPWS = false, vCPW = false;
     boolean vCPWL = false, vCPWU = false, vCPWLw = false, vCPWN = false, vCPWS = false;
 
-    boolean isPasswordUpdate = false;
+    boolean isPasswordUpdated = false;
 
     Calendar calendar = Calendar.getInstance();
     int calendarYear, calendarMonth, calendarDay;
@@ -118,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void initSharedPreferences() {
         SharedPreferences sharedPreferences = getSharedPreferences("login", Context.MODE_PRIVATE);
-        loggedIn = sharedPreferences.getBoolean("loggedIn", false);
+        isLoggedIn = sharedPreferences.getBoolean("isLoggedIn", false);
     }
 
     private void sendLoginPreferences() {
@@ -126,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
                 "login", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
-        editor.putBoolean("loggedIn", false);
+        editor.putBoolean("isLoggedIn", false);
         editor.putBoolean("remember", false);
         editor.putString("emailAddress", null);
         editor.putString("password", null);
@@ -158,7 +158,7 @@ public class MainActivity extends AppCompatActivity {
         initSharedPreferences();
 
         firebaseAuth = FirebaseAuth.getInstance();
-        if(loggedIn) {
+        if(isLoggedIn) {
             firebaseUser = firebaseAuth.getCurrentUser();
             if(firebaseUser != null) firebaseUser.reload();
             if(firebaseUser == null) {
@@ -195,7 +195,7 @@ public class MainActivity extends AppCompatActivity {
 
         fab.setOnClickListener(view -> {
             Intent newIntent;
-            if(loggedIn) {
+            if(isLoggedIn) {
                 newIntent = new Intent(myContext, BookingActivity.class);
             }
             else {
@@ -481,7 +481,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         if(password != null) {
-            if(!isCurrentPasswordValid() && !isPasswordUpdate) {
+            if(!isCurrentPasswordValid() && !isPasswordUpdated) {
                 firebaseAuth.signOut();
                 sendLoginPreferences();
 
@@ -548,7 +548,7 @@ public class MainActivity extends AppCompatActivity {
 
         vPWL = false; vPWU = false; vPWLw = false; vPWN = false; vPWS = false; vCPW = false;
 
-        isPasswordUpdate = false;
+        isPasswordUpdated = false;
 
         passwordDialog.show();
     }
@@ -817,7 +817,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void finishPasswordUpdate() {
-        isPasswordUpdate = true;
+        isPasswordUpdated = true;
         proceedToMainActivity();
 
         Toast.makeText(

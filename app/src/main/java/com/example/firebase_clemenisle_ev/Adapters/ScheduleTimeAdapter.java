@@ -29,7 +29,7 @@ public class ScheduleTimeAdapter extends RecyclerView.Adapter<ScheduleTimeAdapte
 
     String scheduleTimeId = null;
 
-    boolean zeroCountDisable = true;
+    boolean isZeroCountDisable = true;
 
     OnItemClickListener onItemClickListener;
 
@@ -76,7 +76,7 @@ public class ScheduleTimeAdapter extends RecyclerView.Adapter<ScheduleTimeAdapte
         if(scheduleTimeId != null)
             isSelected = scheduleTimeId.equals(id);
 
-        if(!deactivated || !zeroCountDisable) {
+        if(!deactivated || !isZeroCountDisable) {
             if(isSelected) {
                 backgroundLayout.setBackgroundColor(colorBlue);
                 tvScheduleTime.setTextColor(colorWhite);
@@ -117,7 +117,7 @@ public class ScheduleTimeAdapter extends RecyclerView.Adapter<ScheduleTimeAdapte
         backgroundLayout.setLayoutParams(layoutParams);
 
         backgroundLayout.setOnClickListener(view -> {
-            if(!deactivated || !zeroCountDisable) {
+            if(!deactivated || !isZeroCountDisable) {
                 scheduleTimeId = id;
                 onItemClickListener.sendScheduleTime(scheduleTime);
                 notifyDataSetChanged();

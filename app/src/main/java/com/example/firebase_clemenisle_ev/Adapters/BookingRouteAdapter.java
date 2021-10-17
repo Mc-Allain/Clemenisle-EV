@@ -39,7 +39,7 @@ public class BookingRouteAdapter extends RecyclerView.Adapter<BookingRouteAdapte
     String routeId = null;
     Station station = null;
 
-    boolean zeroCountDisable = false;
+    boolean isZeroCountDisable = false;
 
     OnItemClickListener onItemClickListener;
 
@@ -120,7 +120,7 @@ public class BookingRouteAdapter extends RecyclerView.Adapter<BookingRouteAdapte
         if(routeId != null)
             isSelected = routeId.equals(id);
 
-        if(spots.size() > 0 || !zeroCountDisable) {
+        if(spots.size() > 0 || !isZeroCountDisable) {
             if(isSelected) {
                 backgroundLayout.setBackgroundColor(colorBlue);
                 tvEndStationName.setTextColor(colorWhite);
@@ -159,7 +159,7 @@ public class BookingRouteAdapter extends RecyclerView.Adapter<BookingRouteAdapte
         backgroundLayout.setLayoutParams(layoutParams);
 
         backgroundLayout.setOnClickListener(view -> {
-            if(spots.size() > 0 || !zeroCountDisable) {
+            if(spots.size() > 0 || !isZeroCountDisable) {
                 routeId = id;
                 onItemClickListener.sendRoute(bookingTypeRoute);
                 notifyDataSetChanged();
@@ -188,7 +188,7 @@ public class BookingRouteAdapter extends RecyclerView.Adapter<BookingRouteAdapte
 
     @Override
     public void addRoute(List<SimpleTouristSpot> spots, BookingTypeRoute bookingTypeRoute) {
-        if(spots.size() > 0 || !zeroCountDisable) {
+        if(spots.size() > 0 || !isZeroCountDisable) {
             routeId = bookingTypeRoute.getId();
             onItemClickListener.sendRoute(bookingTypeRoute);
             notifyDataSetChanged();

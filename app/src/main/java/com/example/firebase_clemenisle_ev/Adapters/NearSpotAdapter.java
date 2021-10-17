@@ -25,15 +25,15 @@ public class NearSpotAdapter extends RecyclerView.Adapter<NearSpotAdapter.ViewHo
 
     List<SimpleTouristSpot> nearSpots;
     LayoutInflater inflater;
-    boolean loggedIn;
+    boolean isLoggedIn;
 
     Context myContext;
     Resources myResources;
 
-    public NearSpotAdapter(Context context, List<SimpleTouristSpot> nearSpots, boolean loggedIn) {
+    public NearSpotAdapter(Context context, List<SimpleTouristSpot> nearSpots, boolean isLoggedIn) {
         this.nearSpots = nearSpots;
         this.inflater = LayoutInflater.from(context);
-        this.loggedIn = loggedIn;
+        this.isLoggedIn = isLoggedIn;
     }
 
     @NonNull
@@ -80,7 +80,7 @@ public class NearSpotAdapter extends RecyclerView.Adapter<NearSpotAdapter.ViewHo
         thumbnail.setOnClickListener(view -> {
             Intent intent = new Intent(myContext, SelectedSpotActivity.class);
             intent.putExtra("id", id);
-            intent.putExtra("loggedIn", loggedIn);
+            intent.putExtra("isLoggedIn", isLoggedIn);
             myContext.startActivity(intent);
         });
     }

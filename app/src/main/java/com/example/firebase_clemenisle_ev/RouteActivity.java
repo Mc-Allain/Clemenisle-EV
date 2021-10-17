@@ -68,16 +68,16 @@ public class RouteActivity extends AppCompatActivity implements
 
     String userId;
 
-    boolean loggedIn = false;
+    boolean isLoggedIn = false;
 
     DatabaseReference bookingListRef;
 
     String bookingId, schedule, typeName, price, startStationName, endStationName, status, message;
-    boolean latest;
+    boolean isLatest;
 
     Station startStation, endStation;
 
-    boolean onScreen = false;
+    boolean isOnScreen = false;
 
     Handler optionHandler = new Handler();
     Runnable optionRunnable;
@@ -93,7 +93,7 @@ public class RouteActivity extends AppCompatActivity implements
     private void initSharedPreferences() {
         SharedPreferences sharedPreferences = myContext
                 .getSharedPreferences("login", Context.MODE_PRIVATE);
-        loggedIn = sharedPreferences.getBoolean("loggedIn", false);
+        isLoggedIn = sharedPreferences.getBoolean("isLoggedIn", false);
     }
 
     @Override
@@ -134,14 +134,14 @@ public class RouteActivity extends AppCompatActivity implements
 
         Intent intent = getIntent();
         bookingId = intent.getStringExtra("bookingId");
-        latest = intent.getBooleanExtra("latest", false);
+        isLatest = intent.getBooleanExtra("isLatest", false);
 
-        onScreen = true;
+        isOnScreen = true;
 
         Glide.with(myContext).load(R.drawable.magnify_4s_256px).into(reloadImage);
 
         firebaseAuth = FirebaseAuth.getInstance();
-        if(loggedIn) {
+        if(isLoggedIn) {
             firebaseUser = firebaseAuth.getCurrentUser();
             if(firebaseUser != null) {
                 firebaseUser.reload();
@@ -152,7 +152,7 @@ public class RouteActivity extends AppCompatActivity implements
         GridLayoutManager gridLayoutManager =
                 new GridLayoutManager(myContext, columnCount, GridLayoutManager.VERTICAL, false);
         routeView.setLayoutManager(gridLayoutManager);
-        routeAdapter = new RouteAdapter(myContext, routeList, columnCount, bookingId, status, latest, loggedIn);
+        routeAdapter = new RouteAdapter(myContext, routeList, columnCount, bookingId, status, isLatest, isLoggedIn);
         routeView.setAdapter(routeAdapter);
         routeAdapter.setOnVisitClickListener(this);
 
@@ -363,13 +363,13 @@ public class RouteActivity extends AppCompatActivity implements
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        onScreen = false;
+        isOnScreen = false;
     }
 
     private void finishLoading() {
         routeAdapter.setStatus(status);
 
-        if(onScreen) updateInfo();
+        if(isOnScreen) updateInfo();
 
         tvLog.setVisibility(View.GONE);
         reloadImage.setVisibility(View.GONE);

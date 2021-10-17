@@ -89,7 +89,7 @@ public class PostRegisterActivity extends AppCompatActivity {
                 "login", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
-        editor.putBoolean("loggedIn", false);
+        editor.putBoolean("isLoggedIn", false);
         editor.putBoolean("remember", false);
         editor.putString("emailAddress", null);
         editor.putString("password", null);
@@ -457,7 +457,7 @@ public class PostRegisterActivity extends AppCompatActivity {
                 .getSharedPreferences("login", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
-        editor.putBoolean("loggedIn", true);
+        editor.putBoolean("isLoggedIn", true);
         editor.putBoolean("remember", remember);
         if(remember) {
             editor.putString("emailAddress", emailAddress);

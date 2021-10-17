@@ -3,27 +3,26 @@ package com.example.firebase_clemenisle_ev.Fragments;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.firebase_clemenisle_ev.R;
 
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+
 public class BookingListFragment extends Fragment {
 
     Context myContext;
 
-    boolean loggedIn = false;
+    boolean isLoggedIn = false;
 
     private void initSharedPreferences() {
         SharedPreferences sharedPreferences = myContext
                 .getSharedPreferences("login", Context.MODE_PRIVATE);
-        loggedIn = sharedPreferences.getBoolean("loggedIn", false);
+        isLoggedIn = sharedPreferences.getBoolean("isLoggedIn", false);
     }
 
     private void sendSharedPreferences() {
@@ -49,7 +48,7 @@ public class BookingListFragment extends Fragment {
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
         FragmentTransaction fragmentTransaction;
 
-        if(loggedIn) {
+        if(isLoggedIn) {
             fragmentTransaction = fragmentManager.beginTransaction().
                     replace(R.id.bookingListFragmentContainer, new LoggedInBookingListFragment(), null);
         }

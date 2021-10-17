@@ -185,7 +185,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
     private void openItem(Booking booking) {
         Intent intent = new Intent(myContext, RouteActivity.class);
         intent.putExtra("bookingId", booking.getId());
-        intent.putExtra("latest",
+        intent.putExtra("isLatest",
                 bookingList.get(0).getId().equals(booking.getId()) &&
                         booking.getStatus().equals("Completed"));
 

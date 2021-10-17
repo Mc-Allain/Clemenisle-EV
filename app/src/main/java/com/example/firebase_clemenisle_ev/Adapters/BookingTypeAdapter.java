@@ -30,7 +30,7 @@ public class BookingTypeAdapter extends RecyclerView.Adapter<BookingTypeAdapter.
 
     String bookingTypeId = null;
 
-    boolean zeroCountDisable = false;
+    boolean isZeroCountDisable = false;
 
     OnItemClickListener onItemClickListener;
 
@@ -81,7 +81,7 @@ public class BookingTypeAdapter extends RecyclerView.Adapter<BookingTypeAdapter.
         if(bookingTypeId != null)
             isSelected = bookingTypeId.equals(id);
 
-        if(routeCount > 0 || !zeroCountDisable) {
+        if(routeCount > 0 || !isZeroCountDisable) {
             if(isSelected) {
                 backgroundLayout.setBackgroundColor(colorBlue);
                 tvTypeName.setTextColor(colorWhite);
@@ -119,7 +119,7 @@ public class BookingTypeAdapter extends RecyclerView.Adapter<BookingTypeAdapter.
         backgroundLayout.setLayoutParams(layoutParams);
 
         backgroundLayout.setOnClickListener(view -> {
-            if(routeCount > 0 || !zeroCountDisable) {
+            if(routeCount > 0 || !isZeroCountDisable) {
                 bookingTypeId = id;
                 onItemClickListener.sendBookingType(bookingType);
                 notifyDataSetChanged();

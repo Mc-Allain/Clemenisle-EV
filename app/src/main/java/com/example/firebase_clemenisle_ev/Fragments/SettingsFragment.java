@@ -3,11 +3,6 @@ package com.example.firebase_clemenisle_ev.Fragments;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +14,10 @@ import com.example.firebase_clemenisle_ev.R;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 public class SettingsFragment extends Fragment {
 
@@ -32,12 +31,12 @@ public class SettingsFragment extends Fragment {
     );
     List<Setting> settings = new ArrayList<>();
 
-    boolean loggedIn = false;
+    boolean isLoggedIn = false;
 
     private void initSharedPreferences() {
         SharedPreferences sharedPreferences = myContext
                 .getSharedPreferences("login", Context.MODE_PRIVATE);
-        loggedIn = sharedPreferences.getBoolean("loggedIn", false);
+        isLoggedIn = sharedPreferences.getBoolean("isLoggedIn", false);
     }
 
     @Override
@@ -58,7 +57,7 @@ public class SettingsFragment extends Fragment {
 
         for(Setting setting : settingList) {
             if(setting.getSettingName().equals("Log out")) {
-                if(loggedIn) settings.add(setting);
+                if(isLoggedIn) settings.add(setting);
             }
             else {
                 settings.add(setting);

@@ -1,6 +1,7 @@
 package com.example.firebase_clemenisle_ev.Adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Build;
 import android.text.Html;
@@ -14,6 +15,7 @@ import android.widget.TextView;
 
 import com.example.firebase_clemenisle_ev.Classes.Comment;
 import com.example.firebase_clemenisle_ev.Classes.User;
+import com.example.firebase_clemenisle_ev.LoginActivity;
 import com.example.firebase_clemenisle_ev.R;
 import com.ms.square.android.expandabletextview.ExpandableTextView;
 
@@ -104,7 +106,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
             if(user.getMiddleName().length() > 0) fullName += " " + user.getMiddleName();
             tvUserFullName.setText(fromHtml(fullName));
 
-            boolean upVoted = false, downVoted = false;
+            boolean isUpVoted = false, isDownVoted = false;
 
             if(commentRecord != null) {
                 String commentValue = commentRecord.getValue();
@@ -210,7 +212,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
 
                         if(user1.getId().equals(userId)) {
                             upVoteImage.getDrawable().setTint(colorBlue);
-                            upVoted = true;
+                            isUpVoted = true;
                         }
                     }
                 }
@@ -222,7 +224,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
 
                         if(user1.getId().equals(userId)) {
                             downVoteImage.getDrawable().setTint(colorRed);
-                            downVoted = true;
+                            isDownVoted = true;
                         }
                     }
                 }
@@ -244,7 +246,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
                     }
                 }
             }
-            boolean finalUpVoted = upVoted, finalDownVoted = downVoted;
+            boolean finalUpVoted = isUpVoted, finalDownVoted = isDownVoted;
 
             tvUpVotes.setText(String.valueOf(upVotes));
             tvDownVotes.setText(String.valueOf(downVotes));
@@ -279,17 +281,23 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
                 return false;
             });
 
-            upVoteImage.setOnClickListener(view ->
+            upVoteImage.setOnClickListener(view -> {
+                if(userId == null) loginPrompt();
+                else {
                     onActionButtonClickedListener.
                             upVoteImageOnClick(spotId, user.getId(), finalCommentRecord,
-                                    finalUpVoted, finalDownVoted)
-            );
+                                    finalUpVoted, finalDownVoted);
+                }
+            });
 
-            downVoteImage.setOnClickListener(view ->
+            downVoteImage.setOnClickListener(view -> {
+                if(userId == null) loginPrompt();
+                else {
                     onActionButtonClickedListener.
                             downVoteImageOnClick(spotId, user.getId(), finalCommentRecord,
-                                    finalUpVoted, finalDownVoted)
-            );
+                                    finalUpVoted, finalDownVoted);
+                }
+            });
 
             editImage.setOnClickListener(view -> onActionButtonClickedListener.editImageOnClick());
 
@@ -297,10 +305,16 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
 
             deactivateImage.setOnClickListener(view -> onActionButtonClickedListener.deactivateImageOnClick());
 
-            reportImage.setOnClickListener(view ->
-                    onActionButtonClickedListener.
-                            reportImageOnClick(spotId, user.getId(), finalCommentRecord)
-            );
+            reportImage.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if(userId == null) loginPrompt();
+                    else {
+                        onActionButtonClickedListener.
+                                reportImageOnClick(spotId, user.getId(), finalCommentRecord);
+                    }
+                }
+            });
         }
         else if(position == loadCommentItemPosition && position != users.size()) {
             backgroundLayout.setVisibility(View.VISIBLE);
@@ -325,8 +339,11 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
 
         int top = dpToPx(4), bottom = dpToPx(4);
 
-        boolean isLastItem = position + 1 == getItemCount();
+        boolean isFirstItem = position + 1 == 1, isLastItem = position + 1 == getItemCount();
 
+        if(isFirstItem) {
+            top = dpToPx(8);
+        }
         if(isLastItem) {
             bottom = dpToPx(8);
         }
@@ -335,6 +352,11 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
                 (ConstraintLayout.LayoutParams) backgroundLayout.getLayoutParams();
         layoutParams.setMargins(layoutParams.leftMargin, top, layoutParams.rightMargin, bottom);
         backgroundLayout.setLayoutParams(layoutParams);
+    }
+
+    private void loginPrompt() {
+        Intent intent1 = new Intent(myContext, LoginActivity.class);
+        myContext.startActivity(intent1);
     }
 
     public interface OnActionButtonClicked {
@@ -350,9 +372,9 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
         void deactivateImageOnClick();
         void reportImageOnClick(String spotId, String senderUserId, Comment comment);
         void upVoteImageOnClick(String spotId, String senderUserId, Comment comment,
-                                boolean upVoted, boolean downVoted);
+                                boolean isUpVoted, boolean isDownVoted);
         void downVoteImageOnClick(String spotId, String senderUserId, Comment comment,
-                                  boolean upVoted, boolean downVoted);
+                                  boolean isUpVoted, boolean isDownVoted);
     }
 
     public void setOnActionButtonClickedListener(OnActionButtonClicked onActionButtonClickedListener) {

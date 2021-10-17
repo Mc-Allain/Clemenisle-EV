@@ -114,7 +114,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
                 "login", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
-        editor.putBoolean("loggedIn", false);
+        editor.putBoolean("isLoggedIn", false);
         editor.putBoolean("remember", false);
         editor.putString("emailAddress", null);
         editor.putString("password", null);

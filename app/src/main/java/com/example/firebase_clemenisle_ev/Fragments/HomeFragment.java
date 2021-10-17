@@ -82,7 +82,7 @@ public class HomeFragment extends Fragment implements
     String userId;
     User user;
 
-    boolean listMode = true, loggedIn = false;
+    boolean listMode = true, isLoggedIn = false;
     boolean isResponseError = true;
 
     String defaultLogText = "No Records";
@@ -97,7 +97,7 @@ public class HomeFragment extends Fragment implements
 
         sharedPreferences = myContext
                 .getSharedPreferences("login", Context.MODE_PRIVATE);
-        loggedIn = sharedPreferences.getBoolean("loggedIn", false);
+        isLoggedIn = sharedPreferences.getBoolean("isLoggedIn", false);
 
         sharedPreferences = myContext
                 .getSharedPreferences("sortMode", Context.MODE_PRIVATE);
@@ -127,7 +127,7 @@ public class HomeFragment extends Fragment implements
                 "login", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
-        editor.putBoolean("loggedIn", false);
+        editor.putBoolean("isLoggedIn", false);
         editor.putBoolean("remember", false);
         editor.putString("emailAddress", null);
         editor.putString("password", null);
@@ -167,7 +167,7 @@ public class HomeFragment extends Fragment implements
         initSharedPreferences();
 
         firebaseAuth = FirebaseAuth.getInstance();
-        if(loggedIn) {
+        if(isLoggedIn) {
             firebaseUser = firebaseAuth.getCurrentUser();
             if(firebaseUser != null) firebaseUser.reload();
             if(firebaseUser == null) {
@@ -572,7 +572,7 @@ public class HomeFragment extends Fragment implements
         copy.clear();
         copy.addAll(touristSpotList);
 
-        if(loggedIn) getCurrentUserLikedSpots();
+        if(isLoggedIn) getCurrentUserLikedSpots();
         else finishLoading();
     }
 
@@ -639,13 +639,13 @@ public class HomeFragment extends Fragment implements
         if (listMode) {
             viewModeImage.setImageResource(R.drawable.ic_baseline_dynamic_feed_24);
             touristSpotListAdapter = new TouristSpotListAdapter(
-                    myContext, touristSpotList, likedSpots, loggedIn);
+                    myContext, touristSpotList, likedSpots, isLoggedIn);
             touristSpotView.setAdapter(touristSpotListAdapter);
             touristSpotListAdapter.setOnLikeClickListener(this);
         } else {
             viewModeImage.setImageResource(R.drawable.ic_baseline_view_list_24);
             touristSpotAdapter = new TouristSpotAdapter(
-                    myContext, touristSpotList, likedSpots, loggedIn);
+                    myContext, touristSpotList, likedSpots, isLoggedIn);
             touristSpotView.setAdapter(touristSpotAdapter);
             touristSpotAdapter.setOnLikeClickListener(this);
         }

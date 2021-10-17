@@ -95,7 +95,7 @@ public class LoggedInUserProfileFragment extends Fragment {
     User user;
 
     String userId;
-    boolean loggedIn = false;
+    boolean isLoggedIn = false;
 
     Dialog fullNameDialog;
     ImageView fullNameDialogCloseImage;
@@ -141,7 +141,7 @@ public class LoggedInUserProfileFragment extends Fragment {
     private void initSharedPreferences() {
         SharedPreferences sharedPreferences = myContext
                 .getSharedPreferences("login", Context.MODE_PRIVATE);
-        loggedIn = sharedPreferences.getBoolean("loggedIn", false);
+        isLoggedIn = sharedPreferences.getBoolean("isLoggedIn", false);
     }
 
     private void sendLoginPreferences() {
@@ -149,7 +149,7 @@ public class LoggedInUserProfileFragment extends Fragment {
                 "login", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
-        editor.putBoolean("loggedIn", false);
+        editor.putBoolean("isLoggedIn", false);
         editor.putBoolean("remember", false);
         editor.putString("emailAddress", null);
         editor.putString("password", null);
@@ -200,7 +200,7 @@ public class LoggedInUserProfileFragment extends Fragment {
         initSharedPreferences();
 
         firebaseAuth = FirebaseAuth.getInstance();
-        if(loggedIn) {
+        if(isLoggedIn) {
             firebaseUser = firebaseAuth.getCurrentUser();
             if(firebaseUser != null) firebaseUser.reload();
             if(firebaseUser == null) {

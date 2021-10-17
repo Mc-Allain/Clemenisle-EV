@@ -34,10 +34,10 @@ public class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.ViewHolder> 
     List<Route> routeList;
     int columnCount;
     String bookingId, status;
-    boolean latest;
+    boolean isLatest;
     LayoutInflater inflater;
 
-    boolean loggedIn;
+    boolean isLoggedIn;
     String userId;
 
     Context myContext;
@@ -54,13 +54,13 @@ public class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.ViewHolder> 
     }
 
     public RouteAdapter(Context context, List<Route> routeList, int columnCount,
-                        String bookingId, String status, boolean latest, boolean loggedIn) {
+                        String bookingId, String status, boolean isLatest, boolean isLoggedIn) {
         this.routeList = routeList;
         this.columnCount = columnCount;
         this.bookingId = bookingId;
         this.status = status;
-        this.latest = latest;
-        this.loggedIn = loggedIn;
+        this.isLatest = isLatest;
+        this.isLoggedIn = isLoggedIn;
         this.inflater =  LayoutInflater.from(context);
     }
 
@@ -82,7 +82,7 @@ public class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.ViewHolder> 
         myResources = myContext.getResources();
 
         firebaseAuth = FirebaseAuth.getInstance();
-        if(loggedIn) {
+        if(isLoggedIn) {
             firebaseUser = firebaseAuth.getCurrentUser();
             if(firebaseUser != null) {
                 firebaseUser.reload();
@@ -113,7 +113,7 @@ public class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.ViewHolder> 
             visitButton.setBackgroundColor(colorRed);
         }
 
-        visitButton.setEnabled(latest);
+        visitButton.setEnabled(isLatest);
 
         ConstraintLayout.LayoutParams layoutParams =
                 (ConstraintLayout.LayoutParams) routeThumbnail.getLayoutParams();

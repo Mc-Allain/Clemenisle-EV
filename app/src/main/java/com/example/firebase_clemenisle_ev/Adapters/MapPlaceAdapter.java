@@ -154,7 +154,7 @@ public class MapPlaceAdapter extends RecyclerView.Adapter<MapPlaceAdapter.ViewHo
     }
 
     public interface OnItemClickListener {
-        void sendDataSet(List<Place> places, int type, boolean selectAction);
+        void sendDataSet(List<Place> places, int type, boolean isSelectAction);
         void sendSelectedPlace(Place selectedPlace, int type);
     }
 

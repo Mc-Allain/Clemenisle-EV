@@ -58,7 +58,7 @@ implements MapTouristSpotFragment.OnComboBoxClickListener,
     String name;
 
     int bottom;
-    boolean placeViewIsShow = false;
+    boolean isPlaceViewShown = false;
 
     ColorStateList cslRed, cslBlue;
 
@@ -136,7 +136,7 @@ implements MapTouristSpotFragment.OnComboBoxClickListener,
             transition3(constraintSet);
 
             fab.setColorFilter(myResources.getColor(R.color.white));
-            placeViewIsShow = !placeViewIsShow;
+            isPlaceViewShown = !isPlaceViewShown;
             fab.setEnabled(true);
         });
 
@@ -166,7 +166,7 @@ implements MapTouristSpotFragment.OnComboBoxClickListener,
     }
 
     private void transition1(ConstraintSet constraintSet) {
-        if(placeViewIsShow) {
+        if(isPlaceViewShown) {
             constraintSet.clear(placeViewLayout.getId(), ConstraintSet.BOTTOM);
             constraintSet.connect(placeViewLayout.getId(), ConstraintSet.TOP,
                     constraintLayout.getId(), ConstraintSet.BOTTOM);
@@ -182,7 +182,7 @@ implements MapTouristSpotFragment.OnComboBoxClickListener,
     }
 
     private void transition2(ConstraintSet constraintSet) {
-        if(placeViewIsShow) {
+        if(isPlaceViewShown) {
             constraintSet.connect(fabLayout.getId(), ConstraintSet.BOTTOM,
                     constraintLayout.getId(), ConstraintSet.BOTTOM);
 
@@ -210,7 +210,7 @@ implements MapTouristSpotFragment.OnComboBoxClickListener,
     }
 
     private void transition3(ConstraintSet constraintSet) {
-        if(placeViewIsShow) {
+        if(isPlaceViewShown) {
             constraintSet.connect(mapLayout.getId(), ConstraintSet.BOTTOM,
                     constraintLayout.getId(), ConstraintSet.BOTTOM);
         }
@@ -247,8 +247,8 @@ implements MapTouristSpotFragment.OnComboBoxClickListener,
     }
 
     @Override
-    public void sendSelectedTouristSpots(List<Place> places, boolean selectAction) {
-        if(selectAction) {
+    public void sendSelectedTouristSpots(List<Place> places, boolean isSelectAction) {
+        if(isSelectAction) {
             mapFragment.markTouristSpot(places);
         }
         else {
@@ -262,8 +262,8 @@ implements MapTouristSpotFragment.OnComboBoxClickListener,
     }
 
     @Override
-    public void sendSelectedStations(List<Place> places, boolean selectAction) {
-        if(selectAction) {
+    public void sendSelectedStations(List<Place> places, boolean isSelectAction) {
+        if(isSelectAction) {
             mapFragment.markStation(places);
         }
         else {

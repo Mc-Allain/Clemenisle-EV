@@ -87,14 +87,14 @@ public class MapTouristSpotFragment extends Fragment implements MapPlaceAdapter.
     }
 
     public interface OnComboBoxClickListener {
-        void sendSelectedTouristSpots(List<Place> places, boolean selectAction);
+        void sendSelectedTouristSpots(List<Place> places, boolean isSelectAction);
         void sendSelectedTouristSpot(Place selectedPlace);
     }
 
     @Override
-    public void sendDataSet(List<Place> places, int type, boolean selectAction) {
+    public void sendDataSet(List<Place> places, int type, boolean isSelectAction) {
         if(type == 0) {
-            onComboBoxClickListener.sendSelectedTouristSpots(places, selectAction);
+            onComboBoxClickListener.sendSelectedTouristSpots(places, isSelectAction);
 
             cbTouristSpot.setChecked(places.size() == placeList.size());
         }

@@ -424,7 +424,7 @@ public class LoginFragment extends Fragment {
                 .getSharedPreferences("login", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
-        editor.putBoolean("loggedIn", true);
+        editor.putBoolean("isLoggedIn", true);
         editor.putBoolean("remember", cbRemember.isChecked());
         if(cbRemember.isChecked()) {
             editor.putString("emailAddress", emailAddress);

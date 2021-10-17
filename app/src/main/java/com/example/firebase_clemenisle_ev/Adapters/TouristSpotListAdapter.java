@@ -50,7 +50,7 @@ public class TouristSpotListAdapter extends RecyclerView.Adapter<TouristSpotList
     List<SimpleTouristSpot> likedSpots;
     LayoutInflater inflater;
 
-    boolean loggedIn;
+    boolean isLoggedIn;
     String userId;
 
     Context myContext;
@@ -67,11 +67,11 @@ public class TouristSpotListAdapter extends RecyclerView.Adapter<TouristSpotList
     }
 
     public TouristSpotListAdapter(Context context, List<DetailedTouristSpot> touristSpots,
-                                  List<SimpleTouristSpot> likedSpots, boolean loggedIn) {
+                                  List<SimpleTouristSpot> likedSpots, boolean isLoggedIn) {
         this.touristSpots = touristSpots;
         this.likedSpots = likedSpots;
         this.inflater = LayoutInflater.from(context);
-        this.loggedIn = loggedIn;
+        this.isLoggedIn = isLoggedIn;
     }
 
     @NonNull
@@ -88,7 +88,7 @@ public class TouristSpotListAdapter extends RecyclerView.Adapter<TouristSpotList
                 bookImage = holder.bookImage, moreImage = holder.moreImage,
                 openImage = holder.openImage, i360Image = holder.i360Image, locateImage = holder.locateImage;
         TextView tvName = holder.tvName, tvLikes = holder.tvLikes, tvVisits = holder.tvVisits,
-                tvBooks = holder.tvBooks, tvLiked = holder.tvLiked, tvOption = holder.tvOption,
+                tvBooks = holder.tvBooks, tvOption = holder.tvOption,
                 tvOpen = holder.tvOpen, tv360Image = holder.tv360Image, tvLocate = holder.tvLocate;
         ConstraintLayout backgroundLayout = holder.backgroundLayout,
                 buttonLayout = holder.buttonLayout;
@@ -97,7 +97,7 @@ public class TouristSpotListAdapter extends RecyclerView.Adapter<TouristSpotList
         myResources = myContext.getResources();
 
         firebaseAuth = FirebaseAuth.getInstance();
-        if(loggedIn) {
+        if(isLoggedIn) {
             firebaseUser = firebaseAuth.getCurrentUser();
             if(firebaseUser != null) {
                 firebaseUser.reload();
@@ -127,18 +127,11 @@ public class TouristSpotListAdapter extends RecyclerView.Adapter<TouristSpotList
         tvVisits.setText(String.valueOf(visits));
         tvBooks.setText(String.valueOf(books));
 
-        tvLiked.setText(String.valueOf(
-                isInLikedSpots(touristSpot)
-        ));
-        String liked = tvLiked.getText().toString();
+        boolean isLiked = isInLikedSpots(touristSpot);
 
         int color;
-        if(liked.equals("false")) {
-            color = myResources.getColor(R.color.black);
-        }
-        else {
-            color = myResources.getColor(R.color.blue);
-        }
+        if(!isLiked) color = myResources.getColor(R.color.black);
+        else color = myResources.getColor(R.color.blue);
         likeImage.setColorFilter(color);
 
         closeOption(buttonLayout, backgroundLayout, moreImage, tvOption);
@@ -161,17 +154,13 @@ public class TouristSpotListAdapter extends RecyclerView.Adapter<TouristSpotList
 
         likeImage.setEnabled(true);
         likeImage.setOnClickListener(view -> {
-            if(loggedIn) {
+            if(isLoggedIn) {
                 if(firebaseUser != null) {
                     likeImage.setEnabled(false);
                     onLikeClickListener.setProgressBarToVisible();
 
-                    if(liked.equals("false")) {
-                        likeSpot(touristSpot);
-                    }
-                    else{
-                        unlikeSpot(id);
-                    }
+                    if(!isLiked) likeSpot(touristSpot);
+                    else unlikeSpot(id);
                 }
             }
             else {
@@ -293,7 +282,7 @@ public class TouristSpotListAdapter extends RecyclerView.Adapter<TouristSpotList
     private void openItem(String id) {
         Intent intent = new Intent(myContext, SelectedSpotActivity.class);
         intent.putExtra("id", id);
-        intent.putExtra("loggedIn", loggedIn);
+        intent.putExtra("isLoggedIn", isLoggedIn);
         myContext.startActivity(intent);
     }
 
@@ -364,8 +353,7 @@ public class TouristSpotListAdapter extends RecyclerView.Adapter<TouristSpotList
     public static class ViewHolder extends RecyclerView.ViewHolder{
         ImageView thumbnail, likeImage, visitImage, bookImage, moreImage,
         openImage, i360Image, locateImage;
-        TextView tvName, tvLikes, tvVisits, tvBooks, tvLiked, tvOption,
-        tvOpen, tv360Image, tvLocate;
+        TextView tvName, tvLikes, tvVisits, tvBooks, tvOption, tvOpen, tv360Image, tvLocate;
         ConstraintLayout backgroundLayout, buttonLayout;
 
         public ViewHolder(@NonNull View itemView) {
@@ -381,7 +369,6 @@ public class TouristSpotListAdapter extends RecyclerView.Adapter<TouristSpotList
             moreImage = itemView.findViewById(R.id.moreImage);
             backgroundLayout = itemView.findViewById(R.id.backgroundLayout);
             buttonLayout = itemView.findViewById(R.id.buttonLayout);
-            tvLiked = itemView.findViewById(R.id.tvLiked);
             tvOption = itemView.findViewById(R.id.tvOption);
             openImage = itemView.findViewById(R.id.openImage);
             i360Image = itemView.findViewById(R.id.i360Image);

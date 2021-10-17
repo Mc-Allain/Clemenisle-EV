@@ -254,7 +254,7 @@ public class BookingActivity extends AppCompatActivity implements
 
     String userId;
 
-    boolean loggedIn = false;
+    boolean isLoggedIn = false;
 
     DatabaseReference usersRef;
     boolean isGeneratingBookingId = false;
@@ -262,7 +262,7 @@ public class BookingActivity extends AppCompatActivity implements
     private void initSharedPreferences() {
         SharedPreferences sharedPreferences = myContext
                 .getSharedPreferences("login", Context.MODE_PRIVATE);
-        loggedIn = sharedPreferences.getBoolean("loggedIn", false);
+        isLoggedIn = sharedPreferences.getBoolean("isLoggedIn", false);
     }
 
     private void sendLoginPreferences() {
@@ -270,7 +270,7 @@ public class BookingActivity extends AppCompatActivity implements
                 "login", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
-        editor.putBoolean("loggedIn", false);
+        editor.putBoolean("isLoggedIn", false);
         editor.putBoolean("remember", false);
         editor.putString("emailAddress", null);
         editor.putString("password", null);
@@ -371,7 +371,7 @@ public class BookingActivity extends AppCompatActivity implements
         initSharedPreferences();
 
         firebaseAuth = FirebaseAuth.getInstance();
-        if(loggedIn) {
+        if(isLoggedIn) {
             firebaseUser = firebaseAuth.getCurrentUser();
             if(firebaseUser != null) firebaseUser.reload();
             if(firebaseUser == null) {
@@ -1380,7 +1380,7 @@ public class BookingActivity extends AppCompatActivity implements
 
         intent = new Intent(myContext, RouteActivity.class);
         intent.putExtra("bookingId",bookingId);
-        intent.putExtra("latest", false);
+        intent.putExtra("isLatest", false);
 
         startActivity(intent);
 

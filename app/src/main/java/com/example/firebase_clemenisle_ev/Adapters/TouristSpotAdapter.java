@@ -53,7 +53,7 @@ public class TouristSpotAdapter extends RecyclerView.Adapter<TouristSpotAdapter.
     List<SimpleTouristSpot> likedSpots;
     LayoutInflater inflater;
 
-    boolean loggedIn;
+    boolean isLoggedIn;
     String userId;
 
     Context myContext;
@@ -70,11 +70,11 @@ public class TouristSpotAdapter extends RecyclerView.Adapter<TouristSpotAdapter.
     }
 
     public TouristSpotAdapter(Context context, List<DetailedTouristSpot> touristSpots,
-                              List<SimpleTouristSpot> likedSpots, boolean loggedIn) {
+                              List<SimpleTouristSpot> likedSpots, boolean isLoggedIn) {
         this.touristSpots = touristSpots;
         this.likedSpots = likedSpots;
         this.inflater = LayoutInflater.from(context);
-        this.loggedIn = loggedIn;
+        this.isLoggedIn = isLoggedIn;
     }
 
     @NonNull
@@ -92,8 +92,7 @@ public class TouristSpotAdapter extends RecyclerView.Adapter<TouristSpotAdapter.
                 i360Image = holder.i360Image, locateImage = holder.locateImage;
         TextView tvName = holder.tvName, tvStation = holder.tvStation,
                 tvLikes = holder.tvLikes, tvVisits = holder.tvVisits,
-                tvBooks = holder.tvBooks, tvNearSpot = holder.tvNearSpot,
-                tvLiked = holder.tvLiked, tvOption = holder.tvOption,
+                tvBooks = holder.tvBooks, tvNearSpot = holder.tvNearSpot, tvOption = holder.tvOption,
                 tv360Image = holder.tv360Image, tvLocate = holder.tvLocate;
         ExpandableTextView extvDescription = holder.extvDescription;
         ConstraintLayout backgroundLayout = holder.backgroundLayout, buttonLayout = holder.buttonLayout,
@@ -104,7 +103,7 @@ public class TouristSpotAdapter extends RecyclerView.Adapter<TouristSpotAdapter.
         myResources = myContext.getResources();
 
         firebaseAuth = FirebaseAuth.getInstance();
-        if(loggedIn) {
+        if(isLoggedIn) {
             firebaseUser = firebaseAuth.getCurrentUser();
             if(firebaseUser != null) {
                 firebaseUser.reload();
@@ -164,7 +163,7 @@ public class TouristSpotAdapter extends RecyclerView.Adapter<TouristSpotAdapter.
             LinearLayoutManager linearLayout =
                     new LinearLayoutManager(myContext, LinearLayoutManager.HORIZONTAL, false);
             nearSpotView.setLayoutManager(linearLayout);
-            NearSpotAdapter nearSpotAdapter = new NearSpotAdapter(myContext, nearSpots, loggedIn);
+            NearSpotAdapter nearSpotAdapter = new NearSpotAdapter(myContext, nearSpots, isLoggedIn);
             nearSpotView.setAdapter(nearSpotAdapter);
         }
         else {
@@ -172,18 +171,11 @@ public class TouristSpotAdapter extends RecyclerView.Adapter<TouristSpotAdapter.
             nearSpotAdapter.setNearSpots(nearSpots);
         }
 
-        tvLiked.setText(String.valueOf(
-                isInLikedSpots(touristSpot)
-        ));
-        String liked = tvLiked.getText().toString();
+        boolean isLiked =  isInLikedSpots(touristSpot);
 
         int color;
-        if(liked.equals("false")) {
-            color = myResources.getColor(R.color.black);
-        }
-        else {
-            color = myResources.getColor(R.color.blue);
-        }
+        if(!isLiked) color = myResources.getColor(R.color.black);
+        else color = myResources.getColor(R.color.blue);
         likeImage.setColorFilter(color);
 
         closeOption(buttonLayout, connectingLayout, moreImage, tvOption);
@@ -206,17 +198,13 @@ public class TouristSpotAdapter extends RecyclerView.Adapter<TouristSpotAdapter.
 
         likeImage.setEnabled(true);
         likeImage.setOnClickListener(view -> {
-            if(loggedIn) {
+            if(isLoggedIn) {
                 if(firebaseUser != null) {
                     likeImage.setEnabled(false);
                     onLikeClickListener.setProgressBarToVisible();
 
-                    if(liked.equals("false")) {
-                        likeSpot(touristSpot);
-                    }
-                    else{
-                        unlikeSpot(id);
-                    }
+                    if(!isLiked) likeSpot(touristSpot);
+                    else unlikeSpot(id);
                 }
             }
             else {
@@ -397,7 +385,7 @@ public class TouristSpotAdapter extends RecyclerView.Adapter<TouristSpotAdapter.
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView thumbnail, likeImage, visitImage, bookImage, moreImage, i360Image, locateImage;
-        TextView tvName, tvStation, tvLikes, tvVisits, tvBooks, tvNearSpot, tvLiked, tvOption,
+        TextView tvName, tvStation, tvLikes, tvVisits, tvBooks, tvNearSpot, tvOption,
         tv360Image, tvLocate;
         ExpandableTextView extvDescription;
         ConstraintLayout backgroundLayout, buttonLayout, connectingLayout;
@@ -420,7 +408,6 @@ public class TouristSpotAdapter extends RecyclerView.Adapter<TouristSpotAdapter.
             buttonLayout = itemView.findViewById(R.id.buttonLayout);
             tvNearSpot = itemView.findViewById(R.id.tvNearSpot);
             nearSpotView = itemView.findViewById(R.id.nearSpotView);
-            tvLiked = itemView.findViewById(R.id.tvLiked);
             tvOption = itemView.findViewById(R.id.tvOption);
             i360Image = itemView.findViewById(R.id.i360Image);
             locateImage = itemView.findViewById(R.id.locateImage);

@@ -75,12 +75,12 @@ public class LoggedInBookingListFragment extends Fragment {
     boolean success1, success2, success3, success4, success5;
 
     String userId;
-    boolean loggedIn = false;
+    boolean isLoggedIn = false;
 
     private void initSharedPreferences() {
         SharedPreferences sharedPreferences = myContext
                 .getSharedPreferences("login", Context.MODE_PRIVATE);
-        loggedIn = sharedPreferences.getBoolean("loggedIn", false);
+        isLoggedIn = sharedPreferences.getBoolean("isLoggedIn", false);
     }
 
     private void sendLoginPreferences() {
@@ -88,7 +88,7 @@ public class LoggedInBookingListFragment extends Fragment {
                 "login", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
-        editor.putBoolean("loggedIn", false);
+        editor.putBoolean("isLoggedIn", false);
         editor.putBoolean("remember", false);
         editor.putString("emailAddress", null);
         editor.putString("password", null);
@@ -142,7 +142,7 @@ public class LoggedInBookingListFragment extends Fragment {
         initSharedPreferences();
 
         firebaseAuth = FirebaseAuth.getInstance();
-        if(loggedIn) {
+        if(isLoggedIn) {
             firebaseUser = firebaseAuth.getCurrentUser();
             if(firebaseUser != null) firebaseUser.reload();
             if(firebaseUser == null) {

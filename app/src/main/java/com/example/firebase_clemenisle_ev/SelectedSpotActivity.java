@@ -2,6 +2,7 @@ package com.example.firebase_clemenisle_ev;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
@@ -15,6 +16,7 @@ import android.transition.ChangeBounds;
 import android.transition.Transition;
 import android.transition.TransitionManager;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -65,18 +67,19 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
     ConstraintLayout constraintLayout, headerLayout;
 
     ImageView thumbnail, likeImage, visitImage, bookImage, moreImage, i360Image, locateImage, homeImage;
-    TextView tvName, tvStation, tvLikes, tvVisits, tvBooks, tvNearSpot, tvLiked, tvOption,
-            tv360Image, tvLocate;
+    TextView tvName, tvStation, tvLikes, tvVisits, tvBooks, tvNearSpot, tv360Image, tvLocate;
     ExpandableTextView extvDescription;
     ConstraintLayout  backgroundLayout, buttonLayout, connectingLayout;
     ScrollView scrollView;
     RecyclerView nearSpotView;
     ProgressBar progressBar;
 
-    ConstraintLayout commentTitleLayout, commentLayout,
+    ConstraintLayout commentTitleLayout, commentLayout, loginCommentLayout,
             commentInputLayout, userCommentLayout, commentBackgroundLayout;
     EditText etComment;
     ImageView sendImage, commentArrowImage;
+
+    Button loginButton;
 
     TextView tvUserFullName, tvCommentStatus;
     ExpandableTextView extvComment;
@@ -92,7 +95,7 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
 
     String userId;
 
-    boolean loggedIn = false;
+    boolean isLoggedIn = false;
 
     String id, name, description, img;
     int likes, visits, books;
@@ -108,13 +111,13 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
     List<SimpleTouristSpot> likedSpots = new ArrayList<>();
     SimpleTouristSpot selectedSpot;
 
-    boolean onScreen = false;
-    String liked;
+    boolean isOnScreen = false;
+    boolean isLiked, isOptionShown;
 
     DatabaseReference usersRef, likedSpotsRef, commentsRef,
             upVotedCommentsRef, downVotedCommentsRef, reportedCommentsRef;
 
-    boolean isCommentShown = false, commentShowingAnimation = false;
+    boolean isCommentShown = false, commentShowingAnimation = true;
 
     CommentAdapter commentAdapter;
     List<User> users = new ArrayList<>(), commentedUsers = new ArrayList<>(),
@@ -141,6 +144,18 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
     Toast reportToast;
     boolean isReportClicked = false;
 
+    private void sendLoginPreferences() {
+        SharedPreferences sharedPreferences = myContext.getSharedPreferences(
+                "login", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        editor.putBoolean("isLoggedIn", false);
+        editor.putBoolean("remember", false);
+        editor.putString("emailAddress", null);
+        editor.putString("password", null);
+        editor.apply();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -165,8 +180,6 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
         buttonLayout = findViewById(R.id.buttonLayout);
         tvNearSpot = findViewById(R.id.tvNearSpot);
         nearSpotView = findViewById(R.id.nearSpotView);
-        tvLiked = findViewById(R.id.tvLiked);
-        tvOption = findViewById(R.id.tvOption);
         i360Image = findViewById(R.id.i360Image);
         locateImage = findViewById(R.id.locateImage);
         tv360Image = findViewById(R.id.tv360Image);
@@ -177,10 +190,13 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
 
         commentTitleLayout = findViewById(R.id.commentTitleLayout);
         commentLayout = findViewById(R.id.commentLayout);
+        loginCommentLayout = findViewById(R.id.loginCommentLayout);
         commentInputLayout = findViewById(R.id.commentInputLayout);
         etComment = findViewById(R.id.etComment);
         sendImage = findViewById(R.id.sendImage);
         commentArrowImage = findViewById(R.id.commentArrowImage);
+
+        loginButton = findViewById(R.id.loginButton);
 
         userCommentLayout = findViewById(R.id.userCommentLayout);
         commentBackgroundLayout = findViewById(R.id.commentBackgroundLayout);
@@ -203,33 +219,45 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
 
         Intent intent = getIntent();
         id = intent.getStringExtra("id");
-        loggedIn = intent.getBooleanExtra("loggedIn", false);
+        isLoggedIn = intent.getBooleanExtra("isLoggedIn", false);
 
-        onScreen = true;
+        isOnScreen = true;
 
         sendImage.setEnabled(false);
         sendImage.setColorFilter(colorInitial);
 
         firebaseAuth = FirebaseAuth.getInstance();
-        if(loggedIn) {
+        if(isLoggedIn) {
             firebaseUser = firebaseAuth.getCurrentUser();
-            if(firebaseUser != null) {
-                firebaseUser.reload();
+            if(firebaseUser != null) firebaseUser.reload();
+            if(firebaseUser == null) {
+                firebaseAuth.signOut();
+                sendLoginPreferences();
+
+                Toast.makeText(
+                        myContext,
+                        "Failed to get the current user",
+                        Toast.LENGTH_LONG
+                ).show();
+            }
+            else {
                 userId = firebaseUser.getUid();
             }
         }
 
         usersRef = firebaseDatabase.getReference("users");
-        likedSpotsRef = usersRef.child(userId).child("likedSpots");
-        commentsRef = usersRef.child(userId).child("comments");
-        upVotedCommentsRef = usersRef.child(userId).child("upVotedComments");
-        downVotedCommentsRef = usersRef.child(userId).child("downVotedComments");
-        reportedCommentsRef = usersRef.child(userId).child("reportedComments");
+        if(userId != null) {
+            likedSpotsRef = usersRef.child(userId).child("likedSpots");
+            commentsRef = usersRef.child(userId).child("comments");
+            upVotedCommentsRef = usersRef.child(userId).child("upVotedComments");
+            downVotedCommentsRef = usersRef.child(userId).child("downVotedComments");
+            reportedCommentsRef = usersRef.child(userId).child("reportedComments");
+        }
 
         LinearLayoutManager linearLayout =
                 new LinearLayoutManager(myContext, LinearLayoutManager.HORIZONTAL, false);
         nearSpotView.setLayoutManager(linearLayout);
-        nearSpotAdapter = new NearSpotAdapter(myContext, nearSpots, loggedIn);
+        nearSpotAdapter = new NearSpotAdapter(myContext, nearSpots, isLoggedIn);
         nearSpotView.setAdapter(nearSpotAdapter);
 
         LinearLayoutManager linearLayout2 =
@@ -240,20 +268,25 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
         commentAdapter.setOnActionButtonClickedListener(this);
 
         getTouristSpots();
-        getLikedSpots();
         getUsers();
-        checkCurrentUserComment();
+
+        if(userId != null) {
+            getLikedSpots();
+            checkCurrentUserComment();
+            loginCommentLayout.setVisibility(View.GONE);
+        }
+        else {
+            loginCommentLayout.setVisibility(View.VISIBLE);
+            commentInputLayout.setVisibility(View.GONE);
+            userCommentLayout.setVisibility(View.GONE);
+        }
 
         likeImage.setOnClickListener(view -> {
-            if(loggedIn) {
+            if(isLoggedIn) {
                 if(firebaseUser != null) {
                     likeImage.setEnabled(false);
-                    if(liked.equals("false")) {
-                        likeSpot(selectedSpot);
-                    }
-                    else{
-                        unlikeSpot();
-                    }
+                    if(!isLiked) likeSpot(selectedSpot);
+                    else unlikeSpot();
                 }
             }
             else {
@@ -284,7 +317,7 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
         });
 
         moreImage.setOnClickListener(view -> {
-            if(tvOption.getText().equals("false")) {
+            if(!isOptionShown) {
                 openOption();
             }
             else {
@@ -331,6 +364,11 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
         });
 
         commentTitleLayout.setOnClickListener(view -> showCommentLayout());
+
+        loginButton.setOnClickListener(view -> {
+            Intent intent1 = new Intent(myContext, LoginActivity.class);
+            startActivity(intent1);
+        });
 
         sendImage.setOnClickListener(view -> {
             if(isUserCommentExist) updateComment();
@@ -725,27 +763,27 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
 
     @Override
     public void upVoteImageOnClick(String spotId, String senderUserId, Comment comment,
-                                   boolean upVoted, boolean downVoted) {
+                                   boolean isUpVoted, boolean isDownVoted) {
         commentProgressBar.setVisibility(View.VISIBLE);
         comment.setUserId(senderUserId);
 
-        if(upVoted) upVotedCommentsRef.child(spotId).child(senderUserId).setValue(null);
-        else if(downVoted) downVotedCommentsRef.child(spotId).child(senderUserId).setValue(null);
+        if(isUpVoted) upVotedCommentsRef.child(spotId).child(senderUserId).setValue(null);
+        else if(isDownVoted) downVotedCommentsRef.child(spotId).child(senderUserId).setValue(null);
 
-        if(!upVoted) upVotedCommentsRef.child(spotId).child(senderUserId).setValue(comment)
+        if(!isUpVoted) upVotedCommentsRef.child(spotId).child(senderUserId).setValue(comment)
                 .addOnCompleteListener(task -> commentProgressBar.setVisibility(View.GONE));
     }
 
     @Override
     public void downVoteImageOnClick(String spotId, String senderUserId, Comment comment,
-                                     boolean upVoted, boolean downVoted) {
+                                     boolean isUpVoted, boolean isDownVoted) {
         commentProgressBar.setVisibility(View.VISIBLE);
         comment.setUserId(senderUserId);
 
-        if(upVoted) upVotedCommentsRef.child(spotId).child(senderUserId).setValue(null);
-        if(downVoted) downVotedCommentsRef.child(spotId).child(senderUserId).setValue(null);
+        if(isUpVoted) upVotedCommentsRef.child(spotId).child(senderUserId).setValue(null);
+        if(isDownVoted) downVotedCommentsRef.child(spotId).child(senderUserId).setValue(null);
 
-        if(!downVoted) downVotedCommentsRef.child(spotId).child(senderUserId).setValue(comment)
+        if(!isDownVoted) downVotedCommentsRef.child(spotId).child(senderUserId).setValue(comment)
                 .addOnCompleteListener(task -> commentProgressBar.setVisibility(View.GONE));
     }
 
@@ -905,7 +943,7 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
 
     @SuppressWarnings("deprecation")
     public static Spanned fromHtml(String html){
-        if(html == null){
+        if(html == null) {
             return new SpannableString("");
         }
         else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -1077,7 +1115,7 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
         setTransition(buttonLayout);
         constraintSet.applyTo(connectingLayout);
 
-        tvOption.setText("true");
+        isOptionShown = true;
         moreImage.setEnabled(true);
         moreImage.setImageResource(R.drawable.ic_baseline_close_24);
         moreImage.setColorFilter(myContext.getResources().getColor(R.color.red));
@@ -1101,7 +1139,7 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
         setTransition(buttonLayout);
         constraintSet.applyTo(connectingLayout);
 
-        tvOption.setText("false");
+        isOptionShown = false;
         moreImage.setEnabled(true);
         moreImage.setImageResource(R.drawable.ic_baseline_more_horiz_24);
         moreImage.setColorFilter(myContext.getResources().getColor(R.color.black));
@@ -1215,7 +1253,7 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        onScreen = false;
+        isOnScreen = false;
     }
 
     private void setInfo(DetailedTouristSpot touristSpot) {
@@ -1244,7 +1282,7 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
             }
         }
 
-        if(onScreen) updateInfo();
+        if(isOnScreen) updateInfo();
     }
 
     private void updateInfo() {
@@ -1259,18 +1297,11 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
         tvVisits.setText(String.valueOf(visits));
         tvBooks.setText(String.valueOf(books));
 
-        tvLiked.setText(String.valueOf(
-                isInLikedSpots(selectedSpot)
-        ));
-        liked = tvLiked.getText().toString();
+        isLiked = isInLikedSpots(selectedSpot);
 
         int color;
-        if(liked.equals("false")) {
-            color = myContext.getResources().getColor(R.color.black);
-        }
-        else {
-            color = myContext.getResources().getColor(R.color.blue);
-        }
+        if(!isLiked) color = myContext.getResources().getColor(R.color.black);
+        else color = myContext.getResources().getColor(R.color.blue);
         likeImage.setColorFilter(color);
 
         likeImage.setEnabled(true);
