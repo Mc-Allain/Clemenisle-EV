@@ -24,6 +24,7 @@ import com.bumptech.glide.Glide;
 import com.example.firebase_clemenisle_ev.Adapters.TouristSpotAdapter;
 import com.example.firebase_clemenisle_ev.Adapters.TouristSpotListAdapter;
 import com.example.firebase_clemenisle_ev.Classes.Booking;
+import com.example.firebase_clemenisle_ev.Classes.Comment;
 import com.example.firebase_clemenisle_ev.Classes.DetailedTouristSpot;
 import com.example.firebase_clemenisle_ev.Classes.FirebaseURL;
 import com.example.firebase_clemenisle_ev.Classes.Route;
@@ -513,7 +514,7 @@ public class HomeFragment extends Fragment implements
         usersRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                int likes = 0, visits = 0, books = 0;
+                int likes = 0, visits = 0, books = 0, comments = 0;
 
                 if(snapshot.exists()) {
                     String id = touristSpot.getId();
@@ -541,26 +542,34 @@ public class HomeFragment extends Fragment implements
                                     }
                                 }
                             }
+
+                            List<Comment> userComments = user.getComments();
+                            for(Comment comment : userComments) {
+                                if(comment.getId().equals(id)) {
+                                    comments++;
+                                }
+                            }
                         }
                     }
                 }
 
-                updateTouristSpotList(touristSpot, index, likes, visits, books);
+                updateTouristSpotList(touristSpot, index, likes, visits, books, comments);
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                int books = 0, likes = 0, visits = 0;
-                updateTouristSpotList(touristSpot, index, likes, visits, books);
+                int books = 0, likes = 0, visits = 0, comments = 0;
+                updateTouristSpotList(touristSpot, index, likes, visits, books, comments);
             }
         });
     }
 
     private void updateTouristSpotList(DetailedTouristSpot touristSpot, int index,
-                                       int likes, int visits, int books) {
+                                       int likes, int visits, int books, int comments) {
         touristSpot.setLikes(likes);
         touristSpot.setVisits(visits);
         touristSpot.setBooks(books);
+        touristSpot.setComments(comments);
 
         if(touristSpotList.size() == touristSpotCount) touristSpotList.set(index, touristSpot);
         else touristSpotList.add(touristSpot);

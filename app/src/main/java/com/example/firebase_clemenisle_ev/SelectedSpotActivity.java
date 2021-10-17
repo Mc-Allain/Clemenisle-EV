@@ -66,8 +66,10 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
 
     ConstraintLayout constraintLayout, headerLayout;
 
-    ImageView thumbnail, likeImage, visitImage, bookImage, moreImage, i360Image, locateImage, homeImage;
-    TextView tvName, tvStation, tvLikes, tvVisits, tvBooks, tvNearSpot, tv360Image, tvLocate;
+    ImageView thumbnail, likeImage, visitImage, bookImage, commentImage,
+            moreImage, i360Image, locateImage, homeImage;
+    TextView tvName, tvStation, tvLikes, tvVisits, tvBooks, tvComments,
+            tvNearSpot, tv360Image, tvLocate;
     ExpandableTextView extvDescription;
     ConstraintLayout  backgroundLayout, buttonLayout, connectingLayout;
     ScrollView scrollView;
@@ -95,10 +97,10 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
 
     String userId;
 
-    boolean isLoggedIn = false;
+    boolean isLoggedIn = false, toComment = false;
 
     String id, name, description, img;
-    int likes, visits, books;
+    int likes, visits, books, comments;
     double lat, lng;
     List<SimpleTouristSpot> nearSpots = new ArrayList<>();
     List<Station> nearStations;
@@ -172,9 +174,12 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
         likeImage = findViewById(R.id.likeImage);
         visitImage = findViewById(R.id.visitImage);
         bookImage = findViewById(R.id.bookImage);
+        commentImage = findViewById(R.id.commentImage);
         tvLikes = findViewById(R.id.tvLikes);
         tvVisits = findViewById(R.id.tvVisits);
         tvBooks = findViewById(R.id.tvBooks);
+        tvComments = findViewById(R.id.tvComments);
+
         moreImage = findViewById(R.id.moreImage);
         backgroundLayout = findViewById(R.id.backgroundLayout);
         buttonLayout = findViewById(R.id.buttonLayout);
@@ -220,6 +225,7 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
         Intent intent = getIntent();
         id = intent.getStringExtra("id");
         isLoggedIn = intent.getBooleanExtra("isLoggedIn", false);
+        toComment = intent.getBooleanExtra("toComment", false);
 
         isOnScreen = true;
 
@@ -312,6 +318,15 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
         bookImage.setOnLongClickListener(view -> {
             Toast.makeText(myContext,
                     "Books: " + tvBooks.getText(),
+                    Toast.LENGTH_SHORT).show();
+            return false;
+        });
+
+        commentImage.setOnClickListener(view -> showCommentLayout());
+
+        commentImage.setOnLongClickListener(view -> {
+            Toast.makeText(myContext,
+                    "Comments: " + tvComments.getText(),
                     Toast.LENGTH_SHORT).show();
             return false;
         });
@@ -542,6 +557,7 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
                 if(!isCommentShown) showCommentLayout3();
                 else {
                     commentTitleLayout.setEnabled(true);
+                    etComment.clearFocus();
                     isCommentShown = !isCommentShown;
                 }
             }
@@ -612,6 +628,7 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
             public void onTransitionEnd(Transition transition) {
                 if(!isCommentShown) {
                     commentTitleLayout.setEnabled(true);
+                    etComment.clearFocus();
                     isCommentShown = !isCommentShown;
                 }
                 else showCommentLayout3();
@@ -1201,7 +1218,7 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
         usersRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                int books = 0, likes = 0, visits = 0;
+                int books = 0, likes = 0, visits = 0, comments = 0;
 
                 if(snapshot.exists()) {
                     for(DataSnapshot dataSnapshot : snapshot.getChildren()) {
@@ -1226,11 +1243,19 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
                                 }
                             }
                         }
+
+                        List<Comment> userComments = thisUser.getComments();
+                        for(Comment comment : userComments) {
+                            if(comment.getId().equals(id)) {
+                                comments++;
+                            }
+                        }
                     }
                 }
                 touristSpot.setBooks(books);
                 touristSpot.setLikes(likes);
                 touristSpot.setVisits(visits);
+                touristSpot.setComments(comments);
                 setInfo(touristSpot);
             }
 
@@ -1245,6 +1270,7 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
                 touristSpot.setBooks(0);
                 touristSpot.setLikes(0);
                 touristSpot.setVisits(0);
+                touristSpot.setComments(0);
                 setInfo(touristSpot);
             }
         });
@@ -1263,6 +1289,7 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
         likes = touristSpot.getLikes();
         visits = touristSpot.getVisits();
         books = touristSpot.getBooks();
+        comments = touristSpot.getComments();
         lat = touristSpot.getLat();
         lng = touristSpot.getLng();
         nearStations = touristSpot.getNearStations();
@@ -1296,6 +1323,7 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
         tvLikes.setText(String.valueOf(likes));
         tvVisits.setText(String.valueOf(visits));
         tvBooks.setText(String.valueOf(books));
+        tvComments.setText(String.valueOf(comments));
 
         isLiked = isInLikedSpots(selectedSpot);
 
@@ -1305,6 +1333,10 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
         likeImage.setColorFilter(color);
 
         likeImage.setEnabled(true);
+
+        commentShowingAnimation  = false;
+        if(toComment) showCommentLayout();
+        commentShowingAnimation  = true;
     }
 
     private void getLikedSpots() {

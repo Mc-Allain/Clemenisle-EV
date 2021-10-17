@@ -54,6 +54,17 @@
             app:tint="@color/black" />
 
         <ImageView
+            android:id="@+id/commentImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="4dp"
+            app:layout_constraintBottom_toBottomOf="@+id/tvBooks"
+            app:layout_constraintStart_toEndOf="@+id/tvBooks"
+            app:layout_constraintTop_toTopOf="@+id/tvBooks"
+            app:srcCompat="@drawable/ic_baseline_mode_comment_24"
+            app:tint="@color/black" />
+
+        <ImageView
             android:id="@+id/likeImage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -119,6 +130,17 @@
             app:layout_constraintBottom_toBottomOf="@+id/visitImage"
             app:layout_constraintStart_toEndOf="@+id/visitImage"
             app:layout_constraintTop_toTopOf="@+id/visitImage" />
+
+        <TextView
+            android:id="@+id/tvComments"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/ubuntu"
+            android:text="0"
+            android:textColor="@color/black"
+            app:layout_constraintBottom_toBottomOf="@+id/commentImage"
+            app:layout_constraintStart_toEndOf="@+id/commentImage"
+            app:layout_constraintTop_toTopOf="@+id/commentImage" />
 
         <TextView
             android:id="@+id/tvBooks"

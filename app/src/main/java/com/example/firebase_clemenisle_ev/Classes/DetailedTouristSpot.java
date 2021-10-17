@@ -1,17 +1,13 @@
 package com.example.firebase_clemenisle_ev.Classes;
 
 import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class DetailedTouristSpot {
 
-    private final static String firebaseURL = FirebaseURL.getFirebaseURL();
-    FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance(firebaseURL);
-
-    private int books;
+    private int books, comments;
     private boolean deactivated = false;
     private String description, id, img;
     private double lat = 14.590504700930238;
@@ -78,6 +74,10 @@ public class DetailedTouristSpot {
         return books;
     }
 
+    public int getComments() {
+        return comments;
+    }
+
     public boolean isDeactivated() {
         return deactivated;
     }
@@ -124,6 +124,10 @@ public class DetailedTouristSpot {
 
     public void setBooks(int books) {
         this.books = books;
+    }
+
+    public void setComments(int comments) {
+        this.comments = comments;
     }
 
     public void setLikes(int likes) {

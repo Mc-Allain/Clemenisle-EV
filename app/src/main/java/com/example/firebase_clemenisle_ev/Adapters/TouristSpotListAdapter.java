@@ -85,11 +85,11 @@ public class TouristSpotListAdapter extends RecyclerView.Adapter<TouristSpotList
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         ImageView thumbnail = holder.thumbnail,
                 likeImage = holder.likeImage, visitImage = holder.visitImage,
-                bookImage = holder.bookImage, moreImage = holder.moreImage,
-                openImage = holder.openImage, i360Image = holder.i360Image, locateImage = holder.locateImage;
+                bookImage = holder.bookImage, commentImage = holder.commentImage,
+                moreImage = holder.moreImage, openImage = holder.openImage, i360Image = holder.i360Image, locateImage = holder.locateImage;
         TextView tvName = holder.tvName, tvLikes = holder.tvLikes, tvVisits = holder.tvVisits,
-                tvBooks = holder.tvBooks, tvOption = holder.tvOption,
-                tvOpen = holder.tvOpen, tv360Image = holder.tv360Image, tvLocate = holder.tvLocate;
+                tvBooks = holder.tvBooks, tvComments = holder.tvComments,
+                tvOption = holder.tvOption, tvOpen = holder.tvOpen, tv360Image = holder.tv360Image, tvLocate = holder.tvLocate;
         ConstraintLayout backgroundLayout = holder.backgroundLayout,
                 buttonLayout = holder.buttonLayout;
 
@@ -114,6 +114,7 @@ public class TouristSpotListAdapter extends RecyclerView.Adapter<TouristSpotList
         int likes = touristSpots.get(position).getLikes();
         int visits = touristSpots.get(position).getVisits();
         int books = touristSpots.get(position).getBooks();
+        int comments = touristSpots.get(position).getComments();
         double lat = touristSpots.get(position).getLat();
         double lng = touristSpots.get(position).getLng();
         boolean deactivated = touristSpots.get(position).isDeactivated();
@@ -126,6 +127,7 @@ public class TouristSpotListAdapter extends RecyclerView.Adapter<TouristSpotList
         tvLikes.setText(String.valueOf(likes));
         tvVisits.setText(String.valueOf(visits));
         tvBooks.setText(String.valueOf(books));
+        tvComments.setText(String.valueOf(comments));
 
         boolean isLiked = isInLikedSpots(touristSpot);
 
@@ -190,6 +192,15 @@ public class TouristSpotListAdapter extends RecyclerView.Adapter<TouristSpotList
             return false;
         });
 
+        commentImage.setOnClickListener(view -> openItem(id, true));
+
+        commentImage.setOnLongClickListener(view -> {
+            Toast.makeText(myContext,
+                    "Comments: " + tvComments.getText(),
+                    Toast.LENGTH_SHORT).show();
+            return false;
+        });
+
         moreImage.setOnClickListener(view -> {
             if(tvOption.getText().equals("false")) {
                 openOption(buttonLayout, backgroundLayout, moreImage,
@@ -200,9 +211,9 @@ public class TouristSpotListAdapter extends RecyclerView.Adapter<TouristSpotList
             }
         });
 
-        tvOpen.setOnClickListener(view -> openItem(id));
+        tvOpen.setOnClickListener(view -> openItem(id, false));
 
-        openImage.setOnClickListener(view -> openItem(id));
+        openImage.setOnClickListener(view -> openItem(id, false));
 
         thumbnail.setOnClickListener(view -> openStreetView(id));
 
@@ -279,10 +290,11 @@ public class TouristSpotListAdapter extends RecyclerView.Adapter<TouristSpotList
         });
     }
 
-    private void openItem(String id) {
+    private void openItem(String id, boolean toComment) {
         Intent intent = new Intent(myContext, SelectedSpotActivity.class);
         intent.putExtra("id", id);
         intent.putExtra("isLoggedIn", isLoggedIn);
+        intent.putExtra("toComment", toComment);
         myContext.startActivity(intent);
     }
 
@@ -351,9 +363,10 @@ public class TouristSpotListAdapter extends RecyclerView.Adapter<TouristSpotList
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder{
-        ImageView thumbnail, likeImage, visitImage, bookImage, moreImage,
-        openImage, i360Image, locateImage;
-        TextView tvName, tvLikes, tvVisits, tvBooks, tvOption, tvOpen, tv360Image, tvLocate;
+        ImageView thumbnail, likeImage, visitImage, bookImage, commentImage,
+                moreImage, openImage, i360Image, locateImage;
+        TextView tvName, tvLikes, tvVisits, tvBooks, tvComments,
+                tvOption, tvOpen, tv360Image, tvLocate;
         ConstraintLayout backgroundLayout, buttonLayout;
 
         public ViewHolder(@NonNull View itemView) {
@@ -363,9 +376,13 @@ public class TouristSpotListAdapter extends RecyclerView.Adapter<TouristSpotList
             likeImage = itemView.findViewById(R.id.likeImage);
             visitImage = itemView.findViewById(R.id.visitImage);
             bookImage = itemView.findViewById(R.id.bookImage);
+            commentImage = itemView.findViewById(R.id.commentImage);
+
             tvLikes = itemView.findViewById(R.id.tvLikes);
             tvVisits = itemView.findViewById(R.id.tvVisits);
             tvBooks = itemView.findViewById(R.id.tvBooks);
+            tvComments = itemView.findViewById(R.id.tvComments);
+
             moreImage = itemView.findViewById(R.id.moreImage);
             backgroundLayout = itemView.findViewById(R.id.backgroundLayout);
             buttonLayout = itemView.findViewById(R.id.buttonLayout);

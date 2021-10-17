@@ -23,6 +23,7 @@ import com.example.firebase_clemenisle_ev.Classes.Station;
 import com.example.firebase_clemenisle_ev.LoginActivity;
 import com.example.firebase_clemenisle_ev.MapActivity;
 import com.example.firebase_clemenisle_ev.R;
+import com.example.firebase_clemenisle_ev.SelectedSpotActivity;
 import com.example.firebase_clemenisle_ev.StreetWebView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -88,11 +89,12 @@ public class TouristSpotAdapter extends RecyclerView.Adapter<TouristSpotAdapter.
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         ImageView thumbnail = holder.thumbnail,
                 likeImage = holder.likeImage, visitImage = holder.visitImage,
-                bookImage = holder.bookImage, moreImage = holder.moreImage,
-                i360Image = holder.i360Image, locateImage = holder.locateImage;
+                bookImage = holder.bookImage, commentImage = holder.commentImage,
+                moreImage = holder.moreImage, i360Image = holder.i360Image, locateImage = holder.locateImage;
         TextView tvName = holder.tvName, tvStation = holder.tvStation,
                 tvLikes = holder.tvLikes, tvVisits = holder.tvVisits,
-                tvBooks = holder.tvBooks, tvNearSpot = holder.tvNearSpot, tvOption = holder.tvOption,
+                tvBooks = holder.tvBooks, tvComments = holder.tvComments,
+                tvNearSpot = holder.tvNearSpot, tvOption = holder.tvOption,
                 tv360Image = holder.tv360Image, tvLocate = holder.tvLocate;
         ExpandableTextView extvDescription = holder.extvDescription;
         ConstraintLayout backgroundLayout = holder.backgroundLayout, buttonLayout = holder.buttonLayout,
@@ -121,6 +123,7 @@ public class TouristSpotAdapter extends RecyclerView.Adapter<TouristSpotAdapter.
         int likes = touristSpots.get(position).getLikes();
         int visits = touristSpots.get(position).getVisits();
         int books = touristSpots.get(position).getBooks();
+        int comments = touristSpots.get(position).getComments();
         double lat = touristSpots.get(position).getLat();
         double lng = touristSpots.get(position).getLng();
         boolean deactivated = touristSpots.get(position).isDeactivated();
@@ -149,6 +152,7 @@ public class TouristSpotAdapter extends RecyclerView.Adapter<TouristSpotAdapter.
         tvLikes.setText(String.valueOf(likes));
         tvVisits.setText(String.valueOf(visits));
         tvBooks.setText(String.valueOf(books));
+        tvComments.setText(String.valueOf(comments));
 
         if(nearSpots.size() == 0) {
             tvNearSpot.setVisibility(View.GONE);
@@ -230,6 +234,22 @@ public class TouristSpotAdapter extends RecyclerView.Adapter<TouristSpotAdapter.
         bookImage.setOnLongClickListener(view -> {
             Toast.makeText(myContext,
                     "Books: " + tvBooks.getText(),
+                    Toast.LENGTH_SHORT).show();
+            return false;
+        });
+
+        commentImage.setOnClickListener(view -> openItem(id));
+
+        commentImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+
+        tvComments.setOnLongClickListener(view -> {
+            Toast.makeText(myContext,
+                    "Comments: " + tvComments.getText(),
                     Toast.LENGTH_SHORT).show();
             return false;
         });
@@ -319,6 +339,14 @@ public class TouristSpotAdapter extends RecyclerView.Adapter<TouristSpotAdapter.
         });
     }
 
+    private void openItem(String id) {
+        Intent intent = new Intent(myContext, SelectedSpotActivity.class);
+        intent.putExtra("id", id);
+        intent.putExtra("isLoggedIn", isLoggedIn);
+        intent.putExtra("toComment", true);
+        myContext.startActivity(intent);
+    }
+
     private void openOption(ConstraintLayout buttonLayout, ConstraintLayout connectingLayout,
                             ImageView moreImage, Handler optionHandler, Runnable optionRunnable,
                             TextView tvOption) {
@@ -384,9 +412,10 @@ public class TouristSpotAdapter extends RecyclerView.Adapter<TouristSpotAdapter.
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        ImageView thumbnail, likeImage, visitImage, bookImage, moreImage, i360Image, locateImage;
-        TextView tvName, tvStation, tvLikes, tvVisits, tvBooks, tvNearSpot, tvOption,
-        tv360Image, tvLocate;
+        ImageView thumbnail, likeImage, visitImage, bookImage, commentImage,
+                moreImage, i360Image, locateImage;
+        TextView tvName, tvStation, tvLikes, tvVisits, tvBooks, tvComments,
+                tvNearSpot, tvOption, tv360Image, tvLocate;
         ExpandableTextView extvDescription;
         ConstraintLayout backgroundLayout, buttonLayout, connectingLayout;
         RecyclerView nearSpotView;
@@ -400,9 +429,13 @@ public class TouristSpotAdapter extends RecyclerView.Adapter<TouristSpotAdapter.
             likeImage = itemView.findViewById(R.id.likeImage);
             visitImage = itemView.findViewById(R.id.visitImage);
             bookImage = itemView.findViewById(R.id.bookImage);
+            commentImage = itemView.findViewById(R.id.commentImage);
+
             tvLikes = itemView.findViewById(R.id.tvLikes);
             tvVisits = itemView.findViewById(R.id.tvVisits);
             tvBooks = itemView.findViewById(R.id.tvBooks);
+            tvComments = itemView.findViewById(R.id.tvComments);
+
             moreImage = itemView.findViewById(R.id.moreImage);
             backgroundLayout = itemView.findViewById(R.id.backgroundLayout);
             buttonLayout = itemView.findViewById(R.id.buttonLayout);
