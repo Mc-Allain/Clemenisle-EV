@@ -246,8 +246,8 @@ public class MainActivity extends AppCompatActivity {
         checkingForBookingNotification(booking, bookingDay, bookingMonth, bookingYear);
     }
 
-    private void checkingForBookingNotification(Booking booking,
-                                                 int bookingDay, int bookingMonth, int bookingYear) {
+    private void checkingForBookingNotification(Booking booking, int bookingDay,
+                                                int bookingMonth, int bookingYear) {
 
         SimpleDateFormat sdf = new SimpleDateFormat("H:mm:ss");
         String currentTime = sdf.format(new Date().getTime());
@@ -258,48 +258,54 @@ public class MainActivity extends AppCompatActivity {
         int bookingHour = Integer.parseInt(dateTimeToString.getRawHour());
         int bookingMin = Integer.parseInt(dateTimeToString.getMin());
 
-        if(booking.getStatus().equals("Booked")) {
-            List<String> hourArray = Arrays.asList("1", "8", "16");
-            List<String> minArray = Arrays.asList("1", "5", "10", "15", "20", "30", "45");
+        List<String> hourArray = Arrays.asList("1", "8", "16");
+        List<String> minArray = Arrays.asList("1", "5", "10", "15", "20", "30", "45");
 
-            int minDifference;
-            int hrDifference;
+        int minDifference;
+        int hrDifference;
 
-            if(hasBookingToday(bookingDay, bookingMonth, bookingYear)) {
-                if(bookingHour == hour + 1) {
-                    minDifference = (bookingMin + 60) - min;
-                    if(minDifference >= 60) hrDifference = 1;
-                    else hrDifference = 0;
-                }
-                else if (bookingHour == hour) {
-                    hrDifference = 0;
-                    minDifference = bookingMin - min;
-                }
-                else {
-                    hrDifference = bookingHour - hour;
-                    if(min < bookingMin) minDifference = bookingMin - min;
-                    else {
-                        minDifference = 60 - (min - bookingMin);
-                        if(minDifference < 60) hrDifference--;
-                        else minDifference = 0;
-                    }
-
-                    initNotificationInHours(booking, hourArray, hrDifference, minArray, minDifference, sec);
-                    return;
-                }
-                if(minDifference == 60) minDifference = 0;
-                initNotificationInMinutes(booking, hrDifference, minArray, minDifference, sec);
+        if(hasBookingToday(bookingDay, bookingMonth, bookingYear)) {
+            if(bookingHour == hour + 1) {
+                minDifference = (bookingMin + 60) - min;
+                if(minDifference >= 60) hrDifference = 1;
+                else hrDifference = 0;
             }
-            else if(hasBookingTomorrow(bookingDay, bookingMonth, bookingYear)) {
-                hrDifference = (bookingHour + 24) - hour;
+            else if (bookingHour == hour) {
+                hrDifference = 0;
+                minDifference = bookingMin - min;
+            }
+            else {
+                hrDifference = bookingHour - hour;
                 if(min < bookingMin) minDifference = bookingMin - min;
                 else {
                     minDifference = 60 - (min - bookingMin);
                     if(minDifference < 60) hrDifference--;
                     else minDifference = 0;
                 }
-                initNotificationInHours(booking, hourArray, hrDifference, minArray, minDifference, sec);
+
+                if(booking.getStatus().equals("Booked"))
+                    initNotificationInHours(booking, hourArray, hrDifference, minArray, minDifference, sec);
+
+                if(booking.getStatus().equals("Processing") &&
+                        (hrDifference < 0 || (hrDifference == 0 && minDifference == 0)))
+                    firebaseDatabase.getReference("users").child(userId).
+                            child("bookingList").child(booking.getId()).child("status").setValue("Failed");
+                return;
             }
+            if(minDifference == 60) minDifference = 0;
+            if(booking.getStatus().equals("Booked"))
+                initNotificationInMinutes(booking, hrDifference, minArray, minDifference, sec);
+        }
+        else if(hasBookingTomorrow(bookingDay, bookingMonth, bookingYear) &&
+                booking.getStatus().equals("Booked")) {
+            hrDifference = (bookingHour + 24) - hour;
+            if(min < bookingMin) minDifference = bookingMin - min;
+            else {
+                minDifference = 60 - (min - bookingMin);
+                if(minDifference < 60) hrDifference--;
+                else minDifference = 0;
+            }
+            initNotificationInHours(booking, hourArray, hrDifference, minArray, minDifference, sec);
         }
     }
 
@@ -460,14 +466,8 @@ public class MainActivity extends AppCompatActivity {
 
         Intent notificationIntent = new Intent(myContext, RouteActivity.class);
         notificationIntent.putExtra("bookingId", booking.getId());
-        notificationIntent.putExtra("schedule", booking.getSchedule());
         notificationIntent.putExtra("startStationId", booking.getStartStation().getId());
-        notificationIntent.putExtra("startStationName", booking.getStartStation().getName());
         notificationIntent.putExtra("endStationId", booking.getEndStation().getId());
-        notificationIntent.putExtra("endStationName", booking.getEndStation().getName());
-        notificationIntent.putExtra("status", booking.getStatus());
-        notificationIntent.putExtra("typeName", booking.getBookingType().getName());
-        notificationIntent.putExtra("price", "₱" + booking.getBookingType().getPrice());
 
         PendingIntent pendingIntent = PendingIntent.getActivity(
                 myContext, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT

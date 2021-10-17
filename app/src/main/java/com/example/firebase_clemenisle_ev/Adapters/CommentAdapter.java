@@ -93,6 +93,8 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
         if(user.getMiddleName().length() > 0) fullName += " " + user.getMiddleName();
         tvUserFullName.setText(fromHtml(fullName));
 
+        boolean upVoted = false, downVoted = false;
+
         if(commentRecord != null) {
             String commentValue = commentRecord.getValue();
             boolean fouled = commentRecord.isFouled();
@@ -194,6 +196,11 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
             for(Comment comment : upVotedComments) {
                 if(comment.getId().equals(spotId) && comment.getUserId().equals(user.getId())) {
                     upVotes++;
+
+                    if(user1.getId().equals(userId)) {
+                        upVoteImage.getDrawable().setTint(colorBlue);
+                        upVoted = true;
+                    }
                 }
             }
 
@@ -201,6 +208,11 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
             for(Comment comment : downVotedComments) {
                 if(comment.getId().equals(spotId) && comment.getUserId().equals(user.getId())) {
                     downVotes++;
+
+                    if(user1.getId().equals(userId)) {
+                        downVoteImage.getDrawable().setTint(colorRed);
+                        downVoted = true;
+                    }
                 }
             }
 
@@ -221,6 +233,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
                 }
             }
         }
+        boolean finalUpVoted = upVoted, finalDownVoted = downVoted;
 
         tvUpVotes.setText(String.valueOf(upVotes));
         tvDownVotes.setText(String.valueOf(downVotes));
@@ -237,6 +250,16 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
                 (ConstraintLayout.LayoutParams) backgroundLayout.getLayoutParams();
         layoutParams.setMargins(layoutParams.leftMargin, top, layoutParams.rightMargin, bottom);
         backgroundLayout.setLayoutParams(layoutParams);
+
+        upVoteImage.setOnLongClickListener(view -> {
+            onActionButtonClickedListener.upVoteImageOnLongClick();
+            return false;
+        });
+
+        downVoteImage.setOnLongClickListener(view -> {
+            onActionButtonClickedListener.downVoteImageOnLongClick();
+            return false;
+        });
 
         editImage.setOnLongClickListener(view -> {
             onActionButtonClickedListener.editImageOnLongClick();
@@ -258,6 +281,18 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
             return false;
         });
 
+        upVoteImage.setOnClickListener(view ->
+                onActionButtonClickedListener.
+                        upVoteImageOnClick(spotId, user.getId(), finalCommentRecord,
+                                finalUpVoted, finalDownVoted)
+        );
+
+        downVoteImage.setOnClickListener(view ->
+                onActionButtonClickedListener.
+                        downVoteImageOnClick(spotId, user.getId(), finalCommentRecord,
+                                finalUpVoted, finalDownVoted)
+        );
+
         editImage.setOnClickListener(view -> onActionButtonClickedListener.editImageOnClick());
 
         appealImage.setOnClickListener(view -> onActionButtonClickedListener.appealImageOnClick());
@@ -265,19 +300,27 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
         deactivateImage.setOnClickListener(view -> onActionButtonClickedListener.deactivateImageOnClick());
 
         reportImage.setOnClickListener(view ->
-                onActionButtonClickedListener.reportImageOnClick(spotId, user.getId(), finalCommentRecord)
+                onActionButtonClickedListener.
+                        reportImageOnClick(spotId, user.getId(), finalCommentRecord)
         );
     }
 
     public interface OnActionButtonClicked {
         void editImageOnLongClick();
-        void deactivateImageOnLongClick();
         void reportImageOnLongClick();
+        void deactivateImageOnLongClick();
         void appealImageOnLongClick();
+        void upVoteImageOnLongClick();
+        void downVoteImageOnLongClick();
+
         void editImageOnClick();
+        void appealImageOnClick();
         void deactivateImageOnClick();
         void reportImageOnClick(String spotId, String senderUserId, Comment comment);
-        void appealImageOnClick();
+        void upVoteImageOnClick(String spotId, String senderUserId, Comment comment,
+                                boolean upVoted, boolean downVoted);
+        void downVoteImageOnClick(String spotId, String senderUserId, Comment comment,
+                                  boolean upVoted, boolean downVoted);
     }
 
     public void setOnActionButtonClickedListener(OnActionButtonClicked onActionButtonClickedListener) {

@@ -30,6 +30,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.ms.square.android.expandabletextview.ExpandableTextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,6 +53,7 @@ public class RouteActivity extends AppCompatActivity implements
     ImageView thumbnail, moreImage, locateImage, locateEndImage, reloadImage;
     TextView tvBookingId, tvSchedule, tvTypeName, tvPrice, tvStartStation2, tvEndStation2,
             tvOption, tvLocate, tvLocateEnd, tvLog;
+    ExpandableTextView extvMessage;
     RecyclerView routeView;
     ConstraintLayout buttonLayout, bookingInfoLayout, bookingInfoButtonLayout;
     Button cancelButton;
@@ -70,8 +72,7 @@ public class RouteActivity extends AppCompatActivity implements
 
     DatabaseReference bookingListRef;
 
-    String startStationId, endStationId, bookingId, schedule, typeName, price,
-            startStationName, endStationName, status;
+    String bookingId, schedule, typeName, price, startStationName, endStationName, status, message;
     boolean latest;
 
     Station startStation, endStation;
@@ -111,6 +112,8 @@ public class RouteActivity extends AppCompatActivity implements
         tvLocate = findViewById(R.id.tvLocate);
         tvLocateEnd = findViewById(R.id.tvLocateEnd);
         tvLog = findViewById(R.id.tvLog);
+        extvMessage = findViewById(R.id.extvMessage);
+
         routeView = findViewById(R.id.routeView);
         buttonLayout = findViewById(R.id.buttonLayout);
         bookingInfoLayout = findViewById(R.id.bookingInfoLayout);
@@ -131,8 +134,6 @@ public class RouteActivity extends AppCompatActivity implements
 
         Intent intent = getIntent();
         bookingId = intent.getStringExtra("bookingId");
-        startStationId = intent.getStringExtra("startStationId");
-        endStationName = intent.getStringExtra("endStationName");
         latest = intent.getBooleanExtra("latest", false);
 
         onScreen = true;
@@ -219,6 +220,10 @@ public class RouteActivity extends AppCompatActivity implements
         tvBookingId.setText(bookingId);
         tvStartStation2.setText(startStationName);
         tvEndStation2.setText(endStationName);
+        tvSchedule.setText(schedule);
+        tvTypeName.setText(typeName);
+        tvPrice.setText(price);
+        extvMessage.setText(message);
 
         int color = 0;
         Drawable backgroundDrawable = myResources.getDrawable(R.color.blue);
@@ -327,12 +332,10 @@ public class RouteActivity extends AppCompatActivity implements
 
                     schedule = booking.getSchedule();
                     status = booking.getStatus();
+                    message = booking.getMessage();
+
                     typeName = booking.getBookingType().getName();
                     price = String.valueOf(booking.getBookingType().getPrice());
-
-                    tvSchedule.setText(schedule);
-                    tvTypeName.setText(typeName);
-                    tvPrice.setText(price);
 
                     for(Route route : booking.getRouteList()) {
                         if(!route.isDeactivated()) {
@@ -364,7 +367,7 @@ public class RouteActivity extends AppCompatActivity implements
     }
 
     private void finishLoading() {
-        routeAdapter.notifyDataSetChanged();
+        routeAdapter.setStatus(status);
 
         if(onScreen) updateInfo();
 

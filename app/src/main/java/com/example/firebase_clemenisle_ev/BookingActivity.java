@@ -1329,7 +1329,7 @@ public class BookingActivity extends AppCompatActivity implements
                 .child(userId).child("bookingList").child(bookingId);
         bookingListRef.setValue(booking).addOnCompleteListener(task -> {
 
-            if(task.isSuccessful()) addBookingRoute(booking, bookingRouteList, bookingListRef);
+            if(task.isSuccessful()) addBookingRoute(bookingId, bookingRouteList, bookingListRef);
             else {
                 Toast.makeText(
                         myContext,
@@ -1343,7 +1343,7 @@ public class BookingActivity extends AppCompatActivity implements
         });
     }
     
-    private void addBookingRoute(Booking booking, List<Route> bookingRouteList,
+    private void addBookingRoute(String bookingId, List<Route> bookingRouteList,
                                  DatabaseReference bookingListRef) {
         int index = 1;
         for(Route route : bookingRouteList) {
@@ -1355,7 +1355,7 @@ public class BookingActivity extends AppCompatActivity implements
                     bookingListRef.child("routeSpots").child(route.getRouteId());
             routeSpotsRef.setValue(route).addOnCompleteListener(task -> {
                         if(task.isSuccessful()) {
-                            if(isLastItem) proceedToNextActivity(booking);
+                            if(isLastItem) proceedToNextActivity(bookingId);
                         }
                         else {
                             Toast.makeText(
@@ -1372,22 +1372,14 @@ public class BookingActivity extends AppCompatActivity implements
         }
     }
 
-    private void proceedToNextActivity(Booking booking) {
+    private void proceedToNextActivity(String bookingId) {
         Intent intent = new Intent(myContext, MainActivity.class);
 
         startActivity(intent);
         finishAffinity();
 
         intent = new Intent(myContext, RouteActivity.class);
-        intent.putExtra("bookingId", booking.getId());
-        intent.putExtra("schedule", booking.getSchedule());
-        intent.putExtra("startStationId", booking.getStartStation().getId());
-        intent.putExtra("startStationName", booking.getStartStation().getName());
-        intent.putExtra("endStationId", booking.getEndStation().getId());
-        intent.putExtra("endStationName", booking.getEndStation().getName());
-        intent.putExtra("status", booking.getStatus());
-        intent.putExtra("typeName", booking.getBookingType().getName());
-        intent.putExtra("price", "₱" + booking.getBookingType().getPrice());
+        intent.putExtra("bookingId",bookingId);
         intent.putExtra("latest", false);
 
         startActivity(intent);

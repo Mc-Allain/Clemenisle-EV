@@ -185,17 +185,9 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
     private void openItem(Booking booking) {
         Intent intent = new Intent(myContext, RouteActivity.class);
         intent.putExtra("bookingId", booking.getId());
-        intent.putExtra("schedule", booking.getSchedule());
-        intent.putExtra("startStationId", booking.getStartStation().getId());
-        intent.putExtra("startStationName", booking.getStartStation().getName());
-        intent.putExtra("endStationId", booking.getEndStation().getId());
-        intent.putExtra("endStationName", booking.getEndStation().getName());
-        intent.putExtra("status", booking.getStatus());
-        intent.putExtra("typeName", booking.getBookingType().getName());
-        intent.putExtra("price", "₱" + booking.getBookingType().getPrice());
-
         intent.putExtra("latest",
-                bookingList.get(0).getId().equals(booking.getId()) && booking.getStatus().equals("Completed"));
+                bookingList.get(0).getId().equals(booking.getId()) &&
+                        booking.getStatus().equals("Completed"));
 
         myContext.startActivity(intent);
     }

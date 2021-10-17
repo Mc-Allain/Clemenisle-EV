@@ -204,4 +204,9 @@ public class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.ViewHolder> 
                 .child("bookingList").child(bookingId).child("routeSpots").child(spotId);
         usersRef.child("visited").setValue(false);
     }
+
+    public void setStatus(String status) {
+        this.status = status;
+        notifyDataSetChanged();
+    }
 }

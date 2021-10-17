@@ -17,6 +17,7 @@ import android.transition.TransitionManager;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -42,6 +43,8 @@ import com.google.firebase.database.ValueEventListener;
 import com.ms.square.android.expandabletextview.ExpandableTextView;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -64,6 +67,7 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
     ExpandableTextView extvDescription;
     ConstraintLayout backgroundLayout, buttonLayout, connectingLayout;
     RecyclerView nearSpotView;
+    ProgressBar progressBar;
 
     ConstraintLayout commentInputLayout, userCommentLayout, commentBackgroundLayout;
     EditText etComment;
@@ -74,6 +78,7 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
     ImageView profileImage, editImage, appealImage, deactivateImage;
 
     RecyclerView commentView;
+    ProgressBar commentProgressBar;
 
     Context myContext;
     Resources myResources;
@@ -101,10 +106,12 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
     boolean onScreen = false;
     String liked;
 
-    DatabaseReference usersRef, likedSpotsRef, commentsRef;
+    DatabaseReference usersRef, likedSpotsRef, commentsRef,
+            upVotedCommentsRef, downVotedCommentsRef, reportedCommentsRef;
 
     CommentAdapter commentAdapter;
-    List<User> users = new ArrayList<>(), fouledCommentUsers = new ArrayList<>();
+    List<User> users = new ArrayList<>(), commentedUsers = new ArrayList<>(),
+            foulCommentedUsers = new ArrayList<>();
 
     String deactivateText = "Deactivate Comment";
     String activateText = "Activate Comment";
@@ -155,6 +162,7 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
         tvLocate = findViewById(R.id.tvLocate);
         connectingLayout = findViewById(R.id.connectingLayout);
         homeImage = findViewById(R.id.homeImage);
+        progressBar = findViewById(R.id.progressBar);
 
         commentInputLayout = findViewById(R.id.commentInputLayout);
         etComment = findViewById(R.id.etComment);
@@ -169,8 +177,8 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
         editImage = findViewById(R.id.editImage);
         appealImage = findViewById(R.id.appealImage);
         deactivateImage = findViewById(R.id.deactivateImage);
-
         commentView = findViewById(R.id.commentView);
+        commentProgressBar = findViewById(R.id.commentProgressBar);
 
         myContext = SelectedSpotActivity.this;
         myResources = myContext.getResources();
@@ -194,13 +202,15 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
             if(firebaseUser != null) {
                 firebaseUser.reload();
                 userId = firebaseUser.getUid();
-                getLikedSpots();
             }
         }
 
         usersRef = firebaseDatabase.getReference("users");
         likedSpotsRef = usersRef.child(userId).child("likedSpots");
         commentsRef = usersRef.child(userId).child("comments");
+        upVotedCommentsRef = usersRef.child(userId).child("upVotedComments");
+        downVotedCommentsRef = usersRef.child(userId).child("downVotedComments");
+        reportedCommentsRef = usersRef.child(userId).child("reportedComments");
 
         LinearLayoutManager linearLayout =
                 new LinearLayoutManager(myContext, LinearLayoutManager.HORIZONTAL, false);
@@ -217,13 +227,14 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
                 };
 
         commentView.setLayoutManager(linearLayout2);
-        commentAdapter = new CommentAdapter(myContext, users, id, userId);
+        commentAdapter = new CommentAdapter(myContext, commentedUsers, id, userId);
         commentView.setAdapter(commentAdapter);
         commentAdapter.setOnActionButtonClickedListener(this);
 
+        getTouristSpots();
+        getLikedSpots();
         getUsers();
         checkCurrentUserComment();
-        getTouristSpots();
 
         likeImage.setOnClickListener(view -> {
             if(loggedIn) {
@@ -346,6 +357,27 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
     }
 
     @Override
+    public void appealImageOnLongClick() {
+        Toast.makeText(myContext,
+                "Appeal Comment",
+                Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void upVoteImageOnLongClick() {
+        Toast.makeText(myContext,
+                "Up Vote Comment",
+                Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void downVoteImageOnLongClick() {
+        Toast.makeText(myContext,
+                "Down Vote Comment",
+                Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
     public void deactivateImageOnLongClick() {
         Toast.makeText(myContext,
                 currentDeactivateText,
@@ -360,19 +392,38 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
     }
 
     @Override
-    public void appealImageOnLongClick() {
-        Toast.makeText(myContext,
-                "Appeal Comment",
-                Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
     public void editImageOnClick() {
         etComment.setText(commentValue);
         etComment.requestFocus();
 
         commentInputLayout.setVisibility(View.VISIBLE);
         userCommentLayout.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void appealImageOnClick() {
+        commentsRef.child(id).child("appealed").setValue(true).addOnCompleteListener(task -> {
+            if(task.isSuccessful()) {
+                String toastMessage = "Your comment is now in appeal";
+
+                Toast.makeText(
+                        myContext,
+                        toastMessage,
+                        Toast.LENGTH_SHORT
+                ).show();
+            }
+            else {
+                if(task.getException() != null) {
+                    String error = task.getException().toString();
+                    Toast.makeText(
+                            myContext,
+                            error,
+                            Toast.LENGTH_LONG
+                    ).show();
+                }
+            }
+            commentProgressBar.setVisibility(View.GONE);
+        });
     }
 
     @Override
@@ -395,7 +446,6 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
 
             isDeactivateClicked = true;
         }
-
         deactivatePressedTime = System.currentTimeMillis();
     }
 
@@ -416,40 +466,40 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
 
             isReportClicked = true;
         }
-
         reportPressedTime = System.currentTimeMillis();
     }
 
     @Override
-    public void appealImageOnClick() {
-       commentsRef.child(id).child("appealed").setValue(true).addOnCompleteListener(task -> {
-           if(task.isSuccessful()) {
-               String toastMessage = "Your comment is now in appeal";
+    public void upVoteImageOnClick(String spotId, String senderUserId, Comment comment,
+                                   boolean upVoted, boolean downVoted) {
+        commentProgressBar.setVisibility(View.VISIBLE);
+        comment.setUserId(senderUserId);
 
-               Toast.makeText(
-                       myContext,
-                       toastMessage,
-                       Toast.LENGTH_SHORT
-               ).show();
-           }
-           else {
-               if(task.getException() != null) {
-                   String error = task.getException().toString();
-                   Toast.makeText(
-                           myContext,
-                           error,
-                           Toast.LENGTH_LONG
-                   ).show();
-               }
-           }
-       });
+        if(upVoted) upVotedCommentsRef.child(spotId).child(senderUserId).setValue(null);
+        else if(downVoted) downVotedCommentsRef.child(spotId).child(senderUserId).setValue(null);
+
+        if(!upVoted) upVotedCommentsRef.child(spotId).child(senderUserId).setValue(comment)
+                .addOnCompleteListener(task -> commentProgressBar.setVisibility(View.GONE));
+    }
+
+    @Override
+    public void downVoteImageOnClick(String spotId, String senderUserId, Comment comment,
+                                     boolean upVoted, boolean downVoted) {
+        commentProgressBar.setVisibility(View.VISIBLE);
+        comment.setUserId(senderUserId);
+
+        if(upVoted) upVotedCommentsRef.child(spotId).child(senderUserId).setValue(null);
+        if(downVoted) downVotedCommentsRef.child(spotId).child(senderUserId).setValue(null);
+
+        if(!downVoted) downVotedCommentsRef.child(spotId).child(senderUserId).setValue(comment)
+                .addOnCompleteListener(task -> commentProgressBar.setVisibility(View.GONE));
     }
 
     private void setReportedComment(String spotId, String senderUserId, Comment comment) {
+        commentProgressBar.setVisibility(View.VISIBLE);
         comment.setUserId(senderUserId);
 
-        usersRef.child(userId).child("reportedComments").
-                child(spotId).child(senderUserId).setValue(comment).addOnCompleteListener(task -> {
+        reportedCommentsRef.child(spotId).child(senderUserId).setValue(comment).addOnCompleteListener(task -> {
                     if(task.isSuccessful()) {
                         String toastMessage = "The comment is now reported";
 
@@ -458,6 +508,7 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
                                 toastMessage,
                                 Toast.LENGTH_SHORT
                         ).show();
+
                     }
                     else {
                         if(task.getException() != null) {
@@ -469,10 +520,12 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
                             ).show();
                         }
                     }
-                });
+            commentProgressBar.setVisibility(View.GONE);
+        });
     }
 
     private void setDeactivatedComment() {
+        commentProgressBar.setVisibility(View.VISIBLE);
         boolean value = false;
         if(currentDeactivateText.equals(deactivateText)) value = true;
 
@@ -499,18 +552,24 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
                     ).show();
                 }
             }
+            commentProgressBar.setVisibility(View.GONE);
         });
     }
 
     private void updateComment() {
-        commentsRef.child(id).child("value").setValue(inputComment);
+        commentProgressBar.setVisibility(View.VISIBLE);
+        commentsRef.child(id).child("value").setValue(inputComment)
+                .addOnCompleteListener(task -> commentProgressBar.setVisibility(View.GONE));
+
         commentInputLayout.setVisibility(View.GONE);
         userCommentLayout.setVisibility(View.VISIBLE);
     }
 
     private void setComment() {
+        commentProgressBar.setVisibility(View.VISIBLE);
         Comment comment = new Comment(id, inputComment);
-        commentsRef.child(id).setValue(comment);
+        commentsRef.child(id).setValue(comment)
+                .addOnCompleteListener(task -> commentProgressBar.setVisibility(View.GONE));
     }
 
     private void checkCurrentUserComment() {
@@ -590,11 +649,6 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
         });
     }
 
-    private int dpToPx(int dp) {
-        float px = dp * myResources.getDisplayMetrics().density;
-        return (int) px;
-    }
-
     @SuppressWarnings("deprecation")
     public static Spanned fromHtml(String html){
         if(html == null){
@@ -609,26 +663,49 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
     }
 
     private void getUsers() {
+        commentProgressBar.setVisibility(View.VISIBLE);
         usersRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 users.clear();
-                fouledCommentUsers.clear();
+                commentedUsers.clear();
+                foulCommentedUsers.clear();
 
                 if(snapshot.exists()) {
                     for(DataSnapshot dataSnapshot : snapshot.getChildren()) {
                         User thisUser = new User(dataSnapshot);
-                        List<Comment> comments = user.getComments();
+                        users.add(thisUser);
 
+                        List<Comment> comments = thisUser.getComments();
                         for(Comment comment : comments) {
                             if(comment.getId().equals(id)) {
-                                if(comment.isFouled()) fouledCommentUsers.add(thisUser);
-                                else users.add(thisUser);
+                                if(comment.isFouled()) foulCommentedUsers.add(thisUser);
+                                else commentedUsers.add(thisUser);
                                 break;
                             }
                         }
                     }
-                    users.addAll(fouledCommentUsers);
+
+                    Collections.sort(foulCommentedUsers, new Comparator<User>() {
+                        @Override
+                        public int compare(User user, User t1) {
+                            return getVotes(user) - getVotes(t1);
+                        }
+                    });
+
+                    Collections.reverse(foulCommentedUsers);
+
+                    Collections.sort(commentedUsers, new Comparator<User>() {
+                        @Override
+                        public int compare(User user, User t1) {
+                            return getVotes(user) - getVotes(t1);
+                        }
+                    });
+
+                    Collections.reverse(commentedUsers);
+
+                    commentedUsers.addAll(foulCommentedUsers);
+                    commentProgressBar.setVisibility(View.GONE);
                 }
                 commentAdapter.notifyDataSetChanged();
             }
@@ -640,8 +717,30 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
                         error.toString(),
                         Toast.LENGTH_LONG
                 ).show();
+
+                commentProgressBar.setVisibility(View.GONE);
             }
         });
+    }
+
+    private int getVotes(User user) {
+        int upVotes = 0, downVotes = 0;
+        for(User user1 : users) {
+            List<Comment> upVotedComments = user1.getUpVotedComments();
+            for (Comment comment : upVotedComments) {
+                if (comment.getId().equals(id) && comment.getUserId().equals(user.getId())) {
+                    upVotes++;
+                }
+            }
+
+            List<Comment> downVotedComments = user1.getDownVotedComments();
+            for (Comment comment : downVotedComments) {
+                if (comment.getId().equals(id) && comment.getUserId().equals(user.getId())) {
+                    downVotes++;
+                }
+            }
+        }
+        return upVotes - downVotes;
     }
 
     private void likeSpot(SimpleTouristSpot touristSpot) {
@@ -762,6 +861,8 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
     }
 
     private void getTouristSpots() {
+        progressBar.setVisibility(View.VISIBLE);
+
         DatabaseReference touristSpotsRef = firebaseDatabase.getReference("touristSpots")
                 .child(id);
         touristSpotsRef.addValueEventListener(new ValueEventListener() {
@@ -782,6 +883,8 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
                         error.toString(),
                         Toast.LENGTH_SHORT
                 ).show();
+
+                progressBar.setVisibility(View.GONE);
             }
         });
     }
@@ -888,12 +991,12 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
             }
         }
 
-        if(onScreen) {
-            updateInfo();
-        }
+        if(onScreen) updateInfo();
     }
 
     private void updateInfo() {
+        progressBar.setVisibility(View.GONE);
+
         Glide.with(myContext).load(img).placeholder(R.drawable.image_loading_placeholder).
                 override(Target.SIZE_ORIGINAL).into(thumbnail);
         tvName.setText(name);
@@ -921,8 +1024,7 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
     }
 
     private void getLikedSpots() {
-        DatabaseReference usersRef = firebaseDatabase.getReference("users").child(userId);
-        usersRef.addValueEventListener(new ValueEventListener() {
+        usersRef.child(userId).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 likedSpots.clear();
