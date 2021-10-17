@@ -38,7 +38,7 @@ public class LikedSpotAdapter extends RecyclerView.Adapter<LikedSpotAdapter.View
 
     long unlikePressedTime;
     Toast unlikeToast;
-    boolean isUnliked = false;
+    boolean isUnliked = true;
 
     public LikedSpotAdapter(Context context, List<SimpleTouristSpot> likedSpots, String userId) {
         this.likedSpots = likedSpots;

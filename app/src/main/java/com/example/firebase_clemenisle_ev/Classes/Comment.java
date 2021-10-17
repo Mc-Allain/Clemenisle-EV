@@ -1,7 +1,7 @@
 package com.example.firebase_clemenisle_ev.Classes;
 
 public class Comment {
-    boolean deactivated = false, fouled = false;
+    boolean appealed = false, deactivated = false, fouled = false;
     String id, userId, value;
 
     public Comment() {
@@ -16,6 +16,10 @@ public class Comment {
         return id;
     }
 
+    public boolean isAppealed() {
+        return appealed;
+    }
+
     public boolean isDeactivated() {
         return deactivated;
     }
@@ -26,6 +30,10 @@ public class Comment {
 
     public String getUserId() {
         return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public String getValue() {

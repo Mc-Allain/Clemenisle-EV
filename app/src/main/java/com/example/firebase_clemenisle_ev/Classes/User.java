@@ -13,6 +13,7 @@ public class User {
     private final List<Comment> comments = new ArrayList<>();
     private final List<Comment> upVotedComments = new ArrayList<>();
     private final List<Comment> downVotedComments = new ArrayList<>();
+    private final List<Comment> reportedComments = new ArrayList<>();
 
     public User() {
     }
@@ -63,8 +64,12 @@ public class User {
         if(upVotedCommentSnapshot.exists()) {
             for(DataSnapshot dataSnapshot1 : upVotedCommentSnapshot.getChildren()) {
                 if(dataSnapshot1.hasChildren()) {
-                    Comment comment = dataSnapshot1.getValue(Comment.class);
-                    upVotedComments.add(comment);
+                    for(DataSnapshot dataSnapshot2 : dataSnapshot1.getChildren()) {
+                        if(dataSnapshot2.hasChildren()) {
+                            Comment comment = dataSnapshot2.getValue(Comment.class);
+                            upVotedComments.add(comment);
+                        }
+                    }
                 }
             }
         }
@@ -74,8 +79,27 @@ public class User {
         if(downVotedCommentSnapshot.exists()) {
             for(DataSnapshot dataSnapshot1 : downVotedCommentSnapshot.getChildren()) {
                 if(dataSnapshot1.hasChildren()) {
-                    Comment comment = dataSnapshot1.getValue(Comment.class);
-                    downVotedComments.add(comment);
+                    for(DataSnapshot dataSnapshot2 : dataSnapshot1.getChildren()) {
+                        if(dataSnapshot2.hasChildren()) {
+                            Comment comment = dataSnapshot2.getValue(Comment.class);
+                            downVotedComments.add(comment);
+                        }
+                    }
+                }
+            }
+        }
+
+        reportedComments.clear();
+        DataSnapshot reportedCommentSnapshot = dataSnapshot.child("reportedComments");
+        if(reportedCommentSnapshot.exists()) {
+            for(DataSnapshot dataSnapshot1 : reportedCommentSnapshot.getChildren()) {
+                if(dataSnapshot1.hasChildren()) {
+                    for(DataSnapshot dataSnapshot2 : dataSnapshot1.getChildren()) {
+                        if(dataSnapshot2.hasChildren()) {
+                            Comment comment = dataSnapshot2.getValue(Comment.class);
+                            reportedComments.add(comment);
+                        }
+                    }
                 }
             }
         }
@@ -122,5 +146,9 @@ public class User {
 
     public List<Comment> getDownVotedComments() {
         return downVotedComments;
+    }
+
+    public List<Comment> getReportedComments() {
+        return reportedComments;
     }
 }

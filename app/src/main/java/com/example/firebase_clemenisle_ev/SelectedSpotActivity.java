@@ -51,7 +51,7 @@ import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class SelectedSpotActivity extends AppCompatActivity {
+public class SelectedSpotActivity extends AppCompatActivity implements CommentAdapter.OnActionButtonClicked {
 
     private final static String firebaseURL = FirebaseURL.getFirebaseURL();
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance(firebaseURL);
@@ -65,13 +65,13 @@ public class SelectedSpotActivity extends AppCompatActivity {
     ConstraintLayout backgroundLayout, buttonLayout, connectingLayout;
     RecyclerView nearSpotView;
 
-    ConstraintLayout commentInputLayout, userCommentLayout;
+    ConstraintLayout commentInputLayout, userCommentLayout, commentBackgroundLayout;
     EditText etComment;
     ImageView sendImage;
 
-    TextView tvUserFullName, tvFoulComment;
+    TextView tvUserFullName, tvCommentStatus;
     ExpandableTextView extvComment;
-    ImageView profileImage, editImage, deactivateImage;
+    ImageView profileImage, editImage, appealImage, deactivateImage;
 
     RecyclerView commentView;
 
@@ -104,7 +104,7 @@ public class SelectedSpotActivity extends AppCompatActivity {
     DatabaseReference usersRef, likedSpotsRef, commentsRef;
 
     CommentAdapter commentAdapter;
-    List<User> users = new ArrayList<>();
+    List<User> users = new ArrayList<>(), fouledCommentUsers = new ArrayList<>();
 
     String deactivateText = "Deactivate Comment";
     String activateText = "Activate Comment";
@@ -116,8 +116,16 @@ public class SelectedSpotActivity extends AppCompatActivity {
     String inputComment, commentValue;
     boolean isUserCommentExist = true;
 
+    String defaultStatusText = "Foul comment", appealedtext = "(Appealed)",
+            notActiveText = "This comment is not active";
+
     long deactivatePressedTime;
     Toast deactivateToast;
+    boolean isDeactivateClicked = false;
+
+    long reportPressedTime;
+    Toast reportToast;
+    boolean isReportClicked = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -153,11 +161,13 @@ public class SelectedSpotActivity extends AppCompatActivity {
         sendImage = findViewById(R.id.sendImage);
 
         userCommentLayout = findViewById(R.id.userCommentLayout);
+        commentBackgroundLayout = findViewById(R.id.commentBackgroundLayout);
         tvUserFullName = findViewById(R.id.tvUserFullName);
-        tvFoulComment = findViewById(R.id.tvFoulComment);
+        tvCommentStatus = findViewById(R.id.tvCommentStatus);
         extvComment = findViewById(R.id.extvComment);
         profileImage = findViewById(R.id.profileImage);
         editImage = findViewById(R.id.editImage);
+        appealImage = findViewById(R.id.appealImage);
         deactivateImage = findViewById(R.id.deactivateImage);
 
         commentView = findViewById(R.id.commentView);
@@ -209,6 +219,7 @@ public class SelectedSpotActivity extends AppCompatActivity {
         commentView.setLayoutManager(linearLayout2);
         commentAdapter = new CommentAdapter(myContext, users, id, userId);
         commentView.setAdapter(commentAdapter);
+        commentAdapter.setOnActionButtonClickedListener(this);
 
         getUsers();
         checkCurrentUserComment();
@@ -306,50 +317,171 @@ public class SelectedSpotActivity extends AppCompatActivity {
         });
 
         editImage.setOnLongClickListener(view -> {
-            Toast.makeText(myContext,
-                    "Edit Comment",
-                    Toast.LENGTH_SHORT).show();
+            editImageOnLongClick();
+            return false;
+        });
+
+        appealImage.setOnLongClickListener(view -> {
+            appealImageOnLongClick();
             return false;
         });
 
         deactivateImage.setOnLongClickListener(view -> {
-            Toast.makeText(myContext,
-                    currentDeactivateText,
-                    Toast.LENGTH_SHORT).show();
+            deactivateImageOnLongClick();
             return false;
         });
 
-        editImage.setOnClickListener(view -> {
-            etComment.setText(commentValue);
-            commentInputLayout.setVisibility(View.VISIBLE);
-            userCommentLayout.setVisibility(View.GONE);
-        });
+        editImage.setOnClickListener(view -> editImageOnClick());
 
-        deactivateImage.setOnClickListener(view -> {
-            if(deactivatePressedTime + 2500 > System.currentTimeMillis()) {
-                deactivateToast.cancel();
+        appealImage.setOnClickListener(view -> appealImageOnClick());
 
-                setDeactivatedComment();
-            }
-            else {
-                deactivateToast = Toast.makeText(myContext,
-                        "Press again to " + currentDeactivateText, Toast.LENGTH_SHORT);
-                deactivateToast.show();
-            }
+        deactivateImage.setOnClickListener(view -> deactivateImageOnClick());
+    }
 
-            deactivatePressedTime = System.currentTimeMillis();
-        });
+    @Override
+    public void editImageOnLongClick() {
+        Toast.makeText(myContext,
+                "Edit Comment",
+                Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void deactivateImageOnLongClick() {
+        Toast.makeText(myContext,
+                currentDeactivateText,
+                Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void reportImageOnLongClick() {
+        Toast.makeText(myContext,
+                "Report Comment",
+                Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void appealImageOnLongClick() {
+        Toast.makeText(myContext,
+                "Appeal Comment",
+                Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void editImageOnClick() {
+        etComment.setText(commentValue);
+        etComment.requestFocus();
+
+        commentInputLayout.setVisibility(View.VISIBLE);
+        userCommentLayout.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void deactivateImageOnClick() {
+        if(deactivatePressedTime + 2500 > System.currentTimeMillis() && isDeactivateClicked) {
+            deactivateToast.cancel();
+
+            setDeactivatedComment();
+
+            isDeactivateClicked = false;
+        }
+        else {
+            String toastMessage = "Press again to ";
+            if(currentDeactivateText.equals(deactivateText)) toastMessage += "deactivate";
+            else if(currentDeactivateText.equals(activateText)) toastMessage += "activate";
+            toastMessage += " your comment";
+
+            deactivateToast = Toast.makeText(myContext, toastMessage, Toast.LENGTH_SHORT);
+            deactivateToast.show();
+
+            isDeactivateClicked = true;
+        }
+
+        deactivatePressedTime = System.currentTimeMillis();
+    }
+
+    @Override
+    public void reportImageOnClick(String spotId, String senderUserId, Comment comment) {
+        if(reportPressedTime + 2500 > System.currentTimeMillis() && isReportClicked) {
+            reportToast.cancel();
+
+            setReportedComment(spotId, senderUserId, comment);
+
+            isReportClicked = false;
+        }
+        else {
+            String toastMessage = "Press again to report the comment";
+
+            reportToast = Toast.makeText(myContext, toastMessage, Toast.LENGTH_SHORT);
+            reportToast.show();
+
+            isReportClicked = true;
+        }
+
+        reportPressedTime = System.currentTimeMillis();
+    }
+
+    @Override
+    public void appealImageOnClick() {
+       commentsRef.child(id).child("appealed").setValue(true).addOnCompleteListener(task -> {
+           if(task.isSuccessful()) {
+               String toastMessage = "Your comment is now in appeal";
+
+               Toast.makeText(
+                       myContext,
+                       toastMessage,
+                       Toast.LENGTH_SHORT
+               ).show();
+           }
+           else {
+               if(task.getException() != null) {
+                   String error = task.getException().toString();
+                   Toast.makeText(
+                           myContext,
+                           error,
+                           Toast.LENGTH_LONG
+                   ).show();
+               }
+           }
+       });
+    }
+
+    private void setReportedComment(String spotId, String senderUserId, Comment comment) {
+        comment.setUserId(senderUserId);
+
+        usersRef.child(userId).child("reportedComments").
+                child(spotId).child(senderUserId).setValue(comment).addOnCompleteListener(task -> {
+                    if(task.isSuccessful()) {
+                        String toastMessage = "The comment is now reported";
+
+                        Toast.makeText(
+                                myContext,
+                                toastMessage,
+                                Toast.LENGTH_SHORT
+                        ).show();
+                    }
+                    else {
+                        if(task.getException() != null) {
+                            String error = task.getException().toString();
+                            Toast.makeText(
+                                    myContext,
+                                    error,
+                                    Toast.LENGTH_LONG
+                            ).show();
+                        }
+                    }
+                });
     }
 
     private void setDeactivatedComment() {
         boolean value = false;
-        if(currentDeactivateText == deactivateText) value = true;
+        if(currentDeactivateText.equals(deactivateText)) value = true;
+
         commentsRef.child(id).child("deactivated").setValue(value)
         .addOnCompleteListener(task -> {
             if(task.isSuccessful()) {
                 String toastMessage = "Your comment is now ";
-                if(currentDeactivateText == deactivateText) toastMessage += "activated";
-                else if(currentDeactivateText == activateText) toastMessage += "deactivated";
+                if(currentDeactivateText.equals(deactivateText)) toastMessage += "activated";
+                else if(currentDeactivateText.equals(activateText)) toastMessage += "deactivated";
 
                 Toast.makeText(
                         myContext,
@@ -363,7 +495,7 @@ public class SelectedSpotActivity extends AppCompatActivity {
                     Toast.makeText(
                             myContext,
                             error,
-                            Toast.LENGTH_SHORT
+                            Toast.LENGTH_LONG
                     ).show();
                 }
             }
@@ -372,6 +504,8 @@ public class SelectedSpotActivity extends AppCompatActivity {
 
     private void updateComment() {
         commentsRef.child(id).child("value").setValue(inputComment);
+        commentInputLayout.setVisibility(View.GONE);
+        userCommentLayout.setVisibility(View.VISIBLE);
     }
 
     private void setComment() {
@@ -398,25 +532,44 @@ public class SelectedSpotActivity extends AppCompatActivity {
                     extvComment.setText(commentValue);
 
                     if(comment.isFouled()) {
-                        tvUserFullName.setPadding(0, 0, dpToPx(106), 0);
-                        tvFoulComment.setVisibility(View.VISIBLE);
-                        extvComment.setVisibility(View.GONE);
-                    }
-                    else {
-                        tvUserFullName.setPadding(0, 0, 0, 0);
-                        tvFoulComment.setVisibility(View.GONE);
-                        extvComment.setVisibility(View.VISIBLE);
-                    }
+                        tvCommentStatus.setVisibility(View.VISIBLE);
 
-                    if(comment.isDeactivated()){
-                        deactivateImage.setImageResource(R.drawable.ic_baseline_comment_24);
-                        deactivateImage.getDrawable().setTint(colorBlue);
-                        currentDeactivateText = activateText;
+                        appealImage.setEnabled(true);
+                        appealImage.setVisibility(View.VISIBLE);
+                        deactivateImage.setVisibility(View.GONE);
+
+                        String status = defaultStatusText;
+                        if(comment.isAppealed()) {
+                            appealImage.setEnabled(false);
+                            appealImage.setColorFilter(colorInitial);
+                            status = defaultStatusText + " " + appealedtext;
+                        }
+                        else appealImage.setColorFilter(colorBlue);
+
+                        tvCommentStatus.setText(status);
                     }
                     else {
-                        deactivateImage.setImageResource(R.drawable.ic_baseline_comments_disabled_24);
-                        deactivateImage.getDrawable().setTint(colorRed);
-                        currentDeactivateText = deactivateText;
+                        tvCommentStatus.setVisibility(View.GONE);
+
+                        appealImage.setVisibility(View.GONE);
+                        deactivateImage.setVisibility(View.VISIBLE);
+
+                        if(comment.isDeactivated()) {
+                            tvCommentStatus.setVisibility(View.VISIBLE);
+                            tvCommentStatus.setText(notActiveText);
+
+                            deactivateImage.setImageResource(R.drawable.ic_baseline_comment_24);
+                            deactivateImage.getDrawable().setTint(colorBlue);
+                            currentDeactivateText = activateText;
+                        }
+                        else {
+                            tvCommentStatus.setVisibility(View.GONE);
+                            tvCommentStatus.setText(defaultStatusText);
+
+                            deactivateImage.setImageResource(R.drawable.ic_baseline_comments_disabled_24);
+                            deactivateImage.getDrawable().setTint(colorRed);
+                            currentDeactivateText = deactivateText;
+                        }
                     }
                 }
                 else {
@@ -428,7 +581,11 @@ public class SelectedSpotActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
+                Toast.makeText(
+                        myContext,
+                        error.toString(),
+                        Toast.LENGTH_LONG
+                ).show();
             }
         });
     }
@@ -456,11 +613,22 @@ public class SelectedSpotActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 users.clear();
+                fouledCommentUsers.clear();
+
                 if(snapshot.exists()) {
                     for(DataSnapshot dataSnapshot : snapshot.getChildren()) {
                         User thisUser = new User(dataSnapshot);
-                        users.add(thisUser);
+                        List<Comment> comments = user.getComments();
+
+                        for(Comment comment : comments) {
+                            if(comment.getId().equals(id)) {
+                                if(comment.isFouled()) fouledCommentUsers.add(thisUser);
+                                else users.add(thisUser);
+                                break;
+                            }
+                        }
                     }
+                    users.addAll(fouledCommentUsers);
                 }
                 commentAdapter.notifyDataSetChanged();
             }
