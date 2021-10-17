@@ -219,13 +219,7 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
         nearSpotView.setAdapter(nearSpotAdapter);
 
         LinearLayoutManager linearLayout2 =
-                new LinearLayoutManager(myContext, LinearLayoutManager.VERTICAL, false) {
-                    @Override
-                    public boolean canScrollVertically() {
-                        return false;
-                    }
-                };
-
+                new LinearLayoutManager(myContext, LinearLayoutManager.VERTICAL, false);
         commentView.setLayoutManager(linearLayout2);
         commentAdapter = new CommentAdapter(myContext, commentedUsers, id, userId);
         commentView.setAdapter(commentAdapter);
@@ -681,7 +675,6 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
                             if(comment.getId().equals(id)) {
                                 if(comment.isFouled()) foulCommentedUsers.add(thisUser);
                                 else commentedUsers.add(thisUser);
-                                break;
                             }
                         }
                     }

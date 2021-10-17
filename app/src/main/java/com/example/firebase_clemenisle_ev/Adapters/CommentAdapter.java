@@ -37,6 +37,8 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
     String defaultStatusText = "Foul comment", appealedtext = "(Appealed)",
             reportedStatus = "Reported", notActiveText = "This comment is not active";
 
+    int loadCommentItemPosition = 5, incrementLoadedItems = 5;
+
     OnActionButtonClicked onActionButtonClickedListener;
 
     public CommentAdapter(Context context, List<User> users, String spotId, String userId) {
@@ -55,10 +57,11 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
 
     @Override
     public void onBindViewHolder(@NonNull CommentAdapter.ViewHolder holder, int position) {
-        ConstraintLayout backgroundLayout = holder.backgroundLayout,
-                voteLayout = holder.voteLayout;
+        ConstraintLayout backgroundLayout = holder.backgroundLayout, commentLayout = holder.commentLayout,
+                voteLayout = holder.voteLayout, loadCommentLayout = holder.loadCommentLayout;
         TextView tvUserFullName = holder.tvUserFullName, tvCommentStatus = holder.tvCommentStatus,
-                tvUpVotes = holder.tvUpVotes, tvDownVotes = holder.tvDownVotes;
+                tvUpVotes = holder.tvUpVotes, tvDownVotes = holder.tvDownVotes,
+                tvLoadComment = holder.tvLoadComment;
         ExpandableTextView extvComment = holder.extvComment;
         ImageView profileImage  = holder.profileImage,
                 editImage = holder.editImage,
@@ -76,167 +79,249 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
         colorBlack = myResources.getColor(R.color.black);
         colorRed = myResources.getColor(R.color.red);
 
-        User user = users.get(position);
+        if(users.size() < loadCommentItemPosition && users.size() != 0)
+            loadCommentItemPosition = users.size();
 
-        List<Comment> comments = user.getComments();
-
-        Comment commentRecord = null;
-        for(Comment thisComment : comments) {
-            if(thisComment.getId().equals(spotId)) {
-                commentRecord = thisComment;
-                break;
-            }
-        }
-        Comment finalCommentRecord = commentRecord;
-
-        String fullName = "<b>" + user.getLastName() + "</b>, " + user.getFirstName();
-        if(user.getMiddleName().length() > 0) fullName += " " + user.getMiddleName();
-        tvUserFullName.setText(fromHtml(fullName));
-
-        boolean upVoted = false, downVoted = false;
-
-        if(commentRecord != null) {
-            String commentValue = commentRecord.getValue();
-            boolean fouled = commentRecord.isFouled();
-            boolean appealed = commentRecord.isAppealed();
-
-            extvComment.setText(commentValue);
+        if(position < loadCommentItemPosition && users.size() != 0) {
             backgroundLayout.setVisibility(View.VISIBLE);
+            commentLayout.setVisibility(View.VISIBLE);
+            loadCommentLayout.setVisibility(View.GONE);
 
-            if(fouled) {
-                tvCommentStatus.setVisibility(View.VISIBLE);
-                tvCommentStatus.setText(defaultStatusText);
+            User user = users.get(position);
 
-                extvComment.setVisibility(View.GONE);
-                voteLayout.setVisibility(View.GONE);
+            List<Comment> comments = user.getComments();
 
-                if(user.getId().equals(userId))  {
-                    appealImage.setEnabled(true);
-                    appealImage.setVisibility(View.VISIBLE);
-
-                    String status = defaultStatusText;
-                    if(appealed) {
-                        appealImage.setEnabled(false);
-                        appealImage.setColorFilter(colorInitial);
-                        status = defaultStatusText + " " + appealedtext;
-                    }
-                    else appealImage.setColorFilter(colorBlue);
-
-                    tvCommentStatus.setText(status);
+            Comment commentRecord = null;
+            for(Comment thisComment : comments) {
+                if(thisComment.getId().equals(spotId)) {
+                    commentRecord = thisComment;
+                    break;
                 }
-                else appealImage.setVisibility(View.GONE);
-
-                deactivateImage.setVisibility(View.GONE);
-                reportImage.setVisibility(View.GONE);
-
-                backgroundLayout.setPadding(0, 0, 0, dpToPx(12));
             }
-            else {
-                tvCommentStatus.setVisibility(View.GONE);
+            Comment finalCommentRecord = commentRecord;
 
-                appealImage.setVisibility(View.GONE);
+            String fullName = "<b>" + user.getLastName() + "</b>, " + user.getFirstName();
+            if(user.getMiddleName().length() > 0) fullName += " " + user.getMiddleName();
+            tvUserFullName.setText(fromHtml(fullName));
 
-                if(commentRecord.isDeactivated()) {
+            boolean upVoted = false, downVoted = false;
+
+            if(commentRecord != null) {
+                String commentValue = commentRecord.getValue();
+                boolean fouled = commentRecord.isFouled();
+                boolean appealed = commentRecord.isAppealed();
+
+                extvComment.setText(commentValue);
+                backgroundLayout.setVisibility(View.VISIBLE);
+
+                if(fouled) {
                     tvCommentStatus.setVisibility(View.VISIBLE);
-                    tvCommentStatus.setText(notActiveText);
-
-                    deactivateImage.setImageResource(R.drawable.ic_baseline_comment_24);
-                    deactivateImage.getDrawable().setTint(colorBlue);
+                    tvCommentStatus.setText(defaultStatusText);
 
                     extvComment.setVisibility(View.GONE);
                     voteLayout.setVisibility(View.GONE);
 
+                    if(user.getId().equals(userId))  {
+                        appealImage.setEnabled(true);
+                        appealImage.setVisibility(View.VISIBLE);
+
+                        String status = defaultStatusText;
+                        if(appealed) {
+                            appealImage.setEnabled(false);
+                            appealImage.setColorFilter(colorInitial);
+                            status = defaultStatusText + " " + appealedtext;
+                        }
+                        else appealImage.setColorFilter(colorBlue);
+
+                        tvCommentStatus.setText(status);
+                    }
+                    else appealImage.setVisibility(View.GONE);
+
+                    deactivateImage.setVisibility(View.GONE);
+                    reportImage.setVisibility(View.GONE);
+
                     backgroundLayout.setPadding(0, 0, 0, dpToPx(12));
                 }
                 else {
-                    extvComment.setVisibility(View.VISIBLE);
-                    voteLayout.setVisibility(View.VISIBLE);
+                    tvCommentStatus.setVisibility(View.GONE);
 
-                    deactivateImage.setImageResource(R.drawable.ic_baseline_comments_disabled_24);
-                    deactivateImage.getDrawable().setTint(colorRed);
+                    appealImage.setVisibility(View.GONE);
 
-                    backgroundLayout.setPadding(0, 0, 0, 0);
+                    if(commentRecord.isDeactivated()) {
+                        tvCommentStatus.setVisibility(View.VISIBLE);
+                        tvCommentStatus.setText(notActiveText);
+
+                        deactivateImage.setImageResource(R.drawable.ic_baseline_comment_24);
+                        deactivateImage.getDrawable().setTint(colorBlue);
+
+                        extvComment.setVisibility(View.GONE);
+                        voteLayout.setVisibility(View.GONE);
+
+                        backgroundLayout.setPadding(0, 0, 0, dpToPx(12));
+                    }
+                    else {
+                        extvComment.setVisibility(View.VISIBLE);
+                        voteLayout.setVisibility(View.VISIBLE);
+
+                        deactivateImage.setImageResource(R.drawable.ic_baseline_comments_disabled_24);
+                        deactivateImage.getDrawable().setTint(colorRed);
+
+                        backgroundLayout.setPadding(0, 0, 0, 0);
+                    }
+
+                    if(user.getId().equals(userId)) deactivateImage.setVisibility(View.VISIBLE);
+                    else deactivateImage.setVisibility(View.GONE);
+
+                    if(user.getId().equals(userId)) reportImage.setVisibility(View.GONE);
+                    else reportImage.setVisibility(View.VISIBLE);
                 }
 
-                if(user.getId().equals(userId)) deactivateImage.setVisibility(View.VISIBLE);
-                else deactivateImage.setVisibility(View.GONE);
+                if(user.getId().equals(userId)) {
+                    editImage.setVisibility(View.VISIBLE);
 
-                if(user.getId().equals(userId)) reportImage.setVisibility(View.GONE);
-                else reportImage.setVisibility(View.VISIBLE);
+                    upVoteImage.setEnabled(false);
+                    downVoteImage.setEnabled(false);
+                    upVoteImage.getDrawable().setTint(colorInitial);
+                    downVoteImage.getDrawable().setTint(colorInitial);
+
+                    String formattedFullName = fullName + " (You)";
+                    tvUserFullName.setText(fromHtml(formattedFullName));
+                }
+                else {
+                    editImage.setVisibility(View.GONE);
+
+                    upVoteImage.setEnabled(true);
+                    downVoteImage.setEnabled(true);
+                    upVoteImage.getDrawable().setTint(colorBlack);
+                    downVoteImage.getDrawable().setTint(colorBlack);
+                }
             }
+            else backgroundLayout.setVisibility(View.GONE);
 
-            if(user.getId().equals(userId)) {
-                editImage.setVisibility(View.VISIBLE);
+            reportImage.setEnabled(true);
+            reportImage.setColorFilter(colorRed);
 
-                upVoteImage.setEnabled(false);
-                downVoteImage.setEnabled(false);
-                upVoteImage.getDrawable().setTint(colorInitial);
-                downVoteImage.getDrawable().setTint(colorInitial);
+            int upVotes = 0, downVotes = 0;
+            for(User user1 : users) {
+                List<Comment> upVotedComments = user1.getUpVotedComments();
+                for(Comment comment : upVotedComments) {
+                    if(comment.getId().equals(spotId) && comment.getUserId().equals(user.getId())) {
+                        upVotes++;
 
-                String formattedFullName = fullName + " (You)";
-                tvUserFullName.setText(fromHtml(formattedFullName));
-            }
-            else {
-                editImage.setVisibility(View.GONE);
+                        if(user1.getId().equals(userId)) {
+                            upVoteImage.getDrawable().setTint(colorBlue);
+                            upVoted = true;
+                        }
+                    }
+                }
 
-                upVoteImage.setEnabled(true);
-                downVoteImage.setEnabled(true);
-                upVoteImage.getDrawable().setTint(colorBlack);
-                downVoteImage.getDrawable().setTint(colorBlack);
-            }
-        }
-        else backgroundLayout.setVisibility(View.GONE);
+                List<Comment> downVotedComments = user1.getDownVotedComments();
+                for(Comment comment : downVotedComments) {
+                    if(comment.getId().equals(spotId) && comment.getUserId().equals(user.getId())) {
+                        downVotes++;
 
-        reportImage.setEnabled(true);
-        reportImage.setColorFilter(colorRed);
+                        if(user1.getId().equals(userId)) {
+                            downVoteImage.getDrawable().setTint(colorRed);
+                            downVoted = true;
+                        }
+                    }
+                }
 
-        int upVotes = 0, downVotes = 0;
-        for(User user1 : users) {
-            List<Comment> upVotedComments = user1.getUpVotedComments();
-            for(Comment comment : upVotedComments) {
-                if(comment.getId().equals(spotId) && comment.getUserId().equals(user.getId())) {
-                    upVotes++;
+                List<Comment> reportedComments = user1.getReportedComments();
+                for(Comment comment : reportedComments) {
+                    if(comment.getId().equals(spotId) && comment.getUserId().equals(user.getId())) {
+                        reportImage.setEnabled(false);
+                        reportImage.setColorFilter(colorInitial);
 
-                    if(user1.getId().equals(userId)) {
-                        upVoteImage.getDrawable().setTint(colorBlue);
-                        upVoted = true;
+                        tvCommentStatus.setVisibility(View.VISIBLE);
+
+                        String status = reportedStatus;
+
+                        if(commentRecord.isFouled()) status = defaultStatusText;
+                        else if(commentRecord.isDeactivated()) status = notActiveText + " | " + reportedStatus;
+
+                        tvCommentStatus.setText(status);
                     }
                 }
             }
+            boolean finalUpVoted = upVoted, finalDownVoted = downVoted;
 
-            List<Comment> downVotedComments = user1.getDownVotedComments();
-            for(Comment comment : downVotedComments) {
-                if(comment.getId().equals(spotId) && comment.getUserId().equals(user.getId())) {
-                    downVotes++;
+            tvUpVotes.setText(String.valueOf(upVotes));
+            tvDownVotes.setText(String.valueOf(downVotes));
 
-                    if(user1.getId().equals(userId)) {
-                        downVoteImage.getDrawable().setTint(colorRed);
-                        downVoted = true;
-                    }
-                }
-            }
+            upVoteImage.setOnLongClickListener(view -> {
+                onActionButtonClickedListener.upVoteImageOnLongClick();
+                return false;
+            });
 
-            List<Comment> reportedComments = user1.getReportedComments();
-            for(Comment comment : reportedComments) {
-                if(comment.getId().equals(spotId) && comment.getUserId().equals(user.getId())) {
-                    reportImage.setEnabled(false);
-                    reportImage.setColorFilter(colorInitial);
+            downVoteImage.setOnLongClickListener(view -> {
+                onActionButtonClickedListener.downVoteImageOnLongClick();
+                return false;
+            });
 
-                    tvCommentStatus.setVisibility(View.VISIBLE);
+            editImage.setOnLongClickListener(view -> {
+                onActionButtonClickedListener.editImageOnLongClick();
+                return false;
+            });
 
-                    String status = reportedStatus;
+            appealImage.setOnLongClickListener(view -> {
+                onActionButtonClickedListener.appealImageOnLongClick();
+                return false;
+            });
 
-                    if(commentRecord.isFouled()) status = defaultStatusText;
-                    else if(commentRecord.isDeactivated()) status = notActiveText + " | " + reportedStatus;
+            deactivateImage.setOnLongClickListener(view -> {
+                onActionButtonClickedListener.deactivateImageOnLongClick();
+                return false;
+            });
 
-                    tvCommentStatus.setText(status);
-                }
-            }
+            reportImage.setOnLongClickListener(view -> {
+                onActionButtonClickedListener.reportImageOnLongClick();
+                return false;
+            });
+
+            upVoteImage.setOnClickListener(view ->
+                    onActionButtonClickedListener.
+                            upVoteImageOnClick(spotId, user.getId(), finalCommentRecord,
+                                    finalUpVoted, finalDownVoted)
+            );
+
+            downVoteImage.setOnClickListener(view ->
+                    onActionButtonClickedListener.
+                            downVoteImageOnClick(spotId, user.getId(), finalCommentRecord,
+                                    finalUpVoted, finalDownVoted)
+            );
+
+            editImage.setOnClickListener(view -> onActionButtonClickedListener.editImageOnClick());
+
+            appealImage.setOnClickListener(view -> onActionButtonClickedListener.appealImageOnClick());
+
+            deactivateImage.setOnClickListener(view -> onActionButtonClickedListener.deactivateImageOnClick());
+
+            reportImage.setOnClickListener(view ->
+                    onActionButtonClickedListener.
+                            reportImageOnClick(spotId, user.getId(), finalCommentRecord)
+            );
         }
-        boolean finalUpVoted = upVoted, finalDownVoted = downVoted;
+        else if(position == loadCommentItemPosition && position != users.size()) {
+            backgroundLayout.setVisibility(View.VISIBLE);
+            commentLayout.setVisibility(View.GONE);
+            loadCommentLayout.setVisibility(View.VISIBLE);
 
-        tvUpVotes.setText(String.valueOf(upVotes));
-        tvDownVotes.setText(String.valueOf(downVotes));
+            int itemsCountToIncrement = incrementLoadedItems;
+            if(loadCommentItemPosition + incrementLoadedItems > users.size())
+                itemsCountToIncrement = users.size() - loadCommentItemPosition;
+
+            String loadCommentText = "Load " + itemsCountToIncrement + " more comments";
+            tvLoadComment.setText(loadCommentText);
+
+            loadCommentLayout.setOnClickListener(view -> {
+                loadCommentItemPosition += incrementLoadedItems;
+                notifyDataSetChanged();
+            });
+        }
+        else {
+            backgroundLayout.setVisibility(View.GONE);
+        }
 
         int top = dpToPx(4), bottom = dpToPx(4);
 
@@ -250,59 +335,6 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
                 (ConstraintLayout.LayoutParams) backgroundLayout.getLayoutParams();
         layoutParams.setMargins(layoutParams.leftMargin, top, layoutParams.rightMargin, bottom);
         backgroundLayout.setLayoutParams(layoutParams);
-
-        upVoteImage.setOnLongClickListener(view -> {
-            onActionButtonClickedListener.upVoteImageOnLongClick();
-            return false;
-        });
-
-        downVoteImage.setOnLongClickListener(view -> {
-            onActionButtonClickedListener.downVoteImageOnLongClick();
-            return false;
-        });
-
-        editImage.setOnLongClickListener(view -> {
-            onActionButtonClickedListener.editImageOnLongClick();
-            return false;
-        });
-
-        appealImage.setOnLongClickListener(view -> {
-            onActionButtonClickedListener.appealImageOnLongClick();
-            return false;
-        });
-
-        deactivateImage.setOnLongClickListener(view -> {
-            onActionButtonClickedListener.deactivateImageOnLongClick();
-            return false;
-        });
-
-        reportImage.setOnLongClickListener(view -> {
-            onActionButtonClickedListener.reportImageOnLongClick();
-            return false;
-        });
-
-        upVoteImage.setOnClickListener(view ->
-                onActionButtonClickedListener.
-                        upVoteImageOnClick(spotId, user.getId(), finalCommentRecord,
-                                finalUpVoted, finalDownVoted)
-        );
-
-        downVoteImage.setOnClickListener(view ->
-                onActionButtonClickedListener.
-                        downVoteImageOnClick(spotId, user.getId(), finalCommentRecord,
-                                finalUpVoted, finalDownVoted)
-        );
-
-        editImage.setOnClickListener(view -> onActionButtonClickedListener.editImageOnClick());
-
-        appealImage.setOnClickListener(view -> onActionButtonClickedListener.appealImageOnClick());
-
-        deactivateImage.setOnClickListener(view -> onActionButtonClickedListener.deactivateImageOnClick());
-
-        reportImage.setOnClickListener(view ->
-                onActionButtonClickedListener.
-                        reportImageOnClick(spotId, user.getId(), finalCommentRecord)
-        );
     }
 
     public interface OnActionButtonClicked {
@@ -347,14 +379,15 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
 
     @Override
     public int getItemCount() {
-        return users.size();
+        return users.size() + 1;
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        ConstraintLayout backgroundLayout, voteLayout;
-        TextView tvUserFullName, tvCommentStatus, tvUpVotes, tvDownVotes;
+        ConstraintLayout backgroundLayout, voteLayout, commentLayout, loadCommentLayout;
+        TextView tvUserFullName, tvCommentStatus, tvUpVotes, tvDownVotes, tvLoadComment;
         ExpandableTextView extvComment;
-        ImageView profileImage, editImage, appealImage, deactivateImage, reportImage, upVoteImage, downVoteImage;
+        ImageView profileImage, editImage, appealImage, deactivateImage, reportImage,
+                upVoteImage, downVoteImage;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -374,6 +407,9 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
             deactivateImage = itemView.findViewById(R.id.deactivateImage);
             upVoteImage = itemView.findViewById(R.id.upVoteImage);
             downVoteImage = itemView.findViewById(R.id.downVoteImage);
+            commentLayout = itemView.findViewById(R.id.commentLayout);
+            loadCommentLayout = itemView.findViewById(R.id.loadCommentLayout);
+            tvLoadComment = itemView.findViewById(R.id.tvLoadComment);
         }
     }
 }
