@@ -2,332 +2,26 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/constraintLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/gainsboro"
     tools:context=".SelectedSpotActivity">
 
     <ScrollView
+        android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/commentTitleLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/headerLayout">
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/scrollLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/commentLayout"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
-                android:background="@color/white"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="@+id/backgroundLayout"
-                app:layout_constraintStart_toStartOf="@+id/backgroundLayout"
-                app:layout_constraintTop_toBottomOf="@+id/backgroundLayout">
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/commentInputLayout"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/commentTitleLayout">
-
-                    <ImageView
-                        android:id="@+id/sendImage"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="4dp"
-                        android:layout_marginBottom="16dp"
-                        android:padding="4dp"
-                        app:layout_constraintBottom_toBottomOf="@+id/tlComment"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="@+id/tlComment"
-                        app:srcCompat="@drawable/ic_baseline_send_24" />
-
-                    <View
-                        style="@style/line_color"
-                        android:layout_width="0dp"
-                        android:layout_height="1dp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent" />
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/tlComment"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginEnd="4dp"
-                        android:layout_marginBottom="8dp"
-                        app:counterEnabled="true"
-                        app:counterMaxLength="256"
-                        app:hintEnabled="false"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toStartOf="@+id/sendImage"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent">
-
-                        <EditText
-                            android:id="@+id/etComment"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:ems="10"
-                            android:fontFamily="@font/ubuntu"
-                            android:hint="Please input your comment here…"
-                            android:inputType="textLongMessage|textMultiLine|textCapSentences"
-                            android:maxLength="128"
-                            android:textColor="@color/black"
-                            android:textSize="14sp"
-                            tools:ignore="SpeakableTextPresentCheck" />
-
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                </androidx.constraintlayout.widget.ConstraintLayout>
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/commentView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@color/gainsboro"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/userCommentLayout" />
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/commentTitleLayout"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
-
-                    <TextView
-                        android:id="@+id/tvCommentTitle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginBottom="8dp"
-                        android:fontFamily="@font/ubuntu"
-                        android:text="Comments"
-                        android:textColor="@color/black"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                    <View
-                        style="@style/line_color"
-                        android:layout_width="0dp"
-                        android:layout_height="1dp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent" />
-
-                </androidx.constraintlayout.widget.ConstraintLayout>
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/userCommentLayout"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@color/white"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/commentInputLayout">
-
-                    <View
-                        style="@style/line_color"
-                        android:layout_width="0dp"
-                        android:layout_height="1dp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent" />
-
-                    <androidx.constraintlayout.widget.ConstraintLayout
-                        android:id="@+id/userCommentTitleLayout"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent">
-
-                        <TextView
-                            android:id="@+id/tvUserCommentTitle"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="24dp"
-                            android:layout_marginTop="8dp"
-                            android:layout_marginBottom="8dp"
-                            android:fontFamily="@font/ubuntu"
-                            android:text="Your Comment"
-                            android:textColor="@color/black"
-                            android:textStyle="bold"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent" />
-
-                        <View
-                            style="@style/line_color"
-                            android:layout_width="0dp"
-                            android:layout_height="1dp"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toStartOf="parent" />
-                    </androidx.constraintlayout.widget.ConstraintLayout>
-
-                    <androidx.constraintlayout.widget.ConstraintLayout
-                        android:id="@+id/commentBackgroundLayout"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_marginBottom="12dp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/userCommentTitleLayout">
-
-                        <ImageView
-                            android:id="@+id/profileImage"
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
-                            android:layout_marginStart="8dp"
-                            android:layout_marginTop="8dp"
-                            android:scaleType="centerCrop"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent"
-                            app:srcCompat="@drawable/image_loading_placeholder" />
-
-                        <TextView
-                            android:id="@+id/tvUserFullName"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
-                            android:layout_marginEnd="8dp"
-                            android:fontFamily="@font/ubuntu"
-                            android:text="User's Full Name"
-                            android:textColor="@color/black"
-                            app:layout_constraintBottom_toBottomOf="@+id/profileImage"
-                            app:layout_constraintEnd_toStartOf="@+id/actionLayout"
-                            app:layout_constraintStart_toEndOf="@+id/profileImage"
-                            app:layout_constraintTop_toTopOf="@+id/profileImage" />
-
-                        <TextView
-                            android:id="@+id/tvCommentStatus"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
-                            android:fontFamily="@font/ubuntu"
-                            android:paddingBottom="4dp"
-                            android:text="Comment Status"
-                            android:textColor="@color/red"
-                            android:textStyle="italic"
-                            android:visibility="gone"
-                            app:layout_constraintEnd_toEndOf="@+id/actionLayout"
-                            app:layout_constraintStart_toStartOf="@+id/tvUserFullName"
-                            app:layout_constraintTop_toBottomOf="@+id/profileImage" />
-
-                        <androidx.constraintlayout.widget.ConstraintLayout
-                            android:id="@+id/actionLayout"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginEnd="8dp"
-                            app:layout_constraintBottom_toBottomOf="@+id/profileImage"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintTop_toTopOf="@+id/profileImage">
-
-                            <ImageView
-                                android:id="@+id/deactivateImage"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:padding="4dp"
-                                app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintEnd_toEndOf="parent"
-                                app:layout_constraintTop_toTopOf="parent"
-                                app:srcCompat="@drawable/ic_baseline_comments_disabled_24"
-                                app:tint="@color/red" />
-
-                            <ImageView
-                                android:id="@+id/appealImage"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:padding="4dp"
-                                app:layout_constraintBottom_toBottomOf="@+id/deactivateImage"
-                                app:layout_constraintEnd_toStartOf="@+id/deactivateImage"
-                                app:layout_constraintTop_toTopOf="@+id/deactivateImage"
-                                app:srcCompat="@drawable/ic_baseline_front_hand_24"
-                                app:tint="@color/blue" />
-
-                            <ImageView
-                                android:id="@+id/editImage"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:padding="4dp"
-                                app:layout_constraintBottom_toBottomOf="@+id/deactivateImage"
-                                app:layout_constraintEnd_toStartOf="@+id/appealImage"
-                                app:layout_constraintTop_toTopOf="@+id/deactivateImage"
-                                app:srcCompat="@drawable/ic_baseline_edit_24"
-                                app:tint="@color/blue" />
-                        </androidx.constraintlayout.widget.ConstraintLayout>
-
-                        <com.ms.square.android.expandabletextview.ExpandableTextView
-                            android:id="@+id/extvComment"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
-                            android:layout_marginEnd="16dp"
-                            app:animAlphaStart="1"
-                            app:animDuration="200"
-                            app:collapseDrawable="@drawable/ic_baseline_expand_less_24"
-                            app:expandDrawable="@drawable/ic_baseline_expand_more_24"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toStartOf="@+id/tvUserFullName"
-                            app:layout_constraintTop_toBottomOf="@id/tvCommentStatus"
-                            app:maxCollapsedLines="1">
-
-                            <TextView
-                                android:id="@id/expandable_text"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:fontFamily="@font/ubuntu"
-                                android:textColor="@color/initial" />
-
-                            <ImageButton
-                                android:id="@id/expand_collapse"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="right|bottom"
-                                android:background="@android:color/transparent"
-                                android:paddingEnd="8dp"
-                                app:tint="@color/black" />
-
-                        </com.ms.square.android.expandabletextview.ExpandableTextView>
-
-                    </androidx.constraintlayout.widget.ConstraintLayout>
-
-                </androidx.constraintlayout.widget.ConstraintLayout>
-
-                <ProgressBar
-                    android:id="@+id/commentProgressBar"
-                    style="?android:attr/progressBarStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:visibility="gone"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/backgroundLayout"
@@ -336,7 +30,9 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
+                android:layout_marginBottom="8dp"
                 android:background="@color/white"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
@@ -354,19 +50,16 @@
                     app:layout_constraintTop_toTopOf="parent"
                     app:srcCompat="@drawable/image_loading_placeholder" />
 
-                <TextView
-                    android:id="@+id/tvName"
-                    android:layout_width="0dp"
+                <ProgressBar
+                    android:id="@+id/progressBar"
+                    style="?android:attr/progressBarStyle"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/custom_name_background"
-                    android:fontFamily="@font/ubuntu"
-                    android:paddingStart="8dp"
-                    android:text="Tourist Spot Name"
-                    android:textColor="@color/white"
-                    android:textSize="16sp"
-                    app:layout_constraintBottom_toBottomOf="@+id/thumbnail"
-                    app:layout_constraintEnd_toEndOf="@+id/thumbnail"
-                    app:layout_constraintStart_toStartOf="@+id/thumbnail" />
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="@+id/connectingLayout"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
                     android:id="@+id/tvLiked"
@@ -387,6 +80,20 @@
                     android:visibility="gone"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/tvName"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/custom_name_background"
+                    android:fontFamily="@font/ubuntu"
+                    android:paddingStart="8dp"
+                    android:text="Tourist Spot Name"
+                    android:textColor="@color/white"
+                    android:textSize="16sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/thumbnail"
+                    app:layout_constraintEnd_toEndOf="@+id/thumbnail"
+                    app:layout_constraintStart_toStartOf="@+id/thumbnail" />
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/connectingLayout"
@@ -631,23 +338,350 @@
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
-                <ProgressBar
-                    android:id="@+id/progressBar"
-                    style="?android:attr/progressBarStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:visibility="gone"
-                    app:layout_constraintBottom_toBottomOf="@+id/connectingLayout"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
             </androidx.constraintlayout.widget.ConstraintLayout>
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </ScrollView>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/commentTitleLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:background="@drawable/custom_ripple_effect"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <ImageView
+            android:id="@+id/commentArrowImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:src="@drawable/ic_baseline_expand_less_24"
+            app:layout_constraintBottom_toBottomOf="@+id/tvCommentTitle"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/tvCommentTitle"
+            app:tint="@color/black" />
+
+        <TextView
+            android:id="@+id/tvCommentTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:fontFamily="@font/ubuntu"
+            android:text="Comments"
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <View
+            android:id="@+id/commentTitleLayoutLine1"
+            style="@style/line_color"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <View
+            android:id="@+id/commentTitleLayoutLine2"
+            style="@style/line_color"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/commentLayout"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:background="@color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/commentTitleLayout">
+
+        <ProgressBar
+            android:id="@+id/commentProgressBar"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/userCommentLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/commentInputLayout">
+
+            <View
+                android:id="@+id/userCommentLayoutLine1"
+                style="@style/line_color"
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/userCommentTitleLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <TextView
+                    android:id="@+id/tvUserCommentTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:fontFamily="@font/ubuntu"
+                    android:text="Your Comment"
+                    android:textColor="@color/black"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <View
+                    android:id="@+id/userCommentTitleLayoutLine1"
+                    style="@style/line_color"
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/commentBackgroundLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="12dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/userCommentTitleLayout">
+
+                <ImageView
+                    android:id="@+id/profileImage"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:scaleType="centerCrop"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/image_loading_placeholder" />
+
+                <TextView
+                    android:id="@+id/tvUserFullName"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:fontFamily="@font/ubuntu"
+                    android:text="User's Full Name"
+                    android:textColor="@color/black"
+                    app:layout_constraintBottom_toBottomOf="@+id/profileImage"
+                    app:layout_constraintEnd_toStartOf="@+id/actionLayout"
+                    app:layout_constraintStart_toEndOf="@+id/profileImage"
+                    app:layout_constraintTop_toTopOf="@+id/profileImage" />
+
+                <TextView
+                    android:id="@+id/tvCommentStatus"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:fontFamily="@font/ubuntu"
+                    android:paddingBottom="4dp"
+                    android:text="Comment Status"
+                    android:textColor="@color/red"
+                    android:textStyle="italic"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toEndOf="@+id/actionLayout"
+                    app:layout_constraintStart_toStartOf="@+id/tvUserFullName"
+                    app:layout_constraintTop_toBottomOf="@+id/profileImage" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/actionLayout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    app:layout_constraintBottom_toBottomOf="@+id/profileImage"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/profileImage">
+
+                    <ImageView
+                        android:id="@+id/deactivateImage"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="4dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:srcCompat="@drawable/ic_baseline_comments_disabled_24"
+                        app:tint="@color/red" />
+
+                    <ImageView
+                        android:id="@+id/appealImage"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="4dp"
+                        app:layout_constraintBottom_toBottomOf="@+id/deactivateImage"
+                        app:layout_constraintEnd_toStartOf="@+id/deactivateImage"
+                        app:layout_constraintTop_toTopOf="@+id/deactivateImage"
+                        app:srcCompat="@drawable/ic_baseline_front_hand_24"
+                        app:tint="@color/blue" />
+
+                    <ImageView
+                        android:id="@+id/editImage"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="4dp"
+                        app:layout_constraintBottom_toBottomOf="@+id/deactivateImage"
+                        app:layout_constraintEnd_toStartOf="@+id/appealImage"
+                        app:layout_constraintTop_toTopOf="@+id/deactivateImage"
+                        app:srcCompat="@drawable/ic_baseline_edit_24"
+                        app:tint="@color/blue" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <com.ms.square.android.expandabletextview.ExpandableTextView
+                    android:id="@+id/extvComment"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="16dp"
+                    app:animAlphaStart="1"
+                    app:animDuration="200"
+                    app:collapseDrawable="@drawable/ic_baseline_expand_less_24"
+                    app:expandDrawable="@drawable/ic_baseline_expand_more_24"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="@+id/tvUserFullName"
+                    app:layout_constraintTop_toBottomOf="@id/tvCommentStatus"
+                    app:maxCollapsedLines="1">
+
+                    <TextView
+                        android:id="@id/expandable_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/ubuntu"
+                        android:textColor="@color/initial" />
+
+                    <ImageButton
+                        android:id="@id/expand_collapse"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="right|bottom"
+                        android:background="@android:color/transparent"
+                        android:paddingEnd="8dp"
+                        app:tint="@color/black" />
+
+                </com.ms.square.android.expandabletextview.ExpandableTextView>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/commentInputLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/sendImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="4dp"
+                android:layout_marginBottom="16dp"
+                android:padding="4dp"
+                app:layout_constraintBottom_toBottomOf="@+id/tlComment"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/tlComment"
+                app:srcCompat="@drawable/ic_baseline_send_24" />
+
+            <View
+                android:id="@+id/commentInputLayoutLine1"
+                style="@style/line_color"
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tlComment"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="4dp"
+                android:layout_marginBottom="8dp"
+                app:counterEnabled="true"
+                app:counterMaxLength="256"
+                app:hintEnabled="false"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/sendImage"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <EditText
+                    android:id="@+id/etComment"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:fontFamily="@font/ubuntu"
+                    android:hint="Please input your comment here…"
+                    android:inputType="textLongMessage|textMultiLine|textCapSentences"
+                    android:maxLength="128"
+                    android:textColor="@color/black"
+                    android:textSize="14sp"
+                    tools:ignore="SpeakableTextPresentCheck" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/commentView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="@color/gainsboro"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/userCommentLayout" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/headerLayout"
@@ -697,6 +731,7 @@
             app:layout_constraintTop_toTopOf="@+id/appIconImage" />
 
         <View
+            android:id="@+id/headerLayoutLine1"
             style="@style/line_color"
             android:layout_width="0dp"
             android:layout_height="1dp"

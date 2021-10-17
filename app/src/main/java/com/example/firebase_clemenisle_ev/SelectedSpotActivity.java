@@ -18,6 +18,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -61,17 +62,21 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
     FirebaseAuth firebaseAuth;
     FirebaseUser firebaseUser;
 
+    ConstraintLayout constraintLayout, headerLayout;
+
     ImageView thumbnail, likeImage, visitImage, bookImage, moreImage, i360Image, locateImage, homeImage;
     TextView tvName, tvStation, tvLikes, tvVisits, tvBooks, tvNearSpot, tvLiked, tvOption,
             tv360Image, tvLocate;
     ExpandableTextView extvDescription;
-    ConstraintLayout backgroundLayout, buttonLayout, connectingLayout;
+    ConstraintLayout  backgroundLayout, buttonLayout, connectingLayout;
+    ScrollView scrollView;
     RecyclerView nearSpotView;
     ProgressBar progressBar;
 
-    ConstraintLayout commentInputLayout, userCommentLayout, commentBackgroundLayout;
+    ConstraintLayout commentTitleLayout, commentLayout,
+            commentInputLayout, userCommentLayout, commentBackgroundLayout;
     EditText etComment;
-    ImageView sendImage;
+    ImageView sendImage, commentArrowImage;
 
     TextView tvUserFullName, tvCommentStatus;
     ExpandableTextView extvComment;
@@ -109,6 +114,8 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
     DatabaseReference usersRef, likedSpotsRef, commentsRef,
             upVotedCommentsRef, downVotedCommentsRef, reportedCommentsRef;
 
+    boolean isCommentShown = false, commentShowingAnimation = false;
+
     CommentAdapter commentAdapter;
     List<User> users = new ArrayList<>(), commentedUsers = new ArrayList<>(),
             foulCommentedUsers = new ArrayList<>();
@@ -139,6 +146,10 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_selected_spot);
 
+        constraintLayout = findViewById(R.id.constraintLayout);
+        headerLayout = findViewById(R.id.headerLayout);
+
+        scrollView = findViewById(R.id.scrollView);
         thumbnail = findViewById(R.id.thumbnail);
         tvName = findViewById(R.id.tvName);
         tvStation = findViewById(R.id.tvStartStation2);
@@ -164,9 +175,12 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
         homeImage = findViewById(R.id.homeImage);
         progressBar = findViewById(R.id.progressBar);
 
+        commentTitleLayout = findViewById(R.id.commentTitleLayout);
+        commentLayout = findViewById(R.id.commentLayout);
         commentInputLayout = findViewById(R.id.commentInputLayout);
         etComment = findViewById(R.id.etComment);
         sendImage = findViewById(R.id.sendImage);
+        commentArrowImage = findViewById(R.id.commentArrowImage);
 
         userCommentLayout = findViewById(R.id.userCommentLayout);
         commentBackgroundLayout = findViewById(R.id.commentBackgroundLayout);
@@ -316,6 +330,8 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
             }
         });
 
+        commentTitleLayout.setOnClickListener(view -> showCommentLayout());
+
         sendImage.setOnClickListener(view -> {
             if(isUserCommentExist) updateComment();
             else setComment();
@@ -341,6 +357,250 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
         appealImage.setOnClickListener(view -> appealImageOnClick());
 
         deactivateImage.setOnClickListener(view -> deactivateImageOnClick());
+    }
+
+    private void showCommentLayout() {
+        commentTitleLayout.setEnabled(false);
+
+        if(!isCommentShown) {
+            showCommentLayout2();
+            commentArrowImage.setImageResource(R.drawable.ic_baseline_expand_more_24);
+        }
+        else {
+            showCommentLayout4();
+            commentArrowImage.setImageResource(R.drawable.ic_baseline_expand_less_24);
+        }
+    }
+
+    private void showCommentLayout2() {
+        ConstraintSet constraintSet = new ConstraintSet();
+        constraintSet.clone(constraintLayout);
+
+        if(!isCommentShown) {
+            constraintSet.clear(scrollView.getId(), ConstraintSet.TOP);
+            constraintSet.clear(scrollView.getId(), ConstraintSet.BOTTOM);
+            constraintSet.connect(scrollView.getId(), ConstraintSet.BOTTOM,
+                    headerLayout.getId(), ConstraintSet.BOTTOM);
+        }
+        else {
+            constraintSet.clear(scrollView.getId(), ConstraintSet.BOTTOM);
+            constraintSet.connect(scrollView.getId(), ConstraintSet.TOP,
+                    headerLayout.getId(), ConstraintSet.BOTTOM);
+            constraintSet.connect(scrollView.getId(), ConstraintSet.BOTTOM,
+                    commentTitleLayout.getId(), ConstraintSet.TOP);
+        }
+
+        if(commentShowingAnimation) setTransition1();
+        constraintSet.applyTo(constraintLayout);
+
+        if(!commentShowingAnimation) {
+            if(!isCommentShown) showCommentLayout3();
+            else {
+                commentTitleLayout.setEnabled(true);
+                isCommentShown = !isCommentShown;
+            }
+        }
+    }
+
+    private void showCommentLayout3() {
+        ConstraintSet constraintSet = new ConstraintSet();
+        constraintSet.clone(constraintLayout);
+
+        if(!isCommentShown) {
+            constraintSet.clear(commentLayout.getId(), ConstraintSet.TOP);
+            constraintSet.connect(commentLayout.getId(), ConstraintSet.TOP,
+                    constraintLayout.getId(), ConstraintSet.BOTTOM);
+
+            constraintSet.clear(commentTitleLayout.getId(), ConstraintSet.BOTTOM);
+            constraintSet.connect(commentTitleLayout.getId(), ConstraintSet.TOP,
+                    headerLayout.getId(), ConstraintSet.BOTTOM);
+        }
+        else {
+            constraintSet.clear(commentTitleLayout.getId(), ConstraintSet.TOP);
+            constraintSet.connect(commentTitleLayout.getId(), ConstraintSet.BOTTOM,
+                    constraintLayout.getId(), ConstraintSet.BOTTOM);
+
+            constraintSet.clear(commentLayout.getId(), ConstraintSet.TOP);
+            constraintSet.connect(commentLayout.getId(), ConstraintSet.TOP,
+                    commentTitleLayout.getId(), ConstraintSet.BOTTOM);
+        }
+
+        if(commentShowingAnimation) setTransition2();
+        constraintSet.applyTo(constraintLayout);
+
+        ConstraintLayout.LayoutParams layoutParams =
+                (ConstraintLayout.LayoutParams) commentTitleLayout.getLayoutParams();
+        ConstraintLayout.LayoutParams layoutParams2 =
+                (ConstraintLayout.LayoutParams) commentLayout.getLayoutParams();
+
+        if(!isCommentShown) {
+            layoutParams.setMargins(layoutParams.leftMargin, dpToPx(8),
+                    layoutParams.rightMargin, layoutParams.bottomMargin);
+        }
+        else {
+            layoutParams2.setMargins(layoutParams.leftMargin, dpToPx(8),
+                    layoutParams.rightMargin, layoutParams.bottomMargin);
+        }
+
+        commentTitleLayout.setLayoutParams(layoutParams);
+        commentLayout.setLayoutParams(layoutParams2);
+
+        if(!commentShowingAnimation) {
+            if(!isCommentShown) showCommentLayout4();
+            else showCommentLayout2();
+        }
+    }
+
+    private void showCommentLayout4() {
+        ConstraintSet constraintSet = new ConstraintSet();
+        constraintSet.clone(constraintLayout);
+
+        if(!isCommentShown) {
+            constraintSet.connect(commentLayout.getId(), ConstraintSet.TOP,
+                    commentTitleLayout.getId(), ConstraintSet.BOTTOM);
+            constraintSet.connect(commentLayout.getId(), ConstraintSet.BOTTOM,
+                    constraintLayout.getId(), ConstraintSet.BOTTOM);
+        }
+        else {
+            constraintSet.clear(commentLayout.getId(), ConstraintSet.TOP);
+            constraintSet.clear(commentLayout.getId(), ConstraintSet.BOTTOM);
+            constraintSet.connect(commentLayout.getId(), ConstraintSet.TOP,
+                    constraintLayout.getId(), ConstraintSet.BOTTOM);
+        }
+
+        if(commentShowingAnimation) setTransition3();
+        constraintSet.applyTo(constraintLayout);
+
+        ConstraintLayout.LayoutParams layoutParams =
+                (ConstraintLayout.LayoutParams) commentLayout.getLayoutParams();
+
+        if(!isCommentShown) {
+            layoutParams.setMargins(layoutParams.leftMargin, dpToPx(8),
+                    layoutParams.rightMargin, dpToPx(8));
+        }
+
+        commentLayout.setLayoutParams(layoutParams);
+
+        if(!commentShowingAnimation) {
+            if(!isCommentShown) {
+                commentTitleLayout.setEnabled(true);
+                isCommentShown = !isCommentShown;
+            }
+            else showCommentLayout3();
+        }
+    }
+
+    private void setTransition1() {
+        Transition transition = new ChangeBounds();
+        transition.setDuration(300);
+
+        transition.addListener(new Transition.TransitionListener() {
+            @Override
+            public void onTransitionStart(Transition transition) {
+            }
+
+            @Override
+            public void onTransitionEnd(Transition transition) {
+                if(!isCommentShown) showCommentLayout3();
+                else {
+                    commentTitleLayout.setEnabled(true);
+                    isCommentShown = !isCommentShown;
+                }
+            }
+
+            @Override
+            public void onTransitionCancel(Transition transition) {
+
+            }
+
+            @Override
+            public void onTransitionPause(Transition transition) {
+
+            }
+
+            @Override
+            public void onTransitionResume(Transition transition) {
+
+            }
+        });
+
+        TransitionManager.beginDelayedTransition(scrollView, transition);
+    }
+
+    private void setTransition2() {
+        Transition transition = new ChangeBounds();
+        transition.setDuration(300);
+
+        transition.addListener(new Transition.TransitionListener() {
+            @Override
+            public void onTransitionStart(Transition transition) {
+            }
+
+            @Override
+            public void onTransitionEnd(Transition transition) {
+                if(!isCommentShown) showCommentLayout4();
+                else showCommentLayout2();
+            }
+
+            @Override
+            public void onTransitionCancel(Transition transition) {
+
+            }
+
+            @Override
+            public void onTransitionPause(Transition transition) {
+
+            }
+
+            @Override
+            public void onTransitionResume(Transition transition) {
+
+            }
+        });
+
+        TransitionManager.beginDelayedTransition(commentTitleLayout, transition);
+    }
+
+    private void setTransition3() {
+        Transition transition = new ChangeBounds();
+        transition.setDuration(300);
+
+        transition.addListener(new Transition.TransitionListener() {
+            @Override
+            public void onTransitionStart(Transition transition) {
+            }
+
+            @Override
+            public void onTransitionEnd(Transition transition) {
+                if(!isCommentShown) {
+                    commentTitleLayout.setEnabled(true);
+                    isCommentShown = !isCommentShown;
+                }
+                else showCommentLayout3();
+            }
+
+            @Override
+            public void onTransitionCancel(Transition transition) {
+
+            }
+
+            @Override
+            public void onTransitionPause(Transition transition) {
+
+            }
+
+            @Override
+            public void onTransitionResume(Transition transition) {
+
+            }
+        });
+
+        TransitionManager.beginDelayedTransition(commentLayout, transition);
+    }
+
+    private int dpToPx(int dp) {
+        float px = dp * myContext.getResources().getDisplayMetrics().density;
+        return (int) px;
     }
 
     @Override
