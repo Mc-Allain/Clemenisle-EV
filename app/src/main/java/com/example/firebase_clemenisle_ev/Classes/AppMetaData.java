@@ -5,6 +5,7 @@ public class AppMetaData {
     String aboutApp;
     double currentVersion = 0.3, latestVersion = 0;
     String status;
+    boolean isDeveloper = false;
 
     public AppMetaData() {
     }
@@ -35,5 +36,9 @@ public class AppMetaData {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public boolean isDeveloper() {
+        return isDeveloper;
     }
 }

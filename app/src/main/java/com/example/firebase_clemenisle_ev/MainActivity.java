@@ -1,6 +1,5 @@
 package com.example.firebase_clemenisle_ev;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -31,6 +30,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.firebase_clemenisle_ev.Classes.AppMetaData;
 import com.example.firebase_clemenisle_ev.Classes.Booking;
 import com.example.firebase_clemenisle_ev.Classes.DateTimeToString;
 import com.example.firebase_clemenisle_ev.Classes.FirebaseURL;
@@ -41,6 +41,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
@@ -116,6 +117,14 @@ public class MainActivity extends AppCompatActivity {
 
     CountDownTimer notificationTimer;
 
+    DatabaseReference metaDataRef;
+
+    AppMetaData appMetaData;
+
+    List<String> statusPromptArray = Arrays.asList("Under Development", "Under Maintenance");
+
+    boolean isAppStatusActivityShown = false;
+
     private void initSharedPreferences() {
         SharedPreferences sharedPreferences = getSharedPreferences("login", Context.MODE_PRIVATE);
         isLoggedIn = sharedPreferences.getBoolean("isLoggedIn", false);
@@ -176,6 +185,9 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
+        appMetaData = new AppMetaData();
+        getAppMetaData();
+
         if(password != null) {
             if(!isCurrentPasswordValid()) {
                 initPasswordDialog();
@@ -189,19 +201,58 @@ public class MainActivity extends AppCompatActivity {
 
         dateTimeToString = new DateTimeToString();
         if(userId != null) getBooking();
+        else startTimer();
 
         fab = findViewById(R.id.floatingActionButton);
         fab.setColorFilter(getResources().getColor(R.color.white));
 
         fab.setOnClickListener(view -> {
             Intent newIntent;
-            if(isLoggedIn) {
-                newIntent = new Intent(myContext, BookingActivity.class);
-            }
-            else {
-                newIntent = new Intent(myContext, LoginActivity.class);
-            }
+            if(isLoggedIn) newIntent = new Intent(myContext, BookingActivity.class);
+            else newIntent = new Intent(myContext, LoginActivity.class);
             startActivity(newIntent);
+        });
+    }
+
+    private void getAppMetaData() {
+        metaDataRef = firebaseDatabase.getReference("appMetaData");
+        metaDataRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String aboutApp = "Failed to get data";
+                double latestVersion = 0;
+                String status = "Failed to get data";
+
+                if(snapshot.exists()) {
+                    if(snapshot.child("about").exists())
+                        aboutApp = snapshot.child("about").getValue(String.class);
+                    if(snapshot.child("version").exists())
+                        latestVersion = snapshot.child("version").getValue(Double.class);
+                    if(snapshot.child("status").exists())
+                        status = snapshot.child("status").getValue(String.class);
+                }
+
+                appMetaData.setAboutApp(aboutApp);
+                appMetaData.setLatestVersion(latestVersion);
+                appMetaData.setStatus(status);
+
+                if(statusPromptArray.contains(status) &&
+                        !appMetaData.isDeveloper() && !isAppStatusActivityShown) {
+                    Intent newIntent = new Intent(myContext, AppStatusActivity.class);
+                    startActivity(newIntent);
+                    finishAffinity();
+                    isAppStatusActivityShown = !isAppStatusActivityShown;
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(
+                        myContext,
+                        error.toString(),
+                        Toast.LENGTH_LONG
+                ).show();
+            }
         });
     }
 
@@ -213,11 +264,13 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onFinish() {
-                for(Booking booking : bookingList1) {
-                    checkBooking(booking);
-                }
-                for(Booking booking : bookingList2) {
-                    checkBooking(booking);
+                if(userId != null) {
+                    for(Booking booking : bookingList1) {
+                        checkBooking(booking);
+                    }
+                    for(Booking booking : bookingList2) {
+                        checkBooking(booking);
+                    }
                 }
 
                 start();
@@ -492,6 +545,7 @@ public class MainActivity extends AppCompatActivity {
                 ).show();
             }
         }
+        isAppStatusActivityShown = true;
     }
 
     private boolean isCurrentPasswordValid() {
@@ -843,7 +897,7 @@ public class MainActivity extends AppCompatActivity {
 
         Intent intent = new Intent(myContext, MainActivity.class);
         myContext.startActivity(intent);
-        ((Activity) myContext).finishAffinity();
+        finishAffinity();
     }
 
     @Override

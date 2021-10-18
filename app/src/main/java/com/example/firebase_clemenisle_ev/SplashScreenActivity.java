@@ -4,13 +4,27 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Handler;
+import android.widget.Toast;
 
+import com.example.firebase_clemenisle_ev.Classes.AppMetaData;
+import com.example.firebase_clemenisle_ev.Classes.FirebaseURL;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
+import java.util.Arrays;
+import java.util.List;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class SplashScreenActivity extends AppCompatActivity {
+
+    private final static String firebaseURL = FirebaseURL.getFirebaseURL();
+    FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance(firebaseURL);
 
     FirebaseAuth firebaseAuth;
 
@@ -18,6 +32,10 @@ public class SplashScreenActivity extends AppCompatActivity {
 
     String emailAddress, password;
     boolean remember;
+
+    AppMetaData appMetaData;
+
+    List<String> statusPromptArray = Arrays.asList("Under Development", "Under Maintenance");
 
     private void initSharedPreferences() {
         SharedPreferences sharedPreferences = myContext
@@ -51,14 +69,51 @@ public class SplashScreenActivity extends AppCompatActivity {
             firebaseAuth.signOut();
             sendSharedPreferences();
         }
-        proceedToNextActivity();
+
+        appMetaData = new AppMetaData();
+        getAppMetaData();
     }
 
-    private void proceedToNextActivity() {
-        new Handler().postDelayed(() -> {
-            Intent intent = new Intent(myContext, MainActivity.class);
-            startActivity(intent);
-            finish();
-        }, 3000);
+    private void getAppMetaData() {
+        DatabaseReference metaDataRef = firebaseDatabase.getReference("appMetaData");
+        metaDataRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String aboutApp = "Failed to get data";
+                double latestVersion = 0;
+                String status = "Failed to get data";
+
+                if(snapshot.exists()) {
+                    if(snapshot.child("about").exists())
+                        aboutApp = snapshot.child("about").getValue(String.class);
+                    if(snapshot.child("version").exists())
+                        latestVersion = snapshot.child("version").getValue(Double.class);
+                    if(snapshot.child("status").exists())
+                        status = snapshot.child("status").getValue(String.class);
+                }
+
+                appMetaData.setAboutApp(aboutApp);
+                appMetaData.setLatestVersion(latestVersion);
+                appMetaData.setStatus(status);
+
+                Intent intent;
+                if(statusPromptArray.contains(status) && !appMetaData.isDeveloper())
+                    intent = new Intent(myContext, AppStatusActivity.class);
+                else intent = new Intent(myContext, MainActivity.class);
+                finishAffinity();
+
+                startActivity(intent);
+                finish();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(
+                        myContext,
+                        error.toString(),
+                        Toast.LENGTH_LONG
+                ).show();
+            }
+        });
     }
 }

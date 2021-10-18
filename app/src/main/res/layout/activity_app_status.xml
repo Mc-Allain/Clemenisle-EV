@@ -4,15 +4,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="Fragments.LoginPromptFragment">
+    tools:context=".AppStatusActivity">
 
     <TextView
-        android:id="@+id/tvFragmentName"
+        android:id="@+id/tvActivityName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
         android:fontFamily="@font/ubuntu"
-        android:text="Navigation Fragment"
+        android:text="Under Development"
         android:textColor="@color/black"
         android:textSize="18sp"
         android:textStyle="bold"
@@ -21,24 +21,24 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
-        android:id="@+id/fragmentIconImage"
+        android:id="@+id/activityIconImage"
         android:layout_width="256dp"
         android:layout_height="256dp"
         android:src="@drawable/image_loading_placeholder"
         app:layout_constraintBottom_toTopOf="@+id/tvCaption"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvFragmentName" />
+        app:layout_constraintTop_toBottomOf="@+id/tvActivityName" />
 
     <Button
-        android:id="@+id/loginButton"
+        android:id="@+id/exitAppButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
-        android:layout_marginBottom="88dp"
+        android:layout_marginBottom="40dp"
         android:fontFamily="@font/ubuntu"
-        android:text="Log in"
+        android:text="Exit App"
         android:textAllCaps="false"
         app:cornerRadius="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -51,11 +51,11 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:fontFamily="@font/ubuntu"
-        android:text="Please login to continue"
+        android:text="Sorry, the application is currently in under development.\nPlease come back again later."
         android:textAlignment="center"
         android:textColor="@color/black"
-        app:layout_constraintBottom_toTopOf="@+id/loginButton"
-        app:layout_constraintEnd_toEndOf="@+id/loginButton"
-        app:layout_constraintStart_toStartOf="@+id/loginButton" />
+        app:layout_constraintBottom_toTopOf="@+id/exitAppButton"
+        app:layout_constraintEnd_toEndOf="@+id/exitAppButton"
+        app:layout_constraintStart_toStartOf="@+id/exitAppButton" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
