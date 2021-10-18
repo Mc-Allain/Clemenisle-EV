@@ -101,7 +101,7 @@ public class AboutActivity extends AppCompatActivity {
 
                 extvAbout.setText(aboutApp);
 
-                tvAppVersion2.setText(String.valueOf(latestVersion));
+                tvAppVersion2.setText(String.valueOf(appMetaData.getCurrentVersion()));
 
                 if(appMetaData.getCurrentVersion() < latestVersion)
                     updateAppButton.setVisibility(View.VISIBLE);

@@ -311,7 +311,8 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onFinish() {
-                if(dialog != null) dialog.show();
+                if(dialog != null && appMetaData.getCurrentVersion() <
+                        appMetaData.getLatestVersion()) dialog.show();
                 start();
             }
         }.start();
