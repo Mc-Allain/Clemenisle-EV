@@ -311,7 +311,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onFinish() {
-                dialog.show();
+                if(dialog != null) dialog.show();
                 start();
             }
         }.start();
@@ -648,6 +648,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         isAppStatusActivityShown = true;
+        dialog = null;
     }
 
     private boolean isCurrentPasswordValid() {
