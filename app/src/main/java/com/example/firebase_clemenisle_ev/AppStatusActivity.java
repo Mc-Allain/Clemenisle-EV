@@ -36,6 +36,8 @@ public class AppStatusActivity extends AppCompatActivity {
     Context myContext;
     Resources myResources;
 
+    boolean isErrorStatus = false;
+
     String defaultCaption = "Sorry, the application is currently in ",
             comebackCaption = ". Please come back again later.";
 
@@ -46,6 +48,7 @@ public class AppStatusActivity extends AppCompatActivity {
     List<String> statusPromptArray = Arrays.asList("Under Development", "Under Maintenance");
 
     boolean isMainActivityShown = false;
+    boolean isOnScreen = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,8 +65,14 @@ public class AppStatusActivity extends AppCompatActivity {
         myContext = AppStatusActivity.this;
         myResources = myContext.getResources();
 
+        Intent intent = getIntent();
+        isErrorStatus = intent.getBooleanExtra("isErrorStatus", false);
+
+        isOnScreen = true;
+
         appMetaData = new AppMetaData();
-        getAppMetaData();
+        if(!isErrorStatus) getAppMetaData();
+        else statusError();
     }
 
     private void getAppMetaData() {
@@ -89,13 +98,12 @@ public class AppStatusActivity extends AppCompatActivity {
                 appMetaData.setStatus(status);
 
                 if(statusPromptArray.contains(status) && !appMetaData.isDeveloper() && status != null) {
-
-                    if(status.equals(statusPromptArray.get(0))) {
+                    if(status.equals(statusPromptArray.get(0)) && isOnScreen) {
                         Glide.with(myContext).load(R.drawable.ic_baseline_error_outline_24)
                                 .placeholder(R.drawable.image_loading_placeholder)
                                 .into(activityIconImage);
                     }
-                    else if(status.equals(statusPromptArray.get(1))) {
+                    else if(status.equals(statusPromptArray.get(1)) && isOnScreen) {
                         Glide.with(myContext).load(R.drawable.ic_baseline_error_outline_24)
                                 .placeholder(R.drawable.image_loading_placeholder)
                                 .into(activityIconImage);
@@ -121,16 +129,22 @@ public class AppStatusActivity extends AppCompatActivity {
                         Toast.LENGTH_LONG
                 ).show();
 
-                Glide.with(myContext).load(R.drawable.ic_baseline_error_outline_24)
-                        .placeholder(R.drawable.image_loading_placeholder)
-                        .into(activityIconImage);
-
-                String activityName = "Application Error";
-                tvActivityName.setText(activityName);
-                String caption = "Something went wrong to the application. Please try again later.";
-                tvCaption.setText(caption);
+                statusError();
             }
         });
+    }
+
+    private void statusError() {
+        if(isOnScreen) {
+            Glide.with(myContext).load(R.drawable.ic_baseline_error_outline_24)
+                    .placeholder(R.drawable.image_loading_placeholder)
+                    .into(activityIconImage);
+        }
+
+        String activityName = "Application Error";
+        tvActivityName.setText(activityName);
+        String caption = "Something went wrong to the application. Please try again later.";
+        tvCaption.setText(caption);
     }
 
     @Override
@@ -138,5 +152,6 @@ public class AppStatusActivity extends AppCompatActivity {
         super.onDestroy();
         finishAffinity();
         isMainActivityShown = true;
+        isOnScreen = false;
     }
 }

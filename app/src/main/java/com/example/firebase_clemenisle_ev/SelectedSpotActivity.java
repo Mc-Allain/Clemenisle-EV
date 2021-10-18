@@ -36,6 +36,8 @@ import com.example.firebase_clemenisle_ev.Classes.Route;
 import com.example.firebase_clemenisle_ev.Classes.SimpleTouristSpot;
 import com.example.firebase_clemenisle_ev.Classes.Station;
 import com.example.firebase_clemenisle_ev.Classes.User;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -123,7 +125,7 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
     DatabaseReference usersRef, likedSpotsRef, commentsRef,
             upVotedCommentsRef, downVotedCommentsRef, reportedCommentsRef;
 
-    boolean isCommentShown = false, commentShowingAnimation, defaultValueForAnimation = true;
+    boolean isCommentShown = false, commentShowingAnimation, defaultValueForAnimation = false;
 
     CommentAdapter commentAdapter;
     List<User> users = new ArrayList<>(), commentedUsers = new ArrayList<>(),
@@ -149,6 +151,8 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
     long reportPressedTime;
     Toast reportToast;
     boolean isReportClicked = false;
+
+    boolean isUpdatingComments = false;
 
     private void sendLoginPreferences() {
         SharedPreferences sharedPreferences = myContext.getSharedPreferences(
@@ -831,7 +835,6 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
                                 toastMessage,
                                 Toast.LENGTH_SHORT
                         ).show();
-
                     }
                     else {
                         if(task.getException() != null) {
@@ -880,12 +883,55 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
     }
 
     private void updateComment() {
+        isUpdatingComments = true;
         commentProgressBar.setVisibility(View.VISIBLE);
+
         commentsRef.child(id).child("value").setValue(inputComment)
-                .addOnCompleteListener(task -> commentProgressBar.setVisibility(View.GONE));
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if(task.isSuccessful()) updateRelatedComment();
+                        else commentProgressBar.setVisibility(View.GONE);
+                    }
+                });
 
         commentInputLayout.setVisibility(View.GONE);
         userCommentLayout.setVisibility(View.VISIBLE);
+    }
+
+    private void updateRelatedComment() {
+        for(User user1 : users) {
+            DatabaseReference thisUserRef = usersRef.child(user1.getId());
+
+            List<Comment> upVotedComments = user1.getUpVotedComments();
+            for (Comment comment : upVotedComments) {
+                if (comment.getId().equals(id) && comment.getUserId().equals(userId)) {
+                    thisUserRef.child("upVotedComments").child(id).child(userId)
+                            .child("value").setValue(inputComment);
+                }
+            }
+
+            List<Comment> downVotedComments = user1.getDownVotedComments();
+            for (Comment comment : downVotedComments) {
+                if (comment.getId().equals(id) && comment.getUserId().equals(userId)) {
+                    thisUserRef.child("downVotedComments").child(id).child(userId)
+                            .child("value").setValue(inputComment);
+                }
+            }
+
+            List<Comment> reportedComments = user1.getReportedComments();
+            for (Comment comment : reportedComments) {
+                if (comment.getId().equals(id) && comment.getUserId().equals(userId)) {
+                    thisUserRef.child("reportedComments").child(id).child(userId)
+                            .child("value").setValue(inputComment);
+                }
+            }
+
+            if(users.get(users.size() - 1).getId().equals(user1.getId())) {
+                isUpdatingComments = false;
+                commentProgressBar.setVisibility(View.GONE);
+            }
+        }
     }
 
     private void setComment() {
@@ -987,6 +1033,8 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
 
     private void getUsers() {
         commentProgressBar.setVisibility(View.VISIBLE);
+        commentLayout.setVisibility(View.GONE);
+
         usersRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -1027,7 +1075,11 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
                     Collections.reverse(commentedUsers);
 
                     commentedUsers.addAll(foulCommentedUsers);
-                    commentProgressBar.setVisibility(View.GONE);
+
+                    if(!isUpdatingComments) {
+                        commentProgressBar.setVisibility(View.GONE);
+                        commentLayout.setVisibility(View.VISIBLE);
+                    }
                 }
                 commentAdapter.notifyDataSetChanged();
             }

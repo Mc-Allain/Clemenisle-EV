@@ -97,13 +97,13 @@ public class SplashScreenActivity extends AppCompatActivity {
                 appMetaData.setStatus(status);
 
                 Intent intent;
-                if(statusPromptArray.contains(status) && !appMetaData.isDeveloper())
+                if(statusPromptArray.contains(status) && !appMetaData.isDeveloper()) {
                     intent = new Intent(myContext, AppStatusActivity.class);
+                    intent.putExtra("isErrorStatus", false);
+                }
                 else intent = new Intent(myContext, MainActivity.class);
-                finishAffinity();
-
                 startActivity(intent);
-                finish();
+                finishAffinity();
             }
 
             @Override
@@ -113,6 +113,13 @@ public class SplashScreenActivity extends AppCompatActivity {
                         error.toString(),
                         Toast.LENGTH_LONG
                 ).show();
+
+                if(!appMetaData.isDeveloper()) {
+                    Intent intent = new Intent(myContext, AppStatusActivity.class);
+                    intent.putExtra("isErrorStatus", true);
+                    startActivity(intent);
+                    finishAffinity();
+                }
             }
         });
     }

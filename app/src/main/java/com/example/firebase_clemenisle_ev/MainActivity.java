@@ -239,6 +239,7 @@ public class MainActivity extends AppCompatActivity {
                 if(statusPromptArray.contains(status) &&
                         !appMetaData.isDeveloper() && !isAppStatusActivityShown) {
                     Intent newIntent = new Intent(myContext, AppStatusActivity.class);
+                    newIntent.putExtra("isErrorStatus", false);
                     startActivity(newIntent);
                     finishAffinity();
                     isAppStatusActivityShown = !isAppStatusActivityShown;
@@ -252,6 +253,14 @@ public class MainActivity extends AppCompatActivity {
                         error.toString(),
                         Toast.LENGTH_LONG
                 ).show();
+
+                if(!appMetaData.isDeveloper() && !isAppStatusActivityShown) {
+                    Intent intent = new Intent(myContext, AppStatusActivity.class);
+                    intent.putExtra("isErrorStatus", true);
+                    startActivity(intent);
+                    finishAffinity();
+                    isAppStatusActivityShown = !isAppStatusActivityShown;
+                }
             }
         });
     }
