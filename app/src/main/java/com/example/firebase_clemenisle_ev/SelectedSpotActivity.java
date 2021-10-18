@@ -76,13 +76,17 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
     RecyclerView nearSpotView;
     ProgressBar progressBar;
 
-    ConstraintLayout commentTitleLayout, commentLayout, loginCommentLayout,
-            commentInputLayout, userCommentLayout, commentBackgroundLayout;
+    ConstraintLayout commentTitleLayout, commentLayout, commentBackgroundLayout;
+    TextView tvCommentSpot;
+
+    ConstraintLayout loginCommentLayout;
+    Button loginButton;
+
+    ConstraintLayout commentInputLayout;
     EditText etComment;
     ImageView sendImage, commentArrowImage;
 
-    Button loginButton;
-
+    ConstraintLayout userCommentLayout;
     TextView tvUserFullName, tvCommentStatus;
     ExpandableTextView extvComment;
     ImageView profileImage, editImage, appealImage, deactivateImage;
@@ -119,7 +123,7 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
     DatabaseReference usersRef, likedSpotsRef, commentsRef,
             upVotedCommentsRef, downVotedCommentsRef, reportedCommentsRef;
 
-    boolean isCommentShown = false, commentShowingAnimation = true;
+    boolean isCommentShown = false, commentShowingAnimation, defaultValueForAnimation = true;
 
     CommentAdapter commentAdapter;
     List<User> users = new ArrayList<>(), commentedUsers = new ArrayList<>(),
@@ -194,17 +198,19 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
         progressBar = findViewById(R.id.progressBar);
 
         commentTitleLayout = findViewById(R.id.commentTitleLayout);
+        commentBackgroundLayout = findViewById(R.id.commentBackgroundLayout);
         commentLayout = findViewById(R.id.commentLayout);
+        commentArrowImage = findViewById(R.id.commentArrowImage);
+        tvCommentSpot = findViewById(R.id.tvCommentSpot);
+
         loginCommentLayout = findViewById(R.id.loginCommentLayout);
+        loginButton = findViewById(R.id.loginButton);
+
         commentInputLayout = findViewById(R.id.commentInputLayout);
         etComment = findViewById(R.id.etComment);
         sendImage = findViewById(R.id.sendImage);
-        commentArrowImage = findViewById(R.id.commentArrowImage);
-
-        loginButton = findViewById(R.id.loginButton);
 
         userCommentLayout = findViewById(R.id.userCommentLayout);
-        commentBackgroundLayout = findViewById(R.id.commentBackgroundLayout);
         tvUserFullName = findViewById(R.id.tvUserFullName);
         tvCommentStatus = findViewById(R.id.tvCommentStatus);
         extvComment = findViewById(R.id.extvComment);
@@ -228,6 +234,7 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
         toComment = intent.getBooleanExtra("toComment", false);
 
         isOnScreen = true;
+        commentShowingAnimation = defaultValueForAnimation;
 
         sendImage.setEnabled(false);
         sendImage.setColorFilter(colorInitial);
@@ -272,6 +279,8 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
         commentAdapter = new CommentAdapter(myContext, commentedUsers, id, userId);
         commentView.setAdapter(commentAdapter);
         commentAdapter.setOnActionButtonClickedListener(this);
+
+        if(toComment) backgroundLayout.setVisibility(View.GONE);
 
         getTouristSpots();
         getUsers();
@@ -538,6 +547,11 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
             if(!isCommentShown) {
                 commentTitleLayout.setEnabled(true);
                 isCommentShown = !isCommentShown;
+
+                if(toComment) {
+                    toComment = false;
+                    backgroundLayout.setVisibility(View.VISIBLE);
+                }
             }
             else showCommentLayout3();
         }
@@ -1334,9 +1348,13 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
 
         likeImage.setEnabled(true);
 
-        commentShowingAnimation  = false;
-        if(toComment) showCommentLayout();
-        commentShowingAnimation  = true;
+        if(toComment && !isCommentShown) {
+            commentShowingAnimation  = false;
+            showCommentLayout();
+            commentShowingAnimation  = defaultValueForAnimation;
+        }
+
+        tvCommentSpot.setText(name);
     }
 
     private void getLikedSpots() {

@@ -228,6 +228,8 @@ public class RouteActivity extends AppCompatActivity implements
         int color = 0;
         Drawable backgroundDrawable = myResources.getDrawable(R.color.blue);
 
+        buttonLayout.setVisibility(View.GONE);
+
         switch (status) {
             case "Processing":
                 color = myResources.getColor(R.color.orange);
