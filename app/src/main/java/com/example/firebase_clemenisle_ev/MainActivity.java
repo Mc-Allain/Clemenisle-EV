@@ -123,13 +123,17 @@ public class MainActivity extends AppCompatActivity {
 
     List<String> statusPromptArray = Arrays.asList("Under Development", "Under Maintenance");
 
-    boolean isAppStatusActivityShown = false;
+    boolean isAppStatusActivityShown = false, isAlertDialogShown = false;
 
     CountDownTimer updateAppTimer;
     Dialog dialog;
     ImageView dialogCloseImage;
     TextView tvAppVersion;
     Button updateAppButton;
+
+    Dialog appVersionInfoDialog;
+    ImageView appVersionInfoDialogCloseImage;
+    TextView tvAppVersionInfoDialogTitle, tvNewFeatures;
 
     private void initSharedPreferences() {
         SharedPreferences sharedPreferences = getSharedPreferences("login", Context.MODE_PRIVATE);
@@ -173,6 +177,7 @@ public class MainActivity extends AppCompatActivity {
         initSharedPreferences();
 
         initUpdateApplicationDialog();
+        initAppVersionInfoDialog();
 
         firebaseAuth = FirebaseAuth.getInstance();
         if(isLoggedIn) {
@@ -230,6 +235,7 @@ public class MainActivity extends AppCompatActivity {
                 String aboutApp = "Failed to get data";
                 double latestVersion = 0;
                 String status = "Failed to get data";
+                boolean showUpdates = false;
 
                 if(snapshot.exists()) {
                     if(snapshot.child("about").exists())
@@ -238,6 +244,8 @@ public class MainActivity extends AppCompatActivity {
                         latestVersion = snapshot.child("version").getValue(Double.class);
                     if(snapshot.child("status").exists())
                         status = snapshot.child("status").getValue(String.class);
+                    if(snapshot.child("showUpdates").exists())
+                        showUpdates = snapshot.child("showUpdates").getValue(Boolean.class);
                 }
 
                 appMetaData.setAboutApp(aboutApp);
@@ -253,12 +261,26 @@ public class MainActivity extends AppCompatActivity {
                     isAppStatusActivityShown = !isAppStatusActivityShown;
                 }
 
-                if(appMetaData.getCurrentVersion() < latestVersion) {
-                    String appVersion = "Current Version: v" + appMetaData.getCurrentVersion() +
-                            "\tLatest Version: v" + latestVersion;
-                    tvAppVersion.setText(appVersion);
-                    dialog.show();
-                    startUpdateAppTimer();
+                if(!isAlertDialogShown) {
+                    if(appMetaData.getCurrentVersion() < latestVersion) {
+                        String appVersion = "Current Version: v" + appMetaData.getCurrentVersion() +
+                                "\tLatest Version: v" + latestVersion;
+                        tvAppVersion.setText(appVersion);
+                        dialog.show();
+                        startUpdateAppTimer();
+                    }
+                    else if(showUpdates) {
+                        String dialogTitle = "What's new in v" + latestVersion;
+                        tvAppVersionInfoDialogTitle.setText(dialogTitle);
+                        String newFeatures = "• Notification Added\n" +
+                                "• Comment System Added\n" +
+                                "• Application Status Alert Added\n" +
+                                "• Application Update Alert Added\n" +
+                                "• Update Notes Added";
+                        tvNewFeatures.setText(newFeatures);
+                        appVersionInfoDialog.show();
+                    }
+                    isAlertDialogShown = !isAlertDialogShown;
                 }
             }
 
@@ -316,6 +338,24 @@ public class MainActivity extends AppCompatActivity {
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
         dialog.getWindow().getAttributes().windowAnimations = R.style.animBottomSlide;
         dialog.getWindow().setGravity(Gravity.BOTTOM);
+    }
+
+    private void initAppVersionInfoDialog() {
+        appVersionInfoDialog = new Dialog(myContext);
+        appVersionInfoDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        appVersionInfoDialog.setContentView(R.layout.dialog_app_version_info_layout);
+
+        appVersionInfoDialogCloseImage = appVersionInfoDialog.findViewById(R.id.dialogCloseImage);
+        tvAppVersionInfoDialogTitle = appVersionInfoDialog.findViewById(R.id.tvDialogTitle);
+        tvNewFeatures = appVersionInfoDialog.findViewById(R.id.tvNewFeatures);
+
+        appVersionInfoDialogCloseImage.setOnClickListener(view -> appVersionInfoDialog.dismiss());
+
+        appVersionInfoDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT);
+        appVersionInfoDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+        appVersionInfoDialog.getWindow().getAttributes().windowAnimations = R.style.animBottomSlide;
+        appVersionInfoDialog.getWindow().setGravity(Gravity.BOTTOM);
     }
 
     private void startTimer() {

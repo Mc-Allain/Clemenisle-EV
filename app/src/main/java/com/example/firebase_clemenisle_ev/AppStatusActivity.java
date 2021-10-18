@@ -73,6 +73,8 @@ public class AppStatusActivity extends AppCompatActivity {
         appMetaData = new AppMetaData();
         if(!isErrorStatus) getAppMetaData();
         else statusError();
+
+        exitAppButton.setOnClickListener(view -> finishAffinity());
     }
 
     private void getAppMetaData() {
