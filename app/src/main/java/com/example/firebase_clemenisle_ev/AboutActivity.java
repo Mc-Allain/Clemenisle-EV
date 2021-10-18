@@ -1,6 +1,7 @@
 package com.example.firebase_clemenisle_ev;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -32,7 +33,7 @@ public class AboutActivity extends AppCompatActivity {
     ImageView androidStudioLogoImage, fireBaseLogoImage, googleMapLogoImage, googleStreetViewImage;
     ExpandableTextView extvAbout;
     TextView tvAppVersion2;
-    Button btnUpdateApp;
+    Button updateAppButton;
 
     Context myContext;
 
@@ -53,7 +54,7 @@ public class AboutActivity extends AppCompatActivity {
         extvAbout = findViewById(R.id.extvAbout);
 
         tvAppVersion2 = findViewById(R.id.tvAppVersion2);
-        btnUpdateApp = findViewById(R.id.btnUpdateApp);
+        updateAppButton = findViewById(R.id.updateAppButton);
 
         myContext = AboutActivity.this;
 
@@ -68,6 +69,11 @@ public class AboutActivity extends AppCompatActivity {
 
         appMetaData = new AppMetaData();
         getAppMetaData();
+
+        updateAppButton.setOnClickListener(view -> {
+            Intent newIntent = new Intent(myContext, WebViewActivity.class);
+            startActivity(newIntent);
+        });
     }
 
     private void getAppMetaData() {
@@ -98,8 +104,8 @@ public class AboutActivity extends AppCompatActivity {
                 tvAppVersion2.setText(String.valueOf(latestVersion));
 
                 if(appMetaData.getCurrentVersion() < latestVersion)
-                    btnUpdateApp.setVisibility(View.VISIBLE);
-                else btnUpdateApp.setVisibility(View.GONE);
+                    updateAppButton.setVisibility(View.VISIBLE);
+                else updateAppButton.setVisibility(View.GONE);
 
                 progressBar.setVisibility(View.GONE);
             }

@@ -238,13 +238,13 @@ public class TouristSpotAdapter extends RecyclerView.Adapter<TouristSpotAdapter.
             return false;
         });
 
-        commentImage.setOnClickListener(view -> openItem(id));
+        commentImage.setOnClickListener(view -> openItem(id, true));
 
-        commentImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-            }
+        commentImage.setOnLongClickListener(view -> {
+            Toast.makeText(myContext,
+                    "Comments: " + tvComments.getText(),
+                    Toast.LENGTH_SHORT).show();
+            return false;
         });
 
         tvComments.setOnLongClickListener(view -> {
@@ -339,11 +339,11 @@ public class TouristSpotAdapter extends RecyclerView.Adapter<TouristSpotAdapter.
         });
     }
 
-    private void openItem(String id) {
+    private void openItem(String id, boolean toComment) {
         Intent intent = new Intent(myContext, SelectedSpotActivity.class);
         intent.putExtra("id", id);
         intent.putExtra("isLoggedIn", isLoggedIn);
-        intent.putExtra("toComment", true);
+        intent.putExtra("toComment", toComment);
         myContext.startActivity(intent);
     }
 

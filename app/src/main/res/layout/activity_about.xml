@@ -110,7 +110,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/aboutAppLayout">
 
                 <Button
-                    android:id="@+id/btnUpdateApp"
+                    android:id="@+id/updateAppButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="16dp"

@@ -125,6 +125,12 @@ public class MainActivity extends AppCompatActivity {
 
     boolean isAppStatusActivityShown = false;
 
+    CountDownTimer updateAppTimer;
+    Dialog dialog;
+    ImageView dialogCloseImage;
+    TextView tvAppVersion;
+    Button updateAppButton;
+
     private void initSharedPreferences() {
         SharedPreferences sharedPreferences = getSharedPreferences("login", Context.MODE_PRIVATE);
         isLoggedIn = sharedPreferences.getBoolean("isLoggedIn", false);
@@ -165,6 +171,8 @@ public class MainActivity extends AppCompatActivity {
         password = intent.getStringExtra("password");
 
         initSharedPreferences();
+
+        initUpdateApplicationDialog();
 
         firebaseAuth = FirebaseAuth.getInstance();
         if(isLoggedIn) {
@@ -244,6 +252,14 @@ public class MainActivity extends AppCompatActivity {
                     finishAffinity();
                     isAppStatusActivityShown = !isAppStatusActivityShown;
                 }
+
+                if(appMetaData.getCurrentVersion() < latestVersion) {
+                    String appVersion = "Current Version: v" + appMetaData.getCurrentVersion() +
+                            "\tLatest Version: v" + latestVersion;
+                    tvAppVersion.setText(appVersion);
+                    dialog.show();
+                    startUpdateAppTimer();
+                }
             }
 
             @Override
@@ -263,6 +279,43 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    private void startUpdateAppTimer() {
+        if(updateAppTimer != null) updateAppTimer.cancel();
+        updateAppTimer = new CountDownTimer(300000, 1000) {
+            @Override
+            public void onTick(long l) {}
+
+            @Override
+            public void onFinish() {
+                dialog.show();
+                start();
+            }
+        }.start();
+    }
+
+    private void initUpdateApplicationDialog() {
+        dialog = new Dialog(myContext);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.dialog_update_application_layout);
+
+        dialogCloseImage = dialog.findViewById(R.id.dialogCloseImage);
+        tvAppVersion = dialog.findViewById(R.id.tvAppVersion);
+        updateAppButton = dialog.findViewById(R.id.updateAppButton);
+
+        updateAppButton.setOnClickListener(view -> {
+            Intent newIntent = new Intent(myContext, WebViewActivity.class);
+            startActivity(newIntent);
+        });
+
+        dialogCloseImage.setOnClickListener(view -> dialog.dismiss());
+
+        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+        dialog.getWindow().getAttributes().windowAnimations = R.style.animBottomSlide;
+        dialog.getWindow().setGravity(Gravity.BOTTOM);
     }
 
     private void startTimer() {
