@@ -987,6 +987,10 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
                     commentInputLayout.setVisibility(View.GONE);
                     userCommentLayout.setVisibility(View.VISIBLE);
 
+                    Glide.with(myContext).load(user.getProfileImage())
+                            .placeholder(R.drawable.image_loading_placeholder)
+                            .into(profileImage);
+
                     String fullName = "<b>" + user.getLastName() + "</b>, " + user.getFirstName();
                     if(user.getMiddleName().length() > 0) fullName += " " + user.getMiddleName();
                     tvUserFullName.setText(fromHtml(fullName));

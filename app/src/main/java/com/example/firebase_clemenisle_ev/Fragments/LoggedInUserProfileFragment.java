@@ -28,6 +28,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.firebase_clemenisle_ev.Adapters.LikedSpotAdapter;
 import com.example.firebase_clemenisle_ev.Adapters.SpotWithCounterAdapter;
 import com.example.firebase_clemenisle_ev.Classes.Booking;
@@ -65,6 +66,7 @@ public class LoggedInUserProfileFragment extends Fragment {
 
     ProgressBar progressBar;
     TextView tvGreet, tvGreet2;
+    ImageView profileImage;
 
     ConstraintLayout fullNameLayout;
     TextView tvFullName2;
@@ -163,6 +165,7 @@ public class LoggedInUserProfileFragment extends Fragment {
 
         tvGreet = view.findViewById(R.id.tvGreet);
         tvGreet2 = view.findViewById(R.id.tvGreet2);
+        profileImage = view.findViewById(R.id.profileImage);
 
         fullNameLayout = view.findViewById(R.id.fullNameLayout);
         tvFullName2 = view.findViewById(R.id.tvFullName2);
@@ -1073,7 +1076,6 @@ public class LoggedInUserProfileFragment extends Fragment {
         else likedSpotView.setVisibility(View.GONE);
         tvLikedSpotBadge.setText(String.valueOf(likedSpots.size()));
 
-
         bookedSpots.clear(); visitedSpots.clear();
         for(Booking booking : user.getBookingList()) {
             List<Route> routeSpots = booking.getRouteList();
@@ -1113,6 +1115,10 @@ public class LoggedInUserProfileFragment extends Fragment {
         tvGreet.setTextColor(colorWhite);
         tvGreet.setGravity(Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL);
         tvGreet2.setVisibility(View.VISIBLE);
+
+        Glide.with(myContext).load(user.getProfileImage())
+                .placeholder(R.drawable.image_loading_placeholder)
+                .into(profileImage);
 
         progressBar.setVisibility(View.GONE);
     }
