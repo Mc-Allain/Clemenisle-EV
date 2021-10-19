@@ -423,7 +423,10 @@ public class MainActivity extends AppCompatActivity {
         if(hasBookingToday(bookingDay, bookingMonth, bookingYear)) {
             if(bookingHour == hour + 1) {
                 minDifference = (bookingMin + 60) - min;
-                if(minDifference >= 60) hrDifference = 1;
+                if(minDifference >= 60) {
+                    hrDifference = 1;
+                    minDifference -= 60;
+                }
                 else hrDifference = 0;
             }
             else if (bookingHour == hour) {
@@ -440,7 +443,7 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 if(booking.getStatus().equals("Booked"))
-                    initNotificationInHours(booking, hourArray, hrDifference, minArray, minDifference, sec);
+                    initNotificationInHours(booking, hourArray, hrDifference + 1, minArray, minDifference, sec);
 
                 if(booking.getStatus().equals("Processing") &&
                         (hrDifference < 0 || (hrDifference == 0 && minDifference == 0)))
@@ -448,7 +451,6 @@ public class MainActivity extends AppCompatActivity {
                             child("bookingList").child(booking.getId()).child("status").setValue("Failed");
                 return;
             }
-            if(minDifference == 60) minDifference = 0;
             if(booking.getStatus().equals("Booked"))
                 initNotificationInMinutes(booking, hrDifference, minArray, minDifference, sec);
         }
@@ -461,7 +463,7 @@ public class MainActivity extends AppCompatActivity {
                 if(minDifference < 60) hrDifference--;
                 else minDifference = 0;
             }
-            initNotificationInHours(booking, hourArray, hrDifference, minArray, minDifference, sec);
+            initNotificationInHours(booking, hourArray, hrDifference + 1, minArray, minDifference, sec);
         }
     }
 

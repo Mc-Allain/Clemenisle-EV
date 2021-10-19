@@ -52,7 +52,7 @@ public class RouteActivity extends AppCompatActivity implements
 
     ImageView thumbnail, moreImage, locateImage, locateEndImage, reloadImage;
     TextView tvBookingId, tvSchedule, tvTypeName, tvPrice, tvStartStation2, tvEndStation2,
-            tvOption, tvLocate, tvLocateEnd, tvLog;
+            tvLocate, tvLocateEnd, tvLog;
     ExpandableTextView extvMessage;
     RecyclerView routeView;
     ConstraintLayout buttonLayout, bookingInfoLayout, bookingInfoButtonLayout;
@@ -77,7 +77,7 @@ public class RouteActivity extends AppCompatActivity implements
 
     Station startStation, endStation;
 
-    boolean isOnScreen = false;
+    boolean isOnScreen = false, isOptionShown = false;
 
     Handler optionHandler = new Handler();
     Runnable optionRunnable;
@@ -108,7 +108,6 @@ public class RouteActivity extends AppCompatActivity implements
         tvPrice = findViewById(R.id.tvPrice);
         tvStartStation2 = findViewById(R.id.tvStartStation2);
         tvEndStation2 = findViewById(R.id.tvEndStation2);
-        tvOption = findViewById(R.id.tvOption);
         tvLocate = findViewById(R.id.tvLocate);
         tvLocateEnd = findViewById(R.id.tvLocateEnd);
         tvLog = findViewById(R.id.tvLog);
@@ -198,7 +197,7 @@ public class RouteActivity extends AppCompatActivity implements
         });
 
         moreImage.setOnClickListener(view -> {
-            if(tvOption.getText().equals("false")) {
+            if(!isOptionShown) {
                 openOption();
             }
             else {
@@ -280,7 +279,7 @@ public class RouteActivity extends AppCompatActivity implements
         setTransition(bookingInfoButtonLayout);
         constraintSet.applyTo(bookingInfoLayout);
 
-        tvOption.setText("true");
+        isOptionShown = true;
         moreImage.setEnabled(true);
         moreImage.setImageResource(R.drawable.ic_baseline_close_24);
         moreImage.setColorFilter(myContext.getResources().getColor(R.color.red));
@@ -301,7 +300,7 @@ public class RouteActivity extends AppCompatActivity implements
         setTransition(bookingInfoButtonLayout);
         constraintSet.applyTo(bookingInfoLayout);
 
-        tvOption.setText("false");
+        isOptionShown = false;
         moreImage.setEnabled(true);
         moreImage.setImageResource(R.drawable.ic_baseline_more_horiz_24);
         moreImage.setColorFilter(myContext.getResources().getColor(R.color.black));
