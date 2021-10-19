@@ -2,7 +2,13 @@ package com.example.firebase_clemenisle_ev.Classes;
 
 public class AppMetaData {
 
-    String aboutApp;
+    String aboutApp,
+            newlyAddedFeatures = "• Notification Added\n" +
+                    "• Comment System Added\n" +
+                    "• Application Status Alert Added\n" +
+                    "• Application Update Alert Added\n" +
+                    "• Update Notes Added\n" +
+                    "• Profile Image Added";
     double currentVersion = 0.3, latestVersion = 0;
     String status;
     boolean isDeveloper = false;
@@ -12,6 +18,10 @@ public class AppMetaData {
 
     public String getAboutApp() {
         return aboutApp;
+    }
+
+    public String getNewlyAddedFeatures() {
+        return newlyAddedFeatures;
     }
 
     public double getCurrentVersion() {

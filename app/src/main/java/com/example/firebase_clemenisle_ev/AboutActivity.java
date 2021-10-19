@@ -31,7 +31,7 @@ public class AboutActivity extends AppCompatActivity {
     ProgressBar progressBar;
 
     ImageView androidStudioLogoImage, fireBaseLogoImage, googleMapLogoImage, googleStreetViewImage;
-    ExpandableTextView extvAbout;
+    ExpandableTextView extvAbout, extvNewlyAddedFeatures;
     TextView tvAppVersion2;
     Button updateAppButton;
 
@@ -55,6 +55,8 @@ public class AboutActivity extends AppCompatActivity {
 
         tvAppVersion2 = findViewById(R.id.tvAppVersion2);
         updateAppButton = findViewById(R.id.updateAppButton);
+
+        extvNewlyAddedFeatures = findViewById(R.id.extvNewlyAddedFeatures);
 
         myContext = AboutActivity.this;
 
@@ -106,6 +108,9 @@ public class AboutActivity extends AppCompatActivity {
                 if(appMetaData.getCurrentVersion() < latestVersion)
                     updateAppButton.setVisibility(View.VISIBLE);
                 else updateAppButton.setVisibility(View.GONE);
+
+                String newlyAddedFeatures = appMetaData.getNewlyAddedFeatures();
+                extvNewlyAddedFeatures.setText(newlyAddedFeatures);
 
                 progressBar.setVisibility(View.GONE);
             }

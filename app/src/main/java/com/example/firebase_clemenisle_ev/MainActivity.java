@@ -45,6 +45,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.ms.square.android.expandabletextview.ExpandableTextView;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -133,7 +134,8 @@ public class MainActivity extends AppCompatActivity {
 
     Dialog appVersionInfoDialog;
     ImageView appVersionInfoDialogCloseImage;
-    TextView tvAppVersionInfoDialogTitle, tvNewFeatures;
+    TextView tvAppVersionInfoDialogTitle;
+    ExpandableTextView extvNewlyAddedFeatures;
 
     private void initSharedPreferences() {
         SharedPreferences sharedPreferences = getSharedPreferences("login", Context.MODE_PRIVATE);
@@ -272,12 +274,8 @@ public class MainActivity extends AppCompatActivity {
                     else if(showUpdates) {
                         String dialogTitle = "What's new in v" + latestVersion;
                         tvAppVersionInfoDialogTitle.setText(dialogTitle);
-                        String newFeatures = "• Notification Added\n" +
-                                "• Comment System Added\n" +
-                                "• Application Status Alert Added\n" +
-                                "• Application Update Alert Added\n" +
-                                "• Update Notes Added";
-                        tvNewFeatures.setText(newFeatures);
+                        String newlyAddedFeatures = appMetaData.getNewlyAddedFeatures();
+                        extvNewlyAddedFeatures.setText(newlyAddedFeatures);
                         appVersionInfoDialog.show();
                     }
                     isAlertDialogShown = !isAlertDialogShown;
@@ -348,7 +346,7 @@ public class MainActivity extends AppCompatActivity {
 
         appVersionInfoDialogCloseImage = appVersionInfoDialog.findViewById(R.id.dialogCloseImage);
         tvAppVersionInfoDialogTitle = appVersionInfoDialog.findViewById(R.id.tvDialogTitle);
-        tvNewFeatures = appVersionInfoDialog.findViewById(R.id.tvNewFeatures);
+        extvNewlyAddedFeatures = appVersionInfoDialog.findViewById(R.id.extvNewlyAddedFeatures);
 
         appVersionInfoDialogCloseImage.setOnClickListener(view -> appVersionInfoDialog.dismiss());
 
