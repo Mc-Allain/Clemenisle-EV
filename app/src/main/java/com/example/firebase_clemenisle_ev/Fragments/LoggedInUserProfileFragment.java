@@ -28,6 +28,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.firebase_clemenisle_ev.Adapters.LikedSpotAdapter;
 import com.example.firebase_clemenisle_ev.Adapters.SpotWithCounterAdapter;
 import com.example.firebase_clemenisle_ev.Classes.Booking;
@@ -65,6 +66,7 @@ public class LoggedInUserProfileFragment extends Fragment {
 
     ProgressBar progressBar;
     TextView tvGreet, tvGreet2;
+    ImageView profileImage;
 
     ConstraintLayout fullNameLayout;
     TextView tvFullName2;
@@ -138,6 +140,10 @@ public class LoggedInUserProfileFragment extends Fragment {
     SpotWithCounterAdapter visitedSpotAdapter;
     List<Route> visitedSpots = new ArrayList<>();
 
+    Dialog profileImageDialog;
+    ImageView profileImageDialogCloseImage, dialogProfileImage;
+    Button uploadButton, removeButton;
+
     private void initSharedPreferences() {
         SharedPreferences sharedPreferences = myContext
                 .getSharedPreferences("login", Context.MODE_PRIVATE);
@@ -163,6 +169,7 @@ public class LoggedInUserProfileFragment extends Fragment {
 
         tvGreet = view.findViewById(R.id.tvGreet);
         tvGreet2 = view.findViewById(R.id.tvGreet2);
+        profileImage = view.findViewById(R.id.profileImage);
 
         fullNameLayout = view.findViewById(R.id.fullNameLayout);
         tvFullName2 = view.findViewById(R.id.tvFullName2);
@@ -220,12 +227,14 @@ public class LoggedInUserProfileFragment extends Fragment {
 
         usersRef = firebaseDatabase.getReference("users").child(userId);
 
+        initProfileImageDialog();
         initFullNameDialog();
         initEmailAddressDialog();
         initPasswordDialog();
 
         getCurrentUser();
 
+        profileImage.setOnClickListener(view1 -> profileImageDialog.show());
         updateFullNameImage.setOnClickListener(view1 -> showFullNameDialog());
         updateEmailAddressImage.setOnClickListener(view1 -> showEmailAddressDialog());
         updatePasswordImage.setOnClickListener(view1 -> showPasswordDialog());
@@ -311,6 +320,25 @@ public class LoggedInUserProfileFragment extends Fragment {
         vPWL = false; vPWU = false; vPWLw = false; vPWN = false; vPWS = false; vCPW = false;
 
         passwordDialog.show();
+    }
+
+    private void initProfileImageDialog() {
+        profileImageDialog = new Dialog(myContext);
+        profileImageDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        profileImageDialog.setContentView(R.layout.dialog_profile_image_action_layout);
+
+        profileImageDialogCloseImage = profileImageDialog.findViewById(R.id.dialogCloseImage);
+        dialogProfileImage = profileImageDialog.findViewById(R.id.profileImage);
+        uploadButton = profileImageDialog.findViewById(R.id.uploadButton);
+        removeButton = profileImageDialog.findViewById(R.id.removeButton);
+
+        profileImageDialogCloseImage.setOnClickListener(view -> profileImageDialog.dismiss());
+
+        profileImageDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT);
+        profileImageDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        profileImageDialog.getWindow().getAttributes().windowAnimations = R.style.animBottomSlide;
+        profileImageDialog.getWindow().setGravity(Gravity.BOTTOM);
     }
 
     private void initFullNameDialog() {
@@ -1073,7 +1101,6 @@ public class LoggedInUserProfileFragment extends Fragment {
         else likedSpotView.setVisibility(View.GONE);
         tvLikedSpotBadge.setText(String.valueOf(likedSpots.size()));
 
-
         bookedSpots.clear(); visitedSpots.clear();
         for(Booking booking : user.getBookingList()) {
             List<Route> routeSpots = booking.getRouteList();
@@ -1113,6 +1140,19 @@ public class LoggedInUserProfileFragment extends Fragment {
         tvGreet.setTextColor(colorWhite);
         tvGreet.setGravity(Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL);
         tvGreet2.setVisibility(View.VISIBLE);
+
+        uploadButton.setEnabled(true);
+        if(user.getProfileImage() != null) {
+            Glide.with(myContext).load(user.getProfileImage())
+                    .placeholder(R.drawable.image_loading_placeholder)
+                    .into(profileImage);
+
+            Glide.with(myContext).load(user.getProfileImage())
+                    .placeholder(R.drawable.image_loading_placeholder)
+                    .into(dialogProfileImage);
+
+            removeButton.setEnabled(true);
+        }
 
         progressBar.setVisibility(View.GONE);
     }

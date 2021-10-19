@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.example.firebase_clemenisle_ev.Classes.Comment;
 import com.example.firebase_clemenisle_ev.Classes.User;
 import com.example.firebase_clemenisle_ev.LoginActivity;
@@ -101,6 +102,10 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
                 }
             }
             Comment finalCommentRecord = commentRecord;
+
+            Glide.with(myContext).load(user.getProfileImage())
+                    .placeholder(R.drawable.image_loading_placeholder)
+                    .into(profileImage);
 
             String fullName = "<b>" + user.getLastName() + "</b>, " + user.getFirstName();
             if(user.getMiddleName().length() > 0) fullName += " " + user.getMiddleName();
@@ -307,14 +312,11 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
 
             deactivateImage.setOnClickListener(view -> onActionButtonClickedListener.deactivateImageOnClick());
 
-            reportImage.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if(userId == null) loginPrompt();
-                    else {
-                        onActionButtonClickedListener.
-                                reportImageOnClick(spotId, user.getId(), finalCommentRecord);
-                    }
+            reportImage.setOnClickListener(view -> {
+                if(userId == null) loginPrompt();
+                else {
+                    onActionButtonClickedListener.
+                            reportImageOnClick(spotId, user.getId(), finalCommentRecord);
                 }
             });
         }
@@ -339,7 +341,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
             backgroundLayout.setVisibility(View.GONE);
         }
 
-        int top = dpToPx(4), bottom = dpToPx(4);
+        int top = dpToPx(0), bottom = dpToPx(0);
 
         boolean isFirstItem = position + 1 == 1, isLastItem = position + 1 == getItemCount();
 

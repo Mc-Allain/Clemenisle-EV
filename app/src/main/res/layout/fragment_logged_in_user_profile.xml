@@ -21,80 +21,6 @@
             android:paddingBottom="88dp">
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/visitedSpotLayout"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:background="@color/white"
-                app:layout_constraintEnd_toEndOf="@+id/bookedSpotLayout"
-                app:layout_constraintStart_toStartOf="@+id/bookedSpotLayout"
-                app:layout_constraintTop_toBottomOf="@+id/bookedSpotLayout">
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/visitedSpotTitleLayout"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
-
-                    <TextView
-                        android:id="@+id/tvVisitedSpotBadge"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:background="@drawable/corner_layout"
-                        android:backgroundTint="@color/blue"
-                        android:minWidth="28dp"
-                        android:padding="4dp"
-                        android:text="0"
-                        android:textAlignment="center"
-                        android:textColor="@color/white"
-                        android:textStyle="bold"
-                        app:layout_constraintBottom_toBottomOf="@+id/tvVisitedSpotTitle"
-                        app:layout_constraintStart_toEndOf="@+id/tvVisitedSpotTitle"
-                        app:layout_constraintTop_toTopOf="@+id/tvVisitedSpotTitle" />
-
-                    <TextView
-                        android:id="@+id/tvVisitedSpotTitle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginBottom="8dp"
-                        android:fontFamily="@font/ubuntu"
-                        android:text="Visited Spots"
-                        android:textColor="@color/black"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                    <View
-                        style="@style/line_color"
-                        android:layout_width="0dp"
-                        android:layout_height="1dp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent" />
-
-                </androidx.constraintlayout.widget.ConstraintLayout>
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/visitedSpotView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginBottom="8dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/visitedSpotTitleLayout" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/bookedSpotLayout"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -182,7 +108,6 @@
                     android:layout_height="wrap_content"
                     android:adjustViewBounds="true"
                     android:src="@drawable/intramuros_drone_shot"
-                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -283,16 +208,16 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
-                        android:layout_marginTop="8dp"
+                        android:layout_marginTop="56dp"
                         android:layout_marginBottom="8dp"
+                        android:fontFamily="@font/ubuntu"
                         android:text="Full Name"
                         android:textColor="@color/black"
                         android:textSize="16sp"
                         android:textStyle="bold"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        android:fontFamily="@font/ubuntu" />
+                        app:layout_constraintTop_toTopOf="parent" />
 
                     <View
                         style="@style/line_color"
@@ -303,6 +228,80 @@
                         app:layout_constraintStart_toStartOf="parent" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/visitedSpotLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@color/white"
+                app:layout_constraintEnd_toEndOf="@+id/bookedSpotLayout"
+                app:layout_constraintStart_toStartOf="@+id/bookedSpotLayout"
+                app:layout_constraintTop_toBottomOf="@+id/bookedSpotLayout">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/visitedSpotTitleLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <TextView
+                        android:id="@+id/tvVisitedSpotBadge"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:background="@drawable/corner_layout"
+                        android:backgroundTint="@color/blue"
+                        android:minWidth="28dp"
+                        android:padding="4dp"
+                        android:text="0"
+                        android:textAlignment="center"
+                        android:textColor="@color/white"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toBottomOf="@+id/tvVisitedSpotTitle"
+                        app:layout_constraintStart_toEndOf="@+id/tvVisitedSpotTitle"
+                        app:layout_constraintTop_toTopOf="@+id/tvVisitedSpotTitle" />
+
+                    <TextView
+                        android:id="@+id/tvVisitedSpotTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginBottom="8dp"
+                        android:fontFamily="@font/ubuntu"
+                        android:text="Visited Spots"
+                        android:textColor="@color/black"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <View
+                        style="@style/line_color"
+                        android:layout_width="0dp"
+                        android:layout_height="1dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/visitedSpotView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/visitedSpotTitleLayout" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -550,6 +549,19 @@
                     app:layout_constraintTop_toBottomOf="@+id/likedSpotTitleLayout" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/profileImage"
+                android:layout_width="128dp"
+                android:layout_height="128dp"
+                android:src="@drawable/image_loading_placeholder"
+                app:civ_border_color="@color/gainsboro"
+                app:civ_border_width="2dp"
+                app:civ_circle_background_color="@color/gainsboro"
+                app:layout_constraintBottom_toBottomOf="@+id/coverImageLayout"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/coverImageLayout" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

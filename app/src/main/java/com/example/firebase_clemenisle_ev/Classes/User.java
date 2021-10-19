@@ -7,7 +7,7 @@ import java.util.List;
 
 public class User {
 
-    private String firstName, id, lastName, middleName;
+    private String firstName, id, lastName, middleName, profileImage;
     private final List<SimpleTouristSpot> likedSpots = new ArrayList<>();
     private final List<Booking> bookingList = new ArrayList<>();
     private final List<Comment> comments = new ArrayList<>();
@@ -23,6 +23,7 @@ public class User {
         id = dataSnapshot.child("id").getValue(String.class);
         lastName = dataSnapshot.child("lastName").getValue(String.class);
         middleName = dataSnapshot.child("middleName").getValue(String.class);
+        profileImage = dataSnapshot.child("profileImage").getValue(String.class);
 
         likedSpots.clear();
         DataSnapshot likedSpotSnapshot = dataSnapshot.child("likedSpots");
@@ -126,6 +127,10 @@ public class User {
 
     public String getMiddleName() {
         return middleName;
+    }
+
+    public String getProfileImage() {
+        return profileImage;
     }
 
     public List<SimpleTouristSpot> getLikedSpots() {
