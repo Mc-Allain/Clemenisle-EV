@@ -237,7 +237,7 @@ public class TouristSpotListAdapter extends RecyclerView.Adapter<TouristSpotList
     private void unlikeSpot(String spotId) {
         DatabaseReference usersRef = firebaseDatabase.getReference("users")
                 .child(userId).child("likedSpots");
-        usersRef.child(spotId).setValue(null);
+        usersRef.child(spotId).removeValue();
     }
 
     private boolean isInLikedSpots(SimpleTouristSpot targetSpot) {

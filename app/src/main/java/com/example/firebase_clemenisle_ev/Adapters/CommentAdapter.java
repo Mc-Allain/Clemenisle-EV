@@ -234,6 +234,8 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
                     if(comment.getId().equals(spotId) && comment.getUserId().equals(user.getId())) {
                         reportImage.setEnabled(false);
                         reportImage.setColorFilter(colorInitial);
+                        upVoteImage.setEnabled(false);
+                        upVoteImage.getDrawable().setTint(colorInitial);
 
                         tvCommentStatus.setVisibility(View.VISIBLE);
 

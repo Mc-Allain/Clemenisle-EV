@@ -12,20 +12,36 @@ public class Comment {
         this.value = value;
     }
 
-    public String getId() {
-        return id;
-    }
-
     public boolean isAppealed() {
         return appealed;
+    }
+
+    public void setAppealed(boolean appealed) {
+        this.appealed = appealed;
     }
 
     public boolean isDeactivated() {
         return deactivated;
     }
 
+    public void setDeactivated(boolean deactivated) {
+        this.deactivated = deactivated;
+    }
+
     public boolean isFouled() {
         return fouled;
+    }
+
+    public void setFouled(boolean fouled) {
+        this.fouled = fouled;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getUserId() {
@@ -38,5 +54,9 @@ public class Comment {
 
     public String getValue() {
         return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
     }
 }

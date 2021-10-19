@@ -98,7 +98,7 @@ public class LikedSpotAdapter extends RecyclerView.Adapter<LikedSpotAdapter.View
 
                 DatabaseReference usersRef = firebaseDatabase.getReference("users")
                         .child(userId).child("likedSpots");
-                usersRef.child(id).setValue(null);
+                usersRef.child(id).removeValue();
 
                 isUnliked = true;
             }
