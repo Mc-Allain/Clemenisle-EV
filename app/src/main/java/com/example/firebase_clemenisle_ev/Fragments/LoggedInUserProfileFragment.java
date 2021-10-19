@@ -9,6 +9,7 @@ import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
@@ -52,10 +53,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import static android.app.Activity.RESULT_OK;
 
 public class LoggedInUserProfileFragment extends Fragment {
 
@@ -63,6 +67,8 @@ public class LoggedInUserProfileFragment extends Fragment {
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance(firebaseURL);
     FirebaseAuth firebaseAuth;
     FirebaseUser firebaseUser;
+
+    private final static int PICK_IMAGE_REQUEST = 1;
 
     ProgressBar progressBar;
     TextView tvGreet, tvGreet2;
@@ -142,7 +148,9 @@ public class LoggedInUserProfileFragment extends Fragment {
 
     Dialog profileImageDialog;
     ImageView profileImageDialogCloseImage, dialogProfileImage;
-    Button uploadButton, removeButton;
+    Button chooseImageButton, uploadButton, removeButton;
+
+    Uri profileImageUri;
 
     private void initSharedPreferences() {
         SharedPreferences sharedPreferences = myContext
@@ -234,7 +242,7 @@ public class LoggedInUserProfileFragment extends Fragment {
 
         getCurrentUser();
 
-        profileImage.setOnClickListener(view1 -> profileImageDialog.show());
+        profileImage.setOnClickListener(view1 -> showProfileImageDialog());
         updateFullNameImage.setOnClickListener(view1 -> showFullNameDialog());
         updateEmailAddressImage.setOnClickListener(view1 -> showEmailAddressDialog());
         updatePasswordImage.setOnClickListener(view1 -> showPasswordDialog());
@@ -322,6 +330,19 @@ public class LoggedInUserProfileFragment extends Fragment {
         passwordDialog.show();
     }
 
+    private void showProfileImageDialog() {
+        Glide.with(myContext).load(user.getProfileImage())
+                .placeholder(R.drawable.image_loading_placeholder)
+                .into(dialogProfileImage);
+
+        removeButton.setEnabled(true);
+        String uploadText = "Upload";
+        uploadButton.setText(uploadText);
+        uploadButton.setEnabled(false);
+
+        profileImageDialog.show();
+    }
+
     private void initProfileImageDialog() {
         profileImageDialog = new Dialog(myContext);
         profileImageDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -329,16 +350,59 @@ public class LoggedInUserProfileFragment extends Fragment {
 
         profileImageDialogCloseImage = profileImageDialog.findViewById(R.id.dialogCloseImage);
         dialogProfileImage = profileImageDialog.findViewById(R.id.profileImage);
+
+        chooseImageButton = profileImageDialog.findViewById(R.id.chooseImageButton);
         uploadButton = profileImageDialog.findViewById(R.id.uploadButton);
         removeButton = profileImageDialog.findViewById(R.id.removeButton);
 
         profileImageDialogCloseImage.setOnClickListener(view -> profileImageDialog.dismiss());
+
+        chooseImageButton.setOnClickListener(view -> {
+            Intent newIntent = new Intent();
+            newIntent.setType("image/*");
+            newIntent.setAction(Intent.ACTION_GET_CONTENT);
+            startActivityForResult(newIntent, PICK_IMAGE_REQUEST);
+        });
+
+        removeButton.setOnClickListener(view -> {
+            Glide.with(myContext).load(R.drawable.image_loading_placeholder)
+                    .into(dialogProfileImage);
+
+            removeButton.setEnabled(false);
+            String uploadText = "Save";
+            uploadButton.setText(uploadText);
+            uploadButton.setEnabled(true);
+        });
 
         profileImageDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
         profileImageDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         profileImageDialog.getWindow().getAttributes().windowAnimations = R.style.animBottomSlide;
         profileImageDialog.getWindow().setGravity(Gravity.BOTTOM);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK &&
+                data != null && data.getData() != null) {
+            profileImageUri = data.getData();
+
+            Glide.with(myContext).load(profileImageUri)
+                    .placeholder(R.drawable.image_loading_placeholder)
+                    .into(dialogProfileImage);
+
+
+            removeButton.setEnabled(true);
+            String uploadText = "Upload";
+            uploadButton.setText(uploadText);
+            uploadButton.setEnabled(false);
+        }
+    }
+
+    private void uploadProfileImage() {
+
     }
 
     private void initFullNameDialog() {
@@ -1141,7 +1205,7 @@ public class LoggedInUserProfileFragment extends Fragment {
         tvGreet.setGravity(Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL);
         tvGreet2.setVisibility(View.VISIBLE);
 
-        uploadButton.setEnabled(true);
+        chooseImageButton.setEnabled(true);
         if(user.getProfileImage() != null) {
             Glide.with(myContext).load(user.getProfileImage())
                     .placeholder(R.drawable.image_loading_placeholder)

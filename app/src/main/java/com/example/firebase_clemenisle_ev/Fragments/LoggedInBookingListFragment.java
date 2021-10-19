@@ -454,6 +454,7 @@ public class LoggedInBookingListFragment extends Fragment {
                     }
                 }
                 success1 = true;
+                Collections.reverse(bookingList1);
                 finishLoading();
             }
 
@@ -486,6 +487,7 @@ public class LoggedInBookingListFragment extends Fragment {
                     }
                 }
                 success2 = true;
+                Collections.reverse(bookingList2);
                 finishLoading();
             }
 
@@ -518,6 +520,7 @@ public class LoggedInBookingListFragment extends Fragment {
                     }
                 }
                 success3 = true;
+                Collections.reverse(bookingList3);
                 finishLoading();
             }
 
@@ -550,6 +553,7 @@ public class LoggedInBookingListFragment extends Fragment {
                     }
                 }
                 success4 = true;
+                Collections.reverse(bookingList4);
                 finishLoading();
             }
 
@@ -582,6 +586,7 @@ public class LoggedInBookingListFragment extends Fragment {
                     }
                 }
                 success5 = true;
+                Collections.reverse(bookingList5);
                 finishLoading();
             }
 
@@ -601,11 +606,6 @@ public class LoggedInBookingListFragment extends Fragment {
 
     private void finishLoading() {
         if(success1 && success2 && success3 && success4 && success5) {
-            Collections.reverse(bookingList1);
-            Collections.reverse(bookingList2);
-            Collections.reverse(bookingList3);
-            Collections.reverse(bookingList4);
-            Collections.reverse(bookingList5);
             updateAdapter();
 
             progressBar.setVisibility(View.GONE);

@@ -499,6 +499,7 @@ public class BookingActivity extends AppCompatActivity implements
                 bookingTypeLayout.setVisibility(View.VISIBLE);
                 tvBookingType2.setText(bookingType.getName());
                 String price = "₱" + bookingType.getPrice();
+                if(price.split("\\.")[1].length() == 1) price += 0;
                 tvPrice.setText(price);
 
                 tvActivityName.setText(stationActivityText);

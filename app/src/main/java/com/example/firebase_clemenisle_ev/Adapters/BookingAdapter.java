@@ -85,6 +85,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
         BookingType bookingType = booking.getBookingType();
         String typeName = bookingType.getName();
         String price = "₱" + bookingType.getPrice();
+        if(price.split("\\.")[1].length() == 1) price += 0;
 
         String img;
         List<Route> routeList = bookingList.get(position).getRouteList();

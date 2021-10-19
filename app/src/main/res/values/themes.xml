@@ -21,7 +21,7 @@
     <style name="item_line_color">
         <item name="android:background">@color/dark_gray</item>
     </style>
-    
+
     <style name="animBottomSlide">
         <item name="android:windowEnterAnimation">@anim/bottom_slide_up</item>
         <item name="android:windowExitAnimation">@anim/bottom_slide_down</item>

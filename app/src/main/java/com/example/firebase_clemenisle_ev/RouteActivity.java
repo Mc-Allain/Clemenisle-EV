@@ -337,6 +337,7 @@ public class RouteActivity extends AppCompatActivity implements
 
                     typeName = booking.getBookingType().getName();
                     price = String.valueOf(booking.getBookingType().getPrice());
+                    if(price.split("\\.")[1].length() == 1) price += 0;
 
                     for(Route route : booking.getRouteList()) {
                         if(!route.isDeactivated()) {

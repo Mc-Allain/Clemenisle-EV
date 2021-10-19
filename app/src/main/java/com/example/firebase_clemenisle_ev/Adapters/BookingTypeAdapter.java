@@ -70,6 +70,7 @@ public class BookingTypeAdapter extends RecyclerView.Adapter<BookingTypeAdapter.
         String id = bookingTypeList.get(position).getId();
         String typeName = bookingTypeList.get(position).getName();
         String price = "₱" + bookingTypeList.get(position).getPrice();
+        if(price.split("\\.")[1].length() == 1) price += 0;
         int routeCount = bookingTypeList.get(position).getRouteList().size();
         String routeCountText = defaultRouteCountText + routeCount;
 
