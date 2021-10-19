@@ -2,6 +2,7 @@ package com.example.firebase_clemenisle_ev.Fragments;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -12,6 +13,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.Editable;
 import android.text.Html;
 import android.text.SpannableString;
@@ -22,6 +24,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -48,6 +51,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -67,6 +72,8 @@ public class LoggedInUserProfileFragment extends Fragment {
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance(firebaseURL);
     FirebaseAuth firebaseAuth;
     FirebaseUser firebaseUser;
+    FirebaseStorage firebaseStorage = FirebaseStorage.getInstance();
+    StorageReference storageReference;
 
     private final static int PICK_IMAGE_REQUEST = 1;
 
@@ -120,7 +127,7 @@ public class LoggedInUserProfileFragment extends Fragment {
     Dialog passwordDialog;
     ImageView passwordDialogCloseImage;
     Button passwordUpdateButton;
-    ProgressBar passwordDialogProgressBar;
+    ProgressBar passwordDialogProgressBar, roundProgressBar;
 
     DatabaseReference usersRef;
 
@@ -149,8 +156,11 @@ public class LoggedInUserProfileFragment extends Fragment {
     Dialog profileImageDialog;
     ImageView profileImageDialogCloseImage, dialogProfileImage;
     Button chooseImageButton, uploadButton, removeButton;
+    ProgressBar profileImageDialogProgressBar;
 
     Uri profileImageUri;
+
+    boolean isOnScreen = false;
 
     private void initSharedPreferences() {
         SharedPreferences sharedPreferences = myContext
@@ -233,6 +243,10 @@ public class LoggedInUserProfileFragment extends Fragment {
             }
         }
 
+        isOnScreen = true;
+
+        storageReference = firebaseStorage.getReference("profileImages");
+
         usersRef = firebaseDatabase.getReference("users").child(userId);
 
         initProfileImageDialog();
@@ -246,7 +260,7 @@ public class LoggedInUserProfileFragment extends Fragment {
         updateFullNameImage.setOnClickListener(view1 -> showFullNameDialog());
         updateEmailAddressImage.setOnClickListener(view1 -> showEmailAddressDialog());
         updatePasswordImage.setOnClickListener(view1 -> showPasswordDialog());
-        
+
         LinearLayoutManager linearLayout1 =
                 new LinearLayoutManager(myContext, LinearLayoutManager.HORIZONTAL, false);
         likedSpotView.setLayoutManager(linearLayout1);
@@ -335,7 +349,8 @@ public class LoggedInUserProfileFragment extends Fragment {
                 .placeholder(R.drawable.image_loading_placeholder)
                 .into(dialogProfileImage);
 
-        removeButton.setEnabled(true);
+        chooseImageButton.setEnabled(true);
+        if(user.getProfileImage() != null) removeButton.setEnabled(true);
         String uploadText = "Upload";
         uploadButton.setText(uploadText);
         uploadButton.setEnabled(false);
@@ -355,6 +370,9 @@ public class LoggedInUserProfileFragment extends Fragment {
         uploadButton = profileImageDialog.findViewById(R.id.uploadButton);
         removeButton = profileImageDialog.findViewById(R.id.removeButton);
 
+        profileImageDialogProgressBar = profileImageDialog.findViewById(R.id.progressBar);
+        roundProgressBar = profileImageDialog.findViewById(R.id.roundProgressBar);
+
         profileImageDialogCloseImage.setOnClickListener(view -> profileImageDialog.dismiss());
 
         chooseImageButton.setOnClickListener(view -> {
@@ -372,6 +390,11 @@ public class LoggedInUserProfileFragment extends Fragment {
             String uploadText = "Save";
             uploadButton.setText(uploadText);
             uploadButton.setEnabled(true);
+        });
+
+        uploadButton.setOnClickListener(view -> {
+            if(uploadButton.getText().equals("Upload")) uploadProfileImage();
+            else if(uploadButton.getText().equals("Save")) removeProfileImage();
         });
 
         profileImageDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
@@ -401,8 +424,114 @@ public class LoggedInUserProfileFragment extends Fragment {
         }
     }
 
-    private void uploadProfileImage() {
+    private void removeProfileImage() {
+        setProfileImageDialogScreenEnabled(false);
+        roundProgressBar.setVisibility(View.VISIBLE);
 
+        usersRef.child("profileImage").removeValue().addOnCompleteListener(task -> {
+            if(task.isSuccessful()) {
+                Toast.makeText(
+                        myContext,
+                        "Successfully removed the profile image",
+                        Toast.LENGTH_SHORT
+                ).show();
+
+                profileImageDialog.dismiss();
+            }
+            else {
+                if(task.getException() != null) {
+                    String error = task.getException().toString();
+                    Toast.makeText(
+                            myContext,
+                            error,
+                            Toast.LENGTH_LONG
+                    ).show();
+                }
+            }
+            setProfileImageDialogScreenEnabled(true);
+            roundProgressBar.setVisibility(View.GONE);
+        });
+    }
+
+    private String getFileExt(Uri uri) {
+        ContentResolver contentResolver = myContext.getContentResolver();
+        MimeTypeMap mimeTypeMap = MimeTypeMap.getSingleton();
+        return mimeTypeMap.getExtensionFromMimeType(contentResolver.getType(uri));
+    }
+
+    private void uploadProfileImage() {
+        if(profileImageUri == null)
+            Toast.makeText(
+                    myContext,
+                    "No image selected",
+                    Toast.LENGTH_LONG
+            ).show();
+        else {
+            setProfileImageDialogScreenEnabled(false);
+
+            StorageReference profileImageRef =
+                    storageReference.child(System.currentTimeMillis() + "." + getFileExt(profileImageUri));
+
+            profileImageRef.putFile(profileImageUri).addOnCompleteListener(task -> {
+                if(task.isSuccessful()) {
+                    usersRef.child("profileImage").setValue(task.getResult().getStorage().getDownloadUrl())
+                    .addOnCompleteListener(task1 -> {
+                        if(task1.isSuccessful()) {
+                            new Handler().postDelayed(() -> profileImageDialogProgressBar.setProgress(0), 1000);
+
+                            Toast.makeText(
+                                    myContext,
+                                    "Successfully uploaded the profile image",
+                                    Toast.LENGTH_SHORT
+                            ).show();
+
+                            profileImageDialog.dismiss();
+                        }
+                        else {
+                            if(task.getException() != null) {
+                                profileImageDialogProgressBar.setProgress(0);
+
+                                String error = task.getException().toString();
+                                Toast.makeText(
+                                        myContext,
+                                        error,
+                                        Toast.LENGTH_LONG
+                                ).show();
+                            }
+                        }
+                        setProfileImageDialogScreenEnabled(true);
+                    });
+                }
+                else {
+                    if(task.getException() != null) {
+                        profileImageDialogProgressBar.setProgress(0);
+
+                        String error = task.getException().toString();
+                        Toast.makeText(
+                                myContext,
+                                error,
+                                Toast.LENGTH_LONG
+                        ).show();
+                    }
+                    setProfileImageDialogScreenEnabled(true);
+                }
+            }).addOnProgressListener(snapshot -> {
+                double progress =
+                        (100.0 * snapshot.getBytesTransferred() / snapshot.getTotalByteCount());
+                profileImageDialogProgressBar.setProgress((int) progress);
+            });
+        }
+    }
+
+    private void setProfileImageDialogScreenEnabled(boolean value) {
+        profileImageDialog.setCanceledOnTouchOutside(value);
+        profileImageDialogCloseImage.setEnabled(value);
+        chooseImageButton.setEnabled(value);
+        removeButton.setEnabled(value);
+        uploadButton.setEnabled(value);
+
+        if(value) profileImageDialogCloseImage.setColorFilter(colorRed);
+        else profileImageDialogCloseImage.setColorFilter(colorInitial);
     }
 
     private void initFullNameDialog() {
@@ -1206,7 +1335,7 @@ public class LoggedInUserProfileFragment extends Fragment {
         tvGreet2.setVisibility(View.VISIBLE);
 
         chooseImageButton.setEnabled(true);
-        if(user.getProfileImage() != null) {
+        if(user.getProfileImage() != null && isOnScreen) {
             Glide.with(myContext).load(user.getProfileImage())
                     .placeholder(R.drawable.image_loading_placeholder)
                     .into(profileImage);
@@ -1217,8 +1346,21 @@ public class LoggedInUserProfileFragment extends Fragment {
 
             removeButton.setEnabled(true);
         }
+        else {
+            Glide.with(myContext).load(R.drawable.image_loading_placeholder)
+                    .into(profileImage);
+
+            Glide.with(myContext).load(R.drawable.image_loading_placeholder)
+                    .into(dialogProfileImage);
+        }
 
         progressBar.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        isOnScreen = false;
     }
 
     private void bookedSpotAddCounter(Route route) {

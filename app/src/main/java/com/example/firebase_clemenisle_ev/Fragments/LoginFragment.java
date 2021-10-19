@@ -318,8 +318,6 @@ public class LoginFragment extends Fragment {
                                     Toast.LENGTH_LONG
                             ).show();
 
-                            setDialogScreenEnabled(true);
-                            dialogProgressBar.setVisibility(View.GONE);
                             dialog.dismiss();
                         }
                         else {
@@ -334,9 +332,9 @@ public class LoginFragment extends Fragment {
                                         Toast.LENGTH_LONG
                                 ).show();
                             }
-                            setDialogScreenEnabled(true);
-                            dialogProgressBar.setVisibility(View.GONE);
                         }
+                        setDialogScreenEnabled(true);
+                        dialogProgressBar.setVisibility(View.GONE);
                     }
                 });
     }
