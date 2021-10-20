@@ -62,8 +62,7 @@ public class SpotWithCounterAdapter extends RecyclerView.Adapter<SpotWithCounter
             count = bookedSpots.get(position).getVisits() + "×";
         }
 
-        Glide.with(myContext).load(img).placeholder(R.drawable.image_loading_placeholder).
-                override(Target.SIZE_ORIGINAL).into(thumbnail);
+        Glide.with(myContext).load(img).placeholder(R.drawable.image_loading_placeholder).override(Target.SIZE_ORIGINAL).into(thumbnail);
         tvName.setText(name);
         tvCounterBadge.setText(count);
 

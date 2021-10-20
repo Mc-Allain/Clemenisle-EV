@@ -212,5 +212,8 @@ public class HelpActivity extends AppCompatActivity {
             }
             progressBar.setVisibility(View.GONE);
         });
+
+        questionInputLayout.setVisibility(View.GONE);
+        userQuestionLayout.setVisibility(View.VISIBLE);
     }
 }

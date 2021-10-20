@@ -1845,7 +1845,7 @@ public class BookingActivity extends AppCompatActivity implements
     }
 
     private void checkSelectedSpotContinueButton() {
-        if(spots.size() > 2 && currentStep >= 4) {
+        if(spots.size() > 2) {
             continueButton.setEnabled(true);
             tvCaption.setText(routeSpotsCaptionText);
             tvCaption.setTextColor(colorBlack);
@@ -2163,7 +2163,7 @@ public class BookingActivity extends AppCompatActivity implements
         if(!isInStations()) {
             station = null;
             bookingStationAdapter.setStationId(null);
-            checkStationContinueButton();
+            if(currentStep != 1) checkStationContinueButton();
             if(currentStep > targetStep) rebootStep(targetStep);
         }
 
@@ -2197,7 +2197,7 @@ public class BookingActivity extends AppCompatActivity implements
         int targetStep = 2;
         station = null;
         bookingStationAdapter.setStationId(null);
-        checkStationContinueButton();
+        if(currentStep != 1) checkStationContinueButton();
         if(currentStep > targetStep) rebootStep(targetStep);
     }
 
@@ -2208,7 +2208,7 @@ public class BookingActivity extends AppCompatActivity implements
         if(!isInBookingRoutes()) {
             bookingTypeRoute = null;
             bookingRouteAdapter.setRouteId(null);
-            checkRouteContinueButton();
+            if(currentStep != 1) checkRouteContinueButton();
             if(currentStep > targetStep) rebootStep(targetStep);
         }
 
@@ -2242,7 +2242,7 @@ public class BookingActivity extends AppCompatActivity implements
         int targetStep = 3;
         bookingTypeRoute = null;
         bookingRouteAdapter.setRouteId(null);
-        checkRouteContinueButton();
+        if(currentStep != 1) checkRouteContinueButton();
         if(currentStep > targetStep) rebootStep(targetStep);
     }
 
@@ -2340,7 +2340,7 @@ public class BookingActivity extends AppCompatActivity implements
 
     private void errorLoading4p1() {
         int targetStep = 4;
-        checkSelectedSpotContinueButton();
+        if(currentStep != 1) checkSelectedSpotContinueButton();
         if(currentStep > targetStep) rebootStep(targetStep);
     }
 
@@ -2379,7 +2379,7 @@ public class BookingActivity extends AppCompatActivity implements
 
         int targetStep = 4;
         if(!areSelectedSpotsExisting()) {
-            checkSelectedSpotContinueButton();
+            if(currentStep != 1) checkSelectedSpotContinueButton();
             if(currentStep > targetStep) rebootStep(targetStep);
         }
 
@@ -2447,7 +2447,7 @@ public class BookingActivity extends AppCompatActivity implements
     private void errorLoading4p3() {
         int targetStep = 4;
         removeAllSelectedSpots();
-        checkSelectedSpotContinueButton();
+        if(currentStep != 1) checkSelectedSpotContinueButton();
         if(currentStep > targetStep) rebootStep(targetStep);
     }
 
@@ -2466,7 +2466,7 @@ public class BookingActivity extends AppCompatActivity implements
         if(!isInScheduleTime()) {
             scheduleTime = null;
             scheduleTimeAdapter.setScheduleTimeId(null);
-            checkScheduleContinueButton();
+            if(currentStep != 1) checkScheduleContinueButton();
             if(currentStep > targetStep) rebootStep(targetStep);
         }
 
@@ -2500,7 +2500,7 @@ public class BookingActivity extends AppCompatActivity implements
         int targetStep = 5;
         scheduleTime = null;
         scheduleTimeAdapter.setScheduleTimeId(null);
-        checkScheduleContinueButton();
+        if(currentStep != 1) checkScheduleContinueButton();
         if(currentStep > targetStep) rebootStep(targetStep);
     }
 

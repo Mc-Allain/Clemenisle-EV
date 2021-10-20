@@ -121,8 +121,7 @@ public class TouristSpotListAdapter extends RecyclerView.Adapter<TouristSpotList
 
         SimpleTouristSpot touristSpot = new SimpleTouristSpot(deactivated, id, img, name);
 
-        Glide.with(myContext).load(img).placeholder(R.drawable.image_loading_placeholder).
-                override(Target.SIZE_ORIGINAL).into(thumbnail);
+        Glide.with(myContext).load(img).placeholder(R.drawable.image_loading_placeholder).override(Target.SIZE_ORIGINAL).into(thumbnail);
         tvName.setText(name);
         tvLikes.setText(String.valueOf(likes));
         tvVisits.setText(String.valueOf(visits));

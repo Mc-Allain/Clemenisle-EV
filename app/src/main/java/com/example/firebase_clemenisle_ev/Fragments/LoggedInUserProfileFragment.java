@@ -385,6 +385,7 @@ public class LoggedInUserProfileFragment extends Fragment {
 
         removeButton.setOnClickListener(view -> {
             Glide.with(myContext).load(R.drawable.image_loading_placeholder)
+                    .placeholder(R.drawable.image_loading_placeholder)
                     .into(dialogProfileImage);
 
             removeButton.setEnabled(false);
@@ -1343,9 +1344,11 @@ public class LoggedInUserProfileFragment extends Fragment {
         }
         else {
             Glide.with(myContext).load(R.drawable.image_loading_placeholder)
+                    .placeholder(R.drawable.image_loading_placeholder)
                     .into(profileImage);
 
             Glide.with(myContext).load(R.drawable.image_loading_placeholder)
+                    .placeholder(R.drawable.image_loading_placeholder)
                     .into(dialogProfileImage);
         }
 

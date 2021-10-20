@@ -248,8 +248,8 @@ public class RouteActivity extends AppCompatActivity implements
     }
 
     private void updateInfo() {
-        Glide.with(myContext).load(routeList.get(0).getImg()).
-                placeholder(R.drawable.image_loading_placeholder).into(thumbnail);
+        Glide.with(myContext).load(routeList.get(0).getImg())
+                .placeholder(R.drawable.image_loading_placeholder).into(thumbnail);
 
         tvBookingId.setText(bookingId);
         tvStartStation2.setText(startStationName);

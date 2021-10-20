@@ -417,7 +417,7 @@ public class MainActivity extends AppCompatActivity {
         int bookingHour = Integer.parseInt(dateTimeToString.getRawHour());
         int bookingMin = Integer.parseInt(dateTimeToString.getMin());
 
-        List<String> hourArray = Arrays.asList("1", "8", "16");
+        List<String> hourArray = Arrays.asList("1", "2", "4", "8", "12", "16", "20");
         List<String> minArray = Arrays.asList("1", "5", "10", "15", "20", "30", "45");
 
         int minDifference;

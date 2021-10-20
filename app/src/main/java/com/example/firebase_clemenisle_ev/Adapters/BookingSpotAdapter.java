@@ -60,8 +60,7 @@ public class BookingSpotAdapter extends RecyclerView.Adapter<BookingSpotAdapter.
         String name = spot.getName();
         String img = spot.getImg();
 
-        Glide.with(myContext).load(img).placeholder(R.drawable.image_loading_placeholder).
-                override(Target.SIZE_ORIGINAL).into(thumbnail);
+        Glide.with(myContext).load(img).placeholder(R.drawable.image_loading_placeholder).override(Target.SIZE_ORIGINAL).into(thumbnail);
         tvName.setText(name);
 
         int start = dpToPx(4), end = dpToPx(4);

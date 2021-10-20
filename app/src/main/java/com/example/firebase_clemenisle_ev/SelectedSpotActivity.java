@@ -1458,8 +1458,7 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
     private void updateInfo() {
         progressBar.setVisibility(View.GONE);
 
-        Glide.with(myContext).load(img).placeholder(R.drawable.image_loading_placeholder).
-                override(Target.SIZE_ORIGINAL).into(thumbnail);
+        Glide.with(myContext).load(img).placeholder(R.drawable.image_loading_placeholder).override(Target.SIZE_ORIGINAL).into(thumbnail);
         tvName.setText(name);
         extvDescription.setText(description);
         tvStation.setText(stations);

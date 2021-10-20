@@ -91,8 +91,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
         List<Route> routeList = bookingList.get(position).getRouteList();
         if(routeList.size() > 0) {
              img = routeList.get(0).getImg();
-             Glide.with(myContext).load(img).placeholder(R.drawable.image_loading_placeholder).
-                     override(Target.SIZE_ORIGINAL).into(thumbnail);
+             Glide.with(myContext).load(img).placeholder(R.drawable.image_loading_placeholder).override(Target.SIZE_ORIGINAL).into(thumbnail);
         }
 
         tvBookingId.setText(bookingId);

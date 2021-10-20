@@ -69,8 +69,7 @@ public class AllSpotAdapter extends RecyclerView.Adapter<AllSpotAdapter.ViewHold
         String name = touristSpot.getName();
         String img = touristSpot.getImg();
 
-        Glide.with(myContext).load(img).placeholder(R.drawable.image_loading_placeholder).
-                override(Target.SIZE_ORIGINAL).into(thumbnail);
+        Glide.with(myContext).load(img).placeholder(R.drawable.image_loading_placeholder).override(Target.SIZE_ORIGINAL).into(thumbnail);
         tvName.setText(name);
 
         String buttonText;

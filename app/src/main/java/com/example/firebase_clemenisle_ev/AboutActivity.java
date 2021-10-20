@@ -60,14 +60,17 @@ public class AboutActivity extends AppCompatActivity {
 
         myContext = AboutActivity.this;
 
-        Glide.with(myContext).load(R.drawable.android_studio_logo).
-                placeholder(R.drawable.image_loading_placeholder).into(androidStudioLogoImage);
-        Glide.with(myContext).load(R.drawable.firebase_logo).
-                placeholder(R.drawable.image_loading_placeholder).into(fireBaseLogoImage);
-        Glide.with(myContext).load(R.drawable.google_map_logo).
-                placeholder(R.drawable.image_loading_placeholder).into(googleMapLogoImage);
-        Glide.with(myContext).load(R.drawable.google_street_view).
-                placeholder(R.drawable.image_loading_placeholder).into(googleStreetViewImage);
+        Glide.with(myContext).load(R.drawable.android_studio_logo)
+                .placeholder(R.drawable.image_loading_placeholder).into(androidStudioLogoImage);
+
+        Glide.with(myContext).load(R.drawable.firebase_logo)
+                .placeholder(R.drawable.image_loading_placeholder).into(fireBaseLogoImage);
+
+        Glide.with(myContext).load(R.drawable.google_map_logo)
+                .placeholder(R.drawable.image_loading_placeholder).into(googleMapLogoImage);
+
+        Glide.with(myContext).load(R.drawable.google_street_view)
+                .placeholder(R.drawable.image_loading_placeholder).into(googleStreetViewImage);
 
         appMetaData = new AppMetaData();
         getAppMetaData();

@@ -186,11 +186,11 @@
                         <EditText
                             android:id="@+id/etQuestion"
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent"
+                            android:layout_height="wrap_content"
                             android:ems="10"
                             android:fontFamily="@font/ubuntu"
+                            android:inputType="textLongMessage|textMultiLine|textCapSentences"
                             android:hint="Question"
-                            android:inputType="text"
                             android:maxLength="256"
                             android:textColor="@color/black"
                             android:textColorHint="@color/initial"
