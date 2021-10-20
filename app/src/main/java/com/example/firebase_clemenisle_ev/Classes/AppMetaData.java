@@ -8,7 +8,10 @@ public class AppMetaData {
                     "• Application Status Alert Added\n" +
                     "• Application Update Alert Added\n" +
                     "• Update Notes Added\n" +
-                    "• Profile Image Added";
+                    "• Profile Image Added\n" +
+                    "• Booking Alert Dialog Added\n" +
+                    "• Help Section Added\n" +
+                    "• Preference Section Added";
     double currentVersion = 0.3, latestVersion = 0;
     String status;
     boolean isDeveloper = false;

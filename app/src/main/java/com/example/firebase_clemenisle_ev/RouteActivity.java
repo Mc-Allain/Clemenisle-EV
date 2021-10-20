@@ -96,14 +96,19 @@ public class RouteActivity extends AppCompatActivity implements
 
     Dialog dialog;
     ImageView dialogCloseImage;
-    TextView tvAppVersionInfoDialogTitle, tvMessage, tvMessage2;
+    TextView tvMessage, tvMessage2;
 
     String cancelButtonText = "Cancel Booking", cancellingButtonText = "Cancelling…";
+
+    boolean isShowBookingAlertEnabled;
 
     private void initSharedPreferences() {
         SharedPreferences sharedPreferences = myContext
                 .getSharedPreferences("login", Context.MODE_PRIVATE);
         isLoggedIn = sharedPreferences.getBoolean("isLoggedIn", false);
+
+        sharedPreferences = getSharedPreferences("preferences", Context.MODE_PRIVATE);
+        isShowBookingAlertEnabled = sharedPreferences.getBoolean("isShowBookingAlertEnabled", true);
     }
 
     @Override
@@ -264,12 +269,12 @@ public class RouteActivity extends AppCompatActivity implements
                 color = myResources.getColor(R.color.orange);
                 backgroundDrawable = myResources.getDrawable(R.color.orange);
                 buttonLayout.setVisibility(View.VISIBLE);
-                dialog.show();
+                if(isShowBookingAlertEnabled) dialog.show();
                 break;
             case "Booked":
                 color = myResources.getColor(R.color.green);
                 backgroundDrawable = myResources.getDrawable(R.color.green);
-                dialog.show();
+                if(isShowBookingAlertEnabled) dialog.show();
                 break;
             case "Completed":
                 color = myResources.getColor(R.color.blue);

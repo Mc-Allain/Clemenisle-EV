@@ -606,9 +606,9 @@ public class BookingActivity extends AppCompatActivity implements
             }
 
                 if(currentStep < endStep) {
-                currentStep++;
-                tvSteps.setText(getStepText());
-            }
+                    currentStep++;
+                    tvSteps.setText(getStepText());
+                }
         });
 
         backButton.setOnClickListener(view -> {
@@ -1646,7 +1646,7 @@ public class BookingActivity extends AppCompatActivity implements
     }
 
     private void checkBookingTypeContinueButton() {
-        if(bookingType != null && currentStep >= 1) {
+        if(bookingType != null) {
             continueButton.setEnabled(bookingType.getId() != null);
         }
         else {
@@ -1699,7 +1699,7 @@ public class BookingActivity extends AppCompatActivity implements
     }
 
     private void checkStationContinueButton() {
-        if(station != null && currentStep >= 2) {
+        if(station != null) {
             continueButton.setEnabled(station.getId() != null);
         }
         else {
@@ -1759,7 +1759,7 @@ public class BookingActivity extends AppCompatActivity implements
     }
 
     private void checkRouteContinueButton() {
-        if(bookingTypeRoute != null && currentStep >= 3) {
+        if(bookingTypeRoute != null) {
             continueButton.setEnabled(bookingTypeRoute.getId() != null);
         }
         else {
@@ -2068,7 +2068,7 @@ public class BookingActivity extends AppCompatActivity implements
     }
 
     private void checkScheduleContinueButton() {
-        if(currentStep >= 5) continueButton.setEnabled(vSD && !(scheduleTime == null));
+        continueButton.setEnabled((vSD && !(scheduleTime == null)));
     }
 
     private void rebootStep(int targetStep) {

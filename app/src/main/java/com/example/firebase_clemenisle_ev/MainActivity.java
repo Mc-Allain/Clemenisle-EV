@@ -137,9 +137,14 @@ public class MainActivity extends AppCompatActivity {
     TextView tvAppVersionInfoDialogTitle;
     ExpandableTextView extvNewlyAddedFeatures;
 
+    boolean isShowAppVersionInfoEnabled;
+
     private void initSharedPreferences() {
         SharedPreferences sharedPreferences = getSharedPreferences("login", Context.MODE_PRIVATE);
         isLoggedIn = sharedPreferences.getBoolean("isLoggedIn", false);
+
+        sharedPreferences = getSharedPreferences("preferences", Context.MODE_PRIVATE);
+        isShowAppVersionInfoEnabled = sharedPreferences.getBoolean("isShowAppVersionInfoEnabled", true);
     }
 
     private void sendLoginPreferences() {
@@ -271,7 +276,7 @@ public class MainActivity extends AppCompatActivity {
                         dialog.show();
                         startUpdateAppTimer();
                     }
-                    else if(showUpdates) {
+                    else if(showUpdates && isShowAppVersionInfoEnabled) {
                         String dialogTitle = "What's new in v" + latestVersion;
                         tvAppVersionInfoDialogTitle.setText(dialogTitle);
                         String newlyAddedFeatures = appMetaData.getNewlyAddedFeatures();

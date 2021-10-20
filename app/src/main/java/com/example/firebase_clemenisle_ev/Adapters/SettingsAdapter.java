@@ -15,6 +15,7 @@ import com.example.firebase_clemenisle_ev.AboutActivity;
 import com.example.firebase_clemenisle_ev.Classes.Setting;
 import com.example.firebase_clemenisle_ev.HelpActivity;
 import com.example.firebase_clemenisle_ev.MainActivity;
+import com.example.firebase_clemenisle_ev.PreferenceActivity;
 import com.example.firebase_clemenisle_ev.R;
 
 import java.util.List;
@@ -110,6 +111,11 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
                 }
                 case "Help": {
                     Intent intent = new Intent(myContext, HelpActivity.class);
+                    myContext.startActivity(intent);
+                    break;
+                }
+                case "Preferences": {
+                    Intent intent = new Intent(myContext, PreferenceActivity.class);
                     myContext.startActivity(intent);
                     break;
                 }
