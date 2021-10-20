@@ -43,6 +43,7 @@ import com.example.firebase_clemenisle_ev.Classes.SimpleTouristSpot;
 import com.example.firebase_clemenisle_ev.Classes.User;
 import com.example.firebase_clemenisle_ev.MainActivity;
 import com.example.firebase_clemenisle_ev.R;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -420,7 +421,7 @@ public class LoggedInUserProfileFragment extends Fragment {
             removeButton.setEnabled(true);
             String uploadText = "Upload";
             uploadButton.setText(uploadText);
-            uploadButton.setEnabled(false);
+            uploadButton.setEnabled(true);
         }
     }
 
@@ -470,57 +471,57 @@ public class LoggedInUserProfileFragment extends Fragment {
             setProfileImageDialogScreenEnabled(false);
 
             StorageReference profileImageRef =
-                    storageReference.child(System.currentTimeMillis() + "." + getFileExt(profileImageUri));
+                    storageReference.child(System.currentTimeMillis() + "-" + userId +
+                            "." + getFileExt(profileImageUri));
 
             profileImageRef.putFile(profileImageUri).addOnCompleteListener(task -> {
                 if(task.isSuccessful()) {
-                    usersRef.child("profileImage").setValue(task.getResult().getStorage().getDownloadUrl())
-                    .addOnCompleteListener(task1 -> {
-                        if(task1.isSuccessful()) {
-                            new Handler().postDelayed(() -> profileImageDialogProgressBar.setProgress(0), 1000);
+                    if(task.getResult() != null) {
+                        task.getResult().getStorage().getDownloadUrl().addOnCompleteListener(task1 -> {
+                            if(task1.isSuccessful()) {
+                                if(task1.getResult() != null) {
+                                    usersRef.child("profileImage").setValue(task1.getResult().toString())
+                                            .addOnCompleteListener(task2 -> {
+                                                if(task2.isSuccessful()) {
+                                                    new Handler().postDelayed(() -> profileImageDialogProgressBar.setProgress(0), 1000);
 
-                            Toast.makeText(
-                                    myContext,
-                                    "Successfully uploaded the profile image",
-                                    Toast.LENGTH_SHORT
-                            ).show();
+                                                    Toast.makeText(
+                                                            myContext,
+                                                            "Successfully uploaded the profile image",
+                                                            Toast.LENGTH_SHORT
+                                                    ).show();
 
-                            profileImageDialog.dismiss();
-                        }
-                        else {
-                            if(task.getException() != null) {
-                                profileImageDialogProgressBar.setProgress(0);
-
-                                String error = task.getException().toString();
-                                Toast.makeText(
-                                        myContext,
-                                        error,
-                                        Toast.LENGTH_LONG
-                                ).show();
+                                                    profileImageDialog.dismiss();
+                                                }
+                                                else uploadError(task);
+                                            });
+                                }
+                                else uploadError(task);
                             }
-                        }
-                        setProfileImageDialogScreenEnabled(true);
-                    });
-                }
-                else {
-                    if(task.getException() != null) {
-                        profileImageDialogProgressBar.setProgress(0);
-
-                        String error = task.getException().toString();
-                        Toast.makeText(
-                                myContext,
-                                error,
-                                Toast.LENGTH_LONG
-                        ).show();
+                        });
                     }
-                    setProfileImageDialogScreenEnabled(true);
                 }
+                else uploadError(task);
             }).addOnProgressListener(snapshot -> {
                 double progress =
                         (100.0 * snapshot.getBytesTransferred() / snapshot.getTotalByteCount());
                 profileImageDialogProgressBar.setProgress((int) progress);
             });
         }
+    }
+
+    private void uploadError(Task task) {
+        if(task.getException() != null) {
+            profileImageDialogProgressBar.setProgress(0);
+
+            String error = task.getException().toString();
+            Toast.makeText(
+                    myContext,
+                    error,
+                    Toast.LENGTH_LONG
+            ).show();
+        }
+        setProfileImageDialogScreenEnabled(true);
     }
 
     private void setProfileImageDialogScreenEnabled(boolean value) {

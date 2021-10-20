@@ -727,39 +727,46 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
         userCommentLayout.setVisibility(View.GONE);
     }
 
+    private void setCommentOnScreenEnabled(boolean value) {
+        deactivateImage.setEnabled(value);
+        appealImage.setEnabled(value);
+        editImage.setEnabled(value);
+
+        if(!value) {
+            deactivateImage.setColorFilter(colorInitial);
+            appealImage.setColorFilter(colorInitial);
+            editImage.setColorFilter(colorInitial);
+        }
+    }
+
     @Override
     public void appealImageOnClick() {
-        isUpdatingComments = true;
-        commentProgressBar.setVisibility(View.VISIBLE);
+        if(!isUpdatingComments) {
+            isUpdatingComments = true;
+            setCommentOnScreenEnabled(false);
+            commentProgressBar.setVisibility(View.VISIBLE);
 
-        currentUserComment.setAppealed(true);
+            currentUserComment.setAppealed(true);
 
-        commentsRef.child(id).child("appealed").setValue(true)
-                .addOnCompleteListener(task -> {
-            if(task.isSuccessful()) {
-                updateRelatedComment();
-
-                String toastMessage = "Your comment is now in appeal";
-
-                Toast.makeText(
-                        myContext,
-                        toastMessage,
-                        Toast.LENGTH_SHORT
-                ).show();
-            }
-            else {
-                if(task.getException() != null) {
-                    String error = task.getException().toString();
-                    Toast.makeText(
-                            myContext,
-                            error,
-                            Toast.LENGTH_LONG
-                    ).show();
-                }
-                isUpdatingComments = false;
-                commentProgressBar.setVisibility(View.GONE);
-            }
-        });
+            commentsRef.child(id).child("appealed").setValue(true)
+                    .addOnCompleteListener(task -> {
+                        if(task.isSuccessful())
+                            updateRelatedComment(true, false);
+                        else {
+                            if(task.getException() != null) {
+                                String error = task.getException().toString();
+                                Toast.makeText(
+                                        myContext,
+                                        error,
+                                        Toast.LENGTH_LONG
+                                ).show();
+                            }
+                            isUpdatingComments = false;
+                            updateCommentUI(currentUserComment);
+                            commentProgressBar.setVisibility(View.GONE);
+                        }
+                    });
+        }
     }
 
     @Override
@@ -785,6 +792,37 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
         deactivatePressedTime = System.currentTimeMillis();
     }
 
+    private void setDeactivatedComment() {
+        if(!isUpdatingComments) {
+            isUpdatingComments = true;
+            setCommentOnScreenEnabled(false);
+            commentProgressBar.setVisibility(View.VISIBLE);
+
+            boolean value = false;
+            if(currentDeactivateText.equals(deactivateText)) value = true;
+            currentUserComment.setDeactivated(value);
+
+            commentsRef.child(id).child("deactivated").setValue(value)
+                    .addOnCompleteListener(task -> {
+                        if(task.isSuccessful())
+                            updateRelatedComment(false, true);
+                        else {
+                            if(task.getException() != null) {
+                                String error = task.getException().toString();
+                                Toast.makeText(
+                                        myContext,
+                                        error,
+                                        Toast.LENGTH_LONG
+                                ).show();
+                            }
+                            isUpdatingComments = false;
+                            updateCommentUI(currentUserComment);
+                            commentProgressBar.setVisibility(View.GONE);
+                        }
+                    });
+        }
+    }
+
     @Override
     public void reportImageOnClick(String spotId, String senderUserId, Comment comment) {
         if(reportPressedTime + 2500 > System.currentTimeMillis() && isReportClicked) {
@@ -805,9 +843,46 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
         reportPressedTime = System.currentTimeMillis();
     }
 
+    private void setReportedComment(String spotId, String senderUserId, Comment comment) {
+        if(!isUpdatingComments) {
+            isUpdatingComments = true;
+            setCommentOnScreenEnabled(false);
+            commentProgressBar.setVisibility(View.VISIBLE);
+            comment.setUserId(senderUserId);
+
+            upVotedCommentsRef.child(spotId).child(senderUserId).removeValue();
+            downVotedCommentsRef.child(spotId).child(senderUserId).setValue(comment);
+            reportedCommentsRef.child(spotId).child(senderUserId).setValue(comment).addOnCompleteListener(task -> {
+                if(task.isSuccessful()) {
+                    String toastMessage = "The comment is now reported";
+
+                    Toast.makeText(
+                            myContext,
+                            toastMessage,
+                            Toast.LENGTH_SHORT
+                    ).show();
+                }
+                else {
+                    if(task.getException() != null) {
+                        String error = task.getException().toString();
+                        Toast.makeText(
+                                myContext,
+                                error,
+                                Toast.LENGTH_LONG
+                        ).show();
+                    }
+                }
+                isUpdatingComments = false;
+                updateCommentUI(currentUserComment);
+                commentProgressBar.setVisibility(View.GONE);
+            });
+        }
+    }
+
     @Override
     public void upVoteImageOnClick(String spotId, String senderUserId, Comment comment,
                                    boolean isUpVoted, boolean isDownVoted) {
+        setCommentOnScreenEnabled(false);
         commentProgressBar.setVisibility(View.VISIBLE);
         comment.setUserId(senderUserId);
 
@@ -816,6 +891,7 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
         if(!isUpVoted) upVotedCommentsRef.child(spotId).child(senderUserId).setValue(comment)
                 .addOnCompleteListener(task -> {
                     isUpdatingComments = false;
+                    updateCommentUI(currentUserComment);
                     commentProgressBar.setVisibility(View.GONE);
                 });
     }
@@ -823,6 +899,7 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
     @Override
     public void downVoteImageOnClick(String spotId, String senderUserId, Comment comment,
                                      boolean isUpVoted, boolean isDownVoted) {
+        setCommentOnScreenEnabled(false);
         commentProgressBar.setVisibility(View.VISIBLE);
         comment.setUserId(senderUserId);
 
@@ -831,108 +908,44 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
         if(!isDownVoted) downVotedCommentsRef.child(spotId).child(senderUserId).setValue(comment)
                 .addOnCompleteListener(task -> {
                     isUpdatingComments = false;
+                    updateCommentUI(currentUserComment);
                     commentProgressBar.setVisibility(View.GONE);
                 });
     }
 
-    private void setReportedComment(String spotId, String senderUserId, Comment comment) {
-        isUpdatingComments = true;
-        commentProgressBar.setVisibility(View.VISIBLE);
-        comment.setUserId(senderUserId);
-
-        upVotedCommentsRef.child(spotId).child(senderUserId).removeValue();
-        downVotedCommentsRef.child(spotId).child(senderUserId).setValue(comment);
-        reportedCommentsRef.child(spotId).child(senderUserId).setValue(comment).addOnCompleteListener(task -> {
-            if(task.isSuccessful()) {
-                String toastMessage = "The comment is now reported";
-
-                Toast.makeText(
-                        myContext,
-                        toastMessage,
-                        Toast.LENGTH_SHORT
-                ).show();
-            }
-            else {
-                if(task.getException() != null) {
-                    String error = task.getException().toString();
-                    Toast.makeText(
-                            myContext,
-                            error,
-                            Toast.LENGTH_LONG
-                    ).show();
-                }
-            }
-            isUpdatingComments = false;
-            commentProgressBar.setVisibility(View.GONE);
-        });
-    }
-
-    private void setDeactivatedComment() {
-        isUpdatingComments = true;
-        commentProgressBar.setVisibility(View.VISIBLE);
-
-        boolean value = false;
-        if(currentDeactivateText.equals(deactivateText)) value = true;
-        currentUserComment.setDeactivated(value);
-
-        commentsRef.child(id).child("deactivated").setValue(value)
-                .addOnCompleteListener(task -> {
-            if(task.isSuccessful()) {
-                updateRelatedComment();
-
-                String toastMessage = "Your comment is now ";
-                if(currentDeactivateText.equals(deactivateText)) toastMessage += "activated";
-                else if(currentDeactivateText.equals(activateText)) toastMessage += "deactivated";
-
-                Toast.makeText(
-                        myContext,
-                        toastMessage,
-                        Toast.LENGTH_SHORT
-                ).show();
-            }
-            else {
-                if(task.getException() != null) {
-                    String error = task.getException().toString();
-                    Toast.makeText(
-                            myContext,
-                            error,
-                            Toast.LENGTH_LONG
-                    ).show();
-                }
-                isUpdatingComments = false;
-                commentProgressBar.setVisibility(View.GONE);
-            }
-        });
-    }
-
     private void updateComment() {
-        isUpdatingComments = true;
-        commentProgressBar.setVisibility(View.VISIBLE);
+        if(!isUpdatingComments) {
+            isUpdatingComments = true;
+            setCommentOnScreenEnabled(false);
+            commentProgressBar.setVisibility(View.VISIBLE);
 
-        currentUserComment.setValue(inputComment);
+            currentUserComment.setValue(inputComment);
 
-        commentsRef.child(id).child("value").setValue(inputComment)
-                .addOnCompleteListener(task -> {
-                    if(task.isSuccessful()) updateRelatedComment();
-                    else {
-                        if(task.getException() != null) {
-                            String error = task.getException().toString();
-                            Toast.makeText(
-                                    myContext,
-                                    error,
-                                    Toast.LENGTH_LONG
-                            ).show();
+            commentsRef.child(id).child("value").setValue(inputComment)
+                    .addOnCompleteListener(task -> {
+                        if(task.isSuccessful()) updateRelatedComment(false, false);
+                        else {
+                            if(task.getException() != null) {
+                                String error = task.getException().toString();
+                                Toast.makeText(
+                                        myContext,
+                                        error,
+                                        Toast.LENGTH_LONG
+                                ).show();
+                            }
+                            isUpdatingComments = false;
+                            updateCommentUI(currentUserComment);
+                            commentProgressBar.setVisibility(View.GONE);
                         }
-                        isUpdatingComments = false;
-                        commentProgressBar.setVisibility(View.GONE);
-                    }
-                });
+                    });
 
-        commentInputLayout.setVisibility(View.GONE);
-        userCommentLayout.setVisibility(View.VISIBLE);
+            updateCommentUI(currentUserComment);
+            commentInputLayout.setVisibility(View.GONE);
+            userCommentLayout.setVisibility(View.VISIBLE);
+        }
     }
 
-    private void updateRelatedComment() {
+    private void updateRelatedComment(boolean fromAppeal, boolean fromDeactivate) {
         for(User user1 : users) {
             DatabaseReference thisUserRef = usersRef.child(user1.getId());
 
@@ -963,6 +976,23 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
             if(users.get(users.size() - 1).getId().equals(user1.getId())) {
                 isUpdatingComments = false;
                 commentProgressBar.setVisibility(View.GONE);
+                commentAdapter.notifyDataSetChanged();
+
+                String toastMessage = null;
+                if (fromAppeal) toastMessage = "Your comment is now in appeal";
+                else if (fromDeactivate) {
+                    toastMessage = "Your comment is now ";
+                    if(currentDeactivateText.equals(deactivateText)) toastMessage += "activated";
+                    else if(currentDeactivateText.equals(activateText)) toastMessage += "deactivated";
+                }
+
+                if(fromAppeal || fromDeactivate) {
+                    Toast.makeText(
+                            myContext,
+                            toastMessage,
+                            Toast.LENGTH_SHORT
+                    ).show();
+                }
             }
         }
     }
@@ -983,61 +1013,7 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
                     currentUserComment = comment;
                     if(currentUserComment != null) currentUserComment.setUserId(userId);
 
-                    isUserCommentExist = true;
-                    commentInputLayout.setVisibility(View.GONE);
-                    userCommentLayout.setVisibility(View.VISIBLE);
-
-                    Glide.with(myContext).load(user.getProfileImage())
-                            .placeholder(R.drawable.image_loading_placeholder)
-                            .into(profileImage);
-
-                    String fullName = "<b>" + user.getLastName() + "</b>, " + user.getFirstName();
-                    if(user.getMiddleName().length() > 0) fullName += " " + user.getMiddleName();
-                    tvUserFullName.setText(fromHtml(fullName));
-
-                    commentValue = comment.getValue();
-                    extvComment.setText(commentValue);
-
-                    if(comment.isFouled()) {
-                        tvCommentStatus.setVisibility(View.VISIBLE);
-
-                        appealImage.setEnabled(true);
-                        appealImage.setVisibility(View.VISIBLE);
-                        deactivateImage.setVisibility(View.GONE);
-
-                        String status = defaultStatusText;
-                        if(comment.isAppealed()) {
-                            appealImage.setEnabled(false);
-                            appealImage.setColorFilter(colorInitial);
-                            status = defaultStatusText + " " + appealedtext;
-                        }
-                        else appealImage.setColorFilter(colorBlue);
-
-                        tvCommentStatus.setText(status);
-                    }
-                    else {
-                        tvCommentStatus.setVisibility(View.GONE);
-
-                        appealImage.setVisibility(View.GONE);
-                        deactivateImage.setVisibility(View.VISIBLE);
-
-                        if(comment.isDeactivated()) {
-                            tvCommentStatus.setVisibility(View.VISIBLE);
-                            tvCommentStatus.setText(notActiveText);
-
-                            deactivateImage.setImageResource(R.drawable.ic_baseline_comment_24);
-                            deactivateImage.getDrawable().setTint(colorBlue);
-                            currentDeactivateText = activateText;
-                        }
-                        else {
-                            tvCommentStatus.setVisibility(View.GONE);
-                            tvCommentStatus.setText(defaultStatusText);
-
-                            deactivateImage.setImageResource(R.drawable.ic_baseline_comments_disabled_24);
-                            deactivateImage.getDrawable().setTint(colorRed);
-                            currentDeactivateText = deactivateText;
-                        }
-                    }
+                    updateCommentUI(comment);
                 }
                 else {
                     isUserCommentExist = false;
@@ -1055,6 +1031,68 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
                 ).show();
             }
         });
+    }
+
+    private void updateCommentUI(Comment comment) {
+        isUserCommentExist = true;
+        commentInputLayout.setVisibility(View.GONE);
+        userCommentLayout.setVisibility(View.VISIBLE);
+
+        setCommentOnScreenEnabled(true);
+        editImage.setColorFilter(colorBlue);
+
+        if(isOnScreen)
+            Glide.with(myContext).load(user.getProfileImage())
+                    .placeholder(R.drawable.image_loading_placeholder)
+                    .into(profileImage);
+
+        String fullName = "<b>" + user.getLastName() + "</b>, " + user.getFirstName();
+        if(user.getMiddleName().length() > 0) fullName += " " + user.getMiddleName();
+        tvUserFullName.setText(fromHtml(fullName));
+
+        commentValue = comment.getValue();
+        extvComment.setText(commentValue);
+
+        if(comment.isFouled()) {
+            tvCommentStatus.setVisibility(View.VISIBLE);
+
+            appealImage.setEnabled(true);
+            appealImage.setVisibility(View.VISIBLE);
+            deactivateImage.setVisibility(View.GONE);
+
+            String status = defaultStatusText;
+            if(comment.isAppealed()) {
+                appealImage.setEnabled(false);
+                appealImage.setColorFilter(colorInitial);
+                status = defaultStatusText + " " + appealedtext;
+            }
+            else appealImage.setColorFilter(colorBlue);
+
+            tvCommentStatus.setText(status);
+        }
+        else {
+            tvCommentStatus.setVisibility(View.GONE);
+
+            appealImage.setVisibility(View.GONE);
+            deactivateImage.setVisibility(View.VISIBLE);
+
+            if(comment.isDeactivated()) {
+                tvCommentStatus.setVisibility(View.VISIBLE);
+                tvCommentStatus.setText(notActiveText);
+
+                deactivateImage.setImageResource(R.drawable.ic_baseline_comment_24);
+                deactivateImage.setColorFilter(colorBlue);
+                currentDeactivateText = activateText;
+            }
+            else {
+                tvCommentStatus.setVisibility(View.GONE);
+                tvCommentStatus.setText(defaultStatusText);
+
+                deactivateImage.setImageResource(R.drawable.ic_baseline_comments_disabled_24);
+                deactivateImage.setColorFilter(colorRed);
+                currentDeactivateText = deactivateText;
+            }
+        }
     }
 
     @SuppressWarnings("deprecation")
@@ -1114,13 +1152,13 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
                     Collections.reverse(commentedUsers);
 
                     commentedUsers.addAll(foulCommentedUsers);
-
-                    if(!isUpdatingComments) {
-                        commentProgressBar.setVisibility(View.GONE);
-                        commentLayout.setVisibility(View.VISIBLE);
-                    }
                 }
-                commentAdapter.notifyDataSetChanged();
+
+                if(!isUpdatingComments) {
+                    commentProgressBar.setVisibility(View.GONE);
+                    commentLayout.setVisibility(View.VISIBLE);
+                    commentAdapter.notifyDataSetChanged();
+                }
             }
 
             @Override

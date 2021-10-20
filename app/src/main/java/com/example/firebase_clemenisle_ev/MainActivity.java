@@ -480,7 +480,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void initNotificationInMinutes(Booking booking, int hrDifference,
                                            List<String> minArray, int minDifference, int sec) {
-        if(minArray.contains(String.valueOf(minDifference)) && sec < 5) {
+        if(hrDifference == 0 && minArray.contains(String.valueOf(minDifference)) && sec < 5) {
             if(minDifference == 1) showUpcomingBookingNotification(booking, minDifference, "minute");
             else showUpcomingBookingNotification(booking, minDifference, "minutes");
         }

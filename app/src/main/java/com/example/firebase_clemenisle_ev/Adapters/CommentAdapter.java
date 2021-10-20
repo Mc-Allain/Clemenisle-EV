@@ -103,6 +103,10 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
             }
             Comment finalCommentRecord = commentRecord;
 
+            setOnScreenEnabled(true, reportImage, deactivateImage, appealImage, editImage,
+                    upVoteImage, downVoteImage);
+            editImage.setColorFilter(colorBlue);
+
             Glide.with(myContext).load(user.getProfileImage())
                     .placeholder(R.drawable.image_loading_placeholder)
                     .into(profileImage);
@@ -159,7 +163,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
                         tvCommentStatus.setText(notActiveText);
 
                         deactivateImage.setImageResource(R.drawable.ic_baseline_comment_24);
-                        deactivateImage.getDrawable().setTint(colorBlue);
+                        deactivateImage.setColorFilter(colorBlue);
 
                         extvComment.setVisibility(View.GONE);
                         voteLayout.setVisibility(View.GONE);
@@ -171,7 +175,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
                         voteLayout.setVisibility(View.VISIBLE);
 
                         deactivateImage.setImageResource(R.drawable.ic_baseline_comments_disabled_24);
-                        deactivateImage.getDrawable().setTint(colorRed);
+                        deactivateImage.setColorFilter(colorRed);
 
                         backgroundLayout.setPadding(0, 0, 0, 0);
                     }
@@ -291,6 +295,8 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
             upVoteImage.setOnClickListener(view -> {
                 if(userId == null) loginPrompt();
                 else {
+                    setOnScreenEnabled(false, reportImage, deactivateImage, appealImage, editImage,
+                            upVoteImage, downVoteImage);
                     onActionButtonClickedListener.
                             upVoteImageOnClick(spotId, user.getId(), finalCommentRecord,
                                     finalUpVoted, finalDownVoted);
@@ -300,6 +306,8 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
             downVoteImage.setOnClickListener(view -> {
                 if(userId == null) loginPrompt();
                 else {
+                    setOnScreenEnabled(false, reportImage, deactivateImage, appealImage, editImage,
+                            upVoteImage, downVoteImage);
                     onActionButtonClickedListener.
                             downVoteImageOnClick(spotId, user.getId(), finalCommentRecord,
                                     finalUpVoted, finalDownVoted);
@@ -308,7 +316,11 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
 
             editImage.setOnClickListener(view -> onActionButtonClickedListener.editImageOnClick());
 
-            appealImage.setOnClickListener(view -> onActionButtonClickedListener.appealImageOnClick());
+            appealImage.setOnClickListener(view -> {
+                setOnScreenEnabled(false, reportImage, deactivateImage, appealImage, editImage,
+                        upVoteImage, downVoteImage);
+                onActionButtonClickedListener.appealImageOnClick();
+            });
 
             deactivateImage.setOnClickListener(view -> onActionButtonClickedListener.deactivateImageOnClick());
 
@@ -337,11 +349,9 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
                 notifyDataSetChanged();
             });
         }
-        else {
-            backgroundLayout.setVisibility(View.GONE);
-        }
+        else backgroundLayout.setVisibility(View.GONE);
 
-        int top = dpToPx(0), bottom = dpToPx(0);
+        int top = dpToPx(1), bottom = dpToPx(1);
 
         boolean isFirstItem = position + 1 == 1, isLastItem = position + 1 == getItemCount();
 
@@ -356,6 +366,28 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
                 (ConstraintLayout.LayoutParams) backgroundLayout.getLayoutParams();
         layoutParams.setMargins(layoutParams.leftMargin, top, layoutParams.rightMargin, bottom);
         backgroundLayout.setLayoutParams(layoutParams);
+    }
+
+    private void setOnScreenEnabled(boolean value,
+                                           ImageView reportImage, ImageView deactivateImage,
+                                    ImageView appealImage, ImageView editImage,
+                                    ImageView upVoteImage, ImageView downVoteImage) {
+
+        reportImage.setEnabled(value);
+        deactivateImage.setEnabled(value);
+        appealImage.setEnabled(value);
+        editImage.setEnabled(value);
+        upVoteImage.setEnabled(value);
+        downVoteImage.setEnabled(value);
+
+        if(!value) {
+            reportImage.setColorFilter(colorInitial);
+            deactivateImage.setColorFilter(colorInitial);
+            appealImage.setColorFilter(colorInitial);
+            editImage.setColorFilter(colorInitial);
+            upVoteImage.setColorFilter(colorInitial);
+            downVoteImage.setColorFilter(colorInitial);
+        }
     }
 
     private void loginPrompt() {
