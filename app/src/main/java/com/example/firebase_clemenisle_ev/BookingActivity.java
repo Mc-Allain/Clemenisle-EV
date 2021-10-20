@@ -478,124 +478,131 @@ public class BookingActivity extends AppCompatActivity implements
         getScheduleTime();
 
         continueButton.setOnClickListener(view -> {
-            if(currentStep == 1) {
-                if(bookingStationAdapter.getBookingType() == null) {
-                    bookingStationAdapter.setBookingType(bookingType);
-                    checkStationContinueButton();
-                }
-                else {
-                    if(bookingStationAdapter.getBookingType() != bookingType) {
+            if(!bookingType.getId().equals("BT99")) {
+                if(currentStep == 1) {
+                    if(bookingStationAdapter.getBookingType() == null) {
                         bookingStationAdapter.setBookingType(bookingType);
-                        continueButton.setEnabled(false);
-                    }
-                    else {
                         checkStationContinueButton();
                     }
-                }
-
-                firstConstraint.setVisibility(View.GONE);
-                secondConstraint.setVisibility(View.VISIBLE);
-
-                bookingTypeLayout.setVisibility(View.VISIBLE);
-                tvBookingType2.setText(bookingType.getName());
-                String price = "₱" + bookingType.getPrice();
-                if(price.split("\\.")[1].length() == 1) price += 0;
-                tvPrice.setText(price);
-
-                tvActivityName.setText(stationActivityText);
-
-                backButton.setVisibility(View.VISIBLE);
-                infoImage.setVisibility(View.VISIBLE);
-                tvBookingInfo.setVisibility(View.VISIBLE);
-            }
-            else if(currentStep == 2) {
-                getBookingRoutes();
-                getNearSpots();
-
-                if(bookingRouteAdapter.getStation() == null) {
-                    bookingRouteAdapter.setStation(station);
-                    checkRouteContinueButton();
-                }
-                else {
-                    if(bookingRouteAdapter.getStation() != station) {
-                        bookingRouteAdapter.setStation(station);
-                        continueButton.setEnabled(false);
-                    }
                     else {
+                        if(bookingStationAdapter.getBookingType() != bookingType) {
+                            bookingStationAdapter.setBookingType(bookingType);
+                            continueButton.setEnabled(false);
+                        }
+                        else {
+                            checkStationContinueButton();
+                        }
+                    }
+
+                    firstConstraint.setVisibility(View.GONE);
+                    secondConstraint.setVisibility(View.VISIBLE);
+
+                    bookingTypeLayout.setVisibility(View.VISIBLE);
+                    tvBookingType2.setText(bookingType.getName());
+                    String price = "₱" + bookingType.getPrice();
+                    if(price.split("\\.")[1].length() == 1) price += 0;
+                    tvPrice.setText(price);
+
+                    tvActivityName.setText(stationActivityText);
+
+                    backButton.setVisibility(View.VISIBLE);
+                    infoImage.setVisibility(View.VISIBLE);
+                    tvBookingInfo.setVisibility(View.VISIBLE);
+                }
+                else if(currentStep == 2) {
+                    getBookingRoutes();
+                    getNearSpots();
+
+                    if(bookingRouteAdapter.getStation() == null) {
+                        bookingRouteAdapter.setStation(station);
                         checkRouteContinueButton();
                     }
+                    else {
+                        if(bookingRouteAdapter.getStation() != station) {
+                            bookingRouteAdapter.setStation(station);
+                            continueButton.setEnabled(false);
+                        }
+                        else {
+                            checkRouteContinueButton();
+                        }
+                    }
+
+                    secondConstraint.setVisibility(View.GONE);
+                    thirdConstraint.setVisibility(View.VISIBLE);
+
+                    startingStationLayout.setVisibility(View.VISIBLE);
+                    tvStartingStation2.setText(station.getName());
+
+                    tvActivityName.setText(recommendedRouteActivityText);
+
+                    checkRouteContinueButton();
                 }
-
-                secondConstraint.setVisibility(View.GONE);
-                thirdConstraint.setVisibility(View.VISIBLE);
-
-                startingStationLayout.setVisibility(View.VISIBLE);
-                tvStartingStation2.setText(station.getName());
-
-                tvActivityName.setText(recommendedRouteActivityText);
-
-                checkRouteContinueButton();
-            }
-            else if(currentStep == 3) {
-                spots = new ArrayList<>(bookingTypeRoute.getSpots());
-                goToStep4FromStep3();
-            }
-            else if(currentStep == 4) {
-                fourthConstraint.setVisibility(View.GONE);
-                fifthConstraint.setVisibility(View.VISIBLE);
-
-                if(rawScheduleDate.length() == 0) {
-                    calendarYear = calendar.get(Calendar.YEAR);
-                    calendarMonth = calendar.get(Calendar.MONTH);
-                    calendarDay = calendar.get(Calendar.DAY_OF_MONTH);
-                    rawScheduleDate = calendarYear + "-" + calendarMonth + "-" + calendarDay;
-
-                    dateTimeToString.setDateToSplit(rawScheduleDate);
-                    tvScheduleDate2.setText(dateTimeToString.getDate());
-                    tvScheduleDate2.setTextColor(colorRed);
-                    vSD = false;
-
-                    tvCaption.setText(bookingScheduleInvalidDateCaptionText);
-                    tvCaption.setTextColor(colorRed);
+                else if(currentStep == 3) {
+                    spots = new ArrayList<>(bookingTypeRoute.getSpots());
+                    goToStep4FromStep3();
                 }
-                else tvCaption.setText(bookingScheduleCaptionText);
+                else if(currentStep == 4) {
+                    fourthConstraint.setVisibility(View.GONE);
+                    fifthConstraint.setVisibility(View.VISIBLE);
 
-                tvActivityName.setText(bookingScheduleActivityText);
+                    if(rawScheduleDate.length() == 0) {
+                        calendarYear = calendar.get(Calendar.YEAR);
+                        calendarMonth = calendar.get(Calendar.MONTH);
+                        calendarDay = calendar.get(Calendar.DAY_OF_MONTH);
+                        rawScheduleDate = calendarYear + "-" + calendarMonth + "-" + calendarDay;
 
-                checkScheduleContinueButton();
-            }
-            else if(currentStep == 5) {
-                fifthConstraint.setVisibility(View.GONE);
-                sixthConstraint.setVisibility(View.VISIBLE);
+                        dateTimeToString.setDateToSplit(rawScheduleDate);
+                        tvScheduleDate2.setText(dateTimeToString.getDate());
+                        tvScheduleDate2.setTextColor(colorRed);
+                        vSD = false;
 
-                bookingScheduleLayout.setVisibility(View.VISIBLE);
-                tvBookingSchedule2.setText(bookingScheduleText);
+                        tvCaption.setText(bookingScheduleInvalidDateCaptionText);
+                        tvCaption.setTextColor(colorRed);
+                    }
+                    else tvCaption.setText(bookingScheduleCaptionText);
 
-                ConstraintLayout.LayoutParams layoutParams =
-                        (ConstraintLayout.LayoutParams) contentLayout.getLayoutParams();
+                    tvActivityName.setText(bookingScheduleActivityText);
 
-                if(message.length() > 256) {
-                    layoutParams.height = dpToPx(0);
-                    dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
-                            ViewGroup.LayoutParams.MATCH_PARENT);
+                    checkScheduleContinueButton();
                 }
-                else {
-                    layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT;
-                    dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
-                            ViewGroup.LayoutParams.WRAP_CONTENT);
+                else if(currentStep == 5) {
+                    fifthConstraint.setVisibility(View.GONE);
+                    sixthConstraint.setVisibility(View.VISIBLE);
+
+                    bookingScheduleLayout.setVisibility(View.VISIBLE);
+                    tvBookingSchedule2.setText(bookingScheduleText);
+
+                    ConstraintLayout.LayoutParams layoutParams =
+                            (ConstraintLayout.LayoutParams) contentLayout.getLayoutParams();
+
+                    if(message.length() > 256) {
+                        layoutParams.height = dpToPx(0);
+                        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
+                                ViewGroup.LayoutParams.MATCH_PARENT);
+                    }
+                    else {
+                        layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+                        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
+                                ViewGroup.LayoutParams.WRAP_CONTENT);
+                    }
+
+                    contentLayout.setLayoutParams(layoutParams);
+
+                    if(message.length() > 0) messageLayout.setVisibility(View.VISIBLE);
+                    else messageLayout.setVisibility(View.GONE);
+                    buttonLayout2.setVisibility(View.VISIBLE);
+
+                    tvActivityName.setText(messageActivityText);
+                    tvCaption.setText(messageCaptionText);
                 }
-
-                contentLayout.setLayoutParams(layoutParams);
-
-                if(message.length() > 0) messageLayout.setVisibility(View.VISIBLE);
-                else messageLayout.setVisibility(View.GONE);
-                buttonLayout2.setVisibility(View.VISIBLE);
-
-                tvActivityName.setText(messageActivityText);
-                tvCaption.setText(messageCaptionText);
+                else if(currentStep == 6) dialog.show();
             }
-            else if(currentStep == 6) {
-                dialog.show();
+            else {
+                if(currentStep == 1) {
+                    firstConstraint.setVisibility(View.GONE);
+                    continueButton.setEnabled(false);
+                    backButton.setVisibility(View.VISIBLE);
+                }
             }
 
                 if(currentStep < endStep) {
@@ -605,79 +612,95 @@ public class BookingActivity extends AppCompatActivity implements
         });
 
         backButton.setOnClickListener(view -> {
-            if(currentStep == 2) {
-                secondConstraint.setVisibility(View.GONE);
-                firstConstraint.setVisibility(View.VISIBLE);
+            if(!bookingType.getId().equals("BT99")) {
+                if(currentStep == 2) {
+                    secondConstraint.setVisibility(View.GONE);
+                    firstConstraint.setVisibility(View.VISIBLE);
 
-                bookingTypeLayout.setVisibility(View.GONE);
+                    bookingTypeLayout.setVisibility(View.GONE);
 
-                tvActivityName.setText(bookingTypeActivityText);
+                    tvActivityName.setText(bookingTypeActivityText);
 
-                checkBookingTypeContinueButton();
-                backButton.setVisibility(View.GONE);
-                infoImage.setVisibility(View.GONE);
-                tvBookingInfo.setVisibility(View.GONE);
+                    checkBookingTypeContinueButton();
+                    backButton.setVisibility(View.GONE);
+                    infoImage.setVisibility(View.GONE);
+                    tvBookingInfo.setVisibility(View.GONE);
+                }
+                else if(currentStep == 3) {
+                    thirdConstraint.setVisibility(View.GONE);
+                    secondConstraint.setVisibility(View.VISIBLE);
+
+                    if(tvShowNearSpots.getText().equals(hideText))
+                        transition1();
+
+                    startingStationLayout.setVisibility(View.GONE);
+
+                    tvActivityName.setText(stationActivityText);
+
+                    checkStationContinueButton();
+                }
+                else if(currentStep == 4) {
+                    fourthConstraint.setVisibility(View.GONE);
+                    thirdConstraint.setVisibility(View.VISIBLE);
+
+                    spots.clear();
+
+                    if(tvShowRecommendedSpots.getText().equals(hideText))
+                        transition4();
+
+                    routeSpotsLayout.setVisibility(View.GONE);
+
+                    tvActivityName.setText(recommendedRouteActivityText);
+                    tvCaption.setText(defaultCaptionText);
+                    tvCaption.setTextColor(colorBlack);
+
+                    checkRouteContinueButton();
+                }
+                else if(currentStep == 5) {
+                    fifthConstraint.setVisibility(View.GONE);
+                    fourthConstraint.setVisibility(View.VISIBLE);
+
+                    tvActivityName.setText(listOfRouteActivityText);
+                    tvCaption.setText(routeSpotsCaptionText);
+
+                    checkSelectedSpotContinueButton();
+                }
+                else if(currentStep == 6) {
+                    sixthConstraint.setVisibility(View.GONE);
+                    fifthConstraint.setVisibility(View.VISIBLE);
+
+                    bookingScheduleLayout.setVisibility(View.GONE);
+
+                    ConstraintLayout.LayoutParams layoutParams =
+                            (ConstraintLayout.LayoutParams) contentLayout.getLayoutParams();
+                    layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+                    contentLayout.setLayoutParams(layoutParams);
+
+                    dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
+                            ViewGroup.LayoutParams.WRAP_CONTENT);
+
+                    messageLayout.setVisibility(View.GONE);
+                    buttonLayout2.setVisibility(View.GONE);
+
+                    tvActivityName.setText(bookingScheduleActivityText);
+                    tvCaption.setText(bookingScheduleCaptionText);
+
+                    checkScheduleContinueButton();
+                }
             }
-            else if(currentStep == 3) {
-                thirdConstraint.setVisibility(View.GONE);
-                secondConstraint.setVisibility(View.VISIBLE);
+            else {
+                if(currentStep == 2) {
+                    firstConstraint.setVisibility(View.VISIBLE);
 
-                if(tvShowNearSpots.getText().equals(hideText))
-                    transition1();
+                    bookingTypeLayout.setVisibility(View.GONE);
 
-                startingStationLayout.setVisibility(View.GONE);
+                    tvActivityName.setText(bookingTypeActivityText);
 
-                tvActivityName.setText(stationActivityText);
-
-                checkStationContinueButton();
-            }
-            else if(currentStep == 4) {
-                fourthConstraint.setVisibility(View.GONE);
-                thirdConstraint.setVisibility(View.VISIBLE);
-
-                spots.clear();
-
-                if(tvShowRecommendedSpots.getText().equals(hideText))
-                    transition4();
-
-                routeSpotsLayout.setVisibility(View.GONE);
-
-                tvActivityName.setText(recommendedRouteActivityText);
-                tvCaption.setText(defaultCaptionText);
-                tvCaption.setTextColor(colorBlack);
-
-                checkRouteContinueButton();
-            }
-            else if(currentStep == 5) {
-                fifthConstraint.setVisibility(View.GONE);
-                fourthConstraint.setVisibility(View.VISIBLE);
-
-                tvActivityName.setText(listOfRouteActivityText);
-                tvCaption.setText(routeSpotsCaptionText);
-
-                checkSelectedSpotContinueButton();
-            }
-            else if(currentStep == 6) {
-                sixthConstraint.setVisibility(View.GONE);
-                fifthConstraint.setVisibility(View.VISIBLE);
-
-                bookingScheduleLayout.setVisibility(View.GONE);
-
-                ConstraintLayout.LayoutParams layoutParams =
-                        (ConstraintLayout.LayoutParams) contentLayout.getLayoutParams();
-                layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT;
-                contentLayout.setLayoutParams(layoutParams);
-
-                dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
-                        ViewGroup.LayoutParams.WRAP_CONTENT);
-
-                messageLayout.setVisibility(View.GONE);
-                buttonLayout2.setVisibility(View.GONE);
-
-                tvActivityName.setText(bookingScheduleActivityText);
-                tvCaption.setText(bookingScheduleCaptionText);
-
-                checkScheduleContinueButton();
+                    checkBookingTypeContinueButton();
+                    backButton.setVisibility(View.GONE);
+                    infoImage.setVisibility(View.GONE);
+                    tvBookingInfo.setVisibility(View.GONE);
+                }
             }
 
             if(currentStep > 1) {
@@ -779,7 +802,7 @@ public class BookingActivity extends AppCompatActivity implements
     }
 
     private String getStepText() {
-        return "Step " + currentStep + " out of " + endStep;
+        return "Step " + currentStep + (currentStep == 1 ? "" : " out of " +  endStep);
     }
 
     private void goToStep4FromStep3() {
@@ -1623,7 +1646,7 @@ public class BookingActivity extends AppCompatActivity implements
     }
 
     private void checkBookingTypeContinueButton() {
-        if(bookingType != null) {
+        if(bookingType != null && currentStep >= 1) {
             continueButton.setEnabled(bookingType.getId() != null);
         }
         else {
@@ -1676,7 +1699,7 @@ public class BookingActivity extends AppCompatActivity implements
     }
 
     private void checkStationContinueButton() {
-        if(station != null) {
+        if(station != null && currentStep >= 2) {
             continueButton.setEnabled(station.getId() != null);
         }
         else {
@@ -1736,7 +1759,7 @@ public class BookingActivity extends AppCompatActivity implements
     }
 
     private void checkRouteContinueButton() {
-        if(bookingTypeRoute != null) {
+        if(bookingTypeRoute != null && currentStep >= 3) {
             continueButton.setEnabled(bookingTypeRoute.getId() != null);
         }
         else {
@@ -1822,7 +1845,7 @@ public class BookingActivity extends AppCompatActivity implements
     }
 
     private void checkSelectedSpotContinueButton() {
-        if(spots.size() > 2) {
+        if(spots.size() > 2 && currentStep >= 4) {
             continueButton.setEnabled(true);
             tvCaption.setText(routeSpotsCaptionText);
             tvCaption.setTextColor(colorBlack);
@@ -2045,7 +2068,7 @@ public class BookingActivity extends AppCompatActivity implements
     }
 
     private void checkScheduleContinueButton() {
-        continueButton.setEnabled(vSD && !(scheduleTime == null));
+        if(currentStep >= 5) continueButton.setEnabled(vSD && !(scheduleTime == null));
     }
 
     private void rebootStep(int targetStep) {

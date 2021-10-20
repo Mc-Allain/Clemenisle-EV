@@ -74,6 +74,8 @@ public class BookingTypeAdapter extends RecyclerView.Adapter<BookingTypeAdapter.
         int routeCount = bookingTypeList.get(position).getRouteList().size();
         String routeCountText = defaultRouteCountText + routeCount;
 
+        if(routeCount == 0) routeCountText = "One spot at a time";
+
         tvTypeName.setText(typeName);
         tvPrice.setText(price);
         tvRouteCount.setText(routeCountText);
