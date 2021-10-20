@@ -36,6 +36,7 @@ import com.example.firebase_clemenisle_ev.Adapters.BookingRouteAdapter;
 import com.example.firebase_clemenisle_ev.Adapters.BookingSpotAdapter;
 import com.example.firebase_clemenisle_ev.Adapters.BookingStationAdapter;
 import com.example.firebase_clemenisle_ev.Adapters.BookingTypeAdapter;
+import com.example.firebase_clemenisle_ev.Adapters.OnTheSpotAdapter;
 import com.example.firebase_clemenisle_ev.Adapters.RecommendedSpotAdapter;
 import com.example.firebase_clemenisle_ev.Adapters.ScheduleTimeAdapter;
 import com.example.firebase_clemenisle_ev.Adapters.SelectedSpotAdapter;
@@ -78,7 +79,8 @@ public class BookingActivity extends AppCompatActivity implements
         BookingTypeAdapter.OnItemClickListener, BookingStationAdapter.OnItemClickListener,
         BookingRouteAdapter.OnItemClickListener, BookingSpotAdapter.OnItemClickListener,
         SelectedSpotAdapter.OnRemoveClickListener, RecommendedSpotAdapter.OnButtonClickListener,
-        AllSpotAdapter.OnButtonClickListener, ScheduleTimeAdapter.OnItemClickListener {
+        AllSpotAdapter.OnButtonClickListener, ScheduleTimeAdapter.OnItemClickListener,
+        OnTheSpotAdapter.OnItemClickListener{
 
     private final static String firebaseURL = FirebaseURL.getFirebaseURL();
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance(firebaseURL);
@@ -126,6 +128,14 @@ public class BookingActivity extends AppCompatActivity implements
     ConstraintLayout sixthConstraint;
     TextInputLayout tlMessage;
     EditText etMessage;
+
+    ConstraintLayout onTheSpotLayout;
+    TextView tvLog6;
+    TextInputLayout tlOnTheSpotSearch;
+    AutoCompleteTextView acOnTheSpotSearch;
+    ImageView reloadImage6;
+    ProgressBar progressBar6;
+    RecyclerView onTheSpotView;
 
     Button continueButton, backButton, customizeButton;
 
@@ -188,6 +198,10 @@ public class BookingActivity extends AppCompatActivity implements
     int allSpotColumnCount = 2;
     AllSpotAdapter allSpotAdapter;
     List<SimpleTouristSpot> touristSpotList = new ArrayList<>(), copy = new ArrayList<>();
+
+    OnTheSpotAdapter onTheSpotAdapter;
+    DetailedTouristSpot onTheSpot;
+    List<DetailedTouristSpot> detailedTouristSpotList = new ArrayList<>(), copy2 = new ArrayList<>();
 
     DateTimeToString dateTimeToString;
 
@@ -302,6 +316,7 @@ public class BookingActivity extends AppCompatActivity implements
         fourthConstraint = findViewById(R.id.fourthConstraint);
         fifthConstraint = findViewById(R.id.fifthConstraint);
         sixthConstraint = findViewById(R.id.sixthConstraint);
+        onTheSpotLayout = findViewById(R.id.onTheSpotLayout);
 
         tvActivityName = findViewById(R.id.tvActivityName);
         tvCaption = findViewById(R.id.tvCaption);
@@ -364,6 +379,14 @@ public class BookingActivity extends AppCompatActivity implements
 
         infoImage = findViewById(R.id.infoImage);
         tvBookingInfo = findViewById(R.id.tvBookingInfo);
+
+        tvLog6 = findViewById(R.id.tvLog6);
+        onTheSpotView = findViewById(R.id.onTheSpotView);
+        progressBar6 = findViewById(R.id.progressBar6);
+        reloadImage6 = findViewById(R.id.reloadImage6);
+
+        tlOnTheSpotSearch = findViewById(R.id.tlSearch);
+        acOnTheSpotSearch = findViewById(R.id.acSearch);
 
         myContext = BookingActivity.this;
         myResources = myContext.getResources();
@@ -476,6 +499,39 @@ public class BookingActivity extends AppCompatActivity implements
         scheduleTimeAdapter.setOnItemClickListener(this);
 
         getScheduleTime();
+
+        LinearLayoutManager linearLayout6 =
+                new LinearLayoutManager(myContext, LinearLayoutManager.VERTICAL, false);
+        onTheSpotView.setLayoutManager(linearLayout6);
+        onTheSpotAdapter = new OnTheSpotAdapter(myContext, detailedTouristSpotList);
+        onTheSpotView.setAdapter(onTheSpotAdapter);
+        onTheSpotAdapter.setOnItemClickListener(this);
+
+        acOnTheSpotSearch.setOnFocusChangeListener((view1, b) -> {
+            if(b) {
+                tlOnTheSpotSearch.setStartIconTintList(cslBlue);
+            }
+            else {
+                tlOnTheSpotSearch.setStartIconTintList(cslInitial);
+            }
+        });
+
+        acOnTheSpotSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                searchOnTheSpot();
+            }
+        });
 
         continueButton.setOnClickListener(view -> {
             if(!bookingType.getId().equals("BT99")) {
@@ -600,7 +656,9 @@ public class BookingActivity extends AppCompatActivity implements
             else {
                 if(currentStep == 1) {
                     firstConstraint.setVisibility(View.GONE);
-                    continueButton.setEnabled(false);
+                    onTheSpotLayout.setVisibility(View.VISIBLE);
+
+                    checkOnTheSpotContinueButton();
                     backButton.setVisibility(View.VISIBLE);
                 }
             }
@@ -690,6 +748,7 @@ public class BookingActivity extends AppCompatActivity implements
             }
             else {
                 if(currentStep == 2) {
+                    onTheSpotLayout.setVisibility(View.GONE);
                     firstConstraint.setVisibility(View.VISIBLE);
 
                     bookingTypeLayout.setVisibility(View.GONE);
@@ -1513,23 +1572,36 @@ public class BookingActivity extends AppCompatActivity implements
         progressBar4p3.setVisibility(View.VISIBLE);
         touristSpotView.setVisibility(View.INVISIBLE);
 
+        tlOnTheSpotSearch.setVisibility(View.GONE);
+        tvLog6.setVisibility(View.GONE);
+        reloadImage6.setVisibility(View.GONE);
+        progressBar6.setVisibility(View.VISIBLE);
+        onTheSpotView.setVisibility(View.INVISIBLE);
+
         Query touristSpotsQuery = firebaseDatabase.getReference("touristSpots")
                 .orderByChild("deactivated").equalTo(false);
         touristSpotsQuery.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 touristSpotList.clear();
+                detailedTouristSpotList.clear();
                 copy.clear();
+                copy2.clear();
 
                 if(snapshot.exists()) {
                     for(DataSnapshot dataSnapshot : snapshot.getChildren()) {
                         SimpleTouristSpot touristSpot = new SimpleTouristSpot(dataSnapshot);
+                        DetailedTouristSpot detailedTouristSpot = new DetailedTouristSpot(dataSnapshot);
+
                         touristSpotList.add(touristSpot);
+                        detailedTouristSpotList.add(detailedTouristSpot);
                     }
 
                     copy.addAll(touristSpotList);
+                    copy2.addAll(detailedTouristSpotList);
 
-                    if(touristSpotList.size() > 0) finishLoading4p3();
+                    if(touristSpotList.size() > 0 && detailedTouristSpotList.size() > 0)
+                        finishLoading4p3();
                     else setLogText4p3(noRouteLogText);
                 }
                 else {
@@ -1594,11 +1666,56 @@ public class BookingActivity extends AppCompatActivity implements
         }
     }
 
+    private void searchOnTheSpot() {
+        String value = acOnTheSpotSearch.getText().toString().trim();
+        List<DetailedTouristSpot> temp = new ArrayList<>();
+
+        if(!value.isEmpty()) {
+            for(DetailedTouristSpot touristSpot : copy2) {
+                if(touristSpot.getName().toLowerCase().contains(value.toLowerCase())) {
+                    temp.add(touristSpot);
+                }
+            }
+        }
+        else {
+            temp.addAll(copy2);
+        }
+
+        detailedTouristSpotList.clear();
+        detailedTouristSpotList.addAll(temp);
+        sortByNames();
+        temp.clear();
+
+        if(detailedTouristSpotList.size() == 0) {
+            String caption;
+
+            if(copy2.size() == 0) {
+                caption = defaultLogText;
+            }
+            else {
+                caption = "Searching for \"" + value + "\"\n No Record Found";
+            }
+
+            tvLog6.setText(caption);
+            tvLog6.setVisibility(View.VISIBLE);
+            reloadImage6.setVisibility(View.VISIBLE);
+            onTheSpotView.setVisibility(View.INVISIBLE);
+        }
+        else {
+            tvLog6.setVisibility(View.GONE);
+            reloadImage6.setVisibility(View.GONE);
+            onTheSpotView.setVisibility(View.VISIBLE);
+        }
+    }
+
     private void sortByNames() {
         Collections.sort(touristSpotList, (touristSpot, t1) ->
                 touristSpot.getName().compareToIgnoreCase(t1.getName()));
+        Collections.sort(detailedTouristSpotList, (touristSpot, t1) ->
+                touristSpot.getName().compareToIgnoreCase(t1.getName()));
 
         allSpotAdapter.notifyDataSetChanged();
+        onTheSpotAdapter.notifyDataSetChanged();
     }
 
     private void getBookingTypes() {
@@ -2376,11 +2493,24 @@ public class BookingActivity extends AppCompatActivity implements
 
     private void finishLoading4p3() {
         searchTouristSpot();
+        searchOnTheSpot();
 
         int targetStep = 4;
         if(!areSelectedSpotsExisting()) {
             if(currentStep != 1) checkSelectedSpotContinueButton();
             if(currentStep > targetStep) rebootStep(targetStep);
+        }
+
+        if(bookingType != null) {
+            if(bookingType.getId().equals("BT99")) {
+                targetStep = 2;
+                if(!isInOnTheSpots(onTheSpot)) {
+                    onTheSpot = null;
+                    onTheSpotAdapter.setSpotId(null);
+                    if(currentStep != 1) checkOnTheSpotContinueButton();
+                    if(currentStep > targetStep) rebootStep(targetStep);
+                }
+            }
         }
 
         List<String> touristSpotsText = new ArrayList<>();
@@ -2391,12 +2521,19 @@ public class BookingActivity extends AppCompatActivity implements
         ArrayAdapter<String> arrayAdapter =
                 new ArrayAdapter<>(myContext, R.layout.simple_list_item_layout, touristSpotsText);
         acSearch.setAdapter(arrayAdapter);
+        acOnTheSpotSearch.setAdapter(arrayAdapter);
 
         tlSearch.setVisibility(View.VISIBLE);
         tvLog4p3.setVisibility(View.GONE);
         reloadImage4p3.setVisibility(View.GONE);
         progressBar4p3.setVisibility(View.GONE);
         touristSpotView.setVisibility(View.VISIBLE);
+
+        tlOnTheSpotSearch.setVisibility(View.VISIBLE);
+        tvLog6.setVisibility(View.GONE);
+        reloadImage6.setVisibility(View.GONE);
+        progressBar6.setVisibility(View.GONE);
+        onTheSpotView.setVisibility(View.VISIBLE);
     }
 
     private boolean areSelectedSpotsExisting() {
@@ -2422,10 +2559,21 @@ public class BookingActivity extends AppCompatActivity implements
         return false;
     }
 
+    private boolean isInOnTheSpots(DetailedTouristSpot targetSpot) {
+        for (DetailedTouristSpot touristSpot : detailedTouristSpotList) {
+            if (touristSpot.getId().equals(targetSpot.getId())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private void setLogText4p3(String value) {
         touristSpotList.clear();
         copy.clear();
         allSpotAdapter.notifyDataSetChanged();
+        detailedTouristSpotList.clear();
+        onTheSpotAdapter.notifyDataSetChanged();
 
         List<String> touristSpotsText = new ArrayList<>();
         for(SimpleTouristSpot touristSpot : touristSpotList) {
@@ -2442,6 +2590,12 @@ public class BookingActivity extends AppCompatActivity implements
         reloadImage4p3.setVisibility(View.VISIBLE);
         progressBar4p3.setVisibility(View.GONE);
         touristSpotView.setVisibility(View.INVISIBLE);
+
+        tvLog6.setText(value);
+        tvLog6.setVisibility(View.VISIBLE);
+        reloadImage6.setVisibility(View.VISIBLE);
+        progressBar6.setVisibility(View.GONE);
+        onTheSpotView.setVisibility(View.INVISIBLE);
     }
 
     private void errorLoading4p3() {
@@ -2507,5 +2661,20 @@ public class BookingActivity extends AppCompatActivity implements
     private int dpToPx(int dp) {
         float px = dp * myContext.getResources().getDisplayMetrics().density;
         return (int) px;
+    }
+
+    @Override
+    public void sendTouristSpot(DetailedTouristSpot touristSpot) {
+        onTheSpot = touristSpot;
+        checkOnTheSpotContinueButton();
+    }
+
+    private void checkOnTheSpotContinueButton() {
+        if(onTheSpot != null) {
+            continueButton.setEnabled(onTheSpot.getId() != null);
+        }
+        else {
+            continueButton.setEnabled(false);
+        }
     }
 }
