@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import com.example.firebase_clemenisle_ev.AboutActivity;
 import com.example.firebase_clemenisle_ev.Classes.Setting;
+import com.example.firebase_clemenisle_ev.HelpActivity;
 import com.example.firebase_clemenisle_ev.MainActivity;
 import com.example.firebase_clemenisle_ev.R;
 
@@ -85,26 +86,33 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
         settingLayout.setLayoutParams(layoutParams);
 
         settingLayout.setOnClickListener(view -> {
-            if(settingName.equals("Log out")) {
-                if(logoutPressedTime + 2500 > System.currentTimeMillis()) {
-                    logoutToast.cancel();
-                    sendSharedPreferences();
+            switch (settingName) {
+                case "Log out":
+                    if (logoutPressedTime + 2500 > System.currentTimeMillis()) {
+                        logoutToast.cancel();
+                        sendSharedPreferences();
 
-                    Intent intent = new Intent(myContext, MainActivity.class);
+                        Intent intent = new Intent(myContext, MainActivity.class);
+                        myContext.startActivity(intent);
+                        ((Activity) myContext).finishAffinity();
+                    } else {
+                        logoutToast = Toast.makeText(myContext,
+                                "Press again to log out", Toast.LENGTH_SHORT);
+                        logoutToast.show();
+                    }
+
+                    logoutPressedTime = System.currentTimeMillis();
+                    break;
+                case "About": {
+                    Intent intent = new Intent(myContext, AboutActivity.class);
                     myContext.startActivity(intent);
-                    ((Activity) myContext).finishAffinity();
+                    break;
                 }
-                else {
-                    logoutToast = Toast.makeText(myContext,
-                            "Press again to log out", Toast.LENGTH_SHORT);
-                    logoutToast.show();
+                case "Help": {
+                    Intent intent = new Intent(myContext, HelpActivity.class);
+                    myContext.startActivity(intent);
+                    break;
                 }
-
-                logoutPressedTime = System.currentTimeMillis();
-            }
-            else if(settingName.equals("About")) {
-                Intent intent = new Intent(myContext, AboutActivity.class);
-                myContext.startActivity(intent);
             }
         });
     }

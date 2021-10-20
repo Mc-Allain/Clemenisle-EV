@@ -611,7 +611,7 @@ public class MainActivity extends AppCompatActivity {
                         .setSmallIcon(R.drawable.front_icon).setLargeIcon(icon)
                         .setContentTitle("Clemenisle-EV Booking Reminder")
                         .setContentText("You only have less than " + value + " " + unit +
-                        " before the schedule of your Booking (Id: " + booking.getId() +").")
+                        " before the schedule of your Booking (ID: " + booking.getId() +").")
                         .setCategory(NotificationCompat.CATEGORY_REMINDER)
                         .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                         .setDefaults(NotificationCompat.DEFAULT_ALL)

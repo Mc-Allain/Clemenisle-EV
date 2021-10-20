@@ -1,16 +1,22 @@
 package com.example.firebase_clemenisle_ev;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.transition.ChangeBounds;
 import android.transition.Transition;
 import android.transition.TransitionManager;
+import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -88,6 +94,10 @@ public class RouteActivity extends AppCompatActivity implements
     int pressCount = 0;
     Toast cancelToast, errorToast;
 
+    Dialog dialog;
+    ImageView dialogCloseImage;
+    TextView tvAppVersionInfoDialogTitle, tvMessage, tvMessage2;
+
     String cancelButtonText = "Cancel Booking", cancellingButtonText = "Cancelling…";
 
     private void initSharedPreferences() {
@@ -130,6 +140,7 @@ public class RouteActivity extends AppCompatActivity implements
         optionRunnable = () -> closeOption();
 
         initSharedPreferences();
+        initBookingAlertDialog();
 
         Intent intent = getIntent();
         bookingId = intent.getStringExtra("bookingId");
@@ -212,6 +223,25 @@ public class RouteActivity extends AppCompatActivity implements
         locateEndImage.setOnClickListener(view -> openMap(endStation));
     }
 
+    private void initBookingAlertDialog() {
+        dialog = new Dialog(myContext);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.dialog_booking_alert_layout);
+
+        dialogCloseImage = dialog.findViewById(R.id.dialogCloseImage);
+        tvMessage = dialog.findViewById(R.id.tvMessage);
+        tvMessage2 = dialog.findViewById(R.id.tvMessage2);
+
+        dialogCloseImage.setOnClickListener(view -> dialog.dismiss());
+
+        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+        dialog.getWindow().getAttributes().windowAnimations = R.style.animBottomSlide;
+        dialog.getWindow().setGravity(Gravity.BOTTOM);
+        dialog.setCanceledOnTouchOutside(false);
+    }
+
     private void updateInfo() {
         Glide.with(myContext).load(routeList.get(0).getImg()).
                 placeholder(R.drawable.image_loading_placeholder).into(thumbnail);
@@ -234,10 +264,12 @@ public class RouteActivity extends AppCompatActivity implements
                 color = myResources.getColor(R.color.orange);
                 backgroundDrawable = myResources.getDrawable(R.color.orange);
                 buttonLayout.setVisibility(View.VISIBLE);
+                dialog.show();
                 break;
             case "Booked":
                 color = myResources.getColor(R.color.green);
                 backgroundDrawable = myResources.getDrawable(R.color.green);
+                dialog.show();
                 break;
             case "Completed":
                 color = myResources.getColor(R.color.blue);

@@ -27,6 +27,8 @@ public class SettingsFragment extends Fragment {
 
     List<Setting> settingList = Arrays.asList(
             new Setting(R.drawable.ic_baseline_info_24, "About"),
+            new Setting(R.drawable.ic_baseline_settings_24, "Preferences"),
+            new Setting(R.drawable.ic_baseline_help_24, "Help"),
             new Setting(R.drawable.ic_baseline_logout_24, "Log out")
     );
     List<Setting> settings = new ArrayList<>();

@@ -394,8 +394,8 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
         commentTitleLayout.setOnClickListener(view -> showCommentLayout());
 
         loginButton.setOnClickListener(view -> {
-            Intent intent1 = new Intent(myContext, LoginActivity.class);
-            startActivity(intent1);
+            Intent newIntent = new Intent(myContext, LoginActivity.class);
+            startActivity(newIntent);
         });
 
         sendImage.setOnClickListener(view -> {

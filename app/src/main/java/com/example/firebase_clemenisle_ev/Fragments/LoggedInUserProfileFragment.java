@@ -461,58 +461,52 @@ public class LoggedInUserProfileFragment extends Fragment {
     }
 
     private void uploadProfileImage() {
-        if(profileImageUri == null)
-            Toast.makeText(
-                    myContext,
-                    "No image selected",
-                    Toast.LENGTH_LONG
-            ).show();
-        else {
-            setProfileImageDialogScreenEnabled(false);
+        roundProgressBar.setVisibility(View.VISIBLE);
+        setProfileImageDialogScreenEnabled(false);
 
-            StorageReference profileImageRef =
-                    storageReference.child(System.currentTimeMillis() + "-" + userId +
-                            "." + getFileExt(profileImageUri));
+        StorageReference profileImageRef =
+                storageReference.child(System.currentTimeMillis() + "-" + userId +
+                        "." + getFileExt(profileImageUri));
 
-            profileImageRef.putFile(profileImageUri).addOnCompleteListener(task -> {
-                if(task.isSuccessful()) {
-                    if(task.getResult() != null) {
-                        task.getResult().getStorage().getDownloadUrl().addOnCompleteListener(task1 -> {
-                            if(task1.isSuccessful()) {
-                                if(task1.getResult() != null) {
-                                    usersRef.child("profileImage").setValue(task1.getResult().toString())
-                                            .addOnCompleteListener(task2 -> {
-                                                if(task2.isSuccessful()) {
-                                                    new Handler().postDelayed(() -> profileImageDialogProgressBar.setProgress(0), 1000);
+        profileImageRef.putFile(profileImageUri).addOnCompleteListener(task -> {
+            if(task.isSuccessful()) {
+                if(task.getResult() != null) {
+                    task.getResult().getStorage().getDownloadUrl().addOnCompleteListener(task1 -> {
+                        if(task1.isSuccessful()) {
+                            if(task1.getResult() != null) {
+                                usersRef.child("profileImage").setValue(task1.getResult().toString())
+                                        .addOnCompleteListener(task2 -> {
+                                            if(task2.isSuccessful()) {
+                                                new Handler().postDelayed(() -> profileImageDialogProgressBar.setProgress(0), 1000);
 
-                                                    Toast.makeText(
-                                                            myContext,
-                                                            "Successfully uploaded the profile image",
-                                                            Toast.LENGTH_SHORT
-                                                    ).show();
+                                                Toast.makeText(
+                                                        myContext,
+                                                        "Successfully uploaded the profile image",
+                                                        Toast.LENGTH_SHORT
+                                                ).show();
 
-                                                    profileImageDialog.dismiss();
-                                                }
-                                                else uploadError(task);
-                                            });
-                                }
-                                else uploadError(task);
+                                                profileImageDialog.dismiss();
+                                            }
+                                            else uploadError(task);
+                                        });
                             }
-                        });
-                    }
+                            else uploadError(task);
+                        }
+                    });
                 }
-                else uploadError(task);
-            }).addOnProgressListener(snapshot -> {
-                double progress =
-                        (100.0 * snapshot.getBytesTransferred() / snapshot.getTotalByteCount());
-                profileImageDialogProgressBar.setProgress((int) progress);
-            });
-        }
+            }
+            else uploadError(task);
+        }).addOnProgressListener(snapshot -> {
+            double progress =
+                    (100.0 * snapshot.getBytesTransferred() / snapshot.getTotalByteCount());
+            profileImageDialogProgressBar.setProgress((int) progress);
+        });
     }
 
     private void uploadError(Task task) {
         if(task.getException() != null) {
             profileImageDialogProgressBar.setProgress(0);
+            roundProgressBar.setVisibility(View.GONE);
 
             String error = task.getException().toString();
             Toast.makeText(
