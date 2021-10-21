@@ -14,6 +14,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.transition.ChangeBounds;
@@ -57,6 +58,9 @@ import com.example.firebase_clemenisle_ev.Classes.Station;
 import com.example.firebase_clemenisle_ev.Classes.User;
 import com.example.firebase_clemenisle_ev.Fragments.MapFragment;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.Task;
@@ -243,8 +247,7 @@ public class BookingActivity extends AppCompatActivity implements
 
     int currentStep = 1, endStep = 6, onTheSpotEndStep = 4;
 
-    boolean bookingTypeSuccess = false, bookingStationSuccess = false, bookingRouteSuccess = false,
-        bookingScheduleSuccess = false;
+    boolean bookingTypeSuccess = false, bookingStationSuccess = false, bookingScheduleSuccess = false;
 
     Dialog dialog;
 
@@ -980,25 +983,44 @@ public class BookingActivity extends AppCompatActivity implements
     }
 
     private void getUserCurrentLocation(Location location) {
+        LocationRequest locationRequest;
+        LocationCallback locationCallback;
+
         if(location != null) {
             currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
 
-            Toast.makeText(
-                    myContext,
-                    String.valueOf(currentLocation),
-                    Toast.LENGTH_SHORT
-            ).show();
-
-            mapFragment.getUserCurrentLocation(currentLocation, "My Location");
+            mapFragment.getUserCurrentLocation(currentLocation, "Your Location");
             checkCurrentLocationContinueButton();
         }
         else {
-            Toast.makeText(
-                    myContext,
-                    "Failed to get current location",
-                    Toast.LENGTH_LONG
-            ).show();
+            locationRequest = LocationRequest.create();
+            locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+            locationRequest.setInterval(20 * 1000);
+            locationCallback = new LocationCallback() {
+                @Override
+                public void onLocationResult(LocationResult locationResult) {
+                    if(locationResult != null) {
+                        getUserCurrentLocation(locationResult.getLastLocation());
+                    }
+                    else {
+                        Toast.makeText(
+                                myContext,
+                                "Failed to get current location. " +
+                                "Please try to get your location in Google Map App," +
+                                "then come back here to try again.",
+                                Toast.LENGTH_LONG
+                        ).show();
+                    }
+                }
+            };
 
+            if(ActivityCompat.checkSelfPermission(myContext,
+                    Manifest.permission.ACCESS_FINE_LOCATION) ==
+                    PackageManager.PERMISSION_GRANTED
+            ) {
+                fusedLocationProviderClient.requestLocationUpdates(locationRequest,
+                        locationCallback, Looper.getMainLooper());
+            }
         }
         progressBar7.setVisibility(View.GONE);
     }
@@ -1011,7 +1033,8 @@ public class BookingActivity extends AppCompatActivity implements
             if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 if(ActivityCompat.checkSelfPermission(myContext,
                         Manifest.permission.ACCESS_FINE_LOCATION) ==
-                        PackageManager.PERMISSION_GRANTED) {
+                        PackageManager.PERMISSION_GRANTED
+                ) {
                     progressBar7.setVisibility(View.VISIBLE);
                     Task<Location> locationTask = fusedLocationProviderClient.getLastLocation();
                     locationTask.addOnSuccessListener(location -> getUserCurrentLocation(location)).
@@ -2192,7 +2215,8 @@ public class BookingActivity extends AppCompatActivity implements
         SelectedSpotAdapter selectedSpotAdapter = (SelectedSpotAdapter) selectedSpotView.getAdapter();
         if(selectedSpotAdapter != null) selectedSpotAdapter.setSpots(spots);
 
-        if(bookingTypeSuccess && bookingStationSuccess && bookingRouteSuccess && bookingScheduleSuccess) {
+        if(bookingTypeSuccess && bookingStationSuccess && bookingScheduleSuccess) {
+            progressBar1.setVisibility(View.GONE);
             bookingTypeView.setVisibility(View.VISIBLE);
         }
 
@@ -2372,7 +2396,7 @@ public class BookingActivity extends AppCompatActivity implements
         bookingTypeAdapter.notifyDataSetChanged();
 
         bookingTypeSuccess = true;
-        if(bookingStationSuccess && bookingRouteSuccess && bookingScheduleSuccess) {
+        if(bookingStationSuccess && bookingScheduleSuccess) {
             progressBar1.setVisibility(View.GONE);
             bookingTypeView.setVisibility(View.VISIBLE);
         }
@@ -2422,7 +2446,7 @@ public class BookingActivity extends AppCompatActivity implements
         bookingStationAdapter.notifyDataSetChanged();
 
         bookingStationSuccess = true;
-        if(bookingTypeSuccess && bookingRouteSuccess && bookingScheduleSuccess) {
+        if(bookingTypeSuccess && bookingScheduleSuccess) {
             progressBar1.setVisibility(View.GONE);
             bookingTypeView.setVisibility(View.VISIBLE);
         }
@@ -2475,12 +2499,6 @@ public class BookingActivity extends AppCompatActivity implements
     private void finishLoading3() {
         bookingRouteAdapter.notifyDataSetChanged();
 
-        bookingRouteSuccess = true;
-        if(bookingTypeSuccess && bookingStationSuccess && bookingScheduleSuccess) {
-            progressBar1.setVisibility(View.GONE);
-            bookingTypeView.setVisibility(View.VISIBLE);
-        }
-
         int targetStep = 3;
         if(!isInBookingRoutes()) {
             bookingTypeRoute = null;
@@ -2507,9 +2525,6 @@ public class BookingActivity extends AppCompatActivity implements
     private void setLogText3(String value) {
         bookingTypeRouteList.clear();
         bookingRouteAdapter.notifyDataSetChanged();
-
-        bookingRouteSuccess = false;
-        setLogText1(value);
 
         tvLog3.setText(value);
         tvLog3.setVisibility(View.VISIBLE);
@@ -2780,7 +2795,7 @@ public class BookingActivity extends AppCompatActivity implements
         scheduleTimeAdapter.notifyDataSetChanged();
 
         bookingScheduleSuccess = true;
-        if(bookingTypeSuccess && bookingStationSuccess && bookingRouteSuccess) {
+        if(bookingTypeSuccess && bookingStationSuccess) {
             progressBar1.setVisibility(View.GONE);
             bookingTypeView.setVisibility(View.VISIBLE);
         }
