@@ -56,6 +56,9 @@ public class MapFragment extends Fragment {
     int tsMarkColor, sMarkColor, tsMarkIcon, sMarkIcon, mapType;
     boolean mapAutoFocus, locateFocus = false;
 
+    boolean fromBooking;
+    ButtonInterface buttonInterface;
+
     private void initSharedPreferences() {
         SharedPreferences sharedPreferences = myContext
                 .getSharedPreferences("mapSetting", Context.MODE_PRIVATE);
@@ -133,7 +136,7 @@ public class MapFragment extends Fragment {
             name = bundle.getString("name");
             type = bundle.getInt("type", 0);
 
-            boolean fromBooking = bundle.getBoolean("fromBooking", false);
+            fromBooking = bundle.getBoolean("fromBooking", false);
             if(fromBooking) mapAutoFocus = true;
         }
 
@@ -155,25 +158,25 @@ public class MapFragment extends Fragment {
             googleMap.setMapType(mapType);
             googleMap.setMinZoomPreference(10);
 
+            setButtonEnabled(false);
+
             LatLng latLng = new LatLng(lat, lng), zoomLatLng;
 
-            if(mapAutoFocus) {
-                zoomLatLng = new LatLng(lat, lng);
-            }
-            else {
-                zoomLatLng = mapCoordinates.getInitialLatLng();
-            }
+            if(mapAutoFocus) zoomLatLng = new LatLng(lat, lng);
+            else zoomLatLng = mapCoordinates.getInitialLatLng();
 
             MarkerOptions markerOptions = new MarkerOptions();
             markerOptions.position(latLng);
             markerOptions.title(name);
+            markerOptions.icon(bitmapDescriptor(type));
+            googleMap.addMarker(markerOptions).showInfoWindow();
 
             googleMap.animateCamera(
                     CameraUpdateFactory.newLatLngZoom(zoomLatLng, currentZoom),
                     new GoogleMap.CancelableCallback() {
                         @Override
                         public void onFinish() {
-                            googleMap.addMarker(markerOptions).showInfoWindow();
+                            setButtonEnabled(true);
                         }
 
                         @Override
@@ -182,12 +185,14 @@ public class MapFragment extends Fragment {
                         }
                     });
 
-            markerOptions.icon(bitmapDescriptor(type));
+            if(buttonInterface != null) buttonInterface.currentLocationOnClick();
 
             googleMap.setOnCameraMoveListener(() -> {
                 currentZoom = googleMap.getCameraPosition().zoom;
                 resetButton.setVisibility(View.VISIBLE);
             });
+
+            googleMap.setOnCameraMoveCanceledListener(() -> setButtonEnabled(true));
 
             googleMap.setOnMarkerClickListener(marker -> {
                 String name = marker.getTitle();
@@ -202,6 +207,8 @@ public class MapFragment extends Fragment {
         });
 
         resetButton.setOnClickListener(view1 -> {
+            setButtonEnabled(false);
+
             currentZoom = defaultZoom;
             myGoogleMap.animateCamera(CameraUpdateFactory
                             .newLatLngZoom(defaultLatLng, currentZoom),
@@ -209,6 +216,7 @@ public class MapFragment extends Fragment {
                         @Override
                         public void onFinish() {
                             resetButton.setVisibility(View.GONE);
+                            setButtonEnabled(true);
                         }
 
                         @Override
@@ -221,14 +229,68 @@ public class MapFragment extends Fragment {
         return view;
     }
 
+    private void setButtonEnabled(boolean value) {
+        resetButton.setEnabled(value);
+
+        if(buttonInterface != null) buttonInterface.setCurrentLocationEnabled(value);
+    }
+
+    public void setButtonInterface(ButtonInterface buttonInterface) {
+        this.buttonInterface = buttonInterface;
+    }
+
+    public interface ButtonInterface {
+        void setCurrentLocationEnabled(boolean value);
+        void currentLocationOnClick();
+    }
+
     public void getUserCurrentLocation(LatLng latLng, String locationName) {
+        setButtonEnabled(false);
+
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(latLng);
         markerOptions.title(locationName);
         markerOptions.icon(bitmapDescriptor(2));
+        myGoogleMap.addMarker(markerOptions).showInfoWindow();
+
+        myGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, currentZoom),
+                new GoogleMap.CancelableCallback() {
+                    @Override
+                    public void onFinish() {
+                        setButtonEnabled(true);
+                    }
+
+                    @Override
+                    public void onCancel() {
+
+                    }
+                });
+    }
+
+    public void locateOnTheSpot() {
+        setButtonEnabled(false);
+
+        LatLng latLng = new LatLng(selectedPlace.getLat(), selectedPlace.getLng());
+        String locationName = selectedPlace.getName();
+
+        MarkerOptions markerOptions = new MarkerOptions();
+        markerOptions.position(latLng);
+        markerOptions.title(locationName);
+        markerOptions.icon(bitmapDescriptor(0));
 
         myGoogleMap.addMarker(markerOptions).showInfoWindow();
-        myGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, currentZoom));
+        myGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, currentZoom),
+                new GoogleMap.CancelableCallback() {
+                    @Override
+                    public void onFinish() {
+                        setButtonEnabled(true);
+                    }
+
+                    @Override
+                    public void onCancel() {
+
+                    }
+                });
     }
 
     private void getMarkedPlace(String name, double lat, double lng) {
