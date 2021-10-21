@@ -1,14 +1,17 @@
 package com.example.firebase_clemenisle_ev;
 
+import android.Manifest;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
@@ -24,6 +27,7 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
@@ -51,6 +55,11 @@ import com.example.firebase_clemenisle_ev.Classes.ScheduleTime;
 import com.example.firebase_clemenisle_ev.Classes.SimpleTouristSpot;
 import com.example.firebase_clemenisle_ev.Classes.Station;
 import com.example.firebase_clemenisle_ev.Classes.User;
+import com.example.firebase_clemenisle_ev.Fragments.MapFragment;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -71,6 +80,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
+import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -137,7 +148,11 @@ public class BookingActivity extends AppCompatActivity implements
     ProgressBar progressBar6;
     RecyclerView onTheSpotView;
 
-    Button continueButton, backButton, customizeButton;
+    ConstraintLayout currentLocationLayout;
+    FrameLayout mapLayout;
+    ProgressBar progressBar7;
+
+    Button continueButton, backButton, customizeButton, currentLocationButton;
 
     Context myContext;
     Resources myResources;
@@ -221,7 +236,15 @@ public class BookingActivity extends AppCompatActivity implements
 
     String message = "";
 
-    int currentStep = 1, endStep = 6;
+    MapFragment mapFragment;
+    FragmentManager fragmentManager = getSupportFragmentManager();
+    LatLng currentLocation;
+    FusedLocationProviderClient fusedLocationProviderClient;
+
+    int currentStep = 1, endStep = 6, onTheSpotEndStep = 4;
+
+    boolean bookingTypeSuccess = false, bookingStationSuccess = false, bookingRouteSuccess = false,
+        bookingScheduleSuccess = false;
 
     Dialog dialog;
 
@@ -388,6 +411,11 @@ public class BookingActivity extends AppCompatActivity implements
         tlOnTheSpotSearch = findViewById(R.id.tlSearch);
         acOnTheSpotSearch = findViewById(R.id.acSearch);
 
+        currentLocationLayout = findViewById(R.id.currentLocationLayout);
+        mapLayout = findViewById(R.id.mapLayout);
+        currentLocationButton = findViewById(R.id.currentLocationButton);
+        progressBar7 = findViewById(R.id.progressBar7);
+
         myContext = BookingActivity.this;
         myResources = myContext.getResources();
 
@@ -439,6 +467,9 @@ public class BookingActivity extends AppCompatActivity implements
         thirdConstraint.setVisibility(View.GONE);
         fourthConstraint.setVisibility(View.GONE);
         fifthConstraint.setVisibility(View.GONE);
+        sixthConstraint.setVisibility(View.GONE);
+        onTheSpotLayout.setVisibility(View.GONE);
+        currentLocationLayout.setVisibility(View.GONE);
 
         dateTimeToString = new DateTimeToString();
 
@@ -661,6 +692,13 @@ public class BookingActivity extends AppCompatActivity implements
                     checkOnTheSpotContinueButton();
                     backButton.setVisibility(View.VISIBLE);
                 }
+                else if(currentStep == 2) {
+                    onTheSpotLayout.setVisibility(View.GONE);
+                    currentLocationLayout.setVisibility(View.VISIBLE);
+                    showMap();
+
+                    checkCurrentLocationContinueButton();
+                }
             }
 
                 if(currentStep < endStep) {
@@ -760,6 +798,12 @@ public class BookingActivity extends AppCompatActivity implements
                     infoImage.setVisibility(View.GONE);
                     tvBookingInfo.setVisibility(View.GONE);
                 }
+                else if(currentStep == 3) {
+                    currentLocationLayout.setVisibility(View.GONE);
+                    onTheSpotLayout.setVisibility(View.VISIBLE);
+
+                    checkOnTheSpotContinueButton();
+                }
             }
 
             if(currentStep > 1) {
@@ -858,9 +902,35 @@ public class BookingActivity extends AppCompatActivity implements
                 extvMessage.setText(message);
             }
         });
+
+        currentLocationButton.setOnClickListener(view -> {
+            fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(BookingActivity.this);
+
+            if(ActivityCompat.checkSelfPermission(myContext,
+                    Manifest.permission.ACCESS_FINE_LOCATION) ==
+                    PackageManager.PERMISSION_GRANTED
+            ) {
+                progressBar7.setVisibility(View.VISIBLE);
+                Task<Location> locationTask = fusedLocationProviderClient.getLastLocation();
+                locationTask.addOnSuccessListener(location -> getUserCurrentLocation(location)).
+                addOnFailureListener(e ->
+                        Toast.makeText(
+                            myContext,
+                            e.toString(),
+                            Toast.LENGTH_LONG
+                        ).show()
+                );
+            }
+            else {
+                ActivityCompat.requestPermissions(BookingActivity.this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 44);
+            }
+        });
     }
 
     private String getStepText() {
+        if(bookingType != null && bookingType.getId().equals("BT99"))
+            return "Step " + currentStep + (currentStep == 1 ? "" : " out of " +  onTheSpotEndStep);
         return "Step " + currentStep + (currentStep == 1 ? "" : " out of " +  endStep);
     }
 
@@ -907,6 +977,54 @@ public class BookingActivity extends AppCompatActivity implements
 
         getRecommendedSpots();
         checkSelectedSpotContinueButton();
+    }
+
+    private void getUserCurrentLocation(Location location) {
+        if(location != null) {
+            currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
+
+            Toast.makeText(
+                    myContext,
+                    String.valueOf(currentLocation),
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            mapFragment.getUserCurrentLocation(currentLocation, "My Location");
+            checkCurrentLocationContinueButton();
+        }
+        else {
+            Toast.makeText(
+                    myContext,
+                    "Failed to get current location",
+                    Toast.LENGTH_LONG
+            ).show();
+
+        }
+        progressBar7.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if(requestCode == 44) {
+            if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if(ActivityCompat.checkSelfPermission(myContext,
+                        Manifest.permission.ACCESS_FINE_LOCATION) ==
+                        PackageManager.PERMISSION_GRANTED) {
+                    progressBar7.setVisibility(View.VISIBLE);
+                    Task<Location> locationTask = fusedLocationProviderClient.getLastLocation();
+                    locationTask.addOnSuccessListener(location -> getUserCurrentLocation(location)).
+                        addOnFailureListener(e ->
+                            Toast.makeText(
+                                myContext,
+                                e.toString(),
+                                Toast.LENGTH_LONG
+                            ).show()
+                        );
+                }
+            }
+        }
     }
 
     private void showDatePickerDialog() {
@@ -2074,6 +2192,10 @@ public class BookingActivity extends AppCompatActivity implements
         SelectedSpotAdapter selectedSpotAdapter = (SelectedSpotAdapter) selectedSpotView.getAdapter();
         if(selectedSpotAdapter != null) selectedSpotAdapter.setSpots(spots);
 
+        if(bookingTypeSuccess && bookingStationSuccess && bookingRouteSuccess && bookingScheduleSuccess) {
+            bookingTypeView.setVisibility(View.VISIBLE);
+        }
+
         if(spots.size() == 0) {
             tvLog4.setText(noSelectedSpotText);
             tvLog4.setVisibility(View.VISIBLE);
@@ -2188,6 +2310,24 @@ public class BookingActivity extends AppCompatActivity implements
         continueButton.setEnabled((vSD && !(scheduleTime == null)));
     }
 
+    private void showMap() {
+        mapFragment = new MapFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString("id", onTheSpot.getId());
+        bundle.putDouble("lat", onTheSpot.getLat());
+        bundle.putDouble("lng", onTheSpot.getLng());
+        bundle.putString("name", onTheSpot.getName());
+        bundle.putInt("type", 0);
+        bundle.putBoolean("fromBooking", true);
+        mapFragment.setArguments(bundle);
+
+        fragmentManager.beginTransaction().replace(mapLayout.getId(), mapFragment).commit();
+    }
+
+    private void checkCurrentLocationContinueButton() {
+        continueButton.setEnabled(currentLocation != null);
+    }
+
     private void rebootStep(int targetStep) {
         firstConstraint.setVisibility(View.GONE);
         secondConstraint.setVisibility(View.GONE);
@@ -2231,6 +2371,12 @@ public class BookingActivity extends AppCompatActivity implements
     private void finishLoading1() {
         bookingTypeAdapter.notifyDataSetChanged();
 
+        bookingTypeSuccess = true;
+        if(bookingStationSuccess && bookingRouteSuccess && bookingScheduleSuccess) {
+            progressBar1.setVisibility(View.GONE);
+            bookingTypeView.setVisibility(View.VISIBLE);
+        }
+
         int targetStep = 1;
         if(!isInBookingTypes()) {
             bookingType = null;
@@ -2238,9 +2384,6 @@ public class BookingActivity extends AppCompatActivity implements
             checkBookingTypeContinueButton();
             if(currentStep > targetStep) rebootStep(targetStep);
         }
-
-        progressBar1.setVisibility(View.GONE);
-        bookingTypeView.setVisibility(View.VISIBLE);
     }
 
     private boolean isInBookingTypes() {
@@ -2257,6 +2400,8 @@ public class BookingActivity extends AppCompatActivity implements
     private void setLogText1(String value) {
         bookingTypeList.clear();
         bookingTypeAdapter.notifyDataSetChanged();
+
+        bookingTypeSuccess = false;
 
         tvLog1.setText(value);
         tvLog1.setVisibility(View.VISIBLE);
@@ -2275,6 +2420,12 @@ public class BookingActivity extends AppCompatActivity implements
 
     private void finishLoading2() {
         bookingStationAdapter.notifyDataSetChanged();
+
+        bookingStationSuccess = true;
+        if(bookingTypeSuccess && bookingRouteSuccess && bookingScheduleSuccess) {
+            progressBar1.setVisibility(View.GONE);
+            bookingTypeView.setVisibility(View.VISIBLE);
+        }
 
         int targetStep = 2;
         if(!isInStations()) {
@@ -2303,6 +2454,9 @@ public class BookingActivity extends AppCompatActivity implements
         stationList.clear();
         bookingStationAdapter.notifyDataSetChanged();
 
+        bookingStationSuccess = false;
+        setLogText1(value);
+
         tvLog2.setText(value);
         tvLog2.setVisibility(View.VISIBLE);
         reloadImage2.setVisibility(View.VISIBLE);
@@ -2320,6 +2474,12 @@ public class BookingActivity extends AppCompatActivity implements
 
     private void finishLoading3() {
         bookingRouteAdapter.notifyDataSetChanged();
+
+        bookingRouteSuccess = true;
+        if(bookingTypeSuccess && bookingStationSuccess && bookingScheduleSuccess) {
+            progressBar1.setVisibility(View.GONE);
+            bookingTypeView.setVisibility(View.VISIBLE);
+        }
 
         int targetStep = 3;
         if(!isInBookingRoutes()) {
@@ -2347,6 +2507,9 @@ public class BookingActivity extends AppCompatActivity implements
     private void setLogText3(String value) {
         bookingTypeRouteList.clear();
         bookingRouteAdapter.notifyDataSetChanged();
+
+        bookingRouteSuccess = false;
+        setLogText1(value);
 
         tvLog3.setText(value);
         tvLog3.setVisibility(View.VISIBLE);
@@ -2616,6 +2779,12 @@ public class BookingActivity extends AppCompatActivity implements
     private void finishLoading5() {
         scheduleTimeAdapter.notifyDataSetChanged();
 
+        bookingScheduleSuccess = true;
+        if(bookingTypeSuccess && bookingStationSuccess && bookingRouteSuccess) {
+            progressBar1.setVisibility(View.GONE);
+            bookingTypeView.setVisibility(View.VISIBLE);
+        }
+
         int targetStep = 5;
         if(!isInScheduleTime()) {
             scheduleTime = null;
@@ -2642,6 +2811,9 @@ public class BookingActivity extends AppCompatActivity implements
     private void setLogText5(String value) {
         scheduleTimeList.clear();
         scheduleTimeAdapter.notifyDataSetChanged();
+
+        bookingScheduleSuccess = false;
+        setLogText1(value);
 
         tvLog5.setText(value);
         tvLog5.setVisibility(View.VISIBLE);

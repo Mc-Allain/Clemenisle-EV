@@ -17,7 +17,6 @@ import com.example.firebase_clemenisle_ev.Classes.Place;
 import com.example.firebase_clemenisle_ev.R;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -27,7 +26,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
@@ -134,6 +132,9 @@ public class MapFragment extends Fragment {
             lng = bundle.getDouble("lng", defaultLatLng.longitude);
             name = bundle.getString("name");
             type = bundle.getInt("type", 0);
+
+            boolean fromBooking = bundle.getBoolean("fromBooking", false);
+            if(fromBooking) mapAutoFocus = true;
         }
 
         Place place = new Place(id, name, lat, lng);
@@ -218,6 +219,16 @@ public class MapFragment extends Fragment {
         });
 
         return view;
+    }
+
+    public void getUserCurrentLocation(LatLng latLng, String locationName) {
+        MarkerOptions markerOptions = new MarkerOptions();
+        markerOptions.position(latLng);
+        markerOptions.title(locationName);
+        markerOptions.icon(bitmapDescriptor(2));
+
+        myGoogleMap.addMarker(markerOptions).showInfoWindow();
+        myGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, currentZoom));
     }
 
     private void getMarkedPlace(String name, double lat, double lng) {
@@ -393,6 +404,10 @@ public class MapFragment extends Fragment {
         }
         else if(type == 1) {
             iconId = sMarkIcon;
+            iconColor = sMarkColor;
+        }
+        else if(type == 2) {
+            iconId = R.drawable.ic_baseline_emoji_people_24;
             iconColor = sMarkColor;
         }
 
