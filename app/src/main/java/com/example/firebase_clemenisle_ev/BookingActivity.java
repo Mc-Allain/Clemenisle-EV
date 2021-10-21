@@ -153,10 +153,12 @@ public class BookingActivity extends AppCompatActivity implements
     RecyclerView onTheSpotView;
 
     ConstraintLayout currentLocationLayout;
+    TextView tvCurrentLocation, tvLocateOnTheSpot;
+    ImageView currentLocationImage, locateOnTheSpotImage;
     FrameLayout mapLayout;
     ProgressBar progressBar7;
 
-    Button continueButton, backButton, customizeButton, currentLocationButton, locateOnTheSpotButton;
+    Button continueButton, backButton, customizeButton;
 
     Context myContext;
     Resources myResources;
@@ -247,6 +249,9 @@ public class BookingActivity extends AppCompatActivity implements
     FragmentManager fragmentManager = getSupportFragmentManager();
     LatLng currentLocation;
     FusedLocationProviderClient fusedLocationProviderClient;
+
+    ConstraintLayout notAccurateLocationLayout;
+    TextView tvNotAccurateLocation, tvNotAccurateLocation2;
 
     int currentStep = 1, endStep = 6, onTheSpotEndStep = 4;
 
@@ -419,9 +424,15 @@ public class BookingActivity extends AppCompatActivity implements
 
         currentLocationLayout = findViewById(R.id.currentLocationLayout);
         mapLayout = findViewById(R.id.mapLayout);
-        currentLocationButton = findViewById(R.id.currentLocationButton);
-        locateOnTheSpotButton = findViewById(R.id.locateOnTheSpotButton);
+        tvCurrentLocation = findViewById(R.id.tvCurrentLocation);
+        currentLocationImage = findViewById(R.id.currentLocationImage);
+        tvLocateOnTheSpot = findViewById(R.id.tvLocateOnTheSpot);
+        locateOnTheSpotImage = findViewById(R.id.locateOnTheSpotImage);
         progressBar7 = findViewById(R.id.progressBar7);
+
+        notAccurateLocationLayout = findViewById(R.id.notAccurateLocationLayout);
+        tvNotAccurateLocation = findViewById(R.id.tvNotAccurateLocation);
+        tvNotAccurateLocation2 = findViewById(R.id.tvNotAccurateLocation2);
 
         myContext = BookingActivity.this;
         myResources = myContext.getResources();
@@ -711,12 +722,21 @@ public class BookingActivity extends AppCompatActivity implements
 
                     checkCurrentLocationContinueButton();
                 }
+                else if(currentStep == 3) {
+                    currentLocationLayout.setVisibility(View.GONE);
+
+                    continueButton.setEnabled(false);
+                }
             }
 
-                if(currentStep < endStep) {
-                    currentStep++;
-                    tvSteps.setText(getStepText());
-                }
+            int selectedEndStep = endStep;
+            if(bookingType != null && bookingType.getId().equals("BT99"))
+                selectedEndStep = onTheSpotEndStep;
+
+            if(currentStep < selectedEndStep) {
+                currentStep++;
+                tvSteps.setText(getStepText());
+            }
         });
 
         backButton.setOnClickListener(view -> {
@@ -820,6 +840,11 @@ public class BookingActivity extends AppCompatActivity implements
 
                     checkOnTheSpotContinueButton();
                 }
+                else if(currentStep == 4) {
+                    currentLocationLayout.setVisibility(View.VISIBLE);
+
+                    checkCurrentLocationContinueButton();
+                }
             }
 
             if(currentStep > 1) {
@@ -919,9 +944,13 @@ public class BookingActivity extends AppCompatActivity implements
             }
         });
 
-        currentLocationButton.setOnClickListener(view -> currentLocationOnClick());
+        currentLocationImage.setOnClickListener(view -> currentLocationOnClick());
+        tvCurrentLocation.setOnClickListener(view -> currentLocationOnClick());
 
-        locateOnTheSpotButton.setOnClickListener(view -> mapFragment.locateOnTheSpot());
+        locateOnTheSpotImage.setOnClickListener(view -> mapFragment.locateOnTheSpot());
+        tvLocateOnTheSpot.setOnClickListener(view -> mapFragment.locateOnTheSpot());
+
+        tvNotAccurateLocation2.setOnClickListener(view -> Toast.makeText(myContext, "Not yet implemented", Toast.LENGTH_SHORT).show());
     }
 
     private String getStepText() {
@@ -977,11 +1006,25 @@ public class BookingActivity extends AppCompatActivity implements
 
     @Override
     public void setCurrentLocationEnabled(boolean value) {
-        if(currentLocationButton != null) currentLocationButton.setEnabled(value);
-        if(locateOnTheSpotButton != null) locateOnTheSpotButton.setEnabled(value);
+        if(tvCurrentLocation != null) tvCurrentLocation.setEnabled(value);
+        if(currentLocationImage != null) currentLocationImage.setEnabled(value);
+        if(tvLocateOnTheSpot != null) tvLocateOnTheSpot.setEnabled(value);
+        if(locateOnTheSpotImage != null) locateOnTheSpotImage.setEnabled(value);
 
-        if(value) progressBar7.setVisibility(View.GONE);
-        else progressBar7.setVisibility(View.VISIBLE);
+        if(value) {
+            progressBar7.setVisibility(View.GONE);
+            if(tvCurrentLocation != null) tvCurrentLocation.setTextColor(colorBlue);
+            if(currentLocationImage != null) currentLocationImage.setColorFilter(colorBlue);
+            if(tvLocateOnTheSpot != null) tvLocateOnTheSpot.setTextColor(colorBlue);
+            if(locateOnTheSpotImage != null) locateOnTheSpotImage.setColorFilter(colorBlue);
+        }
+        else {
+            progressBar7.setVisibility(View.VISIBLE);
+            if(tvCurrentLocation != null) tvCurrentLocation.setTextColor(colorInitial);
+            if(currentLocationImage != null) currentLocationImage.setColorFilter(colorInitial);
+            if(tvLocateOnTheSpot != null) tvLocateOnTheSpot.setTextColor(colorInitial);
+            if(locateOnTheSpotImage != null) locateOnTheSpotImage.setColorFilter(colorInitial);
+        }
     }
 
     @Override
@@ -1021,6 +1064,12 @@ public class BookingActivity extends AppCompatActivity implements
             currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
             mapFragment.getUserCurrentLocation(currentLocation, "Your Location");
             checkCurrentLocationContinueButton();
+
+            Toast.makeText(
+                    myContext,
+                    "Please check if your current location is accurate.",
+                    Toast.LENGTH_LONG
+            ).show();
         }
         else {
             locationRequest = LocationRequest.create();
@@ -2390,6 +2439,9 @@ public class BookingActivity extends AppCompatActivity implements
 
     private void checkCurrentLocationContinueButton() {
         continueButton.setEnabled(currentLocation != null);
+
+        if(currentLocation != null) notAccurateLocationLayout.setVisibility(View.VISIBLE);
+        else notAccurateLocationLayout.setVisibility(View.GONE);
     }
 
     private void rebootStep(int targetStep) {
