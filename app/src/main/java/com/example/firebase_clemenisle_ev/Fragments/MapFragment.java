@@ -22,6 +22,8 @@ import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -234,6 +236,10 @@ public class MapFragment extends Fragment {
         });
 
         return view;
+    }
+
+    public Polyline getRoute(Object... values) {
+        return myGoogleMap.addPolyline((PolylineOptions) values[0]);
     }
 
     public void mapSettingsRequestResult(LatLng currentLocation) {
