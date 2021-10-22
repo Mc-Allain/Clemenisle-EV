@@ -144,15 +144,20 @@ public class MapFragment extends Fragment {
             if(fromBooking) mapAutoFocus = true;
         }
 
-        Place place = new Place(id, name, lat, lng);
+        if(type == 2) {
+            currentLocation = new LatLng(lat, lng);
+        }
+        else {
+            Place place = new Place(id, name, lat, lng);
 
-        if(type == 0) {
-            selectedTouristSpots.add(place);
+            if(type == 0) {
+                selectedTouristSpots.add(place);
+            }
+            else if(type == 1) {
+                selectedStations.add(place);
+            }
+            selectedPlace = place;
         }
-        else if(type == 1) {
-            selectedStations.add(place);
-        }
-        selectedPlace = place;
         selectedType = type;
 
         SupportMapFragment supportMapFragment =
@@ -464,6 +469,14 @@ public class MapFragment extends Fragment {
             firstList.addAll(selectedTouristSpots);
             secondList.addAll(selectedStations);
         }
+        else if(selectedType == 2) {
+            firstList.addAll(selectedTouristSpots);
+            secondList.addAll(selectedStations);
+            selectedPlace = null;
+        }
+
+        if(!fromBooking && currentLocation != null)
+            markCurrentLocation(currentLocation, "Your Location");
 
         for(Place place : firstList) {
             placeMark(place, flType, null);

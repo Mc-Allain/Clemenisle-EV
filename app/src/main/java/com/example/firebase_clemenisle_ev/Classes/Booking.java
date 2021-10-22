@@ -17,7 +17,6 @@ public class Booking {
     }
 
     public Booking(DataSnapshot dataSnapshot) {
-
         this.id = dataSnapshot.child("id").getValue(String.class);
         this.message = dataSnapshot.child("message").getValue(String.class);
         this.schedule = dataSnapshot.child("schedule").getValue(String.class);

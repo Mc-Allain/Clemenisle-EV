@@ -53,6 +53,7 @@ import com.example.firebase_clemenisle_ev.Classes.DateTimeToString;
 import com.example.firebase_clemenisle_ev.Classes.DetailedTouristSpot;
 import com.example.firebase_clemenisle_ev.Classes.FetchURL;
 import com.example.firebase_clemenisle_ev.Classes.FirebaseURL;
+import com.example.firebase_clemenisle_ev.Classes.OnTheSpotBooking;
 import com.example.firebase_clemenisle_ev.Classes.Route;
 import com.example.firebase_clemenisle_ev.Classes.ScheduleTime;
 import com.example.firebase_clemenisle_ev.Classes.SimpleTouristSpot;
@@ -306,6 +307,35 @@ public class BookingActivity extends AppCompatActivity implements
     ImageView reloadImage4p3;
     ProgressBar progressBar4p3;
 
+    Dialog dialog3;
+
+    ConstraintLayout contentLayout2;
+
+    ScrollView scrollView2;
+    ImageView dialog3CloseImage;
+
+    ConstraintLayout bookingTypeLayout2;
+    TextView tvBookingType4, tvPrice2;
+
+    ConstraintLayout destinationLayout;
+    ImageView locateImage3;
+    TextView  tvDestination2, tvLocate3;
+
+    ConstraintLayout currentLocationLayout2;
+    ImageView locateImage4;
+    TextView tvCurrentLocation2, tvLocate4;
+
+    ConstraintLayout bookingScheduleLayout2;
+    TextView tvBookingSchedule4;
+
+    ConstraintLayout messageLayout2;
+    ExpandableTextView extvMessage2;
+
+    ConstraintLayout buttonLayout3;
+    Button submitButton2;
+
+    ProgressBar dialog3ProgressBar;
+
     String defaultSpotCountText = "Number of Tourist Spot(s): ";
 
     String userId;
@@ -478,6 +508,7 @@ public class BookingActivity extends AppCompatActivity implements
 
         tvSteps.setText(getStepText());
 
+        initOnTheSpotBookingInformationDialog();
         initBookingInformationDialog();
         initAllSpotsDialog();
 
@@ -715,15 +746,26 @@ public class BookingActivity extends AppCompatActivity implements
                     firstConstraint.setVisibility(View.GONE);
                     onTheSpotLayout.setVisibility(View.VISIBLE);
 
+                    bookingTypeLayout2.setVisibility(View.VISIBLE);
+                    tvBookingType4.setText(bookingType.getName());
+                    String price = "₱" + bookingType.getPrice();
+                    if(price.split("\\.")[1].length() == 1) price += 0;
+                    tvPrice2.setText(price);
+
                     tvActivityName.setText(onTheSpotActivityText);
 
                     checkOnTheSpotContinueButton();
                     backButton.setVisibility(View.VISIBLE);
+                    infoImage.setVisibility(View.VISIBLE);
+                    tvBookingInfo.setVisibility(View.VISIBLE);
                 }
                 else if(currentStep == 2) {
                     onTheSpotLayout.setVisibility(View.GONE);
                     currentLocationLayout.setVisibility(View.VISIBLE);
                     showMap();
+
+                    destinationLayout.setVisibility(View.VISIBLE);
+                    tvDestination2.setText(onTheSpot.getName());
 
                     tvActivityName.setText(currentLocationActivityText);
                     tvCaption.setText(currentLocationCaptionText);
@@ -734,9 +776,34 @@ public class BookingActivity extends AppCompatActivity implements
                     currentLocationLayout.setVisibility(View.GONE);
                     sixthConstraint.setVisibility(View.VISIBLE);
 
+                    currentLocationLayout2.setVisibility(View.VISIBLE);
+                    String currentLocationValue =
+                            "Latitude: " + currentLocation.latitude +
+                            "\nLongitude: " + currentLocation.longitude;
+                    tvCurrentLocation2.setText(currentLocationValue);
+
+                    dateTimeToString = new DateTimeToString();
+
+                    calendarYear = calendar.get(Calendar.YEAR);
+                    calendarMonth = calendar.get(Calendar.MONTH);
+                    calendarDay = calendar.get(Calendar.DAY_OF_MONTH);
+                    rawScheduleDate = calendarYear + "-" + calendarMonth + "-" + calendarDay;
+
+                    dateTimeToString.setDateToSplit(rawScheduleDate);
+                    bookingScheduleText =
+                            dateTimeToString.getDate() + " | " + dateTimeToString.getTime();
+
+                    bookingScheduleLayout2.setVisibility(View.VISIBLE);
+                    tvBookingSchedule4.setText(bookingScheduleText);
+
+                    if(message.length() > 0) messageLayout2.setVisibility(View.VISIBLE);
+                    else messageLayout2.setVisibility(View.GONE);
+                    buttonLayout3.setVisibility(View.VISIBLE);
+
                     tvActivityName.setText(messageActivityText);
                     tvCaption.setText(messageCaptionText);
                 }
+                else if(currentStep == 4) dialog3.show();
             }
 
             int selectedEndStep = endStep;
@@ -844,6 +911,8 @@ public class BookingActivity extends AppCompatActivity implements
                     currentLocationLayout.setVisibility(View.GONE);
                     onTheSpotLayout.setVisibility(View.VISIBLE);
 
+                    destinationLayout.setVisibility(View.GONE);
+
                     tvActivityName.setText(onTheSpotActivityText);
                     tvCaption.setText(defaultCaptionText);
                     tvCaption.setTextColor(colorBlack);
@@ -853,6 +922,15 @@ public class BookingActivity extends AppCompatActivity implements
                 else if(currentStep == 4) {
                     sixthConstraint.setVisibility(View.GONE);
                     currentLocationLayout.setVisibility(View.VISIBLE);
+
+                    currentLocationLayout2.setVisibility(View.GONE);
+
+                    bookingScheduleLayout2.setVisibility(View.GONE);
+
+                    rawScheduleDate = "";
+
+                    messageLayout2.setVisibility(View.GONE);
+                    buttonLayout3.setVisibility(View.GONE);
 
                     tvActivityName.setText(currentLocationActivityText);
                     tvCaption.setText(currentLocationCaptionText);
@@ -935,26 +1013,34 @@ public class BookingActivity extends AppCompatActivity implements
             public void afterTextChanged(Editable editable) {
                 message = etMessage.getText().toString();
 
-                if(message.length() > 0) messageLayout.setVisibility(View.VISIBLE);
-                else messageLayout.setVisibility(View.GONE);
+                if(bookingType.getId().equals("BT99")) {
+                    if(message.length() > 0) messageLayout2.setVisibility(View.VISIBLE);
+                    else messageLayout2.setVisibility(View.GONE);
 
-                ConstraintLayout.LayoutParams layoutParams =
-                        (ConstraintLayout.LayoutParams) contentLayout.getLayoutParams();
-
-                if(message.length() > 256) {
-                    layoutParams.height = dpToPx(0);
-                    dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
-                            ViewGroup.LayoutParams.MATCH_PARENT);
+                    extvMessage2.setText(message);
                 }
                 else {
-                    layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT;
-                    dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
-                            ViewGroup.LayoutParams.WRAP_CONTENT);
+                    if(message.length() > 0) messageLayout.setVisibility(View.VISIBLE);
+                    else messageLayout.setVisibility(View.GONE);
+
+                    ConstraintLayout.LayoutParams layoutParams =
+                        (ConstraintLayout.LayoutParams) contentLayout.getLayoutParams();
+
+                    if(message.length() > 256) {
+                        layoutParams.height = dpToPx(0);
+                        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
+                                ViewGroup.LayoutParams.MATCH_PARENT);
+                    }
+                    else {
+                        layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+                        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
+                                ViewGroup.LayoutParams.WRAP_CONTENT);
+                    }
+
+                    contentLayout.setLayoutParams(layoutParams);
+
+                    extvMessage.setText(message);
                 }
-
-                contentLayout.setLayoutParams(layoutParams);
-
-                extvMessage.setText(message);
             }
         });
 
@@ -1554,10 +1640,94 @@ public class BookingActivity extends AppCompatActivity implements
         TransitionManager.beginDelayedTransition(selectedSpotLayout, transition);
     }
 
+    private void initOnTheSpotBookingInformationDialog() {
+        dialog3 = new Dialog(myContext);
+        dialog3.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog3.setContentView(R.layout.dialog_on_the_spot_booking_information_layout);
+
+        dialog3CloseImage = dialog3.findViewById(R.id.dialogCloseImage);
+        scrollView2 = dialog3.findViewById(R.id.scrollView);
+        contentLayout2 = dialog3.findViewById(R.id.contentLayout);
+
+        bookingTypeLayout2 = dialog3.findViewById(R.id.bookingTypeLayout);
+        tvBookingType4 = dialog3.findViewById(R.id.tvBookingType2);
+        tvPrice2 = dialog3.findViewById(R.id.tvPrice);
+
+        destinationLayout = dialog3.findViewById(R.id.destinationLayout);
+        tvDestination2 = dialog3.findViewById(R.id.tvDestination2);
+        locateImage3 = dialog3.findViewById(R.id.locateImage);
+        tvLocate3 = dialog3.findViewById(R.id.tvLocate);
+
+        currentLocationLayout2 = dialog3.findViewById(R.id.currentLocationLayout);
+        tvCurrentLocation2 = dialog3.findViewById(R.id.tvCurrentLocation2);
+        locateImage4 = dialog3.findViewById(R.id.locateImage2);
+        tvLocate4 = dialog3.findViewById(R.id.tvLocate2);
+
+        bookingScheduleLayout2 = dialog3.findViewById(R.id.bookingScheduleLayout);
+        tvBookingSchedule4 = dialog3.findViewById(R.id.tvBookingSchedule2);
+
+        messageLayout2 = dialog3.findViewById(R.id.messageLayout);
+        extvMessage2 = dialog3.findViewById(R.id.extvMessage);
+
+        buttonLayout3 = dialog3.findViewById(R.id.buttonLayout);
+        submitButton2 = dialog3.findViewById(R.id.submitButton);
+
+        dialog3ProgressBar = dialog3.findViewById(R.id.dialogProgressBar);
+
+        ConstraintLayout.LayoutParams layoutParams =
+                (ConstraintLayout.LayoutParams) contentLayout2.getLayoutParams();
+        layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+        contentLayout2.setLayoutParams(layoutParams);
+
+        tvLocate3.setOnClickListener(view -> openMap3());
+        locateImage3.setOnClickListener(view -> openMap3());
+
+        tvLocate4.setOnClickListener(view -> openMap4());
+        locateImage4.setOnClickListener(view -> openMap4());
+
+        submitButton2.setOnClickListener(view -> generateBookingId());
+
+        dialog3CloseImage.setOnClickListener(view -> dialog3.dismiss());
+
+        dialog3.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT);
+        dialog3.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+        dialog3.getWindow().getAttributes().windowAnimations = R.style.animBottomSlide;
+        dialog3.getWindow().setGravity(Gravity.BOTTOM);
+    }
+
+    private void openMap3() {
+        Intent intent = new Intent(myContext, MapActivity.class);
+        intent.putExtra("id", onTheSpot.getId());
+        intent.putExtra("lat", onTheSpot.getLat());
+        intent.putExtra("lng", onTheSpot.getLng());
+        intent.putExtra("name", onTheSpot.getName());
+        intent.putExtra("type", 1);
+        myContext.startActivity(intent);
+    }
+
+    private void openMap4() {
+        Intent intent = new Intent(myContext, MapActivity.class);
+        intent.putExtra("id", 0);
+        intent.putExtra("lat", currentLocation.latitude);
+        intent.putExtra("lng", currentLocation.longitude);
+        intent.putExtra("name", "You Location");
+        intent.putExtra("type", 2);
+        myContext.startActivity(intent);
+    }
+
     private void openBookingInfo() {
-        if(dialog != null) {
-            scrollView.scrollTo(0, 0);
-            dialog.show();
+        if(bookingType.getId().equals("BT99")) {
+            if(dialog3 != null) {
+                scrollView2.scrollTo(0, 0);
+                dialog3.show();
+            }
+        }
+        else {
+            if(dialog != null) {
+                scrollView.scrollTo(0, 0);
+                dialog.show();
+            }
         }
     }
 
@@ -1662,7 +1832,8 @@ public class BookingActivity extends AppCompatActivity implements
 
                     bookingId += "-" + idSuffix;
 
-                    addBooking(bookingId);
+                    if(bookingType.getId().equals("BT99")) addOnTheSpotBooking(bookingId);
+                    else addBooking(bookingId);
                 }
             }
 
@@ -1676,6 +1847,36 @@ public class BookingActivity extends AppCompatActivity implements
 
                 isGeneratingBookingId = false;
                 usersRef = null;
+
+                setDialogScreenEnabled(true);
+                dialogProgressBar.setVisibility(View.GONE);
+            }
+        });
+    }
+
+    private void addOnTheSpotBooking(String bookingId) {
+        OnTheSpotBooking onTheSpotBooking =
+                new OnTheSpotBooking(bookingType, onTheSpot, currentLocation.latitude,
+                        currentLocation.longitude, bookingId, message, bookingScheduleText,
+                        "Processing");
+
+        DatabaseReference bookingListRef = firebaseDatabase.getReference("users")
+                .child(userId).child("bookingList").child(bookingId);
+        bookingListRef.setValue(onTheSpotBooking).addOnCompleteListener(task -> {
+
+            if(task.isSuccessful()) {
+                Toast.makeText(
+                        myContext,
+                        "Successfully booked a service.",
+                        Toast.LENGTH_LONG
+                ).show();
+            }
+            else {
+                Toast.makeText(
+                        myContext,
+                        "Failed to book a service. Please try again.",
+                        Toast.LENGTH_LONG
+                ).show();
 
                 setDialogScreenEnabled(true);
                 dialogProgressBar.setVisibility(View.GONE);
@@ -1739,7 +1940,15 @@ public class BookingActivity extends AppCompatActivity implements
                     bookingListRef.child("routeSpots").child(route.getRouteId());
             routeSpotsRef.setValue(route).addOnCompleteListener(task -> {
                         if(task.isSuccessful()) {
-                            if(isLastItem) proceedToNextActivity(bookingId);
+                            if(isLastItem) {
+                                Toast.makeText(
+                                        myContext,
+                                        "Successfully booked a tour",
+                                        Toast.LENGTH_LONG
+                                ).show();
+
+                                proceedToNextActivity(bookingId);
+                            }
                         }
                         else {
                             Toast.makeText(
@@ -1767,12 +1976,6 @@ public class BookingActivity extends AppCompatActivity implements
         intent.putExtra("isLatest", false);
 
         startActivity(intent);
-
-        Toast.makeText(
-                myContext,
-                "Successfully booked a tour",
-                Toast.LENGTH_LONG
-        ).show();
     }
 
     private void setDialogScreenEnabled(boolean value) {
