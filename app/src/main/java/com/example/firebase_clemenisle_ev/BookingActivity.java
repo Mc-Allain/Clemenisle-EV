@@ -732,8 +732,10 @@ public class BookingActivity extends AppCompatActivity implements
                 }
                 else if(currentStep == 3) {
                     currentLocationLayout.setVisibility(View.GONE);
+                    sixthConstraint.setVisibility(View.VISIBLE);
 
-                    continueButton.setEnabled(false);
+                    tvActivityName.setText(messageActivityText);
+                    tvCaption.setText(messageCaptionText);
                 }
             }
 
@@ -849,7 +851,11 @@ public class BookingActivity extends AppCompatActivity implements
                     checkOnTheSpotContinueButton();
                 }
                 else if(currentStep == 4) {
+                    sixthConstraint.setVisibility(View.GONE);
                     currentLocationLayout.setVisibility(View.VISIBLE);
+
+                    tvActivityName.setText(currentLocationActivityText);
+                    tvCaption.setText(currentLocationCaptionText);
 
                     checkCurrentLocationContinueButton();
                 }

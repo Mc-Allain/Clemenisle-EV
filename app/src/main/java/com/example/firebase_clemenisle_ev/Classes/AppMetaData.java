@@ -11,7 +11,8 @@ public class AppMetaData {
                     "• Profile Image Added\n" +
                     "• Booking Alert Dialog Added\n" +
                     "• Help Section Added\n" +
-                    "• Preference Section Added";
+                    "• Preference Section Added\n" +
+                    "• On The Spot(Single Spot) Service added";
     double currentVersion = 0.3, latestVersion = 0;
     String status;
     boolean isDeveloper = false;
