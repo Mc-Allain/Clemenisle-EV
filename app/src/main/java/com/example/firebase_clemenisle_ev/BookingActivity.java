@@ -1,6 +1,7 @@
 package com.example.firebase_clemenisle_ev;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -298,6 +299,13 @@ public class BookingActivity extends AppCompatActivity implements
     ImageView reloadImage4p3;
     ProgressBar progressBar4p3;
 
+    Dialog dialog3;
+    ImageView dialogCloseImage3;
+    FrameLayout dialogMapLayout;
+
+    MapFragment dialogMapFragment;
+    FragmentManager dialogFragmentManager = getSupportFragmentManager();
+
     String defaultSpotCountText = "Number of Tourist Spot(s): ";
 
     String userId;
@@ -472,6 +480,7 @@ public class BookingActivity extends AppCompatActivity implements
 
         initBookingInformationDialog();
         initAllSpotsDialog();
+        initCurrentLocationDialog();
 
         Glide.with(myContext).load(R.drawable.magnify_4s_256px).into(reloadImage1);
         Glide.with(myContext).load(R.drawable.magnify_4s_256px).into(reloadImage2);
@@ -950,7 +959,7 @@ public class BookingActivity extends AppCompatActivity implements
         locateOnTheSpotImage.setOnClickListener(view -> mapFragment.locateOnTheSpot());
         tvLocateOnTheSpot.setOnClickListener(view -> mapFragment.locateOnTheSpot());
 
-        tvNotAccurateLocation2.setOnClickListener(view -> Toast.makeText(myContext, "Not yet implemented", Toast.LENGTH_SHORT).show());
+        tvNotAccurateLocation2.setOnClickListener(view -> dialog3.show());
     }
 
     private String getStepText() {
@@ -1029,11 +1038,14 @@ public class BookingActivity extends AppCompatActivity implements
 
     @Override
     public void currentLocationOnClick() {
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(BookingActivity.this);
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient((Activity) myContext);
 
         if(ActivityCompat.checkSelfPermission(myContext,
                 Manifest.permission.ACCESS_FINE_LOCATION) ==
-                PackageManager.PERMISSION_GRANTED
+                PackageManager.PERMISSION_GRANTED &&
+            ActivityCompat.checkSelfPermission(myContext,
+                    Manifest.permission.ACCESS_COARSE_LOCATION) ==
+                    PackageManager.PERMISSION_GRANTED
         ) {
             progressBar7.setVisibility(View.VISIBLE);
             Task<Location> locationTask = fusedLocationProviderClient.getLastLocation();
@@ -1048,7 +1060,7 @@ public class BookingActivity extends AppCompatActivity implements
                     );
         }
         else {
-            ActivityCompat.requestPermissions(BookingActivity.this,
+            ActivityCompat.requestPermissions((Activity) myContext,
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 44);
         }
     }
@@ -1115,7 +1127,10 @@ public class BookingActivity extends AppCompatActivity implements
             if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 if(ActivityCompat.checkSelfPermission(myContext,
                         Manifest.permission.ACCESS_FINE_LOCATION) ==
-                        PackageManager.PERMISSION_GRANTED
+                        PackageManager.PERMISSION_GRANTED &&
+                    ActivityCompat.checkSelfPermission(myContext,
+                            Manifest.permission.ACCESS_COARSE_LOCATION) ==
+                            PackageManager.PERMISSION_GRANTED
                 ) {
                     tvCaption.setTextColor(colorBlack);
                     progressBar7.setVisibility(View.VISIBLE);
@@ -1133,6 +1148,31 @@ public class BookingActivity extends AppCompatActivity implements
             }
             else tvCaption.setTextColor(colorRed);
         }
+    }
+
+    private void initCurrentLocationDialog() {
+        dialog3 = new Dialog(myContext);
+        dialog3.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog3.setContentView(R.layout.dialog_current_location_layout);
+
+        dialogCloseImage3 = dialog3.findViewById(R.id.dialogCloseImage);
+        dialogMapLayout = dialog3.findViewById(R.id.mapLayout);
+
+        dialogMapFragment = new MapFragment();
+
+        Bundle bundle = new Bundle();
+        bundle.putBoolean("isMarkingCurrentLocation", true);
+        dialogMapFragment.setArguments(bundle);
+
+        dialogFragmentManager.beginTransaction().replace(dialogMapLayout.getId(), dialogMapFragment).commit();
+
+        dialogCloseImage3.setOnClickListener(view -> dialog3.dismiss());
+
+        dialog3.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT);
+        dialog3.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+        dialog3.getWindow().getAttributes().windowAnimations = R.style.animBottomSlide;
+        dialog3.getWindow().setGravity(Gravity.BOTTOM);
     }
 
     private void showDatePickerDialog() {
@@ -1948,6 +1988,7 @@ public class BookingActivity extends AppCompatActivity implements
         tvLog1.setVisibility(View.GONE);
         reloadImage1.setVisibility(View.GONE);
         progressBar1.setVisibility(View.VISIBLE);
+        bookingTypeView.setVisibility(View.INVISIBLE);
 
         Query bookingTypesQuery = firebaseDatabase.getReference("bookingTypeList")
                 .orderByChild("deactivated").equalTo(false);
