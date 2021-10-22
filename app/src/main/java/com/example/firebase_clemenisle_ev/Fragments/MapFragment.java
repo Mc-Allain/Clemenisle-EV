@@ -56,8 +56,10 @@ public class MapFragment extends Fragment {
     int tsMarkColor, sMarkColor, tsMarkIcon, sMarkIcon, mapType;
     boolean mapAutoFocus, locateFocus = false;
 
-    boolean fromBooking, isMarkingCurrentLocation;
+    boolean fromBooking;
     ButtonInterface buttonInterface;
+
+    LatLng currentLocation;
 
     private void initSharedPreferences() {
         SharedPreferences sharedPreferences = myContext
@@ -130,19 +132,14 @@ public class MapFragment extends Fragment {
 
         Bundle bundle = getArguments();
         if(bundle != null) {
-            isMarkingCurrentLocation =
-                    bundle.getBoolean("isMarkingCurrentLocation", false);
+            id = bundle.getString("id");
+            lat = bundle.getDouble("lat", defaultLatLng.latitude);
+            lng = bundle.getDouble("lng", defaultLatLng.longitude);
+            name = bundle.getString("name");
+            type = bundle.getInt("type", 0);
 
-            if(!isMarkingCurrentLocation) {
-                id = bundle.getString("id");
-                lat = bundle.getDouble("lat", defaultLatLng.latitude);
-                lng = bundle.getDouble("lng", defaultLatLng.longitude);
-                name = bundle.getString("name");
-                type = bundle.getInt("type", 0);
-
-                fromBooking = bundle.getBoolean("fromBooking", false);
-                if(fromBooking) mapAutoFocus = true;
-            }
+            fromBooking = bundle.getBoolean("fromBooking", false);
+            if(fromBooking) mapAutoFocus = true;
         }
 
         Place place = new Place(id, name, lat, lng);
@@ -167,35 +164,31 @@ public class MapFragment extends Fragment {
 
             LatLng latLng = new LatLng(lat, lng), zoomLatLng;
 
-            if(mapAutoFocus && !isMarkingCurrentLocation) zoomLatLng = new LatLng(lat, lng);
+            if(mapAutoFocus) zoomLatLng = new LatLng(lat, lng);
             else zoomLatLng = mapCoordinates.getInitialLatLng();
 
-            if(!isMarkingCurrentLocation) {
+            if(buttonInterface == null) {
                 MarkerOptions markerOptions = new MarkerOptions();
                 markerOptions.position(latLng);
                 markerOptions.title(name);
                 markerOptions.icon(bitmapDescriptor(type));
                 googleMap.addMarker(markerOptions).showInfoWindow();
+
+                googleMap.animateCamera(
+                        CameraUpdateFactory.newLatLngZoom(zoomLatLng, currentZoom),
+                        new GoogleMap.CancelableCallback() {
+                            @Override
+                            public void onFinish() {
+                                setButtonEnabled(true);
+                            }
+
+                            @Override
+                            public void onCancel() {
+
+                            }
+                        });
             }
-
-            googleMap.animateCamera(
-                    CameraUpdateFactory.newLatLngZoom(zoomLatLng, currentZoom),
-                    new GoogleMap.CancelableCallback() {
-                        @Override
-                        public void onFinish() {
-                            setButtonEnabled(true);
-                        }
-
-                        @Override
-                        public void onCancel() {
-
-                        }
-                    });
-
-            if(buttonInterface != null) {
-                currentZoom = defaultZoom;
-                buttonInterface.currentLocationOnClick();
-            }
+            else buttonInterface.currentLocationOnClick();
 
             googleMap.setOnCameraMoveListener(() -> {
                 currentZoom = googleMap.getCameraPosition().zoom;
@@ -205,8 +198,7 @@ public class MapFragment extends Fragment {
             googleMap.setOnCameraMoveCanceledListener(() -> setButtonEnabled(true));
 
             googleMap.setOnMapClickListener(latLng1 -> {
-                if(isMarkingCurrentLocation)
-                    getUserCurrentLocation(latLng1, "Your Location");
+                if(fromBooking) getUserCurrentLocation(latLng1, "Your Location");
             });
 
             googleMap.setOnMarkerClickListener(marker -> {
@@ -244,6 +236,13 @@ public class MapFragment extends Fragment {
         return view;
     }
 
+    public void mapSettingsRequestResult(LatLng currentLocation) {
+        initSharedPreferences();
+        myGoogleMap.setMapType(mapType);
+        if(selectedType == 0) locateOnTheSpot();
+        if(selectedType == 2) getUserCurrentLocation(currentLocation, "Your Location");
+    }
+
     private void setButtonEnabled(boolean value) {
         resetButton.setEnabled(value);
         if(buttonInterface != null) buttonInterface.setCurrentLocationEnabled(value);
@@ -256,23 +255,30 @@ public class MapFragment extends Fragment {
     public interface ButtonInterface {
         void setCurrentLocationEnabled(boolean value);
         void currentLocationOnClick();
+        void sendCurrentLocation(LatLng currentLocation);
     }
 
-    public void getUserCurrentLocation(LatLng latLng, String locationName) {
-        myGoogleMap.clear();
-
-        LatLng onTheSpotLatLng = new LatLng(selectedPlace.getLat(), selectedPlace.getLng());
-        markOnTheSpot(onTheSpotLatLng);
-
-        setButtonEnabled(false);
-
+    private void markCurrentLocation(LatLng latLng, String locationName) {
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(latLng);
         markerOptions.title(locationName);
         markerOptions.icon(bitmapDescriptor(2));
 
         myGoogleMap.addMarker(markerOptions).showInfoWindow();
+    }
 
+    public void getUserCurrentLocation(LatLng latLng, String locationName) {
+        myGoogleMap.clear();
+        selectedType = 2;
+
+        LatLng onTheSpotLatLng = new LatLng(selectedPlace.getLat(), selectedPlace.getLng());
+        markOnTheSpot(onTheSpotLatLng);
+
+        markCurrentLocation(latLng, locationName);
+
+        setButtonEnabled(false);
+
+        currentZoom = defaultZoom;
         myGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, currentZoom),
                 new GoogleMap.CancelableCallback() {
                     @Override
@@ -285,24 +291,32 @@ public class MapFragment extends Fragment {
 
                     }
                 });
+
+        currentLocation = latLng;
+        if(buttonInterface != null) buttonInterface.sendCurrentLocation(latLng);
     }
 
     private void markOnTheSpot(LatLng latLng) {
-        String locationName = selectedPlace.getName();
+        String placeName = selectedPlace.getName();
 
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(latLng);
-        markerOptions.title(locationName);
+        markerOptions.title(placeName);
         markerOptions.icon(bitmapDescriptor(0));
 
         myGoogleMap.addMarker(markerOptions).showInfoWindow();
     }
 
     public void locateOnTheSpot() {
-        setButtonEnabled(false);
+        myGoogleMap.clear();
+        selectedType = 0;
+
+        markCurrentLocation(currentLocation, "Your Location");
 
         LatLng onTheSpotLatLng = new LatLng(selectedPlace.getLat(), selectedPlace.getLng());
         markOnTheSpot(onTheSpotLatLng);
+
+        setButtonEnabled(false);
 
         myGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(onTheSpotLatLng, currentZoom),
                 new GoogleMap.CancelableCallback() {
@@ -334,6 +348,8 @@ public class MapFragment extends Fragment {
                 return;
             }
         }
+
+        selectedType = 2;
     }
 
     private boolean isInPlaceList(Place targetPlace, List<Place> placeList) {

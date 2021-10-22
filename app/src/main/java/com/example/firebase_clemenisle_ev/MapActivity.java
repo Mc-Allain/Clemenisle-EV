@@ -58,7 +58,7 @@ implements MapTouristSpotFragment.OnComboBoxClickListener,
     String name;
 
     int bottom;
-    boolean isPlaceViewShown = false;
+    boolean isPlaceViewShown = false, fromBooking = false, isMapSettingsChanged = false;
 
     ColorStateList cslRed, cslBlue;
 
@@ -83,6 +83,7 @@ implements MapTouristSpotFragment.OnComboBoxClickListener,
         lng = intent.getDoubleExtra("lng", mapCoordinates.getInitialLatLng().longitude);
         name = intent.getStringExtra("name");
         type = intent.getIntExtra("type", 0);
+        fromBooking = intent.getBooleanExtra("fromBooking", false);
 
         Bundle bundle = new Bundle();
         bundle.putString("id", id);
@@ -163,6 +164,14 @@ implements MapTouristSpotFragment.OnComboBoxClickListener,
                 tabLayout.selectTab(tabLayout.getTabAt(position));
             }
         });
+
+        if(fromBooking) {
+            setResult(RESULT_OK);
+            fab.performClick();
+            int position = tabAdapter.getItemCount()-1;
+            tabLayout.selectTab(tabLayout.getTabAt(position));
+            viewPager.setCurrentItem(position);
+        }
     }
 
     private void transition1(ConstraintSet constraintSet) {

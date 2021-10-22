@@ -82,6 +82,7 @@ import java.util.Collections;
 import java.util.List;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
@@ -102,6 +103,8 @@ public class BookingActivity extends AppCompatActivity implements
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance(firebaseURL);
     FirebaseAuth firebaseAuth;
     FirebaseUser firebaseUser;
+
+    private final static int MAP_SETTINGS_REQUEST = 1;
 
     ConstraintLayout buttonLayout;
     TextView tvActivityName, tvCaption, tvSteps, tvBookingInfo;
@@ -154,8 +157,8 @@ public class BookingActivity extends AppCompatActivity implements
     RecyclerView onTheSpotView;
 
     ConstraintLayout currentLocationLayout;
-    TextView tvCurrentLocation, tvLocateOnTheSpot;
-    ImageView currentLocationImage, locateOnTheSpotImage;
+    TextView tvCurrentLocation, tvLocateOnTheSpot, tvMapSettings;
+    ImageView currentLocationImage, locateOnTheSpotImage, mapSettingsImage;
     FrameLayout mapLayout;
     ProgressBar progressBar7;
 
@@ -252,7 +255,6 @@ public class BookingActivity extends AppCompatActivity implements
     FusedLocationProviderClient fusedLocationProviderClient;
 
     ConstraintLayout notAccurateLocationLayout;
-    TextView tvNotAccurateLocation, tvNotAccurateLocation2;
 
     int currentStep = 1, endStep = 6, onTheSpotEndStep = 4;
 
@@ -298,13 +300,6 @@ public class BookingActivity extends AppCompatActivity implements
     TextView tvLog4p3;
     ImageView reloadImage4p3;
     ProgressBar progressBar4p3;
-
-    Dialog dialog3;
-    ImageView dialogCloseImage3;
-    FrameLayout dialogMapLayout;
-
-    MapFragment dialogMapFragment;
-    FragmentManager dialogFragmentManager = getSupportFragmentManager();
 
     String defaultSpotCountText = "Number of Tourist Spot(s): ";
 
@@ -436,11 +431,11 @@ public class BookingActivity extends AppCompatActivity implements
         currentLocationImage = findViewById(R.id.currentLocationImage);
         tvLocateOnTheSpot = findViewById(R.id.tvLocateOnTheSpot);
         locateOnTheSpotImage = findViewById(R.id.locateOnTheSpotImage);
+        tvMapSettings = findViewById(R.id.tvMapSettings);
+        mapSettingsImage = findViewById(R.id.mapSettingsImage);
         progressBar7 = findViewById(R.id.progressBar7);
 
         notAccurateLocationLayout = findViewById(R.id.notAccurateLocationLayout);
-        tvNotAccurateLocation = findViewById(R.id.tvNotAccurateLocation);
-        tvNotAccurateLocation2 = findViewById(R.id.tvNotAccurateLocation2);
 
         myContext = BookingActivity.this;
         myResources = myContext.getResources();
@@ -480,7 +475,6 @@ public class BookingActivity extends AppCompatActivity implements
 
         initBookingInformationDialog();
         initAllSpotsDialog();
-        initCurrentLocationDialog();
 
         Glide.with(myContext).load(R.drawable.magnify_4s_256px).into(reloadImage1);
         Glide.with(myContext).load(R.drawable.magnify_4s_256px).into(reloadImage2);
@@ -959,7 +953,27 @@ public class BookingActivity extends AppCompatActivity implements
         locateOnTheSpotImage.setOnClickListener(view -> mapFragment.locateOnTheSpot());
         tvLocateOnTheSpot.setOnClickListener(view -> mapFragment.locateOnTheSpot());
 
-        tvNotAccurateLocation2.setOnClickListener(view -> dialog3.show());
+        mapSettingsImage.setOnClickListener(view -> openMapSettings());
+        tvMapSettings.setOnClickListener(view -> openMapSettings());
+    }
+
+    private void openMapSettings() {
+        Intent intent = new Intent(myContext, MapActivity.class);
+        intent.putExtra("id", onTheSpot.getId());
+        intent.putExtra("lat", onTheSpot.getLat());
+        intent.putExtra("lng", onTheSpot.getLng());
+        intent.putExtra("name", onTheSpot.getName());
+        intent.putExtra("type", 0);
+        intent.putExtra("fromBooking", true);
+        ((Activity) myContext).startActivityForResult(intent, MAP_SETTINGS_REQUEST);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(resultCode == RESULT_OK && requestCode == MAP_SETTINGS_REQUEST) {
+            mapFragment.mapSettingsRequestResult(currentLocation);
+        }
     }
 
     private String getStepText() {
@@ -1065,6 +1079,11 @@ public class BookingActivity extends AppCompatActivity implements
         }
     }
 
+    @Override
+    public void sendCurrentLocation(LatLng currentLocation) {
+        this.currentLocation = currentLocation;
+    }
+
     private void getUserCurrentLocation(Location location) {
         LocationRequest locationRequest;
         LocationCallback locationCallback;
@@ -1148,31 +1167,6 @@ public class BookingActivity extends AppCompatActivity implements
             }
             else tvCaption.setTextColor(colorRed);
         }
-    }
-
-    private void initCurrentLocationDialog() {
-        dialog3 = new Dialog(myContext);
-        dialog3.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog3.setContentView(R.layout.dialog_current_location_layout);
-
-        dialogCloseImage3 = dialog3.findViewById(R.id.dialogCloseImage);
-        dialogMapLayout = dialog3.findViewById(R.id.mapLayout);
-
-        dialogMapFragment = new MapFragment();
-
-        Bundle bundle = new Bundle();
-        bundle.putBoolean("isMarkingCurrentLocation", true);
-        dialogMapFragment.setArguments(bundle);
-
-        dialogFragmentManager.beginTransaction().replace(dialogMapLayout.getId(), dialogMapFragment).commit();
-
-        dialogCloseImage3.setOnClickListener(view -> dialog3.dismiss());
-
-        dialog3.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT);
-        dialog3.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
-        dialog3.getWindow().getAttributes().windowAnimations = R.style.animBottomSlide;
-        dialog3.getWindow().setGravity(Gravity.BOTTOM);
     }
 
     private void showDatePickerDialog() {
