@@ -6,10 +6,7 @@ import java.util.Locale;
 
 public class DateTimeToString {
 
-    private final SimpleDateFormat simpleDateFormat =
-            new SimpleDateFormat("yyyy-MM-dd H:mm:00", Locale.getDefault());
-
-    String currentDateAndTime = simpleDateFormat.format(new Date());
+    private boolean isDefaultDate = true;
 
     private String[] dateSplit;
     private String[] timeSplit;
@@ -18,11 +15,12 @@ public class DateTimeToString {
     String formattedDate;
     private String formattedMonth = null;
 
-    String formattedTime;
     private int _12HrFormat;
     private String timeMode = null;
 
     public DateTimeToString() {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd H:mm:00", Locale.getDefault());
+        String currentDateAndTime = simpleDateFormat.format(new Date());
         String[] scheduleSplit = currentDateAndTime.split(" ");
         this.dateSplit = scheduleSplit[0].split("-");
         this.timeSplit = scheduleSplit[1].split(":");
@@ -35,6 +33,7 @@ public class DateTimeToString {
     }
 
     public void setDateToSplit(String value) {
+        isDefaultDate = false;
         this.dateSplit = value.split("-");
     }
 
@@ -61,7 +60,10 @@ public class DateTimeToString {
         if(dateSplit.length == 3) {
             String month;
 
-            switch (Integer.parseInt(dateSplit[1])) {
+            int rawMonth = Integer.parseInt(dateSplit[1]);
+            if(isDefaultDate) rawMonth -= 1;
+
+            switch (rawMonth) {
                 case 1:
                     month = "February";
                     break;
@@ -169,7 +171,7 @@ public class DateTimeToString {
     }
 
     public String getDateAndTime() {
-        return getDate() + " " + getTime();
+        return getDate() + " | " + getTime();
     }
 
     public void setFormattedSchedule(String formattedSchedule) {
@@ -183,7 +185,7 @@ public class DateTimeToString {
         this.setDateToSplit(year + "-" + getMonthNoFromFormattedMonth() + "-" + day);
 
         if(this.formattedSchedule.length > 0) {
-            this.formattedTime = this.formattedSchedule[1].trim();
+            String formattedTime = this.formattedSchedule[1].trim();
             this._12HrFormat = Integer.parseInt(formattedTime.split(":")[0]);
             this.timeMode = formattedTime.split(" ")[1];
 

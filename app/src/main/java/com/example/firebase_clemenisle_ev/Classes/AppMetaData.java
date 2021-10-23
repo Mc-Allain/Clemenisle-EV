@@ -15,7 +15,7 @@ public class AppMetaData {
                     "• On The Spot(Single Spot) Service Added";
     double currentVersion = 0.3, latestVersion = 0;
     String status;
-    boolean isDeveloper = false;
+    boolean isDeveloper = true;
 
     public AppMetaData() {
     }

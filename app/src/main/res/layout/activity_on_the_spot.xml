@@ -192,6 +192,39 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/headerLayout">
 
+        <com.ms.square.android.expandabletextview.ExpandableTextView
+            android:id="@+id/extvMessage"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginBottom="8dp"
+            app:animAlphaStart="1"
+            app:animDuration="200"
+            app:collapseDrawable="@drawable/ic_baseline_expand_less_24"
+            app:expandDrawable="@drawable/ic_baseline_expand_more_24"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@id/tvDestinationSpot2"
+            app:layout_constraintStart_toStartOf="@id/thumbnail"
+            app:maxCollapsedLines="3">
+
+            <TextView
+                android:id="@+id/expandable_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/ubuntu"
+                android:textColor="@color/initial" />
+
+            <ImageButton
+                android:id="@id/expand_collapse"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right|bottom"
+                android:background="@android:color/transparent"
+                android:paddingEnd="8dp"
+                app:tint="@color/black" />
+
+        </com.ms.square.android.expandabletextview.ExpandableTextView>
+
         <ImageView
             android:id="@+id/thumbnail"
             android:layout_width="110dp"
@@ -394,39 +427,6 @@
                 app:layout_constraintTop_toTopOf="@+id/locateImage" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <com.ms.square.android.expandabletextview.ExpandableTextView
-            android:id="@+id/extvMessage"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginBottom="8dp"
-            app:animAlphaStart="1"
-            app:animDuration="200"
-            app:collapseDrawable="@drawable/ic_baseline_expand_less_24"
-            app:expandDrawable="@drawable/ic_baseline_expand_more_24"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@id/tvDestinationSpot2"
-            app:layout_constraintStart_toStartOf="@id/thumbnail"
-            app:maxCollapsedLines="3">
-
-            <TextView
-                android:id="@+id/expandable_text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/ubuntu"
-                android:textColor="@color/initial" />
-
-            <ImageButton
-                android:id="@id/expand_collapse"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="right|bottom"
-                android:background="@android:color/transparent"
-                android:paddingEnd="8dp"
-                app:tint="@color/black" />
-
-        </com.ms.square.android.expandabletextview.ExpandableTextView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -30,6 +30,7 @@ import com.example.firebase_clemenisle_ev.Adapters.CommentAdapter;
 import com.example.firebase_clemenisle_ev.Adapters.NearSpotAdapter;
 import com.example.firebase_clemenisle_ev.Classes.Booking;
 import com.example.firebase_clemenisle_ev.Classes.Comment;
+import com.example.firebase_clemenisle_ev.Classes.DateTimeToString;
 import com.example.firebase_clemenisle_ev.Classes.DetailedTouristSpot;
 import com.example.firebase_clemenisle_ev.Classes.FirebaseURL;
 import com.example.firebase_clemenisle_ev.Classes.Route;
@@ -999,7 +1000,7 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
 
     private void setComment() {
         commentProgressBar.setVisibility(View.VISIBLE);
-        Comment comment = new Comment(id, inputComment);
+        Comment comment = new Comment(id, inputComment, new DateTimeToString().getDateAndTime());
         commentsRef.child(id).setValue(comment)
                 .addOnCompleteListener(task -> commentProgressBar.setVisibility(View.GONE));
     }

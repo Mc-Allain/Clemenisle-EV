@@ -335,6 +335,10 @@ public class MainActivity extends AppCompatActivity {
             startActivity(newIntent);
         });
 
+        dialog.setCanceledOnTouchOutside(false);
+
+        dialog.setOnDismissListener(dialogInterface -> finishAffinity());
+
         dialogCloseImage.setOnClickListener(view -> dialog.dismiss());
 
         dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,

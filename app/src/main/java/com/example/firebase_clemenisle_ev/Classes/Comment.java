@@ -2,14 +2,15 @@ package com.example.firebase_clemenisle_ev.Classes;
 
 public class Comment {
     boolean appealed = false, deactivated = false, fouled = false;
-    String id, userId, value;
+    String id, timestamp, userId, value;
 
     public Comment() {
     }
 
-    public Comment(String id, String value) {
+    public Comment(String id, String value, String timestamp) {
         this.id = id;
         this.value = value;
+        this.timestamp = timestamp;
     }
 
     public boolean isAppealed() {
@@ -42,6 +43,14 @@ public class Comment {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(String timestamp) {
+        this.timestamp = timestamp;
     }
 
     public String getUserId() {

@@ -1761,7 +1761,6 @@ public class BookingActivity extends AppCompatActivity implements
 
     private void generateBookingId() {
         setDialogScreenEnabled(false);
-        dialogProgressBar.setVisibility(View.VISIBLE);
 
         isGeneratingBookingId = false;
         usersRef = firebaseDatabase.getReference("users");
@@ -1819,7 +1818,6 @@ public class BookingActivity extends AppCompatActivity implements
                 usersRef = null;
 
                 setDialogScreenEnabled(true);
-                dialogProgressBar.setVisibility(View.GONE);
             }
         });
     }
@@ -1840,6 +1838,8 @@ public class BookingActivity extends AppCompatActivity implements
                         "Successfully booked a service.",
                         Toast.LENGTH_LONG
                 ).show();
+
+                proceedToNextActivity(bookingId);
             }
             else {
                 Toast.makeText(
@@ -1849,7 +1849,6 @@ public class BookingActivity extends AppCompatActivity implements
                 ).show();
 
                 setDialogScreenEnabled(true);
-                dialogProgressBar.setVisibility(View.GONE);
             }
         });
     }
@@ -1893,7 +1892,6 @@ public class BookingActivity extends AppCompatActivity implements
                 ).show();
 
                 setDialogScreenEnabled(true);
-                dialogProgressBar.setVisibility(View.GONE);
             }
         });
     }
@@ -1928,7 +1926,6 @@ public class BookingActivity extends AppCompatActivity implements
                             ).show();
 
                             setDialogScreenEnabled(true);
-                            dialogProgressBar.setVisibility(View.GONE);
                         }
                     });
             index++;
@@ -1941,7 +1938,9 @@ public class BookingActivity extends AppCompatActivity implements
         startActivity(intent);
         finishAffinity();
 
-        intent = new Intent(myContext, RouteActivity.class);
+        if(bookingType.getId().equals("BT99")) intent = new Intent(myContext, OnTheSpotActivity.class);
+        else intent = new Intent(myContext, RouteActivity.class);
+
         intent.putExtra("bookingId",bookingId);
         intent.putExtra("isLatest", false);
 
@@ -1951,7 +1950,10 @@ public class BookingActivity extends AppCompatActivity implements
     private void setDialogScreenEnabled(boolean value) {
         dialog.setCanceledOnTouchOutside(value);
         dialogCloseImage.setEnabled(value);
+        dialog3.setCanceledOnTouchOutside(value);
+        dialog3CloseImage.setEnabled(value);
         submitButton.setEnabled(value);
+        submitButton2.setEnabled(value);
 
         if(value) {
             dialogCloseImage.setColorFilter(colorRed);
@@ -1959,6 +1961,15 @@ public class BookingActivity extends AppCompatActivity implements
             locateImage2.setColorFilter(colorBlue);
             tvLocate.setTextColor(colorBlue);
             tvLocate2.setTextColor(colorBlue);
+
+            dialog3CloseImage.setColorFilter(colorRed);
+            locateImage3.setColorFilter(colorBlue);
+            locateImage4.setColorFilter(colorBlue);
+            tvLocate3.setTextColor(colorBlue);
+            tvLocate4.setTextColor(colorBlue);
+
+            dialogProgressBar.setVisibility(View.GONE);
+            dialog3ProgressBar.setVisibility(View.GONE);
         }
         else {
             dialogCloseImage.setColorFilter(colorInitial);
@@ -1966,6 +1977,15 @@ public class BookingActivity extends AppCompatActivity implements
             locateImage2.setColorFilter(colorInitial);
             tvLocate.setTextColor(colorInitial);
             tvLocate2.setTextColor(colorInitial);
+
+            dialog3CloseImage.setColorFilter(colorInitial);
+            locateImage3.setColorFilter(colorInitial);
+            locateImage4.setColorFilter(colorInitial);
+            tvLocate3.setTextColor(colorInitial);
+            tvLocate4.setTextColor(colorInitial);
+
+            dialogProgressBar.setVisibility(View.VISIBLE);
+            dialog3ProgressBar.setVisibility(View.VISIBLE);
         }
     }
 
