@@ -430,6 +430,42 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/commentTitleLayout">
 
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/commentView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="@color/gainsboro"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/loginCommentLayout" />
+
+        <TextView
+            android:id="@+id/tvLog"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginEnd="16dp"
+            android:fontFamily="@font/ubuntu"
+            android:text="No Comment\nPlease make yours the first one"
+            android:textAlignment="center"
+            android:textColor="@color/initial"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/commentView" />
+
+        <ImageView
+            android:id="@+id/reloadImage"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:padding="0dp"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="@+id/tvLog"
+            app:layout_constraintStart_toStartOf="@+id/tvLog"
+            app:layout_constraintTop_toBottomOf="@+id/tvLog" />
+
         <ProgressBar
             android:id="@+id/commentProgressBar"
             style="?android:attr/progressBarStyle"
@@ -647,7 +683,6 @@
                     android:paddingBottom="4dp"
                     android:text="Timestamp"
                     android:textColor="@color/initial"
-                    android:textStyle="italic"
                     app:layout_constraintEnd_toEndOf="@+id/tvUserFullName"
                     app:layout_constraintStart_toStartOf="@+id/tvUserFullName"
                     app:layout_constraintTop_toBottomOf="@+id/tvUserFullName" />
@@ -747,16 +782,6 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/commentView"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:background="@color/gainsboro"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/loginCommentLayout" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

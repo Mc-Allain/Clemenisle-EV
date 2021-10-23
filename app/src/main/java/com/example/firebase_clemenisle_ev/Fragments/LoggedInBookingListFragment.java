@@ -62,7 +62,7 @@ public class LoggedInBookingListFragment extends Fragment {
     Context myContext;
     Resources myResources;
 
-    String defaultLogText = "No Records";
+    String defaultLogText = "No Record";
 
     BookingAdapter adapter1, adapter2, adapter3, adapter4, adapter5;
 

@@ -191,6 +191,11 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
                     else reportImage.setVisibility(View.VISIBLE);
                 }
 
+                if(user.isDeveloper()) {
+                    fullName += " (Developer)";
+                    tvUserFullName.setText(fromHtml(fullName));
+                }
+
                 if(user.getId().equals(userId)) {
                     editImage.setVisibility(View.VISIBLE);
 
@@ -199,8 +204,8 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
                     upVoteImage.getDrawable().setTint(colorInitial);
                     downVoteImage.getDrawable().setTint(colorInitial);
 
-                    String formattedFullName = fullName + " (You)";
-                    tvUserFullName.setText(fromHtml(formattedFullName));
+                    fullName += " <b>(You)<b/>";
+                    tvUserFullName.setText(fromHtml(fullName));
                 }
                 else {
                     editImage.setVisibility(View.GONE);

@@ -86,7 +86,7 @@ public class HomeFragment extends Fragment implements
     boolean listMode = true, isLoggedIn = false;
     boolean isResponseError = true;
 
-    String defaultLogText = "No Records";
+    String defaultLogText = "No Record";
     String selectedSorting = "Default";
 
     ColorStateList cslInitial, cslBlue;

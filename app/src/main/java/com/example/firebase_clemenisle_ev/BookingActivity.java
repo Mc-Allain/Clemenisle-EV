@@ -184,7 +184,7 @@ public class BookingActivity extends AppCompatActivity implements
     String bookingScheduleActivityText = "Booking Schedule", messageActivityText = "Message";
     String onTheSpotActivityText = "Tourist Spot Destination", currentLocationActivityText = "Origin Location";
 
-    String defaultLogText = "No Records", noRouteLogText = "No Recommended Routes",
+    String defaultLogText = "No Record", noRouteLogText = "No Recommended Routes",
             noSelectedSpotText = "No Selected Spot";
 
     String defaultNearSpotsText = "Tourist Spot(s) Near ", noNearSpotsText = "No Tourist Spots Near ",

@@ -14,6 +14,7 @@ public class User {
     private final List<Comment> upVotedComments = new ArrayList<>();
     private final List<Comment> downVotedComments = new ArrayList<>();
     private final List<Comment> reportedComments = new ArrayList<>();
+    private boolean developer;
 
     public User() {
     }
@@ -104,6 +105,9 @@ public class User {
                 }
             }
         }
+
+        if(dataSnapshot.child("developer").exists())
+            developer = dataSnapshot.child("developer").getValue(Boolean.class);
     }
 
     public User(String firstName, String id, String lastName, String middleName) {
@@ -155,5 +159,9 @@ public class User {
 
     public List<Comment> getReportedComments() {
         return reportedComments;
+    }
+
+    public boolean isDeveloper() {
+        return developer;
     }
 }

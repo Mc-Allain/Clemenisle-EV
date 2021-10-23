@@ -88,7 +88,7 @@ public class RouteActivity extends AppCompatActivity implements
     Handler optionHandler = new Handler();
     Runnable optionRunnable;
 
-    String defaultLogText = "No Records";
+    String defaultLogText = "No Record";
 
     long lastPressSec = 0;
     int pressCount = 0;

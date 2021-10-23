@@ -68,9 +68,9 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
     ConstraintLayout constraintLayout, headerLayout;
 
     ImageView thumbnail, likeImage, visitImage, bookImage, commentImage,
-            moreImage, i360Image, locateImage, homeImage;
+            moreImage, i360Image, locateImage, homeImage, reloadImage;
     TextView tvName, tvStation, tvLikes, tvVisits, tvBooks, tvComments,
-            tvNearSpot, tv360Image, tvLocate, tvTimestamp;
+            tvNearSpot, tv360Image, tvLocate, tvTimestamp, tvLog;
     ExpandableTextView extvDescription;
     ConstraintLayout  backgroundLayout, buttonLayout, connectingLayout;
     ScrollView scrollView;
@@ -137,12 +137,14 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
     Handler optionHandler = new Handler();
     Runnable optionRunnable;
 
+    String defaultLogText = "No Comment\nPlease make yours the first one";
+
     Comment currentUserComment;
 
     String inputComment, commentValue;
     boolean isUserCommentExist = true;
 
-    String defaultStatusText = "Foul comment", appealedtext = "(Appealed)",
+    String defaultStatusText = "Foul comment", appealedText = "(Appealed)",
             notActiveText = "This comment is not active";
 
     long deactivatePressedTime;
@@ -227,6 +229,9 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
         commentView = findViewById(R.id.commentView);
         commentProgressBar = findViewById(R.id.commentProgressBar);
 
+        tvLog = findViewById(R.id.tvLog);
+        reloadImage = findViewById(R.id.reloadImage);
+
         myContext = SelectedSpotActivity.this;
         myResources = myContext.getResources();
 
@@ -263,6 +268,8 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
                 userId = firebaseUser.getUid();
             }
         }
+
+        Glide.with(myContext).load(R.drawable.magnify_4s_256px).into(reloadImage);
 
         usersRef = firebaseDatabase.getReference("users");
         if(userId != null) {
@@ -1047,6 +1054,9 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
 
         String fullName = "<b>" + user.getLastName() + "</b>, " + user.getFirstName();
         if(user.getMiddleName().length() > 0) fullName += " " + user.getMiddleName();
+
+        if(user.isDeveloper()) fullName += " (Developer)";
+
         tvUserFullName.setText(fromHtml(fullName));
 
         commentValue = comment.getValue();
@@ -1066,7 +1076,7 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
             if(comment.isAppealed()) {
                 appealImage.setEnabled(false);
                 appealImage.setColorFilter(colorInitial);
-                status = defaultStatusText + " " + appealedtext;
+                status = defaultStatusText + " " + appealedText;
             }
             else appealImage.setColorFilter(colorBlue);
 
@@ -1157,9 +1167,9 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
                 }
 
                 if(!isUpdatingComments) {
-                    commentProgressBar.setVisibility(View.GONE);
                     commentLayout.setVisibility(View.VISIBLE);
-                    commentAdapter.notifyDataSetChanged();
+                    if(commentedUsers.size() > 0) finishLoading();
+                    else errorLoading(defaultLogText);
                 }
             }
 
@@ -1171,9 +1181,28 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
                         Toast.LENGTH_LONG
                 ).show();
 
-                commentProgressBar.setVisibility(View.GONE);
+                errorLoading(error.toString());
             }
         });
+    }
+
+    private void finishLoading() {
+        commentAdapter.notifyDataSetChanged();
+
+        tvLog.setVisibility(View.GONE);
+        reloadImage.setVisibility(View.GONE);
+        commentProgressBar.setVisibility(View.GONE);
+    }
+
+    private void errorLoading(String error) {
+        foulCommentedUsers.clear();
+        commentedUsers.clear();
+        commentAdapter.notifyDataSetChanged();
+
+        tvLog.setText(error);
+        tvLog.setVisibility(View.VISIBLE);
+        reloadImage.setVisibility(View.VISIBLE);
+        commentProgressBar.setVisibility(View.GONE);
     }
 
     private int getVotes(User user) {
