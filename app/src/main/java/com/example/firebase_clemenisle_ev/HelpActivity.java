@@ -37,7 +37,7 @@ public class HelpActivity extends AppCompatActivity {
     FirebaseUser firebaseUser;
 
     ConstraintLayout helpEntryInputLayout, loginHelpLayout, userEntryLayout;
-    TextView tvUserEntry2;
+    TextView tvUserEntry2, tvFAQ;
     EditText etHelpEntry;
     ImageView editImage;
     Button submitButton, loginButton;
@@ -80,6 +80,7 @@ public class HelpActivity extends AppCompatActivity {
         loginHelpLayout = findViewById(R.id.loginHelpLayout);
         userEntryLayout = findViewById(R.id.userEntryLayout);
         tvUserEntry2 = findViewById(R.id.tvUserEntry2);
+        tvFAQ = findViewById(R.id.tvFAQ);
         etHelpEntry = findViewById(R.id.etHelpEntry);
         editImage = findViewById(R.id.editImage);
         submitButton = findViewById(R.id.submitButton);
@@ -160,6 +161,12 @@ public class HelpActivity extends AppCompatActivity {
             if(helpEntry.length() > 0) submitButton.setEnabled(true);
             else submitButton.setEnabled(false);
         });
+
+        tvFAQ.setOnClickListener(view -> Toast.makeText(
+                myContext,
+                "Not yet implemented",
+                Toast.LENGTH_LONG
+        ).show());
     }
 
     private void setOnScreenEnabled(boolean value) {

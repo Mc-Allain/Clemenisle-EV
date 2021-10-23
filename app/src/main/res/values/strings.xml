@@ -8,6 +8,12 @@
     <string name="originLocationMarkTitle">
         Your Location
     </string>
+    <string name="helpEntryNote">
+        The answers/solutions to your questions/problems will be posted in FAQ section.
+        So make sure you will always check the updates here.
+        \nThe more entries that are similar to your entry, the faster the admins will answer your questions.
+        It is just a matter of urgency.
+    </string>
     <string name="bookingProcess1">
         When the schedule of your Booking comes,
         please do the following:
