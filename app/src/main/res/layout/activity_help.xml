@@ -107,7 +107,7 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/tvAskQuestionLayout"
+                android:id="@+id/tvHelpLayout"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
@@ -128,13 +128,13 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/userQuestionLayout"
+                    android:id="@+id/userEntryLayout"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    app:layout_constraintTop_toBottomOf="@+id/loginQuestionLayout">
+                    app:layout_constraintTop_toBottomOf="@+id/loginHelpLayout">
 
                     <TextView
-                        android:id="@+id/tvUserQuestion2"
+                        android:id="@+id/tvUserEntry2"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
@@ -167,7 +167,7 @@
                             app:tint="@color/blue" />
 
                         <TextView
-                            android:id="@+id/tvUserQuestion"
+                            android:id="@+id/tvUserEntry"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="24dp"
@@ -192,12 +192,12 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/loginQuestionLayout"
+                    android:id="@+id/loginHelpLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/questionInputLayout">
+                    app:layout_constraintTop_toBottomOf="@+id/helpEntryInputLayout">
 
                     <Button
                         android:id="@+id/loginButton"
@@ -230,12 +230,12 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/questionInputLayout"
+                    android:id="@+id/helpEntryInputLayout"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tvAskQuestionTitleLayout">
+                    app:layout_constraintTop_toBottomOf="@+id/tvHelpTitleLayout">
 
                     <Button
                         android:id="@+id/submitButton"
@@ -246,16 +246,16 @@
                         android:layout_marginBottom="8dp"
                         android:enabled="false"
                         android:fontFamily="@font/ubuntu"
-                        android:text="Submit"
+                        android:text="Submit Entry"
                         android:textAllCaps="false"
                         app:cornerRadius="20dp"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/tlQuestion" />
+                        app:layout_constraintTop_toBottomOf="@+id/tlHelpEntry" />
 
                     <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/tlQuestion"
+                        android:id="@+id/tlHelpEntry"
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -271,7 +271,7 @@
                         app:layout_constraintTop_toTopOf="parent">
 
                         <EditText
-                            android:id="@+id/etQuestion"
+                            android:id="@+id/etHelpEntry"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:ems="10"
@@ -288,7 +288,7 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/tvAskQuestionTitleLayout"
+                    android:id="@+id/tvHelpTitleLayout"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -296,7 +296,7 @@
                     app:layout_constraintTop_toTopOf="parent">
 
                     <TextView
-                        android:id="@+id/tvAskQuestion"
+                        android:id="@+id/tvHelp"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
@@ -334,7 +334,7 @@
                 android:background="@color/white"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvAskQuestionLayout">
+                app:layout_constraintTop_toBottomOf="@+id/tvHelpLayout">
 
                 <TextView
                     android:id="@+id/tvBookingProcess1"

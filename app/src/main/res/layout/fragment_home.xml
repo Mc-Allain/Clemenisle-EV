@@ -201,7 +201,7 @@
         android:layout_marginTop="24dp"
         android:layout_marginEnd="16dp"
         android:fontFamily="@font/ubuntu"
-        android:text="No Records"
+        android:text="No Record"
         android:textAlignment="center"
         android:textColor="@color/initial"
         android:visibility="gone"

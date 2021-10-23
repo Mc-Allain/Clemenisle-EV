@@ -16,6 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.firebase_clemenisle_ev.Classes.FirebaseURL;
+import com.example.firebase_clemenisle_ev.Classes.HelpEntry;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -35,9 +36,9 @@ public class HelpActivity extends AppCompatActivity {
     FirebaseAuth firebaseAuth;
     FirebaseUser firebaseUser;
 
-    ConstraintLayout questionInputLayout, loginQuestionLayout, userQuestionLayout;
-    TextView tvUserQuestion2;
-    EditText etQuestion;
+    ConstraintLayout helpEntryInputLayout, loginHelpLayout, userEntryLayout;
+    TextView tvUserEntry2;
+    EditText etHelpEntry;
     ImageView editImage;
     Button submitButton, loginButton;
     ProgressBar progressBar;
@@ -49,7 +50,7 @@ public class HelpActivity extends AppCompatActivity {
 
     boolean isLoggedIn = false;
 
-    String question, questionValue;
+    String helpEntry, helpEntryValue;
 
     DatabaseReference usersRef;
 
@@ -75,11 +76,11 @@ public class HelpActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_help);
 
-        questionInputLayout = findViewById(R.id.questionInputLayout);
-        loginQuestionLayout = findViewById(R.id.loginQuestionLayout);
-        userQuestionLayout = findViewById(R.id.userQuestionLayout);
-        tvUserQuestion2 = findViewById(R.id.tvUserQuestion2);
-        etQuestion = findViewById(R.id.etQuestion);
+        helpEntryInputLayout = findViewById(R.id.helpEntryInputLayout);
+        loginHelpLayout = findViewById(R.id.loginHelpLayout);
+        userEntryLayout = findViewById(R.id.userEntryLayout);
+        tvUserEntry2 = findViewById(R.id.tvUserEntry2);
+        etHelpEntry = findViewById(R.id.etHelpEntry);
         editImage = findViewById(R.id.editImage);
         submitButton = findViewById(R.id.submitButton);
         loginButton = findViewById(R.id.loginButton);
@@ -110,20 +111,20 @@ public class HelpActivity extends AppCompatActivity {
         }
 
         if(userId != null) {
-            loginQuestionLayout.setVisibility(View.GONE);
-            questionInputLayout.setVisibility(View.VISIBLE);
-            userQuestionLayout.setVisibility(View.VISIBLE);
+            loginHelpLayout.setVisibility(View.GONE);
+            helpEntryInputLayout.setVisibility(View.VISIBLE);
+            userEntryLayout.setVisibility(View.VISIBLE);
 
             usersRef = firebaseDatabase.getReference("users").child(userId);
             getSubmittedQuestion();
         }
         else {
-            loginQuestionLayout.setVisibility(View.VISIBLE);
-            questionInputLayout.setVisibility(View.GONE);
-            userQuestionLayout.setVisibility(View.GONE);
+            loginHelpLayout.setVisibility(View.VISIBLE);
+            helpEntryInputLayout.setVisibility(View.GONE);
+            userEntryLayout.setVisibility(View.GONE);
         }
 
-        etQuestion.addTextChangedListener(new TextWatcher() {
+        etHelpEntry.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
@@ -136,9 +137,9 @@ public class HelpActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable editable) {
-                question = etQuestion.getText().toString();
+                helpEntry = etHelpEntry.getText().toString();
 
-                if(question.length() > 0) submitButton.setEnabled(true);
+                if(helpEntry.length() > 0) submitButton.setEnabled(true);
                 else submitButton.setEnabled(false);
             }
         });
@@ -151,18 +152,18 @@ public class HelpActivity extends AppCompatActivity {
         });
 
         editImage.setOnClickListener(view -> {
-            questionInputLayout.setVisibility(View.VISIBLE);
-            userQuestionLayout.setVisibility(View.GONE);
+            helpEntryInputLayout.setVisibility(View.VISIBLE);
+            userEntryLayout.setVisibility(View.GONE);
 
-            etQuestion.setText(questionValue);
+            etHelpEntry.setText(helpEntryValue);
 
-            if(question.length() > 0) submitButton.setEnabled(true);
+            if(helpEntry.length() > 0) submitButton.setEnabled(true);
             else submitButton.setEnabled(false);
         });
     }
 
     private void setOnScreenEnabled(boolean value) {
-        questionInputLayout.setEnabled(value);
+        helpEntryInputLayout.setEnabled(value);
         submitButton.setEnabled(value);
     }
 
@@ -170,19 +171,19 @@ public class HelpActivity extends AppCompatActivity {
         progressBar.setVisibility(View.VISIBLE);
         setOnScreenEnabled(false);
 
-        usersRef.child("question").addValueEventListener(new ValueEventListener() {
+        usersRef.child("helpEntry").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if(snapshot.exists()) {
-                    questionInputLayout.setVisibility(View.GONE);
-                    userQuestionLayout.setVisibility(View.VISIBLE);
+                    helpEntryInputLayout.setVisibility(View.GONE);
+                    userEntryLayout.setVisibility(View.VISIBLE);
 
-                    questionValue = snapshot.getValue().toString();
-                    tvUserQuestion2.setText(questionValue);
+                    helpEntryValue = snapshot.child("value").getValue(String.class);
+                    tvUserEntry2.setText(helpEntryValue);
                 }
                 else {
-                    questionInputLayout.setVisibility(View.VISIBLE);
-                    userQuestionLayout.setVisibility(View.GONE);
+                    helpEntryInputLayout.setVisibility(View.VISIBLE);
+                    userEntryLayout.setVisibility(View.GONE);
                 }
 
                 progressBar.setVisibility(View.GONE);
@@ -206,7 +207,8 @@ public class HelpActivity extends AppCompatActivity {
     private void submitQuestion() {
         progressBar.setVisibility(View.VISIBLE);
 
-        usersRef.child("question").setValue(question).addOnCompleteListener(task -> {
+        usersRef.child("helpEntry").setValue(new HelpEntry(helpEntry)).
+                addOnCompleteListener(task -> {
             if(!task.isSuccessful()) {
                 if(task.getException() != null) {
 
@@ -221,7 +223,7 @@ public class HelpActivity extends AppCompatActivity {
             progressBar.setVisibility(View.GONE);
         });
 
-        questionInputLayout.setVisibility(View.GONE);
-        userQuestionLayout.setVisibility(View.VISIBLE);
+        helpEntryInputLayout.setVisibility(View.GONE);
+        userEntryLayout.setVisibility(View.VISIBLE);
     }
 }
