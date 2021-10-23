@@ -28,7 +28,7 @@
     <string name="onlinePayment2">
         The online payment is through G-Cash Application.
         \nHere are the steps to process your online payment.
-        \n• Go to the booking record of your desire with status of Processing or Booked in order to access the online payment.
+        \n• Go to the booking record of your desire with a status of \"Processing\" or \"Booked\" in order to access the online payment.
         \n• Tap on the online payment button to go to the online payment screen.
         \n• Send your payment depending on the amount cost of your booked tour to the numbers showed on the online payment screen.
         \n• Retrieve the transaction\'s reference number and put it in the input box.

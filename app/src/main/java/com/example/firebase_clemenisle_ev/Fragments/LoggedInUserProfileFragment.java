@@ -58,6 +58,8 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -1345,6 +1347,8 @@ public class LoggedInUserProfileFragment extends Fragment {
                 }
             }
         }
+        sortByStats();
+
         bookedSpotAdapter.notifyDataSetChanged();
         if(bookedSpots.size() > 0) bookedSpotView.setVisibility(View.VISIBLE);
         else bookedSpotView.setVisibility(View.GONE);
@@ -1431,6 +1435,26 @@ public class LoggedInUserProfileFragment extends Fragment {
             }
         }
         return false;
+    }
+
+    private void sortByStats() {
+        Collections.sort(bookedSpots, new Comparator<Route>() {
+            @Override
+            public int compare(Route route, Route t1) {
+                return route.getBooks() - t1.getBooks();
+            }
+        });
+
+        Collections.reverse(bookedSpots);
+
+        Collections.sort(visitedSpots, new Comparator<Route>() {
+            @Override
+            public int compare(Route route, Route t1) {
+                return route.getVisits() - t1.getVisits();
+            }
+        });
+
+        Collections.reverse(visitedSpots);
     }
 
     private void errorLoading(String error) {

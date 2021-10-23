@@ -525,9 +525,7 @@ public class HomeFragment extends Fragment implements
 
                             List<SimpleTouristSpot> likedSpots = user.getLikedSpots();
                             for(SimpleTouristSpot likedSpot : likedSpots) {
-                                if(likedSpot.getId().equals(id)) {
-                                    likes++;
-                                }
+                                if(likedSpot.getId().equals(id)) likes++;
                             }
 
                             List<Booking> bookingList = user.getBookingList();
@@ -536,18 +534,21 @@ public class HomeFragment extends Fragment implements
                                 for(Route route : routeList) {
                                     if(route.getId().equals(id)) {
                                         books++;
-                                        if(route.isVisited()) {
-                                            visits++;
-                                        }
+                                        if(route.isVisited()) visits++;
+                                    }
+                                }
+
+                                if(booking.getDestinationSpot() != null) {
+                                    if(booking.getDestinationSpot().getId().equals(id)) {
+                                        books++;
+                                        if(booking.getStatus().equals("Completed")) visits++;
                                     }
                                 }
                             }
 
                             List<Comment> userComments = user.getComments();
                             for(Comment comment : userComments) {
-                                if(comment.getId().equals(id)) {
-                                    comments++;
-                                }
+                                if(comment.getId().equals(id)) comments++;
                             }
                         }
                     }

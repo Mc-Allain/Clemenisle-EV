@@ -1367,32 +1367,35 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
 
                 if(snapshot.exists()) {
                     for(DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                        User thisUser = new User(dataSnapshot);
+                        if(dataSnapshot.hasChildren()) {
+                            User thisUser = new User(dataSnapshot);
 
-                        List<SimpleTouristSpot> userLikedSpots = thisUser.getLikedSpots();
-                        for(SimpleTouristSpot likedSpot : userLikedSpots) {
-                            if(likedSpot.getId().equals(id)) {
-                                likes++;
+                            List<SimpleTouristSpot> userLikedSpots = thisUser.getLikedSpots();
+                            for(SimpleTouristSpot likedSpot : userLikedSpots) {
+                                if(likedSpot.getId().equals(id)) likes++;
                             }
-                        }
 
-                        List<Booking> userBookingList = thisUser.getBookingList();
-                        for(Booking booking : userBookingList) {
-                            List<Route> routeList = booking.getRouteList();
-                            for(Route route : routeList) {
-                                if(route.getId().equals(id)) {
-                                    books++;
-                                    if(route.isVisited()) {
-                                        visits++;
+                            List<Booking> userBookingList = thisUser.getBookingList();
+                            for(Booking booking : userBookingList) {
+                                List<Route> routeList = booking.getRouteList();
+                                for(Route route : routeList) {
+                                    if(route.getId().equals(id)) {
+                                        books++;
+                                        if(route.isVisited()) visits++;
+                                    }
+                                }
+
+                                if(booking.getDestinationSpot() != null) {
+                                    if(booking.getDestinationSpot().getId().equals(id)) {
+                                        books++;
+                                        if(booking.getStatus().equals("Completed")) visits++;
                                     }
                                 }
                             }
-                        }
 
-                        List<Comment> userComments = thisUser.getComments();
-                        for(Comment comment : userComments) {
-                            if(comment.getId().equals(id)) {
-                                comments++;
+                            List<Comment> userComments = thisUser.getComments();
+                            for(Comment comment : userComments) {
+                                if(comment.getId().equals(id)) comments++;
                             }
                         }
                     }
