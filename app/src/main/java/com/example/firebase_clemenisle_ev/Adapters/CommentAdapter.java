@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.firebase_clemenisle_ev.Classes.Comment;
@@ -62,9 +63,9 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
     public void onBindViewHolder(@NonNull CommentAdapter.ViewHolder holder, int position) {
         ConstraintLayout backgroundLayout = holder.backgroundLayout, commentLayout = holder.commentLayout,
                 voteLayout = holder.voteLayout, loadCommentLayout = holder.loadCommentLayout;
-        TextView tvUserFullName = holder.tvUserFullName, tvCommentStatus = holder.tvCommentStatus,
-                tvUpVotes = holder.tvUpVotes, tvDownVotes = holder.tvDownVotes,
-                tvLoadComment = holder.tvLoadComment;
+        TextView tvUserFullName = holder.tvUserFullName, tvTimestamp = holder.tvTimestamp,
+                tvCommentStatus = holder.tvCommentStatus, tvUpVotes = holder.tvUpVotes,
+                tvDownVotes = holder.tvDownVotes, tvLoadComment = holder.tvLoadComment;
         ExpandableTextView extvComment = holder.extvComment;
         ImageView profileImage  = holder.profileImage,
                 editImage = holder.editImage,
@@ -115,7 +116,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
             if(user.getMiddleName().length() > 0) fullName += " " + user.getMiddleName();
             tvUserFullName.setText(fromHtml(fullName));
 
-            boolean isUpVoted = false, isDownVoted = false;
+            boolean isUpVoted = false, isDownVoted = false, isReported = false;
 
             if(commentRecord != null) {
                 String commentValue = commentRecord.getValue();
@@ -124,6 +125,9 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
 
                 extvComment.setText(commentValue);
                 backgroundLayout.setVisibility(View.VISIBLE);
+
+                String timestamp = commentRecord.getTimestamp();
+                tvTimestamp.setText(timestamp);
 
                 if(fouled) {
                     tvCommentStatus.setVisibility(View.VISIBLE);
@@ -245,6 +249,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
                         reportImage.setColorFilter(colorInitial);
                         upVoteImage.setEnabled(false);
                         upVoteImage.getDrawable().setTint(colorInitial);
+                        isReported = true;
 
                         tvCommentStatus.setVisibility(View.VISIBLE);
 
@@ -257,7 +262,8 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
                     }
                 }
             }
-            boolean finalUpVoted = isUpVoted, finalDownVoted = isDownVoted;
+            boolean finalUpVoted = isUpVoted, finalDownVoted = isDownVoted,
+                    finalReported = isReported;
 
             tvUpVotes.setText(String.valueOf(upVotes));
             tvDownVotes.setText(String.valueOf(downVotes));
@@ -306,11 +312,20 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
             downVoteImage.setOnClickListener(view -> {
                 if(userId == null) loginPrompt();
                 else {
-                    setOnScreenEnabled(false, reportImage, deactivateImage, appealImage, editImage,
-                            upVoteImage, downVoteImage);
-                    onActionButtonClickedListener.
-                            downVoteImageOnClick(spotId, user.getId(), finalCommentRecord,
-                                    finalUpVoted, finalDownVoted);
+                    if(finalReported) {
+                        Toast.makeText(
+                                myContext,
+                                "You cannot remove your down vote in the comment that you reported",
+                                Toast.LENGTH_LONG
+                        ).show();
+                    }
+                    else {
+                        setOnScreenEnabled(false, reportImage, deactivateImage, appealImage, editImage,
+                                upVoteImage, downVoteImage);
+                        onActionButtonClickedListener.
+                                downVoteImageOnClick(spotId, user.getId(), finalCommentRecord,
+                                        finalUpVoted, finalDownVoted);
+                    }
                 }
             });
 
@@ -385,8 +400,8 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
             deactivateImage.setColorFilter(colorInitial);
             appealImage.setColorFilter(colorInitial);
             editImage.setColorFilter(colorInitial);
-            upVoteImage.setColorFilter(colorInitial);
-            downVoteImage.setColorFilter(colorInitial);
+            upVoteImage.getDrawable().setTint(colorInitial);
+            downVoteImage.getDrawable().setTint(colorInitial);
         }
     }
 
@@ -442,7 +457,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         ConstraintLayout backgroundLayout, voteLayout, commentLayout, loadCommentLayout;
-        TextView tvUserFullName, tvCommentStatus, tvUpVotes, tvDownVotes, tvLoadComment;
+        TextView tvUserFullName, tvTimestamp, tvCommentStatus, tvUpVotes, tvDownVotes, tvLoadComment;
         ExpandableTextView extvComment;
         ImageView profileImage, editImage, appealImage, deactivateImage, reportImage,
                 upVoteImage, downVoteImage;
@@ -453,6 +468,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
             backgroundLayout = itemView.findViewById(R.id.backgroundLayout);
             voteLayout = itemView.findViewById(R.id.voteLayout);
             tvUserFullName = itemView.findViewById(R.id.tvUserFullName);
+            tvTimestamp = itemView.findViewById(R.id.tvTimestamp);
             tvCommentStatus = itemView.findViewById(R.id.tvCommentStatus);
             tvUpVotes = itemView.findViewById(R.id.tvUpVotes);
             tvDownVotes = itemView.findViewById(R.id.tvDownVotes);

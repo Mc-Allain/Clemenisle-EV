@@ -70,7 +70,7 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
     ImageView thumbnail, likeImage, visitImage, bookImage, commentImage,
             moreImage, i360Image, locateImage, homeImage;
     TextView tvName, tvStation, tvLikes, tvVisits, tvBooks, tvComments,
-            tvNearSpot, tv360Image, tvLocate;
+            tvNearSpot, tv360Image, tvLocate, tvTimestamp;
     ExpandableTextView extvDescription;
     ConstraintLayout  backgroundLayout, buttonLayout, connectingLayout;
     ScrollView scrollView;
@@ -217,6 +217,7 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
 
         userCommentLayout = findViewById(R.id.userCommentLayout);
         tvUserFullName = findViewById(R.id.tvUserFullName);
+        tvTimestamp = findViewById(R.id.tvTimestamp);
         tvCommentStatus = findViewById(R.id.tvCommentStatus);
         extvComment = findViewById(R.id.extvComment);
         profileImage = findViewById(R.id.profileImage);
@@ -846,7 +847,6 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
 
     private void setReportedComment(String spotId, String senderUserId, Comment comment) {
         if(!isUpdatingComments) {
-            isUpdatingComments = true;
             setCommentOnScreenEnabled(false);
             commentProgressBar.setVisibility(View.VISIBLE);
             comment.setUserId(senderUserId);
@@ -873,7 +873,6 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
                         ).show();
                     }
                 }
-                isUpdatingComments = false;
                 updateCommentUI(currentUserComment);
                 commentProgressBar.setVisibility(View.GONE);
             });
@@ -891,7 +890,6 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
         else if(isDownVoted) downVotedCommentsRef.child(spotId).child(senderUserId).removeValue();
         if(!isUpVoted) upVotedCommentsRef.child(spotId).child(senderUserId).setValue(comment)
                 .addOnCompleteListener(task -> {
-                    isUpdatingComments = false;
                     updateCommentUI(currentUserComment);
                     commentProgressBar.setVisibility(View.GONE);
                 });
@@ -908,7 +906,6 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
         if(isDownVoted) downVotedCommentsRef.child(spotId).child(senderUserId).removeValue();
         if(!isDownVoted) downVotedCommentsRef.child(spotId).child(senderUserId).setValue(comment)
                 .addOnCompleteListener(task -> {
-                    isUpdatingComments = false;
                     updateCommentUI(currentUserComment);
                     commentProgressBar.setVisibility(View.GONE);
                 });
@@ -1054,6 +1051,9 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
 
         commentValue = comment.getValue();
         extvComment.setText(commentValue);
+
+        String timestamp = comment.getTimestamp();
+        tvTimestamp.setText(timestamp);
 
         if(comment.isFouled()) {
             tvCommentStatus.setVisibility(View.VISIBLE);
