@@ -9,6 +9,7 @@ public class Booking {
     private BookingType bookingType;
     private Station endStation;
     private String id, message, schedule;
+    private boolean paid;
     private Station startStation;
     private String status;
     private final List<Route> routeList = new ArrayList<>();
@@ -35,6 +36,8 @@ public class Booking {
     public Booking(DataSnapshot dataSnapshot) {
         this.id = dataSnapshot.child("id").getValue(String.class);
         this.message = dataSnapshot.child("message").getValue(String.class);
+        if(dataSnapshot.child("paid").exists())
+            this.paid = dataSnapshot.child("paid").getValue(Boolean.class);
         this.schedule = dataSnapshot.child("schedule").getValue(String.class);
         if(dataSnapshot.child("startStation").exists())
             this.startStation = dataSnapshot.child("startStation").getValue(Station.class);
@@ -65,11 +68,12 @@ public class Booking {
     }
 
     public Booking(BookingType bookingType, Station endStation, String id, String message,
-                    String schedule, Station startStation, String status) {
+                    boolean paid, String schedule, Station startStation, String status) {
         this.bookingType = bookingType;
         this.endStation = endStation;
         this.id = id;
         this.message = message;
+        this.paid = paid;
         this.schedule = schedule;
         this.startStation = startStation;
         this.status = status;
@@ -89,6 +93,10 @@ public class Booking {
 
     public String getMessage() {
         return message;
+    }
+
+    public boolean isPaid() {
+        return paid;
     }
 
     public String getSchedule() {

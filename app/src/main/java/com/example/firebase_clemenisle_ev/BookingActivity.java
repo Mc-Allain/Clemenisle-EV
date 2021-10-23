@@ -1876,7 +1876,7 @@ public class BookingActivity extends AppCompatActivity implements
         bookingType.setRouteList(null);
 
         Booking booking =
-                new Booking(bookingType, endStation, bookingId, message,
+                new Booking(bookingType, endStation, bookingId, message, false,
                         bookingScheduleText, station, "Processing");
 
         DatabaseReference bookingListRef = firebaseDatabase.getReference("users")

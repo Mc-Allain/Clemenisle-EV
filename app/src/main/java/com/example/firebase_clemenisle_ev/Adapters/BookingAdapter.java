@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.Target;
@@ -66,8 +67,8 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         ImageView thumbnail = holder.thumbnail, moreImage = holder.moreImage,
-                openImage = holder.openImage,
-                locateImage = holder.locateImage, locateEndImage = holder.locateEndImage;
+                openImage = holder.openImage, locateImage = holder.locateImage,
+                locateEndImage = holder.locateEndImage, paidImage = holder.paidImage;
         TextView tvBookingId = holder.tvBookingId, tvSchedule = holder.tvSchedule,
                 tvTypeName = holder.tvTypeName, tvPrice = holder.tvPrice,
                 tvStartStation = holder.tvStartStation, tvEndStation = holder.tvEndStation,
@@ -146,6 +147,13 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
             tvLocate.setText(locateStartStationText);
             tvLocateEnd.setText(locateEndStationText);
 
+            boolean isPaid = booking.isPaid();
+
+            if(isPaid) paidImage.setVisibility(View.VISIBLE);
+            else paidImage.setVisibility(View.GONE);
+
+            paidImage.setColorFilter(color);
+
             tvLocate.setOnClickListener(view -> openMap(startStation));
 
             locateImage.setOnClickListener(view -> openMap(startStation));
@@ -153,6 +161,15 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
             tvLocateEnd.setOnClickListener(view -> openMap(endStation));
 
             locateEndImage.setOnClickListener(view -> openMap(endStation));
+
+            paidImage.setOnLongClickListener(view -> {
+                Toast.makeText(
+                        myContext,
+                        "Already paid through an online payment",
+                        Toast.LENGTH_SHORT
+                ).show();
+                return false;
+            });
         }
         else {
             SimpleTouristSpot destinationSpot = booking.getDestinationSpot();
@@ -329,7 +346,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        ImageView thumbnail, moreImage, openImage, locateImage, locateEndImage;
+        ImageView thumbnail, moreImage, openImage, locateImage, locateEndImage, paidImage;
         TextView tvBookingId, tvSchedule, tvTypeName, tvPrice,
                 tvStartStation, tvStartStation2, tvEndStation, tvEndStation2,
                 tvOption, tvOpen, tvLocate, tvLocateEnd;
@@ -357,6 +374,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
             locateImage = itemView.findViewById(R.id.locateImage);
             tvLocateEnd = itemView.findViewById(R.id.tvLocateEnd);
             locateEndImage = itemView.findViewById(R.id.locateEndImage);
+            paidImage = itemView.findViewById(R.id.paidImage);
         }
     }
 }

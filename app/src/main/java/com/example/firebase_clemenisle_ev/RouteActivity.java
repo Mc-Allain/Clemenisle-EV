@@ -56,7 +56,7 @@ public class RouteActivity extends AppCompatActivity implements
     FirebaseAuth firebaseAuth;
     FirebaseUser firebaseUser;
 
-    ImageView thumbnail, moreImage, locateImage, locateEndImage, reloadImage;
+    ImageView thumbnail, moreImage, locateImage, locateEndImage, reloadImage, paidImage;
     TextView tvBookingId, tvSchedule, tvTypeName, tvPrice, tvStartStation2, tvEndStation2,
             tvLocate, tvLocateEnd, tvLog;
     ExpandableTextView extvMessage;
@@ -79,7 +79,7 @@ public class RouteActivity extends AppCompatActivity implements
     DatabaseReference bookingListRef;
 
     String bookingId, schedule, typeName, price, startStationName, endStationName, status, message;
-    boolean isLatest;
+    boolean isLatest, isPaid;
 
     Station startStation, endStation;
 
@@ -138,6 +138,7 @@ public class RouteActivity extends AppCompatActivity implements
         locateImage = findViewById(R.id.locateImage);
         locateEndImage = findViewById(R.id.locateEndImage);
         reloadImage = findViewById(R.id.reloadImage);
+        paidImage = findViewById(R.id.paidImage);
         progressBar = findViewById(R.id.progressBar);
 
         myContext = RouteActivity.this;
@@ -228,15 +229,19 @@ public class RouteActivity extends AppCompatActivity implements
         tvLocateEnd.setOnClickListener(view -> openMap(endStation));
         locateEndImage.setOnClickListener(view -> openMap(endStation));
 
-        onlinePaymentButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Toast.makeText(
-                        myContext,
-                        "Not yet implemented",
-                        Toast.LENGTH_LONG
-                ).show();
-            }
+        onlinePaymentButton.setOnClickListener(view -> Toast.makeText(
+                myContext,
+                "Not yet implemented",
+                Toast.LENGTH_LONG
+        ).show());
+
+        paidImage.setOnLongClickListener(view -> {
+            Toast.makeText(
+                    myContext,
+                    "Already paid through an online payment",
+                    Toast.LENGTH_SHORT
+            ).show();
+            return false;
         });
     }
 
@@ -304,6 +309,11 @@ public class RouteActivity extends AppCompatActivity implements
 
         tvBookingId.setBackground(backgroundDrawable);
         tvPrice.setTextColor(color);
+
+        if(isPaid) paidImage.setVisibility(View.VISIBLE);
+        else paidImage.setVisibility(View.GONE);
+
+        paidImage.setColorFilter(color);
     }
 
     private void openMap(Station station) {
@@ -396,6 +406,8 @@ public class RouteActivity extends AppCompatActivity implements
                             routeList.add(route);
                         }
                     }
+
+                    isPaid = booking.isPaid();
                 }
                 if(routeList.size() > 0) finishLoading();
                 else errorLoading(defaultLogText);
