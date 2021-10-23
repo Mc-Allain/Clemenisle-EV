@@ -22,6 +22,7 @@ import com.example.firebase_clemenisle_ev.Classes.Route;
 import com.example.firebase_clemenisle_ev.Classes.SimpleTouristSpot;
 import com.example.firebase_clemenisle_ev.Classes.Station;
 import com.example.firebase_clemenisle_ev.MapActivity;
+import com.example.firebase_clemenisle_ev.OnTheSpotActivity;
 import com.example.firebase_clemenisle_ev.R;
 import com.example.firebase_clemenisle_ev.RouteActivity;
 
@@ -45,8 +46,9 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
 
     String locateStartStationText = "Locate Start Station",
             locateEndStationText = "Locate End Station";
-    String locateDestinationSpotText = "Locate Destination Spot",
-            locateOriginLocationText = "Locate Origin Location";
+    String
+            locateOriginLocationText = "Locate Origin Location",
+            locateDestinationSpotText = "Locate Destination Spot";
 
     public BookingAdapter(Context context, List<Booking> bookingList) {
         this.bookingList = bookingList;
@@ -247,11 +249,20 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
     }
 
     private void openItem(Booking booking) {
-        Intent intent = new Intent(myContext, RouteActivity.class);
+        Intent intent;
+
+        if(booking.getBookingType().getId().equals("BT99")) {
+            intent = new Intent(myContext, OnTheSpotActivity.class);
+        }
+        else {
+            intent = new Intent(myContext, RouteActivity.class);
+        }
+
         intent.putExtra("bookingId", booking.getId());
         intent.putExtra("isLatest",
                 bookingList.get(0).getId().equals(booking.getId()) &&
-                        booking.getStatus().equals("Completed"));
+                        booking.getStatus().equals("Completed") &&
+                        !booking.getBookingType().getId().equals("BT99"));
 
         myContext.startActivity(intent);
     }

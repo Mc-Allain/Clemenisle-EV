@@ -57,7 +57,7 @@ public class MapFragment extends Fragment {
     boolean mapAutoFocus, locateFocus = false;
 
     boolean fromBooking;
-    ButtonInterface buttonInterface;
+    BookingMapListener bookingMapListener;
 
     LatLng currentLocation;
 
@@ -172,7 +172,7 @@ public class MapFragment extends Fragment {
             if(mapAutoFocus) zoomLatLng = new LatLng(lat, lng);
             else zoomLatLng = mapCoordinates.getInitialLatLng();
 
-            if(buttonInterface == null) {
+            if(bookingMapListener == null) {
                 MarkerOptions markerOptions = new MarkerOptions();
                 markerOptions.position(latLng);
                 markerOptions.title(name);
@@ -193,7 +193,7 @@ public class MapFragment extends Fragment {
                             }
                         });
             }
-            else buttonInterface.currentLocationOnClick();
+            else bookingMapListener.currentLocationOnClick();
 
             googleMap.setOnCameraMoveListener(() -> {
                 currentZoom = googleMap.getCameraPosition().zoom;
@@ -203,7 +203,10 @@ public class MapFragment extends Fragment {
             googleMap.setOnCameraMoveCanceledListener(() -> setButtonEnabled(true));
 
             googleMap.setOnMapClickListener(latLng1 -> {
-                if(fromBooking) getUserCurrentLocation(latLng1, "Your Location");
+                if(fromBooking) {
+                    getUserCurrentLocation(latLng1, "Your Location");
+                    bookingMapListener.sendManualClicked();
+                }
             });
 
             googleMap.setOnMarkerClickListener(marker -> {
@@ -250,17 +253,18 @@ public class MapFragment extends Fragment {
 
     private void setButtonEnabled(boolean value) {
         resetButton.setEnabled(value);
-        if(buttonInterface != null) buttonInterface.setCurrentLocationEnabled(value);
+        if(bookingMapListener != null) bookingMapListener.setCurrentLocationEnabled(value);
     }
 
-    public void setButtonInterface(ButtonInterface buttonInterface) {
-        this.buttonInterface = buttonInterface;
+    public void setBookingMapListener(BookingMapListener bookingMapListener) {
+        this.bookingMapListener = bookingMapListener;
     }
 
-    public interface ButtonInterface {
+    public interface BookingMapListener {
         void setCurrentLocationEnabled(boolean value);
         void currentLocationOnClick();
         void sendCurrentLocation(LatLng currentLocation);
+        void sendManualClicked();
     }
 
     private void markCurrentLocation(LatLng latLng, String locationName) {
@@ -298,7 +302,7 @@ public class MapFragment extends Fragment {
                 });
 
         currentLocation = latLng;
-        if(buttonInterface != null) buttonInterface.sendCurrentLocation(latLng);
+        if(bookingMapListener != null) bookingMapListener.sendCurrentLocation(latLng);
     }
 
     private void markOnTheSpot(LatLng latLng) {

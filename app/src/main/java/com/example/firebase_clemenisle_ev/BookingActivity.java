@@ -97,7 +97,7 @@ public class BookingActivity extends AppCompatActivity implements
         BookingRouteAdapter.OnItemClickListener, BookingSpotAdapter.OnItemClickListener,
         SelectedSpotAdapter.OnRemoveClickListener, RecommendedSpotAdapter.OnButtonClickListener,
         AllSpotAdapter.OnButtonClickListener, ScheduleTimeAdapter.OnItemClickListener,
-        OnTheSpotAdapter.OnItemClickListener, MapFragment.ButtonInterface {
+        OnTheSpotAdapter.OnItemClickListener, MapFragment.BookingMapListener {
 
     private final static String firebaseURL = FirebaseURL.getFirebaseURL();
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance(firebaseURL);
@@ -253,6 +253,9 @@ public class BookingActivity extends AppCompatActivity implements
     FragmentManager fragmentManager = getSupportFragmentManager();
     LatLng currentLocation;
     FusedLocationProviderClient fusedLocationProviderClient;
+
+    LocationRequest locationRequest;
+    LocationCallback locationCallback;
 
     ConstraintLayout notAccurateLocationLayout;
 
@@ -1175,10 +1178,13 @@ public class BookingActivity extends AppCompatActivity implements
         this.currentLocation = currentLocation;
     }
 
-    private void getUserCurrentLocation(Location location) {
-        LocationRequest locationRequest;
-        LocationCallback locationCallback;
+    @Override
+    public void sendManualClicked() {
+        if(locationCallback != null)
+            fusedLocationProviderClient.removeLocationUpdates(locationCallback);
+    }
 
+    private void getUserCurrentLocation(Location location) {
         if(location != null) {
             tvCaption.setText(currentLocationCaptionText);
             tvCaption.setTextColor(colorBlack);
@@ -2666,7 +2672,7 @@ public class BookingActivity extends AppCompatActivity implements
         setCurrentLocationEnabled(false);
 
         mapFragment = new MapFragment();
-        mapFragment.setButtonInterface(this);
+        mapFragment.setBookingMapListener(this);
 
         Bundle bundle = new Bundle();
         bundle.putString("id", onTheSpot.getId());

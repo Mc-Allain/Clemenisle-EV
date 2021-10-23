@@ -4,18 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/gainsboro"
-    tools:context=".RouteActivity">
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/routeView"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:background="@color/gainsboro"
-        app:layout_constraintBottom_toTopOf="@+id/buttonLayout"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/bookingInfoLayout" />
+    tools:context=".OnTheSpotActivity">
 
     <ImageView
         android:id="@+id/reloadImage"
@@ -97,53 +86,53 @@
             app:tint="@color/black" />
 
         <TextView
-            android:id="@+id/tvStartStation2"
+            android:id="@+id/tvOriginLocation2"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
             android:fontFamily="@font/ubuntu"
-            android:text="Start Station"
+            android:text="Origin Location"
             android:textColor="@color/black"
             app:layout_constraintEnd_toStartOf="@+id/moreImage"
-            app:layout_constraintStart_toEndOf="@+id/tvStartStation"
-            app:layout_constraintStart_toStartOf="@+id/tvStartStation"
-            app:layout_constraintTop_toBottomOf="@+id/tvStartStation" />
+            app:layout_constraintStart_toEndOf="@+id/tvOriginLocation"
+            app:layout_constraintStart_toStartOf="@+id/tvOriginLocation"
+            app:layout_constraintTop_toBottomOf="@+id/tvOriginLocation" />
 
         <TextView
-            android:id="@+id/tvEndStation2"
+            android:id="@+id/tvDestinationSpot2"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:fontFamily="@font/ubuntu"
-            android:text="End Station"
+            android:text="Destination Spot"
             android:textColor="@color/black"
-            app:layout_constraintEnd_toEndOf="@+id/tvStartStation2"
-            app:layout_constraintStart_toStartOf="@+id/tvStartStation2"
-            app:layout_constraintTop_toBottomOf="@+id/tvEndStation" />
+            app:layout_constraintEnd_toEndOf="@+id/tvOriginLocation2"
+            app:layout_constraintStart_toStartOf="@+id/tvOriginLocation2"
+            app:layout_constraintTop_toBottomOf="@+id/tvDestinationSpot" />
 
         <TextView
-            android:id="@+id/tvStartStation"
+            android:id="@+id/tvOriginLocation"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:fontFamily="@font/ubuntu"
-            android:text="Start Station"
+            android:text="Origin Location"
             android:textColor="@color/black"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="@+id/tvSchedule"
             app:layout_constraintTop_toBottomOf="@+id/tvSchedule" />
 
         <TextView
-            android:id="@+id/tvEndStation"
+            android:id="@+id/tvDestinationSpot"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:fontFamily="@font/ubuntu"
-            android:text="End Station"
+            android:text="Destination Spot"
             android:textColor="@color/black"
             android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="@+id/tvStartStation"
-            app:layout_constraintTop_toBottomOf="@+id/tvStartStation2" />
+            app:layout_constraintStart_toStartOf="@+id/tvOriginLocation"
+            app:layout_constraintTop_toBottomOf="@+id/tvOriginLocation2" />
 
         <TextView
             android:id="@+id/tvBookingId"
@@ -201,7 +190,7 @@
             android:textStyle="bold"
             app:layout_constraintBottom_toTopOf="@id/extvMessage"
             app:layout_constraintStart_toStartOf="@+id/tvSchedule"
-            app:layout_constraintTop_toBottomOf="@+id/tvEndStation2" />
+            app:layout_constraintTop_toBottomOf="@+id/tvDestinationSpot2" />
 
         <com.ms.square.android.expandabletextview.ExpandableTextView
             android:id="@+id/extvMessage"
@@ -214,7 +203,7 @@
             app:collapseDrawable="@drawable/ic_baseline_expand_less_24"
             app:expandDrawable="@drawable/ic_baseline_expand_more_24"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@id/tvEndStation2"
+            app:layout_constraintEnd_toEndOf="@id/tvDestinationSpot2"
             app:layout_constraintStart_toStartOf="@id/thumbnail"
             app:maxCollapsedLines="3">
 
@@ -247,7 +236,7 @@
             app:layout_constraintTop_toBottomOf="parent">
 
             <ImageView
-                android:id="@+id/locateEndImage"
+                android:id="@+id/locateDestinationImage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
@@ -271,18 +260,18 @@
                 app:tint="@color/blue" />
 
             <TextView
-                android:id="@+id/tvLocateEnd"
+                android:id="@+id/tvLocateDestination"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:fontFamily="@font/ubuntu"
                 android:gravity="center_vertical"
-                android:text="Locate End Station"
+                android:text="Locate Destination Spot"
                 android:textColor="@color/blue"
                 android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="@+id/locateEndImage"
+                app:layout_constraintBottom_toBottomOf="@+id/locateDestinationImage"
                 app:layout_constraintEnd_toEndOf="@+id/tvLocate"
-                app:layout_constraintStart_toEndOf="@+id/locateEndImage"
-                app:layout_constraintTop_toTopOf="@+id/locateEndImage" />
+                app:layout_constraintStart_toEndOf="@+id/locateDestinationImage"
+                app:layout_constraintTop_toTopOf="@+id/locateDestinationImage" />
 
             <TextView
                 android:id="@+id/tvLocate"
@@ -291,7 +280,7 @@
                 android:layout_marginEnd="8dp"
                 android:fontFamily="@font/ubuntu"
                 android:gravity="center_vertical"
-                android:text="Locate Start Station"
+                android:text="Locate Origin Location"
                 android:textColor="@color/blue"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="@+id/locateImage"

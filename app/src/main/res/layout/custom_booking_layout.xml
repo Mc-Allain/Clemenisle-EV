@@ -68,14 +68,13 @@
 
         <TextView
             android:id="@+id/tvEndStation"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:fontFamily="@font/ubuntu"
             android:text="End Station"
             android:textColor="@color/black"
             android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="@+id/tvStartStation"
             app:layout_constraintStart_toStartOf="@+id/tvStartStation"
             app:layout_constraintTop_toBottomOf="@+id/tvStartStation2" />
 
@@ -208,14 +207,13 @@
                 android:id="@+id/tvLocateEnd"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:layout_marginEnd="8dp"
                 android:fontFamily="@font/ubuntu"
                 android:gravity="center_vertical"
                 android:text="Locate End Station"
                 android:textColor="@color/blue"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="@+id/locateEndImage"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/tvLocate"
                 app:layout_constraintStart_toEndOf="@+id/locateEndImage"
                 app:layout_constraintTop_toTopOf="@+id/locateEndImage" />
 
@@ -238,14 +236,13 @@
                 android:id="@+id/tvLocate"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:layout_marginEnd="8dp"
                 android:fontFamily="@font/ubuntu"
                 android:gravity="center_vertical"
                 android:text="Locate Start Station"
                 android:textColor="@color/blue"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="@+id/locateImage"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/tvOpen"
                 app:layout_constraintStart_toEndOf="@+id/locateImage"
                 app:layout_constraintTop_toTopOf="@+id/locateImage" />
 
