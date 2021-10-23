@@ -51,14 +51,11 @@ import com.example.firebase_clemenisle_ev.Classes.BookingType;
 import com.example.firebase_clemenisle_ev.Classes.BookingTypeRoute;
 import com.example.firebase_clemenisle_ev.Classes.DateTimeToString;
 import com.example.firebase_clemenisle_ev.Classes.DetailedTouristSpot;
-import com.example.firebase_clemenisle_ev.Classes.FetchURL;
 import com.example.firebase_clemenisle_ev.Classes.FirebaseURL;
-import com.example.firebase_clemenisle_ev.Classes.OnTheSpotBooking;
 import com.example.firebase_clemenisle_ev.Classes.Route;
 import com.example.firebase_clemenisle_ev.Classes.ScheduleTime;
 import com.example.firebase_clemenisle_ev.Classes.SimpleTouristSpot;
 import com.example.firebase_clemenisle_ev.Classes.Station;
-import com.example.firebase_clemenisle_ev.Classes.TaskLoadedCallback;
 import com.example.firebase_clemenisle_ev.Classes.User;
 import com.example.firebase_clemenisle_ev.Fragments.MapFragment;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -67,7 +64,6 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
@@ -101,7 +97,7 @@ public class BookingActivity extends AppCompatActivity implements
         BookingRouteAdapter.OnItemClickListener, BookingSpotAdapter.OnItemClickListener,
         SelectedSpotAdapter.OnRemoveClickListener, RecommendedSpotAdapter.OnButtonClickListener,
         AllSpotAdapter.OnButtonClickListener, ScheduleTimeAdapter.OnItemClickListener,
-        OnTheSpotAdapter.OnItemClickListener, MapFragment.ButtonInterface, TaskLoadedCallback {
+        OnTheSpotAdapter.OnItemClickListener, MapFragment.ButtonInterface {
 
     private final static String firebaseURL = FirebaseURL.getFirebaseURL();
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance(firebaseURL);
@@ -186,7 +182,7 @@ public class BookingActivity extends AppCompatActivity implements
     String bookingTypeActivityText = "Booking Type", stationActivityText = "Starting E-Vehicle Station";
     String recommendedRouteActivityText = "Recommended Routes", listOfRouteActivityText = "Route Spots";
     String bookingScheduleActivityText = "Booking Schedule", messageActivityText = "Message";
-    String onTheSpotActivityText = "Tourist Spot Destination", currentLocationActivityText = "Current Location";
+    String onTheSpotActivityText = "Tourist Spot Destination", currentLocationActivityText = "Origin Location";
 
     String defaultLogText = "No Records", noRouteLogText = "No Recommended Routes",
             noSelectedSpotText = "No Selected Spot";
@@ -257,8 +253,6 @@ public class BookingActivity extends AppCompatActivity implements
     FragmentManager fragmentManager = getSupportFragmentManager();
     LatLng currentLocation;
     FusedLocationProviderClient fusedLocationProviderClient;
-
-    Polyline polyline;
 
     ConstraintLayout notAccurateLocationLayout;
 
@@ -1179,36 +1173,6 @@ public class BookingActivity extends AppCompatActivity implements
     @Override
     public void sendCurrentLocation(LatLng currentLocation) {
         this.currentLocation = currentLocation;
-        showRoute();
-    }
-
-    private void showRoute() {
-        String url = getURL(currentLocation, new LatLng(onTheSpot.getLat(), onTheSpot.getLng()),
-                "driving");
-        new FetchURL(myContext).execute(url, "driving");
-    }
-
-    private String getURL(LatLng origin, LatLng destination, String drMode) {
-        String baseURL = "https://maps.googleapis.com/maps/api/directions/";
-        String originValue = "origin=" + origin.latitude + "," + origin.longitude;
-        String destinationValue = "destination=" + destination.latitude + "," + destination.longitude;
-        String drModeValue = "mode=" + drMode;
-        String keyValue = "key=AIzaSyDwvzZif3C-_7Qw3EyVxfOfTa56Fb-mH5k";
-        String params = originValue + "&" + destinationValue + "&" + drModeValue + "&" + keyValue ;
-        String output = "json?";
-        String url = baseURL + output + params;
-
-        /*ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-        ClipData clip = ClipData.newPlainText("URL", url);
-        clipboard.setPrimaryClip(clip);*/
-
-        return url;
-    }
-
-    @Override
-    public void onTaskDone(Object... values) {
-        if(polyline != null) polyline.remove();
-        polyline = mapFragment.getRoute(values);
     }
 
     private void getUserCurrentLocation(Location location) {
@@ -1711,7 +1675,7 @@ public class BookingActivity extends AppCompatActivity implements
         intent.putExtra("id", 0);
         intent.putExtra("lat", currentLocation.latitude);
         intent.putExtra("lng", currentLocation.longitude);
-        intent.putExtra("name", "You Location");
+        intent.putExtra("name", "Your Location");
         intent.putExtra("type", 2);
         myContext.startActivity(intent);
     }
@@ -1855,14 +1819,14 @@ public class BookingActivity extends AppCompatActivity implements
     }
 
     private void addOnTheSpotBooking(String bookingId) {
-        OnTheSpotBooking onTheSpotBooking =
-                new OnTheSpotBooking(bookingType, onTheSpot, currentLocation.latitude,
+        Booking booking =
+                new Booking(bookingType, onTheSpot, currentLocation.latitude,
                         currentLocation.longitude, bookingId, message, bookingScheduleText,
                         "Processing");
 
         DatabaseReference bookingListRef = firebaseDatabase.getReference("users")
                 .child(userId).child("bookingList").child(bookingId);
-        bookingListRef.setValue(onTheSpotBooking).addOnCompleteListener(task -> {
+        bookingListRef.setValue(booking).addOnCompleteListener(task -> {
 
             if(task.isSuccessful()) {
                 Toast.makeText(

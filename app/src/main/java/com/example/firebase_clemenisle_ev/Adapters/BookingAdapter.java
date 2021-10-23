@@ -19,6 +19,7 @@ import com.bumptech.glide.request.target.Target;
 import com.example.firebase_clemenisle_ev.Classes.Booking;
 import com.example.firebase_clemenisle_ev.Classes.BookingType;
 import com.example.firebase_clemenisle_ev.Classes.Route;
+import com.example.firebase_clemenisle_ev.Classes.SimpleTouristSpot;
 import com.example.firebase_clemenisle_ev.Classes.Station;
 import com.example.firebase_clemenisle_ev.MapActivity;
 import com.example.firebase_clemenisle_ev.R;
@@ -38,6 +39,14 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
     LayoutInflater inflater;
 
     Context myContext;
+
+    String startStationText = "Start Station", endStationText = "End Station";
+    String destinationSpotText = "Destination Spot", originLocationText = "Origin Location";
+
+    String locateStartStationText = "Locate Start Station",
+            locateEndStationText = "Locate End Station";
+    String locateDestinationSpotText = "Locate Destination Spot",
+            locateOriginLocationText = "Locate Origin Location";
 
     public BookingAdapter(Context context, List<Booking> bookingList) {
         this.bookingList = bookingList;
@@ -59,6 +68,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                 locateImage = holder.locateImage, locateEndImage = holder.locateEndImage;
         TextView tvBookingId = holder.tvBookingId, tvSchedule = holder.tvSchedule,
                 tvTypeName = holder.tvTypeName, tvPrice = holder.tvPrice,
+                tvStartStation = holder.tvStartStation, tvEndStation = holder.tvEndStation,
                 tvStartStation2 = holder.tvStartStation2, tvEndStation2 = holder.tvEndStation2,
                 tvOption = holder.tvOption, tvOpen = holder.tvOpen,
                 tvLocate = holder.tvLocate, tvLocateEnd = holder.tvLocateEnd;
@@ -71,34 +81,19 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
 
         Booking booking = bookingList.get(position);
 
+        String status = booking.getStatus();
+
         String bookingId = booking.getId();
         String schedule = booking.getSchedule();
-
-        Station startStation = booking.getStartStation();
-        String startStationName = startStation.getName();
-        
-        Station endStation = booking.getEndStation();
-        String endStationName = endStation.getName();
-
-        String status = booking.getStatus();
 
         BookingType bookingType = booking.getBookingType();
         String typeName = bookingType.getName();
         String price = "₱" + bookingType.getPrice();
         if(price.split("\\.")[1].length() == 1) price += 0;
 
-        String img;
-        List<Route> routeList = bookingList.get(position).getRouteList();
-        if(routeList.size() > 0) {
-             img = routeList.get(0).getImg();
-             Glide.with(myContext).load(img).placeholder(R.drawable.image_loading_placeholder).override(Target.SIZE_ORIGINAL).into(thumbnail);
-        }
-
         tvBookingId.setText(bookingId);
         tvSchedule.setText(schedule);
         tvPrice.setText(price);
-        tvStartStation2.setText(startStationName);
-        tvEndStation2.setText(endStationName);
         tvTypeName.setText(typeName);
 
         Resources resources = myContext.getResources();
@@ -128,6 +123,77 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
         tvBookingId.setBackground(backgroundDrawable);
         tvPrice.setTextColor(color);
 
+        if(!bookingType.getId().equals("BT99")) {
+            Station startStation = booking.getStartStation();
+            Station endStation = booking.getEndStation();
+
+            String img;
+            List<Route> routeList = bookingList.get(position).getRouteList();
+            if(routeList.size() > 0) {
+                 img = routeList.get(0).getImg();
+                 Glide.with(myContext).load(img).placeholder(R.drawable.image_loading_placeholder).
+                         override(Target.SIZE_ORIGINAL).into(thumbnail);
+            }
+
+            tvStartStation.setText(startStationText);
+            tvEndStation.setText(endStationText);
+
+            tvStartStation2.setText(startStation.getName());
+            tvEndStation2.setText(endStation.getName());
+
+            tvLocate.setText(locateStartStationText);
+            tvLocateEnd.setText(locateEndStationText);
+
+            tvLocate.setOnClickListener(view -> openMap(startStation));
+
+            locateImage.setOnClickListener(view -> openMap(startStation));
+
+            tvLocateEnd.setOnClickListener(view -> openMap(endStation));
+
+            locateEndImage.setOnClickListener(view -> openMap(endStation));
+        }
+        else {
+            SimpleTouristSpot destinationSpot = booking.getDestinationSpot();
+
+            String img = destinationSpot.getImg();
+            Glide.with(myContext).load(img).placeholder(R.drawable.image_loading_placeholder).
+                    override(Target.SIZE_ORIGINAL).into(thumbnail);
+
+            double originLat = booking.getOriginLat(), originLng = booking.getOriginLng();
+            String originLocation = "Latitude: " + originLat + "\nLongitude: " + originLng;
+
+            tvStartStation.setText(originLocationText);
+            tvEndStation.setText(destinationSpotText);
+
+            tvStartStation2.setText(originLocation);
+            tvEndStation2.setText(destinationSpot.getName());
+
+            tvLocate.setText(locateOriginLocationText);
+            tvLocateEnd.setText(locateDestinationSpotText);
+
+            tvLocate.setOnClickListener(view -> openMap2(originLat, originLng));
+
+            locateImage.setOnClickListener(view -> openMap2(originLat, originLng));
+
+            tvLocateEnd.setOnClickListener(view -> openMap3(destinationSpot));
+
+            locateEndImage.setOnClickListener(view -> openMap3(destinationSpot));
+        }
+
+        moreImage.setOnClickListener(view -> {
+            if(tvOption.getText().equals("false")) {
+                openOption(buttonLayout, backgroundLayout, moreImage,
+                        optionHandler, optionRunnable, tvOption);
+            }
+            else {
+                closeOption(buttonLayout, backgroundLayout, moreImage, tvOption);
+            }
+        });
+
+        tvOpen.setOnClickListener(view -> openItem(booking));
+
+        openImage.setOnClickListener(view -> openItem(booking));
+
         int top = dpToPx(4), bottom = dpToPx(4);
 
         boolean isFirstItem = position + 1 == 1, isLastItem = position + 1 == getItemCount();
@@ -148,28 +214,6 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                 ConstraintLayout.LayoutParams) backgroundLayout.getLayoutParams();
         layoutParams.setMargins(layoutParams.leftMargin, top, layoutParams.rightMargin, bottom);
         backgroundLayout.setLayoutParams(layoutParams);
-
-        moreImage.setOnClickListener(view -> {
-            if(tvOption.getText().equals("false")) {
-                openOption(buttonLayout, backgroundLayout, moreImage,
-                        optionHandler, optionRunnable, tvOption);
-            }
-            else {
-                closeOption(buttonLayout, backgroundLayout, moreImage, tvOption);
-            }
-        });
-
-        tvOpen.setOnClickListener(view -> openItem(booking));
-
-        openImage.setOnClickListener(view -> openItem(booking));
-
-        tvLocate.setOnClickListener(view -> openMap(startStation));
-
-        locateImage.setOnClickListener(view -> openMap(startStation));
-
-        tvLocateEnd.setOnClickListener(view -> openMap(endStation));
-
-        locateEndImage.setOnClickListener(view -> openMap(endStation));
     }
 
     private void openMap(Station startStation) {
@@ -179,6 +223,26 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
         intent.putExtra("lng", startStation.getLng());
         intent.putExtra("name", startStation.getName());
         intent.putExtra("type", 1);
+        myContext.startActivity(intent);
+    }
+
+    private void openMap2(double originLat, double originLng) {
+        Intent intent = new Intent(myContext, MapActivity.class);
+        intent.putExtra("id", 0);
+        intent.putExtra("lat", originLat);
+        intent.putExtra("lng", originLng);
+        intent.putExtra("name", "Your Location");
+        intent.putExtra("type", 2);
+        myContext.startActivity(intent);
+    }
+
+    private void openMap3(SimpleTouristSpot destinationSpot) {
+        Intent intent = new Intent(myContext, MapActivity.class);
+        intent.putExtra("id", destinationSpot.getId());
+        intent.putExtra("lat", destinationSpot.getLat());
+        intent.putExtra("lng", destinationSpot.getLng());
+        intent.putExtra("name", destinationSpot.getName());
+        intent.putExtra("type", 0);
         myContext.startActivity(intent);
     }
 

@@ -9,6 +9,8 @@ public class SimpleTouristSpot {
     private String img;
     private String name;
 
+    private double lat, lng;
+
     public SimpleTouristSpot() {
     }
 
@@ -25,6 +27,8 @@ public class SimpleTouristSpot {
         this.id = touristSpot.getId();
         this.img = touristSpot.getImg();
         this.name = touristSpot.getName();
+        this.lat = touristSpot.getLat();
+        this.lng = touristSpot.getLng();
     }
 
     public SimpleTouristSpot(boolean deactivated, String id, String img, String name) {
@@ -48,5 +52,13 @@ public class SimpleTouristSpot {
 
     public String getName() {
         return name;
+    }
+
+    public double getLat() {
+        return lat;
+    }
+
+    public double getLng() {
+        return lng;
     }
 }

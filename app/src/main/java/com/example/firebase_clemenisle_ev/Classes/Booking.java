@@ -13,7 +13,23 @@ public class Booking {
     private String status;
     private final List<Route> routeList = new ArrayList<>();
 
+    private SimpleTouristSpot destinationSpot;
+    private double originLat, originLng;
+
     public Booking() {
+    }
+
+    public Booking(BookingType bookingType, DetailedTouristSpot destinationSpot,
+                            double originLat, double originLng, String id, String message,
+                            String schedule, String status) {
+        this.bookingType = bookingType;
+        this.destinationSpot = new SimpleTouristSpot(destinationSpot);
+        this.originLat = originLat;
+        this.originLng = originLng;
+        this.id = id;
+        this.message = message;
+        this.schedule = schedule;
+        this.status = status;
     }
 
     public Booking(DataSnapshot dataSnapshot) {
@@ -39,6 +55,13 @@ public class Booking {
                 }
             }
         }
+
+        if(dataSnapshot.child("destinationSpot").exists())
+            this.destinationSpot = dataSnapshot.child("destinationSpot").getValue(SimpleTouristSpot.class);
+        if(dataSnapshot.child("originLat").exists())
+            this.originLat = dataSnapshot.child("originLat").getValue(Double.class);
+        if(dataSnapshot.child("originLng").exists())
+            this.originLng = dataSnapshot.child("originLng").getValue(Double.class);
     }
 
     public Booking(BookingType bookingType, Station endStation, String id, String message,
@@ -82,5 +105,17 @@ public class Booking {
 
     public List<Route> getRouteList() {
         return routeList;
+    }
+
+    public SimpleTouristSpot getDestinationSpot() {
+        return destinationSpot;
+    }
+
+    public double getOriginLat() {
+        return originLat;
+    }
+
+    public double getOriginLng() {
+        return originLng;
     }
 }

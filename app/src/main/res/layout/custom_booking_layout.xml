@@ -39,10 +39,9 @@
             android:fontFamily="@font/ubuntu"
             android:text="Start Station"
             android:textColor="@color/black"
-            app:layout_constraintBottom_toBottomOf="@+id/tvStartStation"
             app:layout_constraintEnd_toStartOf="@+id/moreImage"
-            app:layout_constraintStart_toEndOf="@+id/tvStartStation"
-            app:layout_constraintTop_toTopOf="@+id/tvStartStation" />
+            app:layout_constraintStart_toStartOf="@+id/tvStartStation"
+            app:layout_constraintTop_toBottomOf="@+id/tvStartStation" />
 
         <TextView
             android:id="@+id/tvEndStation2"
@@ -51,11 +50,9 @@
             android:fontFamily="@font/ubuntu"
             android:text="End Station"
             android:textColor="@color/black"
-            app:layout_constraintBottom_toBottomOf="@+id/tvEndStation"
             app:layout_constraintEnd_toEndOf="@+id/tvStartStation2"
-            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="@+id/tvStartStation2"
-            app:layout_constraintTop_toTopOf="@+id/tvEndStation" />
+            app:layout_constraintTop_toBottomOf="@+id/tvEndStation" />
 
         <TextView
             android:id="@+id/tvStartStation"
@@ -73,13 +70,14 @@
             android:id="@+id/tvEndStation"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
             android:fontFamily="@font/ubuntu"
             android:text="End Station"
             android:textColor="@color/black"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="@+id/tvStartStation"
             app:layout_constraintStart_toStartOf="@+id/tvStartStation"
-            app:layout_constraintTop_toBottomOf="@+id/tvStartStation" />
+            app:layout_constraintTop_toBottomOf="@+id/tvStartStation2" />
 
         <TextView
             android:id="@+id/tvBookingId"
@@ -137,7 +135,7 @@
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="@+id/tvSchedule"
-            app:layout_constraintTop_toBottomOf="@+id/tvEndStation" />
+            app:layout_constraintTop_toBottomOf="@+id/tvEndStation2" />
 
         <TextView
             android:id="@+id/tvOption"
@@ -167,6 +165,7 @@
             android:layout_marginEnd="8dp"
             android:background="@drawable/border_layout"
             app:layout_constraintEnd_toStartOf="@+id/moreImage"
+            app:layout_constraintStart_toStartOf="@+id/tvPrice"
             app:layout_constraintTop_toBottomOf="parent">
 
             <ImageView
@@ -209,13 +208,14 @@
                 android:id="@+id/tvLocateEnd"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
+                android:layout_marginEnd="8dp"
                 android:fontFamily="@font/ubuntu"
                 android:gravity="center_vertical"
                 android:text="Locate End Station"
                 android:textColor="@color/blue"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="@+id/locateEndImage"
-                app:layout_constraintEnd_toEndOf="@+id/tvLocate"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/locateEndImage"
                 app:layout_constraintTop_toTopOf="@+id/locateEndImage" />
 
@@ -223,19 +223,20 @@
                 android:id="@+id/tvOpen"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
+                android:layout_marginEnd="8dp"
                 android:fontFamily="@font/ubuntu"
                 android:gravity="center_vertical"
                 android:text="Open"
                 android:textColor="@color/blue"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="@+id/openImage"
-                app:layout_constraintEnd_toEndOf="@+id/tvLocate"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/openImage"
                 app:layout_constraintTop_toTopOf="@+id/openImage" />
 
             <TextView
                 android:id="@+id/tvLocate"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:layout_marginEnd="8dp"
                 android:fontFamily="@font/ubuntu"

@@ -449,6 +449,7 @@ public class MainActivity extends AppCompatActivity {
                     initNotificationInHours(booking, hourArray, hrDifference + 1, minArray, minDifference, sec);
 
                 if(booking.getStatus().equals("Processing") &&
+                        !booking.getBookingType().getId().equals("BT99") &&
                         (hrDifference < 0 || (hrDifference == 0 && minDifference == 0)))
                     firebaseDatabase.getReference("users").child(userId).
                             child("bookingList").child(booking.getId()).child("status").setValue("Failed");
