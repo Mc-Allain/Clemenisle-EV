@@ -161,8 +161,14 @@ public class HelpActivity extends AppCompatActivity {
         });
     }
 
+    private void setOnScreenEnabled(boolean value) {
+        questionInputLayout.setEnabled(value);
+        submitButton.setEnabled(value);
+    }
+
     private void getSubmittedQuestion() {
         progressBar.setVisibility(View.VISIBLE);
+        setOnScreenEnabled(false);
 
         usersRef.child("question").addValueEventListener(new ValueEventListener() {
             @Override
@@ -180,6 +186,7 @@ public class HelpActivity extends AppCompatActivity {
                 }
 
                 progressBar.setVisibility(View.GONE);
+                setOnScreenEnabled(true);
             }
 
             @Override
@@ -191,6 +198,7 @@ public class HelpActivity extends AppCompatActivity {
                 ).show();
 
                 progressBar.setVisibility(View.GONE);
+                setOnScreenEnabled(true);
             }
         });
     }

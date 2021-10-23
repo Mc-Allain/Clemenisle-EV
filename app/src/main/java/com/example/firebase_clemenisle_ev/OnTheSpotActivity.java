@@ -1,5 +1,6 @@
 package com.example.firebase_clemenisle_ev;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
@@ -18,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -28,6 +30,8 @@ import com.bumptech.glide.request.target.Target;
 import com.example.firebase_clemenisle_ev.Classes.Booking;
 import com.example.firebase_clemenisle_ev.Classes.FirebaseURL;
 import com.example.firebase_clemenisle_ev.Classes.SimpleTouristSpot;
+import com.example.firebase_clemenisle_ev.Fragments.MapFragment;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -38,9 +42,11 @@ import com.google.firebase.database.ValueEventListener;
 import com.ms.square.android.expandabletextview.ExpandableTextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
+import androidx.fragment.app.FragmentManager;
 
 public class OnTheSpotActivity extends AppCompatActivity {
 
@@ -49,13 +55,19 @@ public class OnTheSpotActivity extends AppCompatActivity {
     FirebaseAuth firebaseAuth;
     FirebaseUser firebaseUser;
 
+    private final static int MAP_SETTINGS_REQUEST = 1;
+
     ImageView thumbnail, moreImage, locateImage, locateDestinationImage, reloadImage;
     TextView tvBookingId, tvSchedule, tvTypeName, tvPrice, tvOriginLocation2, tvDestinationSpot2,
             tvLocate, tvLocateDestination, tvLog;
     ExpandableTextView extvMessage;
     ConstraintLayout buttonLayout, bookingInfoLayout, bookingInfoButtonLayout;
     Button cancelButton;
+    FrameLayout mapLayout;
     ProgressBar progressBar;
+
+    TextView tvCurrentLocation, tvLocateOnTheSpot, tvMapSettings;
+    ImageView currentLocationImage, locateOnTheSpotImage, mapSettingsImage;
 
     Context myContext;
     Resources myResources;
@@ -67,10 +79,13 @@ public class OnTheSpotActivity extends AppCompatActivity {
     DatabaseReference bookingListRef;
 
     String bookingId, schedule, typeName, price, status, message;
-    double originLat, originLng;
+    LatLng originLocation, destinationSpotLocation;
     boolean isLatest;
 
     SimpleTouristSpot destinationSpot;
+
+    MapFragment mapFragment;
+    FragmentManager fragmentManager = getSupportFragmentManager();
 
     boolean isOnScreen = false, isOptionShown = false;
 
@@ -125,7 +140,15 @@ public class OnTheSpotActivity extends AppCompatActivity {
         locateImage = findViewById(R.id.locateImage);
         locateDestinationImage = findViewById(R.id.locateDestinationImage);
         reloadImage = findViewById(R.id.reloadImage);
+        mapLayout = findViewById(R.id.mapLayout);
         progressBar = findViewById(R.id.progressBar);
+
+        tvCurrentLocation = findViewById(R.id.tvCurrentLocation);
+        currentLocationImage = findViewById(R.id.currentLocationImage);
+        tvLocateOnTheSpot = findViewById(R.id.tvLocateOnTheSpot);
+        locateOnTheSpotImage = findViewById(R.id.locateOnTheSpotImage);
+        tvMapSettings = findViewById(R.id.tvMapSettings);
+        mapSettingsImage = findViewById(R.id.mapSettingsImage);
 
         myContext = OnTheSpotActivity.this;
         myResources = getResources();optionRunnable = () -> closeOption();
@@ -138,6 +161,8 @@ public class OnTheSpotActivity extends AppCompatActivity {
         isLatest = intent.getBooleanExtra("isLatest", false);
 
         isOnScreen = true;
+
+        Glide.with(myContext).load(R.drawable.magnify_4s_256px).into(reloadImage);
 
         firebaseAuth = FirebaseAuth.getInstance();
         if(isLoggedIn) {
@@ -197,17 +222,45 @@ public class OnTheSpotActivity extends AppCompatActivity {
             }
         });
 
-        tvLocate.setOnClickListener(view -> openMap("O-00", originLat, originLng,
+        tvLocate.setOnClickListener(view -> openMap("O-00", originLocation,
                 "Your Location", 2));
-        locateImage.setOnClickListener(view -> openMap("O-00", originLat, originLng,
+        locateImage.setOnClickListener(view -> openMap("O-00", originLocation,
                 "Your Location", 2));
 
         tvLocateDestination.setOnClickListener(view -> openMap(destinationSpot.getId(),
-                destinationSpot.getLat(), destinationSpot.getLng(),
-                destinationSpot.getName(), 0));
+                destinationSpotLocation, destinationSpot.getName(), 0));
         locateDestinationImage.setOnClickListener(view -> openMap(destinationSpot.getId(),
-                destinationSpot.getLat(), destinationSpot.getLng(),
-                destinationSpot.getName(), 0));
+                destinationSpotLocation, destinationSpot.getName(), 0));
+
+        currentLocationImage.setOnClickListener(view ->
+                mapFragment.getUserCurrentLocation(originLocation, "Your Location"));
+        tvCurrentLocation.setOnClickListener(view ->
+                mapFragment.getUserCurrentLocation(originLocation, "Your Location"));
+
+        locateOnTheSpotImage.setOnClickListener(view -> mapFragment.locateOnTheSpot());
+        tvLocateOnTheSpot.setOnClickListener(view -> mapFragment.locateOnTheSpot());
+
+        mapSettingsImage.setOnClickListener(view -> openMapSettings());
+        tvMapSettings.setOnClickListener(view -> openMapSettings());
+    }
+
+    private void openMapSettings() {
+        Intent intent = new Intent(myContext, MapActivity.class);
+        intent.putExtra("id", destinationSpot.getId());
+        intent.putExtra("lat", destinationSpot.getLat());
+        intent.putExtra("lng", destinationSpot.getLng());
+        intent.putExtra("name", destinationSpot.getName());
+        intent.putExtra("type", 0);
+        intent.putExtra("fromBooking", true);
+        ((Activity) myContext).startActivityForResult(intent, MAP_SETTINGS_REQUEST);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(resultCode == RESULT_OK && requestCode == MAP_SETTINGS_REQUEST) {
+            mapFragment.mapSettingsRequestResult();
+        }
     }
 
     private void initBookingAlertDialog() {
@@ -234,10 +287,11 @@ public class OnTheSpotActivity extends AppCompatActivity {
         Glide.with(myContext).load(img).placeholder(R.drawable.image_loading_placeholder).
                 override(Target.SIZE_ORIGINAL).into(thumbnail);
 
-        String originLocation = "Latitude: " + originLat + "\nLongitude: " + originLng;
+        String originLocationText = "Latitude: " + originLocation.latitude +
+                "\nLongitude: " + originLocation.longitude;
 
         tvBookingId.setText(bookingId);
-        tvOriginLocation2.setText(originLocation);
+        tvOriginLocation2.setText(originLocationText);
         tvDestinationSpot2.setText(destinationSpot.getName());
         tvSchedule.setText(schedule);
         tvTypeName.setText(typeName);
@@ -274,13 +328,27 @@ public class OnTheSpotActivity extends AppCompatActivity {
 
         tvBookingId.setBackground(backgroundDrawable);
         tvPrice.setTextColor(color);
+
+        mapFragment = new MapFragment();
+
+        Bundle bundle = new Bundle();
+        bundle.putString("id", destinationSpot.getId());
+        bundle.putDouble("lat", destinationSpot.getLat());
+        bundle.putDouble("lng", destinationSpot.getLng());
+        bundle.putString("name", destinationSpot.getName());
+        bundle.putInt("type", 0);
+        bundle.putBoolean("fromBookingRecord", true);
+        mapFragment.setArguments(bundle);
+
+        fragmentManager.beginTransaction().replace(mapLayout.getId(), mapFragment).commit();
+        mapFragment.setCurrentLocation(originLocation);
     }
 
-    private void openMap(String id, double lat, double lng, String name, int type) {
+    private void openMap(String id, LatLng latlng, String name, int type) {
         Intent intent = new Intent(myContext, MapActivity.class);
         intent.putExtra("id", id);
-        intent.putExtra("lat", lat);
-        intent.putExtra("lng", lng);
+        intent.putExtra("lat", latlng.latitude);
+        intent.putExtra("lng", latlng.longitude);
         intent.putExtra("name", name);
         intent.putExtra("type", type);
         myContext.startActivity(intent);
@@ -345,9 +413,11 @@ public class OnTheSpotActivity extends AppCompatActivity {
                 if(snapshot.exists()) {
                     Booking booking = new Booking(snapshot);
                     destinationSpot = booking.getDestinationSpot();
+                    destinationSpotLocation =
+                            new LatLng(destinationSpot.getLat(), destinationSpot.getLng());
 
-                    originLat = booking.getOriginLat();
-                    originLng = booking.getOriginLng();
+                    originLocation =
+                            new LatLng(booking.getOriginLat(), booking.getOriginLng());
 
                     schedule = booking.getSchedule();
                     status = booking.getStatus();

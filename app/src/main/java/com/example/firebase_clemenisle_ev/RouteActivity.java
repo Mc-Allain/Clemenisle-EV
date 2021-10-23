@@ -62,7 +62,7 @@ public class RouteActivity extends AppCompatActivity implements
     ExpandableTextView extvMessage;
     RecyclerView routeView;
     ConstraintLayout buttonLayout, bookingInfoLayout, bookingInfoButtonLayout;
-    Button cancelButton;
+    Button cancelButton, onlinePaymentButton;
     ProgressBar progressBar;
 
     int columnCount = 2;
@@ -133,6 +133,7 @@ public class RouteActivity extends AppCompatActivity implements
         bookingInfoLayout = findViewById(R.id.bookingInfoLayout);
         bookingInfoButtonLayout = findViewById(R.id.bookingInfoButtonLayout);
         cancelButton = findViewById(R.id.cancelButton);
+        onlinePaymentButton = findViewById(R.id.onlinePaymentButton);
         moreImage = findViewById(R.id.moreImage);
         locateImage = findViewById(R.id.locateImage);
         locateEndImage = findViewById(R.id.locateEndImage);
@@ -226,6 +227,17 @@ public class RouteActivity extends AppCompatActivity implements
 
         tvLocateEnd.setOnClickListener(view -> openMap(endStation));
         locateEndImage.setOnClickListener(view -> openMap(endStation));
+
+        onlinePaymentButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(
+                        myContext,
+                        "Not yet implemented",
+                        Toast.LENGTH_LONG
+                ).show();
+            }
+        });
     }
 
     private void initBookingAlertDialog() {
@@ -269,11 +281,14 @@ public class RouteActivity extends AppCompatActivity implements
                 color = myResources.getColor(R.color.orange);
                 backgroundDrawable = myResources.getDrawable(R.color.orange);
                 buttonLayout.setVisibility(View.VISIBLE);
+                cancelButton.setVisibility(View.VISIBLE);
                 if(isShowBookingAlertEnabled) dialog.show();
                 break;
             case "Booked":
                 color = myResources.getColor(R.color.green);
                 backgroundDrawable = myResources.getDrawable(R.color.green);
+                buttonLayout.setVisibility(View.VISIBLE);
+                cancelButton.setVisibility(View.GONE);
                 if(isShowBookingAlertEnabled) dialog.show();
                 break;
             case "Completed":

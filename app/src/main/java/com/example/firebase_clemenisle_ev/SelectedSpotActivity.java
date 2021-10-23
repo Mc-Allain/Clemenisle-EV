@@ -1005,6 +1005,7 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
     }
 
     private void checkCurrentUserComment() {
+        setCommentOnScreenEnabled(false);
         commentsRef.child(id).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -1012,6 +1013,10 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
                     Comment comment = snapshot.getValue(Comment.class);
                     currentUserComment = comment;
                     if(currentUserComment != null) currentUserComment.setUserId(userId);
+
+                    isUserCommentExist = true;
+                    commentInputLayout.setVisibility(View.GONE);
+                    userCommentLayout.setVisibility(View.VISIBLE);
 
                     updateCommentUI(comment);
                 }
@@ -1034,10 +1039,6 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
     }
 
     private void updateCommentUI(Comment comment) {
-        isUserCommentExist = true;
-        commentInputLayout.setVisibility(View.GONE);
-        userCommentLayout.setVisibility(View.VISIBLE);
-
         setCommentOnScreenEnabled(true);
         editImage.setColorFilter(colorBlue);
 

@@ -56,7 +56,7 @@ public class MapFragment extends Fragment {
     int tsMarkColor, sMarkColor, tsMarkIcon, sMarkIcon, mapType;
     boolean mapAutoFocus, locateFocus = false;
 
-    boolean fromBooking;
+    boolean fromBooking, fromBookingRecord;
     BookingMapListener bookingMapListener;
 
     LatLng currentLocation;
@@ -140,6 +140,8 @@ public class MapFragment extends Fragment {
 
             fromBooking = bundle.getBoolean("fromBooking", false);
             if(fromBooking) mapAutoFocus = true;
+
+            fromBookingRecord = bundle.getBoolean("fromBookingRecord", false);
         }
 
         if(type == 2) {
@@ -219,6 +221,8 @@ public class MapFragment extends Fragment {
             });
 
             myGoogleMap = googleMap;
+
+            if(fromBookingRecord) locateOnTheSpot();
         });
 
         resetButton.setOnClickListener(view1 -> {
@@ -244,11 +248,15 @@ public class MapFragment extends Fragment {
         return view;
     }
 
-    public void mapSettingsRequestResult(LatLng currentLocation) {
+    public void mapSettingsRequestResult() {
         initSharedPreferences();
         myGoogleMap.setMapType(mapType);
         if(selectedType == 0) locateOnTheSpot();
         if(selectedType == 2) getUserCurrentLocation(currentLocation, "Your Location");
+    }
+
+    public void setCurrentLocation(LatLng currentLocation) {
+        this.currentLocation = currentLocation;
     }
 
     private void setButtonEnabled(boolean value) {

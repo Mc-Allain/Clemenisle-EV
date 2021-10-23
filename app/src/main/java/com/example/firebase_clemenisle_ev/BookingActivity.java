@@ -1066,7 +1066,7 @@ public class BookingActivity extends AppCompatActivity implements
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(resultCode == RESULT_OK && requestCode == MAP_SETTINGS_REQUEST) {
-            mapFragment.mapSettingsRequestResult(currentLocation);
+            mapFragment.mapSettingsRequestResult();
         }
     }
 

@@ -36,7 +36,7 @@
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="16dp"
                     android:fontFamily="@font/ubuntu"
-                    android:text="When the schedule of your Booking comes, please do the following:\n• Prepare your payment.\n• Go to your designated Starting Station.\n• Tell your Booking ID to the receptionist.\n• Ride into the E-Vehicle with your assigned driver."
+                    android:text="@string/bookingProcess1"
                     android:textColor="@color/black"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -51,7 +51,7 @@
                     android:layout_marginEnd="16dp"
                     android:layout_marginBottom="8dp"
                     android:fontFamily="@font/ubuntu"
-                    android:text='You can only cancel your booking while it is \"Processing". Once the status becomes \"Booked\", you cannot cancel it anymore. Please be sure of your decision.'
+                    android:text="@string/bookingProcess2"
                     android:textColor="@color/black"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
