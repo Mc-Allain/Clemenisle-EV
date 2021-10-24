@@ -31,7 +31,7 @@ public class SplashScreenActivity extends AppCompatActivity {
     Context myContext;
 
     String emailAddress, password;
-    boolean remember;
+    boolean remember, isDriver;
 
     AppMetaData appMetaData;
 
@@ -43,6 +43,7 @@ public class SplashScreenActivity extends AppCompatActivity {
         remember = sharedPreferences.getBoolean("remember", false);
         emailAddress = sharedPreferences.getString("emailAddress", null);
         password = sharedPreferences.getString("password", null);
+        isDriver = sharedPreferences.getBoolean("isDriver", false);
     }
 
     private void sendSharedPreferences() {
@@ -101,7 +102,9 @@ public class SplashScreenActivity extends AppCompatActivity {
                     intent = new Intent(myContext, AppStatusActivity.class);
                     intent.putExtra("isErrorStatus", false);
                 }
+                else if(isDriver) intent = new Intent(myContext, DriverActivity.class);
                 else intent = new Intent(myContext, MainActivity.class);
+
                 startActivity(intent);
                 finishAffinity();
             }

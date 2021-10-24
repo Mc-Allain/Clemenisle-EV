@@ -206,9 +206,12 @@ public class LoginFragment extends Fragment {
         dialogProgressBar = dialog.findViewById(R.id.dialogProgressBar);
 
         String dialogTitle = "Forgot Password?";
-        String dialogCaption = "Please input your email address of forgotten password account.";
+        String dialogCaption = "Please input the email address of your forgotten password account.";
+        String buttonText = "Submit";
+
         tvDialogTitle.setText(dialogTitle);
         tvDialogCaption.setText(dialogCaption);
+        submitButton.setText(buttonText);
 
         etDEmailAddress.setOnFocusChangeListener((view1, b) -> {
             if(!tlDEmailAddress.isErrorEnabled()) {

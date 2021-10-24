@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,7 @@ import android.widget.Toast;
 
 import com.example.firebase_clemenisle_ev.AboutActivity;
 import com.example.firebase_clemenisle_ev.Classes.Setting;
+import com.example.firebase_clemenisle_ev.DriverActivity;
 import com.example.firebase_clemenisle_ev.HelpActivity;
 import com.example.firebase_clemenisle_ev.MainActivity;
 import com.example.firebase_clemenisle_ev.PreferenceActivity;
@@ -30,9 +32,23 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
     LayoutInflater inflater;
 
     Context myContext;
+    Resources myResources;
 
     long logoutPressedTime;
     Toast logoutToast;
+
+    private void sendLoginPreferences() {
+        SharedPreferences sharedPreferences = myContext.getSharedPreferences(
+                "login", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        editor.putBoolean("isLoggedIn", false);
+        editor.putBoolean("remember", false);
+        editor.putString("emailAddress", null);
+        editor.putString("password", null);
+
+        editor.apply();
+    }
 
     public SettingsAdapter(Context context, List<Setting> settings) {
         this.settings = settings;
@@ -53,9 +69,10 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
         ConstraintLayout settingLayout = holder.settingLayout;
 
         myContext = inflater.getContext();
+        myResources = myContext.getResources();
 
-        int colorRed = myContext.getResources().getColor(R.color.red);
-        int colorBlack = myContext.getResources().getColor(R.color.black);
+        int colorRed = myResources.getColor(R.color.red);
+        int colorBlack = myResources.getColor(R.color.black);
 
         int settingIcon = settings.get(position).getSettingIcon();
         String settingName = settings.get(position).getSettingName();
@@ -91,7 +108,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
                 case "Log out":
                     if (logoutPressedTime + 2500 > System.currentTimeMillis()) {
                         logoutToast.cancel();
-                        sendSharedPreferences();
+                        sendLoginPreferences();
 
                         Intent intent = new Intent(myContext, MainActivity.class);
                         myContext.startActivity(intent);
@@ -119,20 +136,13 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
                     myContext.startActivity(intent);
                     break;
                 }
+                case "Driver Mode": {
+                    Intent intent = new Intent(myContext, DriverActivity.class);
+                    myContext.startActivity(intent);
+                    break;
+                }
             }
         });
-    }
-
-    private void sendSharedPreferences() {
-        SharedPreferences sharedPreferences = myContext.getSharedPreferences(
-                "login", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-
-        editor.putBoolean("isLoggedIn", false);
-        editor.putBoolean("remember", false);
-        editor.putString("emailAddress", null);
-        editor.putString("password", null);
-        editor.apply();
     }
 
     private int dpToPx(int dp) {

@@ -532,6 +532,8 @@ public class RegisterFragment extends Fragment {
                 "Registration failed. Please try again.",
                 Toast.LENGTH_LONG
         ).show();
+
+        tlEmailAddress.clearFocus();
         setScreenEnabled(true);
         progressBar.setVisibility(View.GONE);
     }
