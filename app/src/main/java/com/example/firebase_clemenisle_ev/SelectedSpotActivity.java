@@ -1565,8 +1565,22 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
         isLiked = isInLikedSpots(selectedSpot);
 
         int color;
-        if(!isLiked) color = myContext.getResources().getColor(R.color.black);
-        else color = myContext.getResources().getColor(R.color.blue);
+        if(!isLiked) {
+            color = myResources.getColor(R.color.black);
+            likerImage.setVisibility(View.GONE);
+        }
+        else {
+            color = myResources.getColor(R.color.blue);
+            likerImage.setVisibility(View.VISIBLE);
+            likerImage.setOnLongClickListener(view -> {
+                Toast.makeText(
+                        myContext,
+                        "Liker",
+                        Toast.LENGTH_SHORT
+                ).show();
+                return false;
+            });
+        }
         likeImage.setColorFilter(color);
 
         likeImage.setEnabled(true);

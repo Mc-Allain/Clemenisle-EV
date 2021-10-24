@@ -158,13 +158,12 @@ public class HelpActivity extends AppCompatActivity {
 
             etHelpEntry.setText(helpEntryValue);
 
-            if(helpEntry.length() > 0) submitButton.setEnabled(true);
-            else submitButton.setEnabled(false);
+            submitButton.setEnabled(helpEntry.length() > 0);
         });
 
         tvFAQ.setOnClickListener(view -> Toast.makeText(
                 myContext,
-                "Not yet implemented",
+                "Coming soon…",
                 Toast.LENGTH_LONG
         ).show());
     }

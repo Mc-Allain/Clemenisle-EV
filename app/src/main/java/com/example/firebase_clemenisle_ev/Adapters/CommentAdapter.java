@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.firebase_clemenisle_ev.Classes.Comment;
+import com.example.firebase_clemenisle_ev.Classes.SimpleTouristSpot;
 import com.example.firebase_clemenisle_ev.Classes.User;
 import com.example.firebase_clemenisle_ev.LoginActivity;
 import com.example.firebase_clemenisle_ev.R;
@@ -242,6 +243,22 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
                     });
                 }
 
+                List<SimpleTouristSpot> likedSpots = user.getLikedSpots();
+                for(SimpleTouristSpot likedSpot : likedSpots) {
+                    if(likedSpot.getId().equals(spotId)) {
+                        likerImage.setVisibility(View.VISIBLE);
+                        likerImage.setOnLongClickListener(view -> {
+                            Toast.makeText(
+                                    myContext,
+                                    "Liker",
+                                    Toast.LENGTH_SHORT
+                            ).show();
+                            return false;
+                        });
+                        break;
+                    }
+                }
+
                 if(user.getId().equals(userId)) {
                     editImage.setVisibility(View.VISIBLE);
 
@@ -278,6 +295,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
                             upVoteImage.getDrawable().setTint(colorBlue);
                             isUpVoted = true;
                         }
+                        break;
                     }
                 }
 
@@ -290,26 +308,30 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
                             downVoteImage.getDrawable().setTint(colorRed);
                             isDownVoted = true;
                         }
+                        break;
                     }
                 }
 
-                List<Comment> reportedComments = user1.getReportedComments();
-                for(Comment comment : reportedComments) {
-                    if(comment.getId().equals(spotId) && comment.getUserId().equals(user.getId())) {
-                        reportImage.setEnabled(false);
-                        reportImage.setColorFilter(colorInitial);
-                        upVoteImage.setEnabled(false);
-                        upVoteImage.getDrawable().setTint(colorInitial);
-                        isReported = true;
+                if(user1.getId().equals(userId)) {
+                    List<Comment> reportedComments = user1.getReportedComments();
+                    for(Comment comment : reportedComments) {
+                        if(comment.getId().equals(spotId) && comment.getUserId().equals(user.getId())) {
+                            reportImage.setEnabled(false);
+                            reportImage.setColorFilter(colorInitial);
+                            upVoteImage.setEnabled(false);
+                            upVoteImage.getDrawable().setTint(colorInitial);
+                            isReported = true;
 
-                        tvCommentStatus.setVisibility(View.VISIBLE);
+                            tvCommentStatus.setVisibility(View.VISIBLE);
 
-                        String status = reportedStatus;
+                            String status = reportedStatus;
 
-                        if(commentRecord.isFouled()) status = defaultStatusText;
-                        else if(commentRecord.isDeactivated()) status = notActiveText + " | " + reportedStatus;
+                            if(commentRecord.isFouled()) status = defaultStatusText;
+                            else if(commentRecord.isDeactivated()) status = notActiveText + " | " + reportedStatus;
 
-                        tvCommentStatus.setText(status);
+                            tvCommentStatus.setText(status);
+                            break;
+                        }
                     }
                 }
             }
