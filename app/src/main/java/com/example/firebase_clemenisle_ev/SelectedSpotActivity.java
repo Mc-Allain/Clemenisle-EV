@@ -1073,14 +1073,38 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
         if(user.isDeveloper()) {
             badgeLayout.setVisibility(View.VISIBLE);
             developerImage.setVisibility(View.VISIBLE);
+            developerImage.setOnLongClickListener(view -> {
+                Toast.makeText(
+                        myContext,
+                        "Developer",
+                        Toast.LENGTH_SHORT
+                ).show();
+                return false;
+            });
         }
         if(user.isAdmin()) {
             badgeLayout.setVisibility(View.VISIBLE);
             adminImage.setVisibility(View.VISIBLE);
+            adminImage.setOnLongClickListener(view -> {
+                Toast.makeText(
+                        myContext,
+                        "Admin",
+                        Toast.LENGTH_SHORT
+                ).show();
+                return false;
+            });
         }
         if(user.isDriver()) {
             badgeLayout.setVisibility(View.VISIBLE);
             driverImage.setVisibility(View.VISIBLE);
+            driverImage.setOnLongClickListener(view -> {
+                Toast.makeText(
+                        myContext,
+                        "Driver",
+                        Toast.LENGTH_SHORT
+                ).show();
+                return false;
+            });
         }
 
         commentValue = comment.getValue();

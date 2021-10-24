@@ -165,8 +165,8 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
             paidImage.setOnLongClickListener(view -> {
                 Toast.makeText(
                         myContext,
-                        "Already paid via online payment",
-                        Toast.LENGTH_LONG
+                        "Paid",
+                        Toast.LENGTH_SHORT
                 ).show();
                 return false;
             });
