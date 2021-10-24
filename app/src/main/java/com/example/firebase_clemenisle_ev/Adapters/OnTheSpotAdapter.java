@@ -71,7 +71,12 @@ public class OnTheSpotAdapter extends RecyclerView.Adapter<OnTheSpotAdapter.View
         String name = touristSpot.getName();
         String img = touristSpot.getImg();
 
-        Glide.with(myContext).load(img).placeholder(R.drawable.image_loading_placeholder).override(Target.SIZE_ORIGINAL).into(thumbnail);
+        try {
+            Glide.with(myContext).load(img).
+                    placeholder(R.drawable.image_loading_placeholder).
+                    override(Target.SIZE_ORIGINAL).into(thumbnail);
+        }
+        catch (Exception ignored) {}
         tvName.setText(name);
 
         boolean isSelected = false;

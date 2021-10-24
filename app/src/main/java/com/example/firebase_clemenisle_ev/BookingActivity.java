@@ -509,12 +509,15 @@ public class BookingActivity extends AppCompatActivity implements
         initBookingInformationDialog();
         initAllSpotsDialog();
 
-        Glide.with(myContext).load(R.drawable.magnify_4s_256px).into(reloadImage1);
-        Glide.with(myContext).load(R.drawable.magnify_4s_256px).into(reloadImage2);
-        Glide.with(myContext).load(R.drawable.magnify_4s_256px).into(reloadImage3);
-        Glide.with(myContext).load(R.drawable.magnify_4s_256px).into(reloadImage4);
-        Glide.with(myContext).load(R.drawable.magnify_4s_256px).into(reloadImage4p3);
-        Glide.with(myContext).load(R.drawable.magnify_4s_256px).into(reloadImage5);
+        try {
+            Glide.with(myContext).load(R.drawable.magnify_4s_256px).into(reloadImage1);
+            Glide.with(myContext).load(R.drawable.magnify_4s_256px).into(reloadImage2);
+            Glide.with(myContext).load(R.drawable.magnify_4s_256px).into(reloadImage3);
+            Glide.with(myContext).load(R.drawable.magnify_4s_256px).into(reloadImage4);
+            Glide.with(myContext).load(R.drawable.magnify_4s_256px).into(reloadImage4p3);
+            Glide.with(myContext).load(R.drawable.magnify_4s_256px).into(reloadImage5);
+        }
+        catch (Exception ignored) {}
 
         firstConstraint.setVisibility(View.VISIBLE);
         secondConstraint.setVisibility(View.GONE);

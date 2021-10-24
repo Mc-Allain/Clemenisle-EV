@@ -169,7 +169,10 @@ public class RouteActivity extends AppCompatActivity implements
 
         isOnScreen = true;
 
-        Glide.with(myContext).load(R.drawable.magnify_4s_256px).into(reloadImage);
+        try {
+            Glide.with(myContext).load(R.drawable.magnify_4s_256px).into(reloadImage);
+        }
+        catch (Exception ignored) {}
 
         firebaseAuth = FirebaseAuth.getInstance();
         if(!inDriverMode) {
@@ -291,9 +294,12 @@ public class RouteActivity extends AppCompatActivity implements
                                 if(thisUser.getMiddleName().length() > 0) fullName += " " + thisUser.getMiddleName();
                                 tvUserFullName.setText(fromHtml(fullName));
 
-                                Glide.with(myContext).load(thisUser.getProfileImage())
-                                        .placeholder(R.drawable.image_loading_placeholder)
-                                        .into(profileImage);
+                                try {
+                                    Glide.with(myContext).load(thisUser.getProfileImage())
+                                            .placeholder(R.drawable.image_loading_placeholder)
+                                            .into(profileImage);
+                                }
+                                catch (Exception ignored) {}
 
                                 return;
                             }
@@ -341,8 +347,11 @@ public class RouteActivity extends AppCompatActivity implements
     }
 
     private void updateInfo() {
-        Glide.with(myContext).load(routeList.get(0).getImg())
-                .placeholder(R.drawable.image_loading_placeholder).into(thumbnail);
+        try {
+            Glide.with(myContext).load(routeList.get(0).getImg())
+                    .placeholder(R.drawable.image_loading_placeholder).into(thumbnail);
+        }
+        catch (Exception ignored) {}
 
         tvBookingId.setText(bookingId);
         tvStartStation2.setText(startStationName);

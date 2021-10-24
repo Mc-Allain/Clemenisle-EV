@@ -92,9 +92,12 @@ public class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.ViewHolder> 
 
         String spotId = routeList.get(position).getRouteId();
 
-        Glide.with(myContext).load(routeList.get(position).getImg())
-                .placeholder(R.drawable.image_loading_placeholder)
-                .into(routeThumbnail);
+        try {
+            Glide.with(myContext).load(routeList.get(position).getImg())
+                    .placeholder(R.drawable.image_loading_placeholder)
+                    .into(routeThumbnail);
+        }
+        catch (Exception ignored) {}
 
         tvName.setText(routeList.get(position).getName());
         tvRouteSpotNoBadge.setText(String.valueOf(position + 1));

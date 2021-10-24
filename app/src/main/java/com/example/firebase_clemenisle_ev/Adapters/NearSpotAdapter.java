@@ -56,7 +56,12 @@ public class NearSpotAdapter extends RecyclerView.Adapter<NearSpotAdapter.ViewHo
         String name = nearSpots.get(position).getName();
         String img = nearSpots.get(position).getImg();
 
-        Glide.with(myContext).load(img).placeholder(R.drawable.image_loading_placeholder).override(Target.SIZE_ORIGINAL).into(thumbnail);
+        try {
+            Glide.with(myContext).load(img).
+                    placeholder(R.drawable.image_loading_placeholder).
+                    override(Target.SIZE_ORIGINAL).into(thumbnail);
+        }
+        catch (Exception ignored) {}
         tvName.setText(name);
 
         int start = dpToPx(4), end = dpToPx(4);

@@ -113,9 +113,12 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
                     upVoteImage, downVoteImage);
             editImage.setColorFilter(colorBlue);
 
-            Glide.with(myContext).load(user.getProfileImage())
-                    .placeholder(R.drawable.image_loading_placeholder)
-                    .into(profileImage);
+            try {
+                Glide.with(myContext).load(user.getProfileImage())
+                        .placeholder(R.drawable.image_loading_placeholder)
+                        .into(profileImage);
+            }
+            catch (Exception ignored) {}
 
             String fullName = "<b>" + user.getLastName() + "</b>, " + user.getFirstName();
             if(user.getMiddleName().length() > 0) fullName += " " + user.getMiddleName();

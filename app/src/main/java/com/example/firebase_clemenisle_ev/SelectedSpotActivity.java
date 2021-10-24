@@ -277,7 +277,10 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
             }
         }
 
-        Glide.with(myContext).load(R.drawable.magnify_4s_256px).into(reloadImage);
+        try {
+            Glide.with(myContext).load(R.drawable.magnify_4s_256px).into(reloadImage);
+        }
+        catch (Exception ignored) {}
 
         usersRef = firebaseDatabase.getReference("users");
         if(userId != null) {
@@ -1055,10 +1058,14 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
         setCommentOnScreenEnabled(true);
         editImage.setColorFilter(colorBlue);
 
-        if(isOnScreen)
-            Glide.with(myContext).load(user.getProfileImage())
-                    .placeholder(R.drawable.image_loading_placeholder)
-                    .into(profileImage);
+        if(isOnScreen) {
+            try {
+                Glide.with(myContext).load(user.getProfileImage())
+                        .placeholder(R.drawable.image_loading_placeholder)
+                        .into(profileImage);
+            }
+            catch (Exception ignored) {}
+        }
 
         String fullName = "<b>" + user.getLastName() + "</b>, " + user.getFirstName();
         if(user.getMiddleName().length() > 0) fullName += " " + user.getMiddleName();
@@ -1540,7 +1547,13 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
     private void updateInfo() {
         progressBar.setVisibility(View.GONE);
 
-        Glide.with(myContext).load(img).placeholder(R.drawable.image_loading_placeholder).override(Target.SIZE_ORIGINAL).into(thumbnail);
+        try {
+            Glide.with(myContext).load(img).
+                    placeholder(R.drawable.image_loading_placeholder).
+                    override(Target.SIZE_ORIGINAL).into(thumbnail);
+        }
+        catch (Exception ignored) {}
+
         tvName.setText(name);
         extvDescription.setText(description);
         tvStation.setText(stations);

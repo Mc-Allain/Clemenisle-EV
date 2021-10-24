@@ -186,7 +186,10 @@ public class HomeFragment extends Fragment implements
             }
         }
 
-        Glide.with(myContext).load(R.drawable.magnify_4s_256px).into(reloadImage);
+        try {
+            Glide.with(myContext).load(R.drawable.magnify_4s_256px).into(reloadImage);
+        }
+        catch (Exception ignored) {}
 
         acSort.setText(selectedSorting);
 

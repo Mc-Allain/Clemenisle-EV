@@ -93,7 +93,10 @@ public class DriverActivity extends AppCompatActivity {
         myContext = DriverActivity.this;
         myResources = myContext.getResources();
 
-        Glide.with(myContext).load(R.drawable.magnify_4s_256px).into(reloadImage);
+        try {
+            Glide.with(myContext).load(R.drawable.magnify_4s_256px).into(reloadImage);
+        }
+        catch (Exception ignored) {}
 
         LinearLayoutManager linearLayout1 = new LinearLayoutManager(myContext, LinearLayoutManager.VERTICAL, false);
         bookingView.setLayoutManager(linearLayout1);

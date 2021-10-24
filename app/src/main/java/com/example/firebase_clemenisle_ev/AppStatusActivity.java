@@ -101,14 +101,20 @@ public class AppStatusActivity extends AppCompatActivity {
 
                 if(statusPromptArray.contains(status) && !appMetaData.isDeveloper() && status != null) {
                     if(status.equals(statusPromptArray.get(0)) && isOnScreen) {
-                        Glide.with(myContext).load(R.drawable.ic_baseline_error_outline_24)
-                                .placeholder(R.drawable.image_loading_placeholder)
-                                .into(activityIconImage);
+                        try {
+                            Glide.with(myContext).load(R.drawable.ic_baseline_error_outline_24)
+                                    .placeholder(R.drawable.image_loading_placeholder)
+                                    .into(activityIconImage);
+                        }
+                        catch (Exception ignored) {}
                     }
                     else if(status.equals(statusPromptArray.get(1)) && isOnScreen) {
-                        Glide.with(myContext).load(R.drawable.ic_baseline_error_outline_24)
-                                .placeholder(R.drawable.image_loading_placeholder)
-                                .into(activityIconImage);
+                        try {
+                            Glide.with(myContext).load(R.drawable.ic_baseline_error_outline_24)
+                                    .placeholder(R.drawable.image_loading_placeholder)
+                                    .into(activityIconImage);
+                        }
+                        catch (Exception ignored) {}
                     }
 
                     tvActivityName.setText(status);
@@ -138,9 +144,12 @@ public class AppStatusActivity extends AppCompatActivity {
 
     private void statusError() {
         if(isOnScreen) {
-            Glide.with(myContext).load(R.drawable.ic_baseline_error_outline_24)
-                    .placeholder(R.drawable.image_loading_placeholder)
-                    .into(activityIconImage);
+            try {
+                Glide.with(myContext).load(R.drawable.ic_baseline_error_outline_24)
+                        .placeholder(R.drawable.image_loading_placeholder)
+                        .into(activityIconImage);
+            }
+            catch (Exception ignored) {}
         }
 
         String activityName = "Application Error";

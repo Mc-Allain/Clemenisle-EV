@@ -178,7 +178,10 @@ public class OnTheSpotActivity extends AppCompatActivity {
 
         isOnScreen = true;
 
-        Glide.with(myContext).load(R.drawable.magnify_4s_256px).into(reloadImage);
+        try {
+            Glide.with(myContext).load(R.drawable.magnify_4s_256px).into(reloadImage);
+        }
+        catch (Exception ignored) {}
 
         firebaseAuth = FirebaseAuth.getInstance();
         if(!inDriverMode) {
@@ -291,9 +294,12 @@ public class OnTheSpotActivity extends AppCompatActivity {
                                 if(thisUser.getMiddleName().length() > 0) fullName += " " + thisUser.getMiddleName();
                                 tvUserFullName.setText(fromHtml(fullName));
 
-                                Glide.with(myContext).load(thisUser.getProfileImage())
-                                        .placeholder(R.drawable.image_loading_placeholder)
-                                        .into(profileImage);
+                                try {
+                                    Glide.with(myContext).load(thisUser.getProfileImage())
+                                            .placeholder(R.drawable.image_loading_placeholder)
+                                            .into(profileImage);
+                                }
+                                catch (Exception ignored) {}
 
                                 return;
                             }
@@ -361,8 +367,11 @@ public class OnTheSpotActivity extends AppCompatActivity {
 
     private void updateInfo() {
         String img = destinationSpot.getImg();
-        Glide.with(myContext).load(img).placeholder(R.drawable.image_loading_placeholder).
-                override(Target.SIZE_ORIGINAL).into(thumbnail);
+        try {
+            Glide.with(myContext).load(img).placeholder(R.drawable.image_loading_placeholder).
+                    override(Target.SIZE_ORIGINAL).into(thumbnail);
+        }
+        catch (Exception ignored) {}
 
         String originLocationText = "Latitude: " + originLocation.latitude +
                 "\nLongitude: " + originLocation.longitude;

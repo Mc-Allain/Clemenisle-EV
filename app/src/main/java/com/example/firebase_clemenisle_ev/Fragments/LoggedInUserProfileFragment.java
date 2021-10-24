@@ -352,9 +352,12 @@ public class LoggedInUserProfileFragment extends Fragment {
 
     private void showProfileImageDialog() {
         if(user != null) {
-            Glide.with(myContext).load(user.getProfileImage())
-                    .placeholder(R.drawable.image_loading_placeholder)
-                    .into(dialogProfileImage);
+            try {
+                Glide.with(myContext).load(user.getProfileImage())
+                        .placeholder(R.drawable.image_loading_placeholder)
+                        .into(dialogProfileImage);
+            }
+            catch (Exception ignored) {}
 
             chooseImageButton.setEnabled(true);
             if(user.getProfileImage() != null) removeButton.setEnabled(true);
@@ -395,9 +398,12 @@ public class LoggedInUserProfileFragment extends Fragment {
         });
 
         removeButton.setOnClickListener(view -> {
-            Glide.with(myContext).load(R.drawable.image_loading_placeholder)
-                    .placeholder(R.drawable.image_loading_placeholder)
-                    .into(dialogProfileImage);
+            try {
+                Glide.with(myContext).load(R.drawable.image_loading_placeholder)
+                        .placeholder(R.drawable.image_loading_placeholder)
+                        .into(dialogProfileImage);
+            }
+            catch (Exception ignored) {}
 
             removeButton.setEnabled(false);
             String uploadText = "Save";
@@ -449,9 +455,12 @@ public class LoggedInUserProfileFragment extends Fragment {
                 data != null && data.getData() != null) {
             profileImageUri = data.getData();
 
-            Glide.with(myContext).load(profileImageUri)
-                    .placeholder(R.drawable.image_loading_placeholder)
-                    .into(dialogProfileImage);
+            try {
+                Glide.with(myContext).load(profileImageUri)
+                        .placeholder(R.drawable.image_loading_placeholder)
+                        .into(dialogProfileImage);
+            }
+            catch (Exception ignored) {}
 
 
             removeButton.setEnabled(true);
@@ -1369,24 +1378,30 @@ public class LoggedInUserProfileFragment extends Fragment {
 
         chooseImageButton.setEnabled(true);
         if(user.getProfileImage() != null && isOnScreen) {
-            Glide.with(myContext).load(user.getProfileImage())
-                    .placeholder(R.drawable.image_loading_placeholder)
-                    .into(profileImage);
+            try {
+                Glide.with(myContext).load(user.getProfileImage())
+                        .placeholder(R.drawable.image_loading_placeholder)
+                        .into(profileImage);
 
-            Glide.with(myContext).load(user.getProfileImage())
-                    .placeholder(R.drawable.image_loading_placeholder)
-                    .into(dialogProfileImage);
+                Glide.with(myContext).load(user.getProfileImage())
+                        .placeholder(R.drawable.image_loading_placeholder)
+                        .into(dialogProfileImage);
+            }
+            catch (Exception ignored) {}
 
             removeButton.setEnabled(true);
         }
         else {
-            Glide.with(myContext).load(R.drawable.image_loading_placeholder)
-                    .placeholder(R.drawable.image_loading_placeholder)
-                    .into(profileImage);
+            try {
+                Glide.with(myContext).load(R.drawable.image_loading_placeholder)
+                        .placeholder(R.drawable.image_loading_placeholder)
+                        .into(profileImage);
 
-            Glide.with(myContext).load(R.drawable.image_loading_placeholder)
-                    .placeholder(R.drawable.image_loading_placeholder)
-                    .into(dialogProfileImage);
+                Glide.with(myContext).load(R.drawable.image_loading_placeholder)
+                        .placeholder(R.drawable.image_loading_placeholder)
+                        .into(dialogProfileImage);
+            }
+            catch (Exception ignored) {}
         }
 
         progressBar.setVisibility(View.GONE);

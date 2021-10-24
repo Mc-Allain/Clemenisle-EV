@@ -158,9 +158,12 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
             String img;
             List<Route> routeList = bookingList.get(position).getRouteList();
             if(routeList.size() > 0) {
-                 img = routeList.get(0).getImg();
-                 Glide.with(myContext).load(img).placeholder(R.drawable.image_loading_placeholder).
-                         override(Target.SIZE_ORIGINAL).into(thumbnail);
+                img = routeList.get(0).getImg();
+                try {
+                    Glide.with(myContext).load(img).placeholder(R.drawable.image_loading_placeholder).
+                            override(Target.SIZE_ORIGINAL).into(thumbnail);
+                }
+                catch (Exception ignored) {}
             }
 
             tvStartStation.setText(startStationText);
@@ -200,8 +203,11 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
             SimpleTouristSpot destinationSpot = booking.getDestinationSpot();
 
             String img = destinationSpot.getImg();
-            Glide.with(myContext).load(img).placeholder(R.drawable.image_loading_placeholder).
-                    override(Target.SIZE_ORIGINAL).into(thumbnail);
+            try {
+                Glide.with(myContext).load(img).placeholder(R.drawable.image_loading_placeholder).
+                        override(Target.SIZE_ORIGINAL).into(thumbnail);
+            }
+            catch (Exception ignored) {}
 
             double originLat = booking.getOriginLat(), originLng = booking.getOriginLng();
             String originLocation = "Latitude: " + originLat + "\nLongitude: " + originLng;
@@ -365,9 +371,12 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                                 if(thisUser.getMiddleName().length() > 0) fullName += " " + thisUser.getMiddleName();
                                 tvUserFullName.setText(fromHtml(fullName));
 
-                                Glide.with(myContext).load(thisUser.getProfileImage())
-                                        .placeholder(R.drawable.image_loading_placeholder)
-                                        .into(profileImage);
+                                try {
+                                    Glide.with(myContext).load(thisUser.getProfileImage())
+                                            .placeholder(R.drawable.image_loading_placeholder)
+                                            .into(profileImage);
+                                }
+                                catch (Exception ignored) {}
 
                                 return;
                             }

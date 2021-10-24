@@ -144,7 +144,13 @@ public class TouristSpotAdapter extends RecyclerView.Adapter<TouristSpotAdapter.
             }
         }
 
-        Glide.with(myContext).load(img).placeholder(R.drawable.image_loading_placeholder).override(Target.SIZE_ORIGINAL).into(thumbnail);
+        try {
+            Glide.with(myContext).load(img).
+                    placeholder(R.drawable.image_loading_placeholder).
+                    override(Target.SIZE_ORIGINAL).into(thumbnail);
+        }
+        catch (Exception ignored) {}
+
         tvName.setText(name);
         extvDescription.setText(description);
         tvStation.setText(stations.toString());
