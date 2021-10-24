@@ -80,7 +80,7 @@ public class OnTheSpotActivity extends AppCompatActivity {
     Context myContext;
     Resources myResources;
 
-    String userId;
+    String userId, driverUserId;
 
     boolean isLoggedIn = false, inDriverMode = false;
 
@@ -184,16 +184,17 @@ public class OnTheSpotActivity extends AppCompatActivity {
         catch (Exception ignored) {}
 
         firebaseAuth = FirebaseAuth.getInstance();
-        if(!inDriverMode) {
-            if(isLoggedIn) {
-                firebaseUser = firebaseAuth.getCurrentUser();
-                if(firebaseUser != null) {
-                    firebaseUser.reload();
-                    userId = firebaseUser.getUid();
+        if(isLoggedIn) {
+            firebaseUser = firebaseAuth.getCurrentUser();
+            if(firebaseUser != null) {
+                firebaseUser.reload();
+                if(inDriverMode) {
+                    driverUserId = firebaseUser.getUid();
+                    userId = intent.getStringExtra("userId");
                 }
+                else userId = firebaseUser.getUid();
             }
         }
-        else userId = intent.getStringExtra("userId");
 
         getBookingData();
 
@@ -267,8 +268,6 @@ public class OnTheSpotActivity extends AppCompatActivity {
 
         if(inDriverMode) {
             tvDriver.setVisibility(View.VISIBLE);
-            driverImage.setVisibility(View.VISIBLE);
-            userInfoLayout.setVisibility(View.VISIBLE);
 
             getUserInfo(bookingId);
         }
@@ -300,6 +299,15 @@ public class OnTheSpotActivity extends AppCompatActivity {
                                             .into(profileImage);
                                 }
                                 catch (Exception ignored) {}
+
+                                if(driverUserId.equals(thisUser.getId())) {
+                                    tvDriver.setVisibility(View.GONE);
+                                    driverImage.setVisibility(View.GONE);
+                                }
+                                else {
+                                    tvDriver.setVisibility(View.VISIBLE);
+                                    driverImage.setVisibility(View.VISIBLE);
+                                }
 
                                 return;
                             }

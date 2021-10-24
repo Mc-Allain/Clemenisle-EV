@@ -2,6 +2,7 @@ package com.example.firebase_clemenisle_ev.Adapters;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -32,6 +33,8 @@ import com.example.firebase_clemenisle_ev.MapActivity;
 import com.example.firebase_clemenisle_ev.OnTheSpotActivity;
 import com.example.firebase_clemenisle_ev.R;
 import com.example.firebase_clemenisle_ev.RouteActivity;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -51,11 +54,16 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
     private final static String firebaseURL = FirebaseURL.getFirebaseURL();
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance(firebaseURL);
     DatabaseReference usersRef = firebaseDatabase.getReference("users");
+    FirebaseAuth firebaseAuth;
+    FirebaseUser firebaseUser;
 
     List<Booking> bookingList;
     LayoutInflater inflater;
 
     Context myContext;
+
+    String userId;
+    boolean isLoggedIn = false;
 
     String startStationText = "Start Station", endStationText = "End Station";
     String destinationSpotText = "Destination Spot", originLocationText = "Origin Location";
@@ -70,6 +78,24 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
     public void setInDriverMode(boolean inDriverMode) {
         this.inDriverMode = inDriverMode;
         notifyDataSetChanged();
+    }
+
+    private void initSharedPreferences() {
+        SharedPreferences sharedPreferences = myContext
+                .getSharedPreferences("login", Context.MODE_PRIVATE);
+        isLoggedIn = sharedPreferences.getBoolean("isLoggedIn", false);
+    }
+
+    private void sendLoginPreferences() {
+        SharedPreferences sharedPreferences = myContext.getSharedPreferences(
+                "login", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        editor.putBoolean("isLoggedIn", false);
+        editor.putBoolean("remember", false);
+        editor.putString("emailAddress", null);
+        editor.putString("password", null);
+        editor.apply();
     }
 
     public BookingAdapter(Context context, List<Booking> bookingList) {
@@ -101,6 +127,27 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                 userInfoLayout = holder.userInfoLayout;
 
         myContext = inflater.getContext();
+
+        initSharedPreferences();
+
+        firebaseAuth = FirebaseAuth.getInstance();
+        if(isLoggedIn) {
+            firebaseUser = firebaseAuth.getCurrentUser();
+            if(firebaseUser != null) firebaseUser.reload();
+            if(firebaseUser == null) {
+                firebaseAuth.signOut();
+                sendLoginPreferences();
+
+                Toast.makeText(
+                        myContext,
+                        "Failed to get the current user",
+                        Toast.LENGTH_LONG
+                ).show();
+            }
+            else {
+                userId = firebaseUser.getUid();
+            }
+        }
 
         Handler optionHandler = new Handler();
         Runnable optionRunnable = () -> closeOption(buttonLayout, backgroundLayout, moreImage, tvOption);
@@ -246,11 +293,9 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
 
         if(inDriverMode) {
             tvDriver.setVisibility(View.VISIBLE);
-            driverImage.setVisibility(View.VISIBLE);
-            userInfoLayout.setVisibility(View.VISIBLE);
 
             extvMessage.setText(message);
-            getUserInfo(bookingId, tvUserFullName, profileImage);
+            getUserInfo(bookingId, tvUserFullName, profileImage, tvDriver, driverImage);
         }
         else {
             tvDriver.setVisibility(View.GONE);
@@ -356,7 +401,8 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
         });
     }
 
-    private void getUserInfo(String bookingId, TextView tvUserFullName, ImageView profileImage) {
+    private void getUserInfo(String bookingId, TextView tvUserFullName, ImageView profileImage,
+                             TextView tvDriver, ImageView driverImage) {
         usersRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -377,6 +423,15 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                                             .into(profileImage);
                                 }
                                 catch (Exception ignored) {}
+
+                                if(userId.equals(thisUser.getId())) {
+                                    tvDriver.setVisibility(View.GONE);
+                                    driverImage.setVisibility(View.GONE);
+                                }
+                                else {
+                                    tvDriver.setVisibility(View.VISIBLE);
+                                    driverImage.setVisibility(View.VISIBLE);
+                                }
 
                                 return;
                             }
