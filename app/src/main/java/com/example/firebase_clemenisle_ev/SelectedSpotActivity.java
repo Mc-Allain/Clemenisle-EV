@@ -87,10 +87,11 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
     EditText etComment;
     ImageView sendImage, commentArrowImage;
 
-    ConstraintLayout userCommentLayout;
+    ConstraintLayout userCommentLayout, badgeLayout;
     TextView tvUserFullName, tvCommentStatus;
     ExpandableTextView extvComment;
     ImageView profileImage, editImage, appealImage, deactivateImage;
+    ImageView developerImage, adminImage, driverImage, likerImage;
 
     RecyclerView commentView;
     ProgressBar commentProgressBar;
@@ -226,6 +227,13 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
         editImage = findViewById(R.id.editImage);
         appealImage = findViewById(R.id.appealImage);
         deactivateImage = findViewById(R.id.deactivateImage);
+
+        badgeLayout = findViewById(R.id.badgeLayout);
+        developerImage = findViewById(R.id.developerImage);
+        adminImage = findViewById(R.id.adminImage);
+        driverImage = findViewById(R.id.driverImage);
+        likerImage = findViewById(R.id.likerImage);
+
         commentView = findViewById(R.id.commentView);
         commentProgressBar = findViewById(R.id.commentProgressBar);
 
@@ -1054,11 +1062,26 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
 
         String fullName = "<b>" + user.getLastName() + "</b>, " + user.getFirstName();
         if(user.getMiddleName().length() > 0) fullName += " " + user.getMiddleName();
-
-        if(user.isDeveloper()) fullName += " (Developer)";
-        if(user.isAdmin()) fullName += " (Admin)";
-        if(user.isDriver()) fullName += " (Driver)";
         tvUserFullName.setText(fromHtml(fullName));
+
+        badgeLayout.setVisibility(View.GONE);
+        developerImage.setVisibility(View.GONE);
+        adminImage.setVisibility(View.GONE);
+        driverImage.setVisibility(View.GONE);
+        likerImage.setVisibility(View.GONE);
+
+        if(user.isDeveloper()) {
+            badgeLayout.setVisibility(View.VISIBLE);
+            developerImage.setVisibility(View.VISIBLE);
+        }
+        if(user.isAdmin()) {
+            badgeLayout.setVisibility(View.VISIBLE);
+            adminImage.setVisibility(View.VISIBLE);
+        }
+        if(user.isDriver()) {
+            badgeLayout.setVisibility(View.VISIBLE);
+            driverImage.setVisibility(View.VISIBLE);
+        }
 
         commentValue = comment.getValue();
         extvComment.setText(commentValue);

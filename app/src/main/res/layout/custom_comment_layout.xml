@@ -52,6 +52,67 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/badgeLayout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:visibility="gone"
+                app:layout_constraintStart_toStartOf="@+id/tvUserFullName"
+                app:layout_constraintTop_toBottomOf="@+id/tvUserFullName">
+
+                <ImageView
+                    android:id="@+id/driverImage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="2dp"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/likerImage"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/ic_baseline_electric_rickshaw_24"
+                    app:tint="@color/orange" />
+
+                <ImageView
+                    android:id="@+id/adminImage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="2dp"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/driverImage"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/ic_baseline_admin_panel_settings_24"
+                    app:tint="@color/orange" />
+
+                <ImageView
+                    android:id="@+id/developerImage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="2dp"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/adminImage"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/ic_baseline_developer_mode_24"
+                    app:tint="@color/orange" />
+
+                <ImageView
+                    android:id="@+id/likerImage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/ic_baseline_thumb_up_24"
+                    app:tint="@color/orange" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/profileImage"
                 android:layout_width="40dp"
@@ -103,7 +164,7 @@
                 android:textColor="@color/initial"
                 app:layout_constraintEnd_toEndOf="@+id/tvUserFullName"
                 app:layout_constraintStart_toStartOf="@+id/tvUserFullName"
-                app:layout_constraintTop_toBottomOf="@+id/tvUserFullName" />
+                app:layout_constraintTop_toBottomOf="@+id/badgeLayout" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/voteLayout"

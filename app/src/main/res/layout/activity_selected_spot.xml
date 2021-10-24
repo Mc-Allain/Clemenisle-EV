@@ -430,32 +430,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/commentTitleLayout">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/commentView"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:background="@color/gainsboro"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/loginCommentLayout" />
-
-        <TextView
-            android:id="@+id/tvLog"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="24dp"
-            android:layout_marginEnd="16dp"
-            android:fontFamily="@font/ubuntu"
-            android:text="No Comment\nPlease make yours the first one"
-            android:textAlignment="center"
-            android:textColor="@color/initial"
-            android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/commentView" />
-
         <ImageView
             android:id="@+id/reloadImage"
             android:layout_width="48dp"
@@ -477,6 +451,22 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tvLog"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginEnd="16dp"
+            android:fontFamily="@font/ubuntu"
+            android:text="No Comment\nPlease make yours the first one"
+            android:textAlignment="center"
+            android:textColor="@color/initial"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/commentView" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/loginCommentLayout"
@@ -649,7 +639,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/userCommentTitleLayout">
 
-                <ImageView
+                <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/profileImage"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
@@ -685,7 +675,7 @@
                     android:textColor="@color/initial"
                     app:layout_constraintEnd_toEndOf="@+id/tvUserFullName"
                     app:layout_constraintStart_toStartOf="@+id/tvUserFullName"
-                    app:layout_constraintTop_toBottomOf="@+id/tvUserFullName" />
+                    app:layout_constraintTop_toBottomOf="@+id/badgeLayout" />
 
                 <TextView
                     android:id="@+id/tvCommentStatus"
@@ -701,6 +691,67 @@
                     app:layout_constraintEnd_toEndOf="@+id/actionLayout"
                     app:layout_constraintStart_toStartOf="@+id/tvTimestamp"
                     app:layout_constraintTop_toBottomOf="@+id/tvTimestamp" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/badgeLayout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:visibility="gone"
+                    app:layout_constraintStart_toStartOf="@+id/tvUserFullName"
+                    app:layout_constraintTop_toBottomOf="@+id/tvUserFullName">
+
+                    <ImageView
+                        android:id="@+id/driverImage"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="2dp"
+                        android:visibility="gone"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/likerImage"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:srcCompat="@drawable/ic_baseline_electric_rickshaw_24"
+                        app:tint="@color/orange" />
+
+                    <ImageView
+                        android:id="@+id/adminImage"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="2dp"
+                        android:visibility="gone"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/driverImage"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:srcCompat="@drawable/ic_baseline_admin_panel_settings_24"
+                        app:tint="@color/orange" />
+
+                    <ImageView
+                        android:id="@+id/developerImage"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="2dp"
+                        android:visibility="gone"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/adminImage"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:srcCompat="@drawable/ic_baseline_developer_mode_24"
+                        app:tint="@color/orange" />
+
+                    <ImageView
+                        android:id="@+id/likerImage"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:srcCompat="@drawable/ic_baseline_thumb_up_24"
+                        app:tint="@color/orange" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/actionLayout"
@@ -782,6 +833,16 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/commentView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="@color/gainsboro"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/loginCommentLayout" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

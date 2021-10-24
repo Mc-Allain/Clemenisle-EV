@@ -62,7 +62,8 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
     @Override
     public void onBindViewHolder(@NonNull CommentAdapter.ViewHolder holder, int position) {
         ConstraintLayout backgroundLayout = holder.backgroundLayout, commentLayout = holder.commentLayout,
-                voteLayout = holder.voteLayout, loadCommentLayout = holder.loadCommentLayout;
+                voteLayout = holder.voteLayout, loadCommentLayout = holder.loadCommentLayout,
+                badgeLayout = holder.badgeLayout;
         TextView tvUserFullName = holder.tvUserFullName, tvTimestamp = holder.tvTimestamp,
                 tvCommentStatus = holder.tvCommentStatus, tvUpVotes = holder.tvUpVotes,
                 tvDownVotes = holder.tvDownVotes, tvLoadComment = holder.tvLoadComment;
@@ -73,7 +74,11 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
                 deactivateImage = holder.deactivateImage,
                 reportImage = holder.reportImage,
                 upVoteImage = holder.upVoteImage,
-                downVoteImage = holder.downVoteImage;
+                downVoteImage = holder.downVoteImage,
+                developerImage = holder.developerImage,
+                adminImage = holder.adminImage,
+                driverImage = holder.driverImage,
+                likerImage = holder.likerImage;
 
         myContext = inflater.getContext();
         myResources = myContext.getResources();
@@ -191,10 +196,24 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
                     else reportImage.setVisibility(View.VISIBLE);
                 }
 
-                if(user.isDeveloper()) fullName += " (Developer)";
-                if(user.isAdmin()) fullName += " (Admin)";
-                if(user.isDriver()) fullName += " (Driver)";
-                tvUserFullName.setText(fromHtml(fullName));
+                badgeLayout.setVisibility(View.GONE);
+                developerImage.setVisibility(View.GONE);
+                adminImage.setVisibility(View.GONE);
+                driverImage.setVisibility(View.GONE);
+                likerImage.setVisibility(View.GONE);
+
+                if(user.isDeveloper()) {
+                    badgeLayout.setVisibility(View.VISIBLE);
+                    developerImage.setVisibility(View.VISIBLE);
+                }
+                if(user.isAdmin()) {
+                    badgeLayout.setVisibility(View.VISIBLE);
+                    adminImage.setVisibility(View.VISIBLE);
+                }
+                if(user.isDriver()) {
+                    badgeLayout.setVisibility(View.VISIBLE);
+                    driverImage.setVisibility(View.VISIBLE);
+                }
 
                 if(user.getId().equals(userId)) {
                     editImage.setVisibility(View.VISIBLE);
@@ -461,11 +480,11 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        ConstraintLayout backgroundLayout, voteLayout, commentLayout, loadCommentLayout;
+        ConstraintLayout backgroundLayout, voteLayout, commentLayout, loadCommentLayout, badgeLayout;
         TextView tvUserFullName, tvTimestamp, tvCommentStatus, tvUpVotes, tvDownVotes, tvLoadComment;
         ExpandableTextView extvComment;
         ImageView profileImage, editImage, appealImage, deactivateImage, reportImage,
-                upVoteImage, downVoteImage;
+                upVoteImage, downVoteImage, developerImage, adminImage, driverImage, likerImage;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -479,6 +498,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
             tvDownVotes = itemView.findViewById(R.id.tvDownVotes);
             extvComment = itemView.findViewById(R.id.extvComment);
             profileImage = itemView.findViewById(R.id.profileImage);
+
             editImage = itemView.findViewById(R.id.editImage);
             appealImage = itemView.findViewById(R.id.appealImage);
             deactivateImage = itemView.findViewById(R.id.deactivateImage);
@@ -486,6 +506,13 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
             deactivateImage = itemView.findViewById(R.id.deactivateImage);
             upVoteImage = itemView.findViewById(R.id.upVoteImage);
             downVoteImage = itemView.findViewById(R.id.downVoteImage);
+
+            badgeLayout = itemView.findViewById(R.id.badgeLayout);
+            developerImage = itemView.findViewById(R.id.developerImage);
+            adminImage = itemView.findViewById(R.id.adminImage);
+            driverImage = itemView.findViewById(R.id.driverImage);
+            likerImage = itemView.findViewById(R.id.likerImage);
+
             commentLayout = itemView.findViewById(R.id.commentLayout);
             loadCommentLayout = itemView.findViewById(R.id.loadCommentLayout);
             tvLoadComment = itemView.findViewById(R.id.tvLoadComment);
