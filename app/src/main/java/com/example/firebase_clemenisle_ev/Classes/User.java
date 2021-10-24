@@ -14,7 +14,7 @@ public class User {
     private final List<Comment> upVotedComments = new ArrayList<>();
     private final List<Comment> downVotedComments = new ArrayList<>();
     private final List<Comment> reportedComments = new ArrayList<>();
-    private boolean developer;
+    private boolean developer, admin, driver;
 
     public User() {
     }
@@ -108,6 +108,10 @@ public class User {
 
         if(dataSnapshot.child("developer").exists())
             developer = dataSnapshot.child("developer").getValue(Boolean.class);
+        if(dataSnapshot.child("admin").exists())
+            admin = dataSnapshot.child("admin").getValue(Boolean.class);
+        if(dataSnapshot.child("driver").exists())
+            driver = dataSnapshot.child("driver").getValue(Boolean.class);
     }
 
     public User(String firstName, String id, String lastName, String middleName) {
@@ -163,5 +167,13 @@ public class User {
 
     public boolean isDeveloper() {
         return developer;
+    }
+
+    public boolean isAdmin() {
+        return admin;
+    }
+
+    public boolean isDriver() {
+        return driver;
     }
 }

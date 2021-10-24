@@ -1056,7 +1056,8 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
         if(user.getMiddleName().length() > 0) fullName += " " + user.getMiddleName();
 
         if(user.isDeveloper()) fullName += " (Developer)";
-
+        if(user.isAdmin()) fullName += " (Admin)";
+        if(user.isDriver()) fullName += " (Driver)";
         tvUserFullName.setText(fromHtml(fullName));
 
         commentValue = comment.getValue();

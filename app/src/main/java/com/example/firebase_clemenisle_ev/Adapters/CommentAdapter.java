@@ -191,10 +191,10 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
                     else reportImage.setVisibility(View.VISIBLE);
                 }
 
-                if(user.isDeveloper()) {
-                    fullName += " (Developer)";
-                    tvUserFullName.setText(fromHtml(fullName));
-                }
+                if(user.isDeveloper()) fullName += " (Developer)";
+                if(user.isAdmin()) fullName += " (Admin)";
+                if(user.isDriver()) fullName += " (Driver)";
+                tvUserFullName.setText(fromHtml(fullName));
 
                 if(user.getId().equals(userId)) {
                     editImage.setVisibility(View.VISIBLE);

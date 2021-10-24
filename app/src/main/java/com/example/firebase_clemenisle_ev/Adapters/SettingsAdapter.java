@@ -50,6 +50,16 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
         editor.apply();
     }
 
+    private void sendDriverModePreferences() {
+        SharedPreferences sharedPreferences = myContext.getSharedPreferences(
+                "login", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        editor.putBoolean("isDriver", true);
+        editor.putBoolean("remember", true);
+        editor.apply();
+    }
+
     public SettingsAdapter(Context context, List<Setting> settings) {
         this.settings = settings;
         this.inflater = LayoutInflater.from(context);
@@ -137,8 +147,17 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
                     break;
                 }
                 case "Driver Mode": {
+                    sendDriverModePreferences();
+
+                    Toast.makeText(
+                            myContext,
+                            "You are now accessed the Driver Mode",
+                            Toast.LENGTH_LONG
+                    ).show();
+
                     Intent intent = new Intent(myContext, DriverActivity.class);
                     myContext.startActivity(intent);
+                    ((Activity) myContext).finishAffinity();
                     break;
                 }
             }
