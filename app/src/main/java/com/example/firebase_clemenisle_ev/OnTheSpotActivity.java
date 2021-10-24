@@ -9,8 +9,12 @@ import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.Html;
+import android.text.SpannableString;
+import android.text.Spanned;
 import android.transition.ChangeBounds;
 import android.transition.Transition;
 import android.transition.TransitionManager;
@@ -30,6 +34,7 @@ import com.bumptech.glide.request.target.Target;
 import com.example.firebase_clemenisle_ev.Classes.Booking;
 import com.example.firebase_clemenisle_ev.Classes.FirebaseURL;
 import com.example.firebase_clemenisle_ev.Classes.SimpleTouristSpot;
+import com.example.firebase_clemenisle_ev.Classes.User;
 import com.example.firebase_clemenisle_ev.Fragments.MapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
@@ -40,6 +45,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.ms.square.android.expandabletextview.ExpandableTextView;
+
+import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -52,16 +59,17 @@ public class OnTheSpotActivity extends AppCompatActivity {
 
     private final static String firebaseURL = FirebaseURL.getFirebaseURL();
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance(firebaseURL);
+    DatabaseReference usersRef = firebaseDatabase.getReference("users");
     FirebaseAuth firebaseAuth;
     FirebaseUser firebaseUser;
 
     private final static int MAP_SETTINGS_REQUEST = 1;
 
-    ImageView thumbnail, moreImage, locateImage, locateDestinationImage, reloadImage;
-    TextView tvBookingId, tvSchedule, tvTypeName, tvPrice, tvOriginLocation2, tvDestinationSpot2,
-            tvLocate, tvLocateDestination, tvLog;
+    ImageView profileImage, thumbnail, moreImage, locateImage, locateDestinationImage, driverImage, reloadImage;
+    TextView tvUserFullName, tvBookingId, tvSchedule, tvTypeName, tvPrice, tvOriginLocation2, tvDestinationSpot2,
+            tvLocate, tvLocateDestination, tvDriver, tvLog;
     ExpandableTextView extvMessage;
-    ConstraintLayout buttonLayout, bookingInfoLayout, bookingInfoButtonLayout;
+    ConstraintLayout buttonLayout, bookingInfoLayout, bookingInfoButtonLayout, userInfoLayout;
     Button cancelButton;
     FrameLayout mapLayout;
     ProgressBar progressBar;
@@ -74,7 +82,7 @@ public class OnTheSpotActivity extends AppCompatActivity {
 
     String userId;
 
-    boolean isLoggedIn = false;
+    boolean isLoggedIn = false, inDriverMode = false;
 
     DatabaseReference bookingListRef;
 
@@ -120,6 +128,10 @@ public class OnTheSpotActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_on_the_spot);
 
+        userInfoLayout = findViewById(R.id.userInfoLayout);
+        tvUserFullName = findViewById(R.id.tvUserFullName);
+        profileImage = findViewById(R.id.profileImage);
+
         thumbnail = findViewById(R.id.thumbnail);
         tvBookingId = findViewById(R.id.tvBookingId);
         tvSchedule = findViewById(R.id.tvSchedule);
@@ -139,6 +151,9 @@ public class OnTheSpotActivity extends AppCompatActivity {
         moreImage = findViewById(R.id.moreImage);
         locateImage = findViewById(R.id.locateImage);
         locateDestinationImage = findViewById(R.id.locateDestinationImage);
+        tvDriver = findViewById(R.id.tvDriver);
+        driverImage = findViewById(R.id.driverImage);
+
         reloadImage = findViewById(R.id.reloadImage);
         mapLayout = findViewById(R.id.mapLayout);
         progressBar = findViewById(R.id.progressBar);
@@ -159,19 +174,23 @@ public class OnTheSpotActivity extends AppCompatActivity {
         Intent intent = getIntent();
         bookingId = intent.getStringExtra("bookingId");
         isLatest = intent.getBooleanExtra("isLatest", false);
+        inDriverMode = intent.getBooleanExtra("inDriverMode", false);
 
         isOnScreen = true;
 
         Glide.with(myContext).load(R.drawable.magnify_4s_256px).into(reloadImage);
 
         firebaseAuth = FirebaseAuth.getInstance();
-        if(isLoggedIn) {
-            firebaseUser = firebaseAuth.getCurrentUser();
-            if(firebaseUser != null) {
-                firebaseUser.reload();
-                userId = firebaseUser.getUid();
+        if(!inDriverMode) {
+            if(isLoggedIn) {
+                firebaseUser = firebaseAuth.getCurrentUser();
+                if(firebaseUser != null) {
+                    firebaseUser.reload();
+                    userId = firebaseUser.getUid();
+                }
             }
         }
+        else userId = intent.getStringExtra("userId");
 
         getBookingData();
 
@@ -242,6 +261,64 @@ public class OnTheSpotActivity extends AppCompatActivity {
 
         mapSettingsImage.setOnClickListener(view -> openMapSettings());
         tvMapSettings.setOnClickListener(view -> openMapSettings());
+
+        if(inDriverMode) {
+            tvDriver.setVisibility(View.VISIBLE);
+            driverImage.setVisibility(View.VISIBLE);
+            userInfoLayout.setVisibility(View.VISIBLE);
+
+            getUserInfo(bookingId);
+        }
+        else {
+            tvDriver.setVisibility(View.GONE);
+            driverImage.setVisibility(View.GONE);
+            userInfoLayout.setVisibility(View.GONE);
+        }
+    }
+
+    private void getUserInfo(String bookingId) {
+        usersRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(snapshot.exists()) {
+                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        User thisUser = new User(dataSnapshot);
+                        List<Booking> bookingList = thisUser.getBookingList();
+
+                        for(Booking booking : bookingList) {
+                            if(booking.getId().equals(bookingId)) {
+                                String fullName = "<b>" + thisUser.getLastName() + "</b>, " + thisUser.getFirstName();
+                                if(thisUser.getMiddleName().length() > 0) fullName += " " + thisUser.getMiddleName();
+                                tvUserFullName.setText(fromHtml(fullName));
+
+                                Glide.with(myContext).load(thisUser.getProfileImage())
+                                        .placeholder(R.drawable.image_loading_placeholder)
+                                        .into(profileImage);
+
+                                return;
+                            }
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+            }
+        });
+    }
+
+    @SuppressWarnings("deprecation")
+    public static Spanned fromHtml(String html){
+        if(html == null) {
+            return new SpannableString("");
+        }
+        else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            return Html.fromHtml(html, Html.FROM_HTML_MODE_LEGACY);
+        }
+        else {
+            return Html.fromHtml(html);
+        }
     }
 
     private void openMapSettings() {
@@ -307,13 +384,19 @@ public class OnTheSpotActivity extends AppCompatActivity {
             case "Processing":
                 color = myResources.getColor(R.color.orange);
                 backgroundDrawable = myResources.getDrawable(R.color.orange);
-                buttonLayout.setVisibility(View.VISIBLE);
-                if(isShowBookingAlertEnabled) dialog.show();
+
+                if(!inDriverMode) {
+                    buttonLayout.setVisibility(View.VISIBLE);
+                    if (isShowBookingAlertEnabled) dialog.show();
+                }
+
                 break;
             case "Booked":
                 color = myResources.getColor(R.color.green);
                 backgroundDrawable = myResources.getDrawable(R.color.green);
-                if(isShowBookingAlertEnabled) dialog.show();
+
+                if(isShowBookingAlertEnabled && !inDriverMode) dialog.show();
+
                 break;
             case "Completed":
                 color = myResources.getColor(R.color.blue);

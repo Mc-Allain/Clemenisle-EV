@@ -19,6 +19,39 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
+        <com.ms.square.android.expandabletextview.ExpandableTextView
+            android:id="@+id/extvMessage"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginBottom="8dp"
+            app:animAlphaStart="1"
+            app:animDuration="200"
+            app:collapseDrawable="@drawable/ic_baseline_expand_less_24"
+            app:expandDrawable="@drawable/ic_baseline_expand_more_24"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@id/tvEndStation2"
+            app:layout_constraintStart_toStartOf="@id/thumbnail"
+            app:maxCollapsedLines="3">
+
+            <TextView
+                android:id="@+id/expandable_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/ubuntu"
+                android:textColor="@color/initial" />
+
+            <ImageButton
+                android:id="@id/expand_collapse"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right|bottom"
+                android:background="@android:color/transparent"
+                android:paddingEnd="8dp"
+                app:tint="@color/black" />
+
+        </com.ms.square.android.expandabletextview.ExpandableTextView>
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/userInfoLayout"
             android:layout_width="match_parent"
@@ -26,6 +59,22 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/tvUserFullName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="8dp"
+                android:fontFamily="@font/ubuntu"
+                android:text="User Full Name"
+                android:textColor="@color/black"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/profileImage"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <View
                 style="@style/line_color"
@@ -35,22 +84,18 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
 
-            <TextView
-                android:id="@+id/tvUserFullName"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/profileImage"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
-                android:layout_marginEnd="16dp"
                 android:layout_marginBottom="8dp"
-                android:fontFamily="@font/ubuntu"
-                android:text="User Full Name"
-                android:textColor="@color/black"
-                android:textSize="16sp"
+                android:scaleType="centerCrop"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/image_loading_placeholder" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <ImageView
@@ -166,7 +211,7 @@
             android:textColor="@color/blue"
             android:textSize="18sp"
             android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toBottomOf="@id/extvMessage"
             app:layout_constraintStart_toStartOf="@+id/tvSchedule"
             app:layout_constraintTop_toBottomOf="@+id/tvEndStation2" />
 
@@ -264,15 +309,16 @@
                 android:id="@+id/tvDriver"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
+                android:layout_marginStart="1dp"
                 android:fontFamily="@font/ubuntu"
                 android:gravity="center_vertical"
-                android:text="Take the Driver Role"
+                android:text="Take Task"
                 android:textColor="@color/blue"
                 android:textStyle="bold"
                 android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="@+id/driverImage"
-                app:layout_constraintEnd_toEndOf="@+id/tvLocate"
-                app:layout_constraintStart_toEndOf="@+id/locateEndImage"
+                app:layout_constraintEnd_toEndOf="@+id/tvLocateEnd"
+                app:layout_constraintStart_toEndOf="@+id/driverImage"
                 app:layout_constraintTop_toTopOf="@+id/driverImage" />
 
             <TextView

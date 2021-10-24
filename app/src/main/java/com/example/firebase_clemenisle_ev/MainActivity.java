@@ -54,6 +54,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -219,7 +220,6 @@ public class MainActivity extends AppCompatActivity {
         if(navHostFragment != null) mainNavCtrlr = navHostFragment.getNavController();
         NavigationUI.setupWithNavController(mainNav, mainNavCtrlr);
 
-        dateTimeToString = new DateTimeToString();
         if(userId != null) getBooking();
         else startTimer();
 
@@ -389,6 +389,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void checkBooking(Booking booking) {
+        dateTimeToString = new DateTimeToString();
         dateTimeToString.setFormattedSchedule(booking.getSchedule());
         int bookingYear = Integer.parseInt(dateTimeToString.getYear());
         int bookingMonth = Integer.parseInt(dateTimeToString.getMonthNo());
@@ -412,7 +413,7 @@ public class MainActivity extends AppCompatActivity {
     private void checkingForBookingNotification(Booking booking, int bookingDay,
                                                 int bookingMonth, int bookingYear) {
 
-        SimpleDateFormat sdf = new SimpleDateFormat("H:mm:ss");
+        SimpleDateFormat sdf = new SimpleDateFormat("H:mm:ss", Locale.getDefault());
         String currentTime = sdf.format(new Date().getTime());
         int hour = Integer.parseInt(currentTime.split(":")[0]);
         int min = Integer.parseInt(currentTime.split(":")[1]);
@@ -421,70 +422,62 @@ public class MainActivity extends AppCompatActivity {
         int bookingHour = Integer.parseInt(dateTimeToString.getRawHour());
         int bookingMin = Integer.parseInt(dateTimeToString.getMin());
 
-        List<String> hourArray = Arrays.asList("1", "2", "4", "8", "12", "16", "20");
+        List<String> hourArray = Arrays.asList("2", "4", "8", "12", "16", "20");
         List<String> minArray = Arrays.asList("1", "5", "10", "15", "20", "30", "45");
 
         int minDifference;
         int hrDifference;
 
         if(hasBookingToday(bookingDay, bookingMonth, bookingYear)) {
-            if(bookingHour == hour + 1) {
-                minDifference = (bookingMin + 60) - min;
-                if(minDifference >= 60) {
-                    hrDifference = 1;
-                    minDifference -= 60;
-                }
-                else hrDifference = 0;
-            }
-            else if (bookingHour == hour) {
-                hrDifference = 0;
-                minDifference = bookingMin - min;
-            }
-            else {
-                hrDifference = bookingHour - hour;
-                if(min < bookingMin) minDifference = bookingMin - min;
-                else {
-                    minDifference = 60 - (min - bookingMin);
-                    if(minDifference < 60) hrDifference--;
-                    else minDifference = 0;
-                }
+            hrDifference = bookingHour - hour;
 
-                if(booking.getStatus().equals("Booked"))
-                    initNotificationInHours(booking, hourArray, hrDifference + 1, minArray, minDifference, sec);
-
-                if(booking.getStatus().equals("Processing") &&
-                        !booking.getBookingType().getId().equals("BT99") &&
-                        (hrDifference < 0 || (hrDifference == 0 && minDifference == 0)))
-                    firebaseDatabase.getReference("users").child(userId).
-                            child("bookingList").child(booking.getId()).child("status").setValue("Failed");
-                return;
-            }
-            if(booking.getStatus().equals("Booked"))
-                initNotificationInMinutes(booking, hrDifference, minArray, minDifference, sec);
-        }
-        else if(hasBookingTomorrow(bookingDay, bookingMonth, bookingYear) &&
-                booking.getStatus().equals("Booked")) {
-            hrDifference = (bookingHour + 24) - hour;
             if(min < bookingMin) minDifference = bookingMin - min;
             else {
                 minDifference = 60 - (min - bookingMin);
                 if(minDifference < 60) hrDifference--;
                 else minDifference = 0;
             }
+
+            setBookingStatusToFailed(booking, hrDifference, minDifference);
+
+            if(booking.getStatus().equals("Booked")) {
+                initNotificationInHours(booking, hourArray, hrDifference + 1, minArray, minDifference, sec);
+                initNotificationInMinutes(booking, hrDifference, minArray, minDifference, sec);
+            }
+        }
+        else if(booking.getStatus().equals("Booked")) {
+            int dayDifference = bookingDay - calendarDay;
+
+            hrDifference = (bookingHour + (24 * dayDifference)) - hour;
+
+            if(min < bookingMin) minDifference = bookingMin - min;
+            else {
+                minDifference = 60 - (min - bookingMin);
+                if(minDifference < 60) hrDifference--;
+                else minDifference = 0;
+            }
+
             initNotificationInHours(booking, hourArray, hrDifference + 1, minArray, minDifference, sec);
         }
+    }
+
+    private void setBookingStatusToFailed(Booking booking, int hrDifference, int minDifference) {
+        if(booking.getStatus().equals("Processing") &&
+                !booking.getBookingType().getId().equals("BT99") &&
+                (hrDifference < 0 || (hrDifference == 0 && minDifference == 0)))
+            firebaseDatabase.getReference("users").child(userId).
+                    child("bookingList").child(booking.getId()).child("status").setValue("Failed");
     }
 
     private void initNotificationInHours(Booking booking, List<String> hourArray, int hrDifference,
                                          List<String> minArray, int minDifference, int sec) {
         if(hourArray.contains(String.valueOf(hrDifference)) &&
                 (minArray.contains(String.valueOf(minDifference)) || minDifference == 0) && sec < 5) {
-            if(hrDifference == 1) showUpcomingBookingNotification(booking, hrDifference, "hour");
-            else showUpcomingBookingNotification(booking, hrDifference, "hours");
+            showUpcomingBookingNotification(booking, hrDifference, "hours");
         }
-        else if(hrDifference == 24) {
+        else if(hrDifference % 24 == 0) {
             if((minArray.contains(String.valueOf(minDifference)) || minDifference == 0) && sec < 5)
-                showUpcomingBookingNotification(booking, 1, "day");
+                showUpcomingBookingNotification(booking, hrDifference/24, "day");
         }
     }
 
@@ -494,17 +487,12 @@ public class MainActivity extends AppCompatActivity {
             if(minDifference == 1) showUpcomingBookingNotification(booking, minDifference, "minute");
             else showUpcomingBookingNotification(booking, minDifference, "minutes");
         }
-        else if(hrDifference > 0 && minDifference == 0 && sec < 5) {
-            showUpcomingBookingNotification(booking, 1, "hour");
-        }
+        else if(hrDifference == 1 && minDifference == 0 && sec < 5)
+            showUpcomingBookingNotification(booking, hrDifference, "hour");
     }
 
     private boolean hasBookingToday(int bookingDay, int bookingMonth, int bookingYear) {
         return (bookingDay == calendarDay && bookingMonth == calendarMonth && bookingYear == calendarYear);
-    }
-
-    private boolean hasBookingTomorrow(int bookingDay, int bookingMonth, int bookingYear) {
-        return (bookingDay == calendarDay + 1 && bookingMonth == calendarMonth && bookingYear == calendarYear);
     }
 
     private void getBooking() {

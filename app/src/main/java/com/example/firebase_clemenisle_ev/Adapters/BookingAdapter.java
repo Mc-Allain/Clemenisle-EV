@@ -37,6 +37,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.ms.square.android.expandabletextview.ExpandableTextView;
 
 import java.util.List;
 
@@ -49,6 +50,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
 
     private final static String firebaseURL = FirebaseURL.getFirebaseURL();
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance(firebaseURL);
+    DatabaseReference usersRef = firebaseDatabase.getReference("users");
 
     List<Booking> bookingList;
     LayoutInflater inflater;
@@ -84,16 +86,17 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        ImageView thumbnail = holder.thumbnail, moreImage = holder.moreImage,
-                openImage = holder.openImage, locateImage = holder.locateImage,
-                locateEndImage = holder.locateEndImage, driverImage = holder.driverImage,
-                paidImage = holder.paidImage;
+        ImageView profileImage = holder.profileImage, thumbnail = holder.thumbnail,
+                moreImage = holder.moreImage, openImage = holder.openImage,
+                locateImage = holder.locateImage, locateEndImage = holder.locateEndImage,
+                driverImage = holder.driverImage, paidImage = holder.paidImage;
         TextView tvUserFullName = holder.tvUserFullName, tvBookingId = holder.tvBookingId,
                 tvSchedule = holder.tvSchedule, tvTypeName = holder.tvTypeName, tvPrice = holder.tvPrice,
                 tvStartStation = holder.tvStartStation, tvEndStation = holder.tvEndStation,
                 tvStartStation2 = holder.tvStartStation2, tvEndStation2 = holder.tvEndStation2,
                 tvOption = holder.tvOption, tvOpen = holder.tvOpen,
                 tvLocate = holder.tvLocate, tvLocateEnd = holder.tvLocateEnd, tvDriver = holder.tvDriver;
+        ExpandableTextView extvMessage = holder.extvMessage;
         ConstraintLayout backgroundLayout = holder.backgroundLayout, buttonLayout = holder.buttonLayout,
                 userInfoLayout = holder.userInfoLayout;
 
@@ -113,6 +116,8 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
         String typeName = bookingType.getName();
         String price = "₱" + bookingType.getPrice();
         if(price.split("\\.")[1].length() == 1) price += 0;
+
+        String message = booking.getMessage();
 
         tvBookingId.setText(bookingId);
         tvSchedule.setText(schedule);
@@ -237,12 +242,16 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
             tvDriver.setVisibility(View.VISIBLE);
             driverImage.setVisibility(View.VISIBLE);
             userInfoLayout.setVisibility(View.VISIBLE);
-            getUserInfo(bookingId, tvUserFullName);
+
+            extvMessage.setText(message);
+            getUserInfo(bookingId, tvUserFullName, profileImage);
         }
         else {
             tvDriver.setVisibility(View.GONE);
             driverImage.setVisibility(View.GONE);
             userInfoLayout.setVisibility(View.GONE);
+
+            extvMessage.setText(null);
         }
 
         int top = dpToPx(4), bottom = dpToPx(4);
@@ -310,14 +319,38 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                 bookingList.get(0).getId().equals(booking.getId()) &&
                         booking.getStatus().equals("Completed") &&
                         !booking.getBookingType().getId().equals("BT99"));
-        intent.putExtra("isDriver", inDriverMode);
-        if(inDriverMode) intent.putExtra("userId", "");
-
-        myContext.startActivity(intent);
+        intent.putExtra("inDriverMode", inDriverMode);
+        if(inDriverMode) getUserId(booking.getId(), intent);
+        else myContext.startActivity(intent);
     }
 
-    private void getUserInfo(String bookingId, TextView tvUserFullName) {
-        DatabaseReference usersRef = firebaseDatabase.getReference("users");
+    private void getUserId(String bookingId, Intent intent) {
+        usersRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(snapshot.exists()) {
+                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        User thisUser = new User(dataSnapshot);
+                        List<Booking> bookingList = thisUser.getBookingList();
+
+                        for(Booking booking : bookingList) {
+                            if(booking.getId().equals(bookingId)) {
+                                intent.putExtra("userId", thisUser.getId());
+                                myContext.startActivity(intent);
+                                return;
+                            }
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+            }
+        });
+    }
+
+    private void getUserInfo(String bookingId, TextView tvUserFullName, ImageView profileImage) {
         usersRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -331,6 +364,11 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                                 String fullName = "<b>" + thisUser.getLastName() + "</b>, " + thisUser.getFirstName();
                                 if(thisUser.getMiddleName().length() > 0) fullName += " " + thisUser.getMiddleName();
                                 tvUserFullName.setText(fromHtml(fullName));
+
+                                Glide.with(myContext).load(thisUser.getProfileImage())
+                                        .placeholder(R.drawable.image_loading_placeholder)
+                                        .into(profileImage);
+
                                 return;
                             }
                         }
@@ -340,11 +378,6 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(
-                        myContext,
-                        "Failed to get user info",
-                        Toast.LENGTH_SHORT
-                ).show();
             }
         });
     }
@@ -424,10 +457,12 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        ImageView thumbnail, moreImage, openImage, locateImage, locateEndImage, driverImage, paidImage;
+        ImageView profileImage, thumbnail, moreImage, openImage, locateImage, locateEndImage,
+                driverImage, paidImage;
         TextView tvUserFullName, tvBookingId, tvSchedule, tvTypeName, tvPrice,
                 tvStartStation, tvStartStation2, tvEndStation, tvEndStation2,
                 tvOption, tvOpen, tvLocate, tvLocateEnd, tvDriver;
+        ExpandableTextView extvMessage;
         ConstraintLayout backgroundLayout, buttonLayout, userInfoLayout;
 
         public ViewHolder(@NonNull View itemView) {
@@ -435,6 +470,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
 
             userInfoLayout = itemView.findViewById(R.id.userInfoLayout);
             tvUserFullName = itemView.findViewById(R.id.tvUserFullName);
+            profileImage = itemView.findViewById(R.id.profileImage);
 
             thumbnail = itemView.findViewById(R.id.thumbnail);
             tvBookingId = itemView.findViewById(R.id.tvBookingId);
@@ -445,10 +481,13 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
             tvStartStation2 = itemView.findViewById(R.id.tvStartStation2);
             tvEndStation = itemView.findViewById(R.id.tvEndStation);
             tvEndStation2 = itemView.findViewById(R.id.tvEndStation2);
+            extvMessage = itemView.findViewById(R.id.extvMessage);
+
             tvOption = itemView.findViewById(R.id.tvOption);
             backgroundLayout = itemView.findViewById(R.id.backgroundLayout);
             buttonLayout = itemView.findViewById(R.id.buttonLayout);
             moreImage = itemView.findViewById(R.id.moreImage);
+            paidImage = itemView.findViewById(R.id.paidImage);
 
             tvOpen = itemView.findViewById(R.id.tvOpen);
             openImage = itemView.findViewById(R.id.openImage);
@@ -458,8 +497,6 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
             locateEndImage = itemView.findViewById(R.id.locateEndImage);
             tvDriver = itemView.findViewById(R.id.tvDriver);
             driverImage = itemView.findViewById(R.id.driverImage);
-
-            paidImage = itemView.findViewById(R.id.paidImage);
         }
     }
 }
