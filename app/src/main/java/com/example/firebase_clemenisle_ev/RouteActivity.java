@@ -74,7 +74,7 @@ public class RouteActivity extends AppCompatActivity implements
 
     String userId;
 
-    boolean isLoggedIn = false;
+    boolean isLoggedIn = false, isDriver = false;
 
     DatabaseReference bookingListRef;
 
@@ -152,19 +152,23 @@ public class RouteActivity extends AppCompatActivity implements
         Intent intent = getIntent();
         bookingId = intent.getStringExtra("bookingId");
         isLatest = intent.getBooleanExtra("isLatest", false);
+        isDriver = intent.getBooleanExtra("isDriver", false);
 
         isOnScreen = true;
 
         Glide.with(myContext).load(R.drawable.magnify_4s_256px).into(reloadImage);
 
         firebaseAuth = FirebaseAuth.getInstance();
-        if(isLoggedIn) {
-            firebaseUser = firebaseAuth.getCurrentUser();
-            if(firebaseUser != null) {
-                firebaseUser.reload();
-                userId = firebaseUser.getUid();
+        if(!isDriver) {
+            if(isLoggedIn) {
+                firebaseUser = firebaseAuth.getCurrentUser();
+                if(firebaseUser != null) {
+                    firebaseUser.reload();
+                    userId = firebaseUser.getUid();
+                }
             }
         }
+        else userId = intent.getStringExtra("userId");
 
         GridLayoutManager gridLayoutManager =
                 new GridLayoutManager(myContext, columnCount, GridLayoutManager.VERTICAL, false);

@@ -162,27 +162,27 @@ public class LoggedInBookingListFragment extends Fragment {
 
         Glide.with(myContext).load(R.drawable.magnify_4s_256px).into(reloadImage);
 
-        LinearLayoutManager linearLayout1 = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
+        LinearLayoutManager linearLayout1 = new LinearLayoutManager(myContext, LinearLayoutManager.VERTICAL, false);
         processingView.setLayoutManager(linearLayout1);
         adapter1 = new BookingAdapter(myContext, bookingList1);
         processingView.setAdapter(adapter1);
 
-        LinearLayoutManager linearLayout2 = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
+        LinearLayoutManager linearLayout2 = new LinearLayoutManager(myContext, LinearLayoutManager.VERTICAL, false);
         bookedView.setLayoutManager(linearLayout2);
         adapter2 = new BookingAdapter(myContext, bookingList2);
         bookedView.setAdapter(adapter2);
 
-        LinearLayoutManager linearLayout3 = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
+        LinearLayoutManager linearLayout3 = new LinearLayoutManager(myContext, LinearLayoutManager.VERTICAL, false);
         completedView.setLayoutManager(linearLayout3);
         adapter3 = new BookingAdapter(myContext, bookingList3);
         completedView.setAdapter(adapter3);
 
-        LinearLayoutManager linearLayout4 = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
+        LinearLayoutManager linearLayout4 = new LinearLayoutManager(myContext, LinearLayoutManager.VERTICAL, false);
         cancelledView.setLayoutManager(linearLayout4);
         adapter4 = new BookingAdapter(myContext, bookingList4);
         cancelledView.setAdapter(adapter4);
 
-        LinearLayoutManager linearLayout5 = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
+        LinearLayoutManager linearLayout5 = new LinearLayoutManager(myContext, LinearLayoutManager.VERTICAL, false);
         failedView.setLayoutManager(linearLayout5);
         adapter5 = new BookingAdapter(myContext, bookingList5);
         failedView.setAdapter(adapter5);

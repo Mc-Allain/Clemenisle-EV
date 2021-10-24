@@ -4,7 +4,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Handler;
+import android.text.Html;
+import android.text.SpannableString;
+import android.text.Spanned;
 import android.transition.ChangeBounds;
 import android.transition.Transition;
 import android.transition.TransitionManager;
@@ -19,15 +23,21 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.Target;
 import com.example.firebase_clemenisle_ev.Classes.Booking;
 import com.example.firebase_clemenisle_ev.Classes.BookingType;
+import com.example.firebase_clemenisle_ev.Classes.FirebaseURL;
 import com.example.firebase_clemenisle_ev.Classes.Route;
 import com.example.firebase_clemenisle_ev.Classes.SimpleTouristSpot;
 import com.example.firebase_clemenisle_ev.Classes.Station;
+import com.example.firebase_clemenisle_ev.Classes.User;
 import com.example.firebase_clemenisle_ev.MapActivity;
 import com.example.firebase_clemenisle_ev.OnTheSpotActivity;
 import com.example.firebase_clemenisle_ev.R;
 import com.example.firebase_clemenisle_ev.RouteActivity;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
-import java.util.Collections;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -36,6 +46,9 @@ import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHolder> {
+
+    private final static String firebaseURL = FirebaseURL.getFirebaseURL();
+    FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance(firebaseURL);
 
     List<Booking> bookingList;
     LayoutInflater inflater;
@@ -47,14 +60,19 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
 
     String locateStartStationText = "Locate Start Station",
             locateEndStationText = "Locate End Station";
-    String
-            locateOriginLocationText = "Locate Origin Location",
+    String locateOriginLocationText = "Locate Origin Location",
             locateDestinationSpotText = "Locate Destination Spot";
+
+    boolean inDriverMode = false;
+
+    public void setInDriverMode(boolean inDriverMode) {
+        this.inDriverMode = inDriverMode;
+        notifyDataSetChanged();
+    }
 
     public BookingAdapter(Context context, List<Booking> bookingList) {
         this.bookingList = bookingList;
         this.inflater = LayoutInflater.from(context);
-        Collections.reverse(this.bookingList);
     }
 
     @NonNull
@@ -68,14 +86,16 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         ImageView thumbnail = holder.thumbnail, moreImage = holder.moreImage,
                 openImage = holder.openImage, locateImage = holder.locateImage,
-                locateEndImage = holder.locateEndImage, paidImage = holder.paidImage;
-        TextView tvBookingId = holder.tvBookingId, tvSchedule = holder.tvSchedule,
-                tvTypeName = holder.tvTypeName, tvPrice = holder.tvPrice,
+                locateEndImage = holder.locateEndImage, driverImage = holder.driverImage,
+                paidImage = holder.paidImage;
+        TextView tvUserFullName = holder.tvUserFullName, tvBookingId = holder.tvBookingId,
+                tvSchedule = holder.tvSchedule, tvTypeName = holder.tvTypeName, tvPrice = holder.tvPrice,
                 tvStartStation = holder.tvStartStation, tvEndStation = holder.tvEndStation,
                 tvStartStation2 = holder.tvStartStation2, tvEndStation2 = holder.tvEndStation2,
                 tvOption = holder.tvOption, tvOpen = holder.tvOpen,
-                tvLocate = holder.tvLocate, tvLocateEnd = holder.tvLocateEnd;
-        ConstraintLayout backgroundLayout = holder.backgroundLayout, buttonLayout = holder.buttonLayout;
+                tvLocate = holder.tvLocate, tvLocateEnd = holder.tvLocateEnd, tvDriver = holder.tvDriver;
+        ConstraintLayout backgroundLayout = holder.backgroundLayout, buttonLayout = holder.buttonLayout,
+                userInfoLayout = holder.userInfoLayout;
 
         myContext = inflater.getContext();
 
@@ -213,6 +233,18 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
 
         openImage.setOnClickListener(view -> openItem(booking));
 
+        if(inDriverMode) {
+            tvDriver.setVisibility(View.VISIBLE);
+            driverImage.setVisibility(View.VISIBLE);
+            userInfoLayout.setVisibility(View.VISIBLE);
+            getUserInfo(bookingId, tvUserFullName);
+        }
+        else {
+            tvDriver.setVisibility(View.GONE);
+            driverImage.setVisibility(View.GONE);
+            userInfoLayout.setVisibility(View.GONE);
+        }
+
         int top = dpToPx(4), bottom = dpToPx(4);
 
         boolean isFirstItem = position + 1 == 1, isLastItem = position + 1 == getItemCount();
@@ -268,20 +300,66 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
     private void openItem(Booking booking) {
         Intent intent;
 
-        if(booking.getBookingType().getId().equals("BT99")) {
+        if(booking.getBookingType().getId().equals("BT99"))
             intent = new Intent(myContext, OnTheSpotActivity.class);
-        }
-        else {
+        else
             intent = new Intent(myContext, RouteActivity.class);
-        }
 
         intent.putExtra("bookingId", booking.getId());
         intent.putExtra("isLatest",
                 bookingList.get(0).getId().equals(booking.getId()) &&
                         booking.getStatus().equals("Completed") &&
                         !booking.getBookingType().getId().equals("BT99"));
+        intent.putExtra("isDriver", inDriverMode);
+        if(inDriverMode) intent.putExtra("userId", "");
 
         myContext.startActivity(intent);
+    }
+
+    private void getUserInfo(String bookingId, TextView tvUserFullName) {
+        DatabaseReference usersRef = firebaseDatabase.getReference("users");
+        usersRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(snapshot.exists()) {
+                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        User thisUser = new User(dataSnapshot);
+                        List<Booking> bookingList = thisUser.getBookingList();
+
+                        for(Booking booking : bookingList) {
+                            if(booking.getId().equals(bookingId)) {
+                                String fullName = "<b>" + thisUser.getLastName() + "</b>, " + thisUser.getFirstName();
+                                if(thisUser.getMiddleName().length() > 0) fullName += " " + thisUser.getMiddleName();
+                                tvUserFullName.setText(fromHtml(fullName));
+                                return;
+                            }
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(
+                        myContext,
+                        "Failed to get user info",
+                        Toast.LENGTH_SHORT
+                ).show();
+            }
+        });
+    }
+
+    @SuppressWarnings("deprecation")
+    public static Spanned fromHtml(String html){
+        if(html == null) {
+            return new SpannableString("");
+        }
+        else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            return Html.fromHtml(html, Html.FROM_HTML_MODE_LEGACY);
+        }
+        else {
+            return Html.fromHtml(html);
+        }
     }
 
     private void openOption(ConstraintLayout buttonLayout, ConstraintLayout backgroundLayout,
@@ -346,14 +424,17 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        ImageView thumbnail, moreImage, openImage, locateImage, locateEndImage, paidImage;
-        TextView tvBookingId, tvSchedule, tvTypeName, tvPrice,
+        ImageView thumbnail, moreImage, openImage, locateImage, locateEndImage, driverImage, paidImage;
+        TextView tvUserFullName, tvBookingId, tvSchedule, tvTypeName, tvPrice,
                 tvStartStation, tvStartStation2, tvEndStation, tvEndStation2,
-                tvOption, tvOpen, tvLocate, tvLocateEnd;
-        ConstraintLayout backgroundLayout, buttonLayout;
+                tvOption, tvOpen, tvLocate, tvLocateEnd, tvDriver;
+        ConstraintLayout backgroundLayout, buttonLayout, userInfoLayout;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
+
+            userInfoLayout = itemView.findViewById(R.id.userInfoLayout);
+            tvUserFullName = itemView.findViewById(R.id.tvUserFullName);
 
             thumbnail = itemView.findViewById(R.id.thumbnail);
             tvBookingId = itemView.findViewById(R.id.tvBookingId);
@@ -368,12 +449,16 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
             backgroundLayout = itemView.findViewById(R.id.backgroundLayout);
             buttonLayout = itemView.findViewById(R.id.buttonLayout);
             moreImage = itemView.findViewById(R.id.moreImage);
+
             tvOpen = itemView.findViewById(R.id.tvOpen);
             openImage = itemView.findViewById(R.id.openImage);
             tvLocate = itemView.findViewById(R.id.tvLocate);
             locateImage = itemView.findViewById(R.id.locateImage);
             tvLocateEnd = itemView.findViewById(R.id.tvLocateEnd);
             locateEndImage = itemView.findViewById(R.id.locateEndImage);
+            tvDriver = itemView.findViewById(R.id.tvDriver);
+            driverImage = itemView.findViewById(R.id.driverImage);
+
             paidImage = itemView.findViewById(R.id.paidImage);
         }
     }

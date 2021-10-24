@@ -19,6 +19,40 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/userInfoLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <View
+                style="@style/line_color"
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <TextView
+                android:id="@+id/tvUserFullName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="8dp"
+                android:fontFamily="@font/ubuntu"
+                android:text="User Full Name"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
         <ImageView
             android:id="@+id/thumbnail"
             android:layout_width="110dp"
@@ -92,7 +126,7 @@
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="@+id/thumbnail"
             app:layout_constraintStart_toStartOf="@+id/thumbnail"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@+id/userInfoLayout" />
 
         <TextView
             android:id="@+id/tvTypeName"
@@ -171,13 +205,24 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/buttonLayout"
-            android:layout_width="0dp"
+            android:layout_width="208dp"
             android:layout_height="match_parent"
             android:layout_marginEnd="8dp"
             android:background="@drawable/border_layout"
             app:layout_constraintEnd_toStartOf="@+id/moreImage"
-            app:layout_constraintStart_toStartOf="@+id/tvPrice"
             app:layout_constraintTop_toBottomOf="parent">
+
+            <ImageView
+                android:id="@+id/driverImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                android:padding="4dp"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/locateImage"
+                app:srcCompat="@drawable/ic_baseline_electric_rickshaw_24"
+                app:tint="@color/blue" />
 
             <ImageView
                 android:id="@+id/locateEndImage"
@@ -186,7 +231,7 @@
                 android:layout_marginTop="4dp"
                 android:layout_marginBottom="4dp"
                 android:padding="4dp"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintBottom_toTopOf="@+id/driverImage"
                 app:layout_constraintStart_toStartOf="@+id/locateImage"
                 app:layout_constraintTop_toBottomOf="@+id/locateImage"
                 app:srcCompat="@drawable/ic_baseline_location_searching_24"
@@ -214,6 +259,21 @@
                 app:layout_constraintTop_toBottomOf="@+id/openImage"
                 app:srcCompat="@drawable/ic_baseline_location_searching_24"
                 app:tint="@color/blue" />
+
+            <TextView
+                android:id="@+id/tvDriver"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:fontFamily="@font/ubuntu"
+                android:gravity="center_vertical"
+                android:text="Take the Driver Role"
+                android:textColor="@color/blue"
+                android:textStyle="bold"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@+id/driverImage"
+                app:layout_constraintEnd_toEndOf="@+id/tvLocate"
+                app:layout_constraintStart_toEndOf="@+id/locateEndImage"
+                app:layout_constraintTop_toTopOf="@+id/driverImage" />
 
             <TextView
                 android:id="@+id/tvLocateEnd"

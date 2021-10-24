@@ -365,12 +365,11 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/bookingInfoButtonLayout"
-            android:layout_width="0dp"
+            android:layout_width="208dp"
             android:layout_height="match_parent"
             android:layout_marginEnd="8dp"
             android:background="@drawable/border_layout"
             app:layout_constraintEnd_toStartOf="@+id/moreImage"
-            app:layout_constraintStart_toStartOf="@+id/tvPrice"
             app:layout_constraintTop_toBottomOf="parent">
 
             <ImageView

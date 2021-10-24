@@ -417,6 +417,7 @@ public class LoggedInUserProfileFragment extends Fragment {
         profileImageDialog.getWindow().setGravity(Gravity.BOTTOM);
     }
 
+    @SuppressWarnings("deprecation")
     private void openStorage() {
         Intent newIntent = new Intent();
         newIntent.setType("image/*");
@@ -425,6 +426,7 @@ public class LoggedInUserProfileFragment extends Fragment {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
@@ -439,6 +441,7 @@ public class LoggedInUserProfileFragment extends Fragment {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
