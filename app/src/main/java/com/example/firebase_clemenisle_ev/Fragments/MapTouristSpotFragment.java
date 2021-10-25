@@ -145,7 +145,7 @@ public class MapTouristSpotFragment extends Fragment implements MapPlaceAdapter.
                 Toast.makeText(
                         myContext,
                         error.toString(),
-                        Toast.LENGTH_SHORT
+                        Toast.LENGTH_LONG
                 ).show();
 
                 placeList.clear();

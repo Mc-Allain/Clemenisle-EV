@@ -164,7 +164,7 @@ public class HelpActivity extends AppCompatActivity {
         tvFAQ.setOnClickListener(view -> Toast.makeText(
                 myContext,
                 "Coming soon…",
-                Toast.LENGTH_LONG
+                Toast.LENGTH_SHORT
         ).show());
     }
 

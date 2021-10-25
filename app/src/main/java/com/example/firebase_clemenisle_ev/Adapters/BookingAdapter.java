@@ -291,8 +291,8 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
 
         openImage.setOnClickListener(view -> openItem(booking));
 
-        if(inDriverMode) {
-            tvDriver.setVisibility(View.VISIBLE);
+        if(inDriverMode && status.equals("Processing")) {
+            userInfoLayout.setVisibility(View.VISIBLE);
 
             extvMessage.setText(message);
             getUserInfo(bookingId, tvUserFullName, profileImage, tvDriver, driverImage);
@@ -376,7 +376,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
     }
 
     private void getUserId(String bookingId, Intent intent) {
-        usersRef.addValueEventListener(new ValueEventListener() {
+        usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if(snapshot.exists()) {
@@ -431,6 +431,9 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                                 else {
                                     tvDriver.setVisibility(View.VISIBLE);
                                     driverImage.setVisibility(View.VISIBLE);
+
+                                    tvDriver.setOnClickListener(view -> takeTask(booking, thisUser.getId()));
+                                    driverImage.setOnClickListener(view -> takeTask(booking, thisUser.getId()));
                                 }
 
                                 return;
@@ -444,6 +447,64 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
             public void onCancelled(@NonNull DatabaseError error) {
             }
         });
+    }
+
+    private void takeTask(Booking booking, String passengerUserId) {
+        String status = "Booked";
+        List<Route> bookingRouteList = booking.getRouteList();
+        booking.setStatus(status);
+        Booking driverTask = new Booking(booking);
+
+        DatabaseReference taskListRef = usersRef.child(userId).child("taskList").
+                child(booking.getId());
+        taskListRef.setValue(driverTask).addOnCompleteListener(task -> {
+            if(task.isSuccessful()) {
+                usersRef.child(passengerUserId).child("bookingList").
+                        child(driverTask.getId()).child("status").setValue(status).
+                addOnCompleteListener(task1 -> {
+                    if(task1.isSuccessful())
+                        addBookingRoute(bookingRouteList, taskListRef);
+                    else {
+                        Toast.makeText(
+                                myContext,
+                                "Failed to take the task. Please try again.",
+                                Toast.LENGTH_LONG
+                        ).show();
+                    }
+                });
+            }
+            else {
+                Toast.makeText(
+                        myContext,
+                        "Failed to take the task. Please try again.",
+                        Toast.LENGTH_LONG
+                ).show();
+            }
+        });
+    }
+
+    private void addBookingRoute(List<Route> bookingRouteList,
+                                 DatabaseReference taskListRef) {
+        int index = 1;
+        for(Route route : bookingRouteList) {
+            boolean isLastItem;
+            isLastItem = index == bookingRouteList.size();
+
+            DatabaseReference routeSpotsRef =
+                    taskListRef.child("routeSpots").child(route.getRouteId());
+            routeSpotsRef.setValue(route).addOnCompleteListener(task -> {
+                if(task.isSuccessful()) {
+                    if(isLastItem) {
+                        Toast.makeText(
+                                myContext,
+                                "Successfully taken the task",
+                                Toast.LENGTH_SHORT
+                        ).show();
+                    }
+                }
+            });
+            index++;
+        }
     }
 
     @SuppressWarnings("deprecation")

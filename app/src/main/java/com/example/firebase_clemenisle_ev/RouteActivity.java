@@ -253,7 +253,7 @@ public class RouteActivity extends AppCompatActivity implements
         onlinePaymentButton.setOnClickListener(view -> Toast.makeText(
                 myContext,
                 "Not yet implemented",
-                Toast.LENGTH_LONG
+                Toast.LENGTH_SHORT
         ).show());
 
         paidImage.setOnLongClickListener(view -> {
@@ -267,7 +267,7 @@ public class RouteActivity extends AppCompatActivity implements
 
 
         if(inDriverMode) {
-            tvDriver.setVisibility(View.VISIBLE);
+            userInfoLayout.setVisibility(View.VISIBLE);
 
             getUserInfo(bookingId);
         }
@@ -300,13 +300,17 @@ public class RouteActivity extends AppCompatActivity implements
                                 }
                                 catch (Exception ignored) {}
 
-                                if(driverUserId.equals(thisUser.getId())) {
+                                if(driverUserId.equals(thisUser.getId()) ||
+                                        !status.equals("Processing")) {
                                     tvDriver.setVisibility(View.GONE);
                                     driverImage.setVisibility(View.GONE);
                                 }
                                 else {
                                     tvDriver.setVisibility(View.VISIBLE);
                                     driverImage.setVisibility(View.VISIBLE);
+
+                                    tvDriver.setOnClickListener(view -> takeTask(booking));
+                                    driverImage.setOnClickListener(view -> takeTask(booking));
                                 }
 
                                 return;
@@ -320,6 +324,64 @@ public class RouteActivity extends AppCompatActivity implements
             public void onCancelled(@NonNull DatabaseError error) {
             }
         });
+    }
+
+    private void takeTask(Booking booking) {
+        String status = "Booked";
+        List<Route> bookingRouteList = booking.getRouteList();
+        booking.setStatus(status);
+        Booking driverTask = new Booking(booking);
+
+        DatabaseReference taskListRef = usersRef.child(driverUserId).child("taskList").
+                child(booking.getId());
+        taskListRef.setValue(driverTask).addOnCompleteListener(task -> {
+            if(task.isSuccessful()) {
+                usersRef.child(userId).child("bookingList").
+                        child(driverTask.getId()).child("status").setValue(status).
+                        addOnCompleteListener(task1 -> {
+                            if(task1.isSuccessful())
+                                addBookingRoute(bookingRouteList, taskListRef);
+                            else {
+                                Toast.makeText(
+                                        myContext,
+                                        "Failed to take the task. Please try again.",
+                                        Toast.LENGTH_LONG
+                                ).show();
+                            }
+                        });
+            }
+            else {
+                Toast.makeText(
+                        myContext,
+                        "Failed to take the task. Please try again.",
+                        Toast.LENGTH_LONG
+                ).show();
+            }
+        });
+    }
+
+    private void addBookingRoute(List<Route> bookingRouteList,
+                                 DatabaseReference taskListRef) {
+        int index = 1;
+        for(Route route : bookingRouteList) {
+            boolean isLastItem;
+            isLastItem = index == bookingRouteList.size();
+
+            DatabaseReference routeSpotsRef =
+                    taskListRef.child("routeSpots").child(route.getRouteId());
+            routeSpotsRef.setValue(route).addOnCompleteListener(task -> {
+                if(task.isSuccessful()) {
+                    if(isLastItem) {
+                        Toast.makeText(
+                                myContext,
+                                "Successfully taken the task",
+                                Toast.LENGTH_SHORT
+                        ).show();
+                    }
+                }
+            });
+            index++;
+        }
     }
 
     @SuppressWarnings("deprecation")

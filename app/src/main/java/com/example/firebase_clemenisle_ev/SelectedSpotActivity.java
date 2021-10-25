@@ -1348,7 +1348,7 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
                     Toast.makeText(
                             myContext,
                             "No Street View Record",
-                            Toast.LENGTH_SHORT
+                            Toast.LENGTH_LONG
                     ).show();
                 }
             }
@@ -1358,7 +1358,7 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
                 Toast.makeText(
                         myContext,
                         error.toString(),
-                        Toast.LENGTH_SHORT
+                        Toast.LENGTH_LONG
                 ).show();
             }
         });
@@ -1438,7 +1438,7 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
                 Toast.makeText(
                         myContext,
                         error.toString(),
-                        Toast.LENGTH_SHORT
+                        Toast.LENGTH_LONG
                 ).show();
 
                 progressBar.setVisibility(View.GONE);
@@ -1516,7 +1516,7 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
                 Toast.makeText(
                         myContext,
                         error.toString(),
-                        Toast.LENGTH_SHORT
+                        Toast.LENGTH_LONG
                 ).show();
 
                 touristSpot.setBooks(0);
@@ -1616,7 +1616,7 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
                 Toast.makeText(
                         myContext,
                         error.toString(),
-                        Toast.LENGTH_SHORT
+                        Toast.LENGTH_LONG
                 ).show();
             }
         });

@@ -525,7 +525,7 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(
                         myContext,
                         error.toString(),
-                        Toast.LENGTH_SHORT
+                        Toast.LENGTH_LONG
                 ).show();
 
                 success1 = false;
@@ -557,7 +557,7 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(
                         myContext,
                         error.toString(),
-                        Toast.LENGTH_SHORT
+                        Toast.LENGTH_LONG
                 ).show();
 
                 success2 = false;

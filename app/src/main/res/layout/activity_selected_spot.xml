@@ -430,43 +430,15 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/commentTitleLayout">
 
-        <ImageView
-            android:id="@+id/reloadImage"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:padding="0dp"
-            android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="@+id/tvLog"
-            app:layout_constraintStart_toStartOf="@+id/tvLog"
-            app:layout_constraintTop_toBottomOf="@+id/tvLog" />
-
-        <ProgressBar
-            android:id="@+id/commentProgressBar"
-            style="?android:attr/progressBarStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="40dp"
-            android:visibility="gone"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/commentView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="@color/gainsboro"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/tvLog"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="24dp"
-            android:layout_marginEnd="16dp"
-            android:fontFamily="@font/ubuntu"
-            android:text="No Comment\nPlease make yours the first one"
-            android:textAlignment="center"
-            android:textColor="@color/initial"
-            android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/commentView" />
+            app:layout_constraintTop_toBottomOf="@+id/loginCommentLayout" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/loginCommentLayout"
@@ -638,17 +610,6 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/userCommentTitleLayout">
-
-                <de.hdodenhof.circleimageview.CircleImageView
-                    android:id="@+id/profileImage"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="8dp"
-                    android:scaleType="centerCrop"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/image_loading_placeholder" />
 
                 <TextView
                     android:id="@+id/tvUserFullName"
@@ -830,19 +791,58 @@
 
                 </com.ms.square.android.expandabletextview.ExpandableTextView>
 
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/profileImage"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:scaleType="centerCrop"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/image_loading_placeholder" />
+
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/commentView"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:background="@color/gainsboro"
+        <ImageView
+            android:id="@+id/reloadImage"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:padding="0dp"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="@+id/tvLog"
+            app:layout_constraintStart_toStartOf="@+id/tvLog"
+            app:layout_constraintTop_toBottomOf="@+id/tvLog" />
+
+        <TextView
+            android:id="@+id/tvLog"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginEnd="16dp"
+            android:fontFamily="@font/ubuntu"
+            android:text="No Comment\nPlease make yours the first one"
+            android:textAlignment="center"
+            android:textColor="@color/initial"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/commentView" />
+
+        <ProgressBar
+            android:id="@+id/commentProgressBar"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="40dp"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/loginCommentLayout" />
+            app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -45,7 +45,7 @@ public class PendingListFragment extends Fragment {
     Context myContext;
     Resources myResources;
 
-    String defaultLogText = "No Record";
+    String defaultLogText = "No Available Booking Record";
 
     BookingAdapter bookingAdapter;
 
@@ -129,7 +129,7 @@ public class PendingListFragment extends Fragment {
                 Toast.makeText(
                         myContext,
                         error.toString(),
-                        Toast.LENGTH_SHORT
+                        Toast.LENGTH_LONG
                 ).show();
 
                 errorLoading(error.toString());

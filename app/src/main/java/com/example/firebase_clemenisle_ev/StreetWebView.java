@@ -153,7 +153,7 @@ public class StreetWebView extends AppCompatActivity {
                 Toast.makeText(
                         myContext,
                         error.toString(),
-                        Toast.LENGTH_SHORT
+                        Toast.LENGTH_LONG
                 ).show();
             }
         });

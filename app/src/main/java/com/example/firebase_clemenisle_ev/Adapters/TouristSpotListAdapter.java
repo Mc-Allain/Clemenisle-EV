@@ -280,7 +280,7 @@ public class TouristSpotListAdapter extends RecyclerView.Adapter<TouristSpotList
                     Toast.makeText(
                             myContext,
                             "No Street View Record",
-                            Toast.LENGTH_SHORT
+                            Toast.LENGTH_LONG
                     ).show();
                 }
             }
@@ -290,7 +290,7 @@ public class TouristSpotListAdapter extends RecyclerView.Adapter<TouristSpotList
                 Toast.makeText(
                         myContext,
                         error.toString(),
-                        Toast.LENGTH_SHORT
+                        Toast.LENGTH_LONG
                 ).show();
             }
         });

@@ -101,7 +101,7 @@ public class LoggedInBookingListFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_logged_in_booking_list, container, false);
 
         constraintLayout = view.findViewById(R.id.constraintLayout);
-        constraintLayout1 = view.findViewById(R.id.bookingTypeLayout);
+        constraintLayout1 = view.findViewById(R.id.constraintLayout1);
         constraintLayout2 = view.findViewById(R.id.constraintLayout2);
         constraintLayout3 = view.findViewById(R.id.constraintLayout3);
         constraintLayout4 = view.findViewById(R.id.constraintLayout4);
@@ -466,7 +466,7 @@ public class LoggedInBookingListFragment extends Fragment {
                 Toast.makeText(
                         myContext,
                         error.toString(),
-                        Toast.LENGTH_SHORT
+                        Toast.LENGTH_LONG
                 ).show();
 
                 success1 = false;
@@ -499,7 +499,7 @@ public class LoggedInBookingListFragment extends Fragment {
                 Toast.makeText(
                         myContext,
                         error.toString(),
-                        Toast.LENGTH_SHORT
+                        Toast.LENGTH_LONG
                 ).show();
 
                 success2 = false;
@@ -532,7 +532,7 @@ public class LoggedInBookingListFragment extends Fragment {
                 Toast.makeText(
                         myContext,
                         error.toString(),
-                        Toast.LENGTH_SHORT
+                        Toast.LENGTH_LONG
                 ).show();
 
                 success3 = false;
@@ -565,7 +565,7 @@ public class LoggedInBookingListFragment extends Fragment {
                 Toast.makeText(
                         myContext,
                         error.toString(),
-                        Toast.LENGTH_SHORT
+                        Toast.LENGTH_LONG
                 ).show();
 
                 success4 = false;
@@ -598,7 +598,7 @@ public class LoggedInBookingListFragment extends Fragment {
                 Toast.makeText(
                         myContext,
                         error.toString(),
-                        Toast.LENGTH_SHORT
+                        Toast.LENGTH_LONG
                 ).show();
 
                 success5 = false;

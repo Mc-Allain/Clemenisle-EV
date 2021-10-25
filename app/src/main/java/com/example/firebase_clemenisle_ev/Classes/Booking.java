@@ -20,9 +20,22 @@ public class Booking {
     public Booking() {
     }
 
+    public Booking(Booking booking) {
+        this.bookingType = booking.getBookingType();
+        this.endStation = booking.getEndStation();
+        this.id = booking.getId();
+        this.message = booking.getMessage();
+        this.schedule = booking.getSchedule();
+        this.paid = booking.isPaid();
+        this.startStation = booking.getStartStation();
+        this.status = booking.getStatus();
+        this.originLat = startStation.getLat();
+        this.originLng = startStation.getLng();
+    }
+
     public Booking(BookingType bookingType, DetailedTouristSpot destinationSpot,
-                            double originLat, double originLng, String id, String message,
-                            String schedule, String status) {
+                   double originLat, double originLng, String id, String message,
+                   String schedule, String status) {
         this.bookingType = bookingType;
         this.destinationSpot = new SimpleTouristSpot(destinationSpot);
         this.originLat = originLat;
@@ -77,6 +90,8 @@ public class Booking {
         this.schedule = schedule;
         this.startStation = startStation;
         this.status = status;
+        this.originLat = startStation.getLat();
+        this.originLng = startStation.getLng();
     }
 
     public BookingType getBookingType() {
@@ -109,6 +124,10 @@ public class Booking {
 
     public String getStatus() {
         return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public List<Route> getRouteList() {

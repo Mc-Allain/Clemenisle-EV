@@ -505,7 +505,7 @@ public class HomeFragment extends Fragment implements
                 Toast.makeText(
                         myContext,
                         error.toString(),
-                        Toast.LENGTH_SHORT
+                        Toast.LENGTH_LONG
                 ).show();
 
                 errorLoading(error.toString());

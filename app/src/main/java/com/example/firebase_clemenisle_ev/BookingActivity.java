@@ -1839,7 +1839,7 @@ public class BookingActivity extends AppCompatActivity implements
                 Toast.makeText(
                         myContext,
                         "Successfully booked a service.",
-                        Toast.LENGTH_LONG
+                        Toast.LENGTH_SHORT
                 ).show();
 
                 proceedToNextActivity(bookingId);
@@ -1885,7 +1885,6 @@ public class BookingActivity extends AppCompatActivity implements
         DatabaseReference bookingListRef = firebaseDatabase.getReference("users")
                 .child(userId).child("bookingList").child(bookingId);
         bookingListRef.setValue(booking).addOnCompleteListener(task -> {
-
             if(task.isSuccessful()) addBookingRoute(bookingId, bookingRouteList, bookingListRef);
             else {
                 Toast.makeText(
@@ -1904,8 +1903,7 @@ public class BookingActivity extends AppCompatActivity implements
         int index = 1;
         for(Route route : bookingRouteList) {
             boolean isLastItem;
-            if(index == bookingRouteList.size()) isLastItem = true;
-            else isLastItem = false;
+            isLastItem = index == bookingRouteList.size();
 
             DatabaseReference routeSpotsRef =
                     bookingListRef.child("routeSpots").child(route.getRouteId());
@@ -1915,20 +1913,11 @@ public class BookingActivity extends AppCompatActivity implements
                                 Toast.makeText(
                                         myContext,
                                         "Successfully booked a tour",
-                                        Toast.LENGTH_LONG
+                                        Toast.LENGTH_SHORT
                                 ).show();
 
                                 proceedToNextActivity(bookingId);
                             }
-                        }
-                        else {
-                            Toast.makeText(
-                                    myContext,
-                                    "Failed to book a tour. Please try again.",
-                                    Toast.LENGTH_LONG
-                            ).show();
-
-                            setDialogScreenEnabled(true);
                         }
                     });
             index++;
@@ -2112,7 +2101,7 @@ public class BookingActivity extends AppCompatActivity implements
                 Toast.makeText(
                         myContext,
                         error.toString(),
-                        Toast.LENGTH_SHORT
+                        Toast.LENGTH_LONG
                 ).show();
 
                 setLogText4p3(error.toString());
@@ -2245,7 +2234,7 @@ public class BookingActivity extends AppCompatActivity implements
                 Toast.makeText(
                         myContext,
                         error.toString(),
-                        Toast.LENGTH_SHORT
+                        Toast.LENGTH_LONG
                 ).show();
 
                 setLogText1(error.toString());
@@ -2298,7 +2287,7 @@ public class BookingActivity extends AppCompatActivity implements
                 Toast.makeText(
                         myContext,
                         error.toString(),
-                        Toast.LENGTH_SHORT
+                        Toast.LENGTH_LONG
                 ).show();
 
                 setLogText2(error.toString());
@@ -2358,7 +2347,7 @@ public class BookingActivity extends AppCompatActivity implements
                 Toast.makeText(
                         myContext,
                         error.toString(),
-                        Toast.LENGTH_SHORT
+                        Toast.LENGTH_LONG
                 ).show();
                 
                 setLogText3(error.toString());
@@ -2432,7 +2421,7 @@ public class BookingActivity extends AppCompatActivity implements
                 Toast.makeText(
                         myContext,
                         error.toString(),
-                        Toast.LENGTH_SHORT
+                        Toast.LENGTH_LONG
                 ).show();
 
                 String logText = failedNearSpotsText + station.getName();
@@ -2524,7 +2513,7 @@ public class BookingActivity extends AppCompatActivity implements
                     Toast.makeText(
                             myContext,
                             error.toString(),
-                            Toast.LENGTH_SHORT
+                            Toast.LENGTH_LONG
                     ).show();
 
 
@@ -2631,7 +2620,7 @@ public class BookingActivity extends AppCompatActivity implements
                 Toast.makeText(
                         myContext,
                         error.toString(),
-                        Toast.LENGTH_SHORT
+                        Toast.LENGTH_LONG
                 ).show();
 
                 errorLoading4p2();
@@ -2670,7 +2659,7 @@ public class BookingActivity extends AppCompatActivity implements
                 Toast.makeText(
                         myContext,
                         error.toString(),
-                        Toast.LENGTH_SHORT
+                        Toast.LENGTH_LONG
                 ).show();
 
                 setLogText5(error.toString());

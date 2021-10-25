@@ -144,7 +144,7 @@ public class MapStationFragment extends Fragment implements MapPlaceAdapter.OnIt
                 Toast.makeText(
                         myContext,
                         error.toString(),
-                        Toast.LENGTH_SHORT
+                        Toast.LENGTH_LONG
                 ).show();
 
                 placeList.clear();

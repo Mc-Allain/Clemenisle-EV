@@ -241,7 +241,7 @@ public class LoggedInUserProfileFragment extends Fragment {
                 Toast.makeText(
                         myContext,
                         "Failed to get the current user",
-                        Toast.LENGTH_SHORT
+                        Toast.LENGTH_LONG
                 ).show();
             }
             else {
