@@ -29,8 +29,16 @@ public class Booking {
         this.paid = booking.isPaid();
         this.startStation = booking.getStartStation();
         this.status = booking.getStatus();
-        this.originLat = startStation.getLat();
-        this.originLng = startStation.getLng();
+
+        this.destinationSpot = booking.getDestinationSpot();
+        if(startStation == null) {
+            this.originLat = booking.getOriginLat();
+            this.originLng = booking.getOriginLng();
+        }
+        else {
+            this.originLat = startStation.getLat();
+            this.originLng = startStation.getLng();
+        }
     }
 
     public Booking(BookingType bookingType, DetailedTouristSpot destinationSpot,

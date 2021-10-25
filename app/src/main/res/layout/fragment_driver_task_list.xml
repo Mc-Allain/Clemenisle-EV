@@ -215,7 +215,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:background="@drawable/corner_layout"
-                    android:backgroundTint="@color/orange"
+                    android:backgroundTint="@color/green"
                     android:fontFamily="@font/ubuntu"
                     android:minWidth="28dp"
                     android:padding="4dp"
