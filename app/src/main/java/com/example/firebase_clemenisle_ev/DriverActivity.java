@@ -1,24 +1,20 @@
 package com.example.firebase_clemenisle_ev;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
-import com.example.firebase_clemenisle_ev.Adapters.BookingAdapter;
 import com.example.firebase_clemenisle_ev.Classes.Booking;
 import com.example.firebase_clemenisle_ev.Classes.DateTimeToString;
 import com.example.firebase_clemenisle_ev.Classes.FirebaseURL;
 import com.example.firebase_clemenisle_ev.Classes.User;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -35,30 +31,28 @@ import java.util.Locale;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
+import androidx.navigation.ui.NavigationUI;
 
 public class DriverActivity extends AppCompatActivity {
 
     private final static String firebaseURL = FirebaseURL.getFirebaseURL();
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance(firebaseURL);
+    FirebaseAuth firebaseAuth;
+    FirebaseUser firebaseUser;
 
-    TextView tvLog;
-    ImageView reloadImage;
-    RecyclerView bookingView;
-    Button exitButton;
-    ProgressBar progressBar;
+    ConstraintLayout headerLayout;
+
+    BottomNavigationView driverNav;
+    NavController driverNavCtrlr;
+    NavHostFragment navHostFragment;
 
     Context myContext;
     Resources myResources;
 
-    String defaultLogText = "No Record";
-
-    BookingAdapter bookingAdapter;
-
-    List<Booking> processingBookingList = new ArrayList<>(),
-            isNotOnTheSpotBookingList = new ArrayList<>(),
-            isNotPaidBookingList = new ArrayList<>();
+    List<Booking> processingBookingList = new ArrayList<>();
 
     DateTimeToString dateTimeToString;
 
@@ -70,12 +64,23 @@ public class DriverActivity extends AppCompatActivity {
     long backPressedTime;
     Toast backToast;
 
-    private void sendDriverModePreferences() {
+    String userId;
+    boolean isLoggedIn = false;
+
+    private void initSharedPreferences() {
+        SharedPreferences sharedPreferences = getSharedPreferences("login", Context.MODE_PRIVATE);
+        isLoggedIn = sharedPreferences.getBoolean("isLoggedIn", false);
+    }
+
+    private void sendLoginPreferences() {
         SharedPreferences sharedPreferences = myContext.getSharedPreferences(
                 "login", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
-        editor.putBoolean("isDriver", false);
+        editor.putBoolean("isLoggedIn", false);
+        editor.putBoolean("remember", false);
+        editor.putString("emailAddress", null);
+        editor.putString("password", null);
         editor.apply();
     }
 
@@ -84,33 +89,84 @@ public class DriverActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_driver);
 
-        tvLog = findViewById(R.id.tvLog);
-        reloadImage = findViewById(R.id.reloadImage);
-        bookingView = findViewById(R.id.bookingView);
-        exitButton = findViewById(R.id.exitButton);
-        progressBar = findViewById(R.id.progressBar);
+        headerLayout = findViewById(R.id.headerLayout);
+        driverNav = findViewById(R.id.bottomNavigationView);
+        driverNav.setBackground(null);
 
         myContext = DriverActivity.this;
         myResources = myContext.getResources();
 
-        try {
-            Glide.with(myContext).load(R.drawable.magnify_4s_256px).into(reloadImage);
-        }
-        catch (Exception ignored) {}
+        initSharedPreferences();
 
-        LinearLayoutManager linearLayout1 = new LinearLayoutManager(myContext, LinearLayoutManager.VERTICAL, false);
-        bookingView.setLayoutManager(linearLayout1);
-        bookingAdapter = new BookingAdapter(myContext, processingBookingList);
-        bookingView.setAdapter(bookingAdapter);
+        firebaseAuth = FirebaseAuth.getInstance();
+        if(isLoggedIn) {
+            firebaseUser = firebaseAuth.getCurrentUser();
+            if(firebaseUser != null) firebaseUser.reload();
+            if(firebaseUser == null) {
+                firebaseAuth.signOut();
+                sendLoginPreferences();
+
+                Toast.makeText(
+                        myContext,
+                        "Failed to get the current user",
+                        Toast.LENGTH_LONG
+                ).show();
+            }
+            else {
+                userId = firebaseUser.getUid();
+
+                Toast.makeText(
+                        myContext,
+                        "You accessed the Driver Module using " + firebaseUser.getEmail(),
+                        Toast.LENGTH_LONG
+                ).show();
+            }
+        }
+
+        navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.fragmentContainerView);
+        if(navHostFragment != null) driverNavCtrlr = navHostFragment.getNavController();
+        NavigationUI.setupWithNavController(driverNav, driverNavCtrlr);
+
+        if(driverNav.getSelectedItemId() == R.id.settingsFragment2)
+            headerLayout.setVisibility(View.GONE);
+        else headerLayout.setVisibility(View.VISIBLE);
 
         getProcessingBooking();
+    }
 
-        exitButton.setOnClickListener(view -> {
-            sendDriverModePreferences();
+    private void getProcessingBooking() {
+        DatabaseReference usersRef = firebaseDatabase.getReference("users");
+        usersRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                processingBookingList.clear();
 
-            Intent intent = new Intent(myContext, MainActivity.class);
-            startActivity(intent);
-            finishAffinity();
+                if(snapshot.exists()) {
+                    for(DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        User thisUser = new User(dataSnapshot);
+                        List<Booking> bookingList = thisUser.getBookingList();
+
+                        for(Booking booking : bookingList) {
+                            if(booking.getStatus().equals("Processing"))
+                                processingBookingList.add(booking);
+                        }
+                    }
+                }
+
+                Collections.sort(processingBookingList, (booking, t1) ->
+                        booking.getId().compareToIgnoreCase(t1.getId()));
+
+                if(processingBookingList.size() > 0) startTimer();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(
+                        myContext,
+                        error.toString(),
+                        Toast.LENGTH_SHORT
+                ).show();
+            }
         });
     }
 
@@ -210,82 +266,6 @@ public class DriverActivity extends AppCompatActivity {
 
     private boolean hasBookingToday(int bookingDay, int bookingMonth, int bookingYear) {
         return (bookingDay == calendarDay && bookingMonth == calendarMonth && bookingYear == calendarYear);
-    }
-
-    private void getProcessingBooking() {
-        DatabaseReference usersRef = firebaseDatabase.getReference("users");
-        usersRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                processingBookingList.clear();
-                isNotOnTheSpotBookingList.clear();
-                isNotPaidBookingList.clear();
-
-                if(snapshot.exists()) {
-                    for(DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                        User thisUser = new User(dataSnapshot);
-                        List<Booking> bookingList = thisUser.getBookingList();
-
-                        for(Booking booking : bookingList) {
-                            if(booking.getStatus().equals("Processing"))
-                                if(booking.getBookingType().getId().equals("BT99"))
-                                    processingBookingList.add(booking);
-                                else if(booking.isPaid()) isNotOnTheSpotBookingList.add(booking);
-                                else isNotPaidBookingList.add(booking);
-                        }
-                    }
-                }
-
-                Collections.sort(isNotPaidBookingList, (booking, t1) ->
-                        booking.getId().compareToIgnoreCase(t1.getId()));
-
-                Collections.sort(isNotOnTheSpotBookingList, (booking, t1) ->
-                        booking.getId().compareToIgnoreCase(t1.getId()));
-
-                Collections.sort(processingBookingList, (booking, t1) ->
-                        booking.getId().compareToIgnoreCase(t1.getId()));
-
-                processingBookingList.addAll(isNotOnTheSpotBookingList);
-                processingBookingList.addAll(isNotPaidBookingList);
-
-                if(processingBookingList.size() > 0) finishLoading();
-                else errorLoading(defaultLogText);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(
-                        myContext,
-                        error.toString(),
-                        Toast.LENGTH_SHORT
-                ).show();
-
-                errorLoading(error.toString());
-            }
-        });
-    }
-
-    private void finishLoading() {
-        startTimer();
-        bookingAdapter.setInDriverMode(true);
-
-        tvLog.setVisibility(View.GONE);
-        reloadImage.setVisibility(View.GONE);
-        progressBar.setVisibility(View.GONE);
-        bookingView.setVisibility(View.VISIBLE);
-    }
-
-    private void errorLoading(String error) {
-        processingBookingList.clear();
-        isNotOnTheSpotBookingList.clear();
-        isNotPaidBookingList.clear();
-        bookingAdapter.notifyDataSetChanged();
-
-        tvLog.setText(error);
-        tvLog.setVisibility(View.VISIBLE);
-        reloadImage.setVisibility(View.VISIBLE);
-        progressBar.setVisibility(View.GONE);
-        bookingView.setVisibility(View.GONE);
     }
 
     @Override

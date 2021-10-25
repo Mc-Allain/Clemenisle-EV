@@ -2,31 +2,27 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/homeFragment"
-        android:title="Home"
-        android:icon="@drawable/ic_baseline_home_24"
+        android:id="@+id/pendingListFragment"
+        android:title="Pending List"
+        android:icon="@drawable/ic_baseline_pending_actions_24"
         app:showAsAction="ifRoom" />
 
     <item
-        android:id="@+id/bookingListFragment"
-        android:title="Booking List"
-        android:icon="@drawable/ic_baseline_book_24"
+        android:id="@+id/driverTaskListFragment"
+        android:title="Driver's Task List"
+        android:icon="@drawable/ic_baseline_electric_rickshaw_24"
         app:showAsAction="ifRoom" />
 
     <item
-        android:id="@+id/placeholder"
-        android:title=""
-        android:enabled="false" />
-
-    <item
-        android:id="@+id/userProfileFragment"
-        android:title="User's Profile"
+        android:id="@+id/loggedInUserProfileFragment"
+        android:title="Driver's Profile"
         android:icon="@drawable/ic_baseline_person_24"
         app:showAsAction="ifRoom" />
 
     <item
-        android:id="@+id/settingsFragment"
+        android:id="@+id/settingsFragment2"
         android:title="Settings"
         android:icon="@drawable/ic_baseline_settings_24"
         app:showAsAction="ifRoom" />
+
 </menu>

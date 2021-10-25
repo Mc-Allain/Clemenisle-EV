@@ -116,22 +116,23 @@ public class TouristSpotAdapter extends RecyclerView.Adapter<TouristSpotAdapter.
         Handler optionHandler = new Handler();
         Runnable optionRunnable = () -> closeOption(buttonLayout, connectingLayout, moreImage, tvOption);
 
-        String id = touristSpots.get(position).getId();
-        String name = touristSpots.get(position).getName();
-        String description = touristSpots.get(position).getDescription();
-        String img = touristSpots.get(position).getImg();
-        int likes = touristSpots.get(position).getLikes();
-        int visits = touristSpots.get(position).getVisits();
-        int books = touristSpots.get(position).getBooks();
-        int comments = touristSpots.get(position).getComments();
-        double lat = touristSpots.get(position).getLat();
-        double lng = touristSpots.get(position).getLng();
-        boolean deactivated = touristSpots.get(position).isDeactivated();
-        List<SimpleTouristSpot> nearSpots = new ArrayList<>(touristSpots.get(position).getNearSpots());
-        List<Station> nearStations = new ArrayList<>(touristSpots.get(position).getNearStations());
+        DetailedTouristSpot detailedTouristSpot = touristSpots.get(position);
+
+        String id = detailedTouristSpot.getId();
+        String name = detailedTouristSpot.getName();
+        String description = detailedTouristSpot.getDescription();
+        String img = detailedTouristSpot.getImg();
+        int likes = detailedTouristSpot.getLikes();
+        int visits = detailedTouristSpot.getVisits();
+        int books = detailedTouristSpot.getBooks();
+        int comments = detailedTouristSpot.getComments();
+        double lat = detailedTouristSpot.getLat();
+        double lng = detailedTouristSpot.getLng();
+        List<SimpleTouristSpot> nearSpots = new ArrayList<>(detailedTouristSpot.getNearSpots());
+        List<Station> nearStations = new ArrayList<>(detailedTouristSpot.getNearStations());
         StringBuilder stations = new StringBuilder();
 
-        SimpleTouristSpot touristSpot = new SimpleTouristSpot(deactivated, id, img, name);
+        SimpleTouristSpot touristSpot = new SimpleTouristSpot(detailedTouristSpot);
 
         boolean isFirst = true;
         for(Station nearStation : nearStations) {

@@ -160,7 +160,7 @@ public class HomeFragment extends Fragment implements
         reloadImage = view.findViewById(R.id.reloadImage);
 
         myContext = getContext();
-        myResources = myContext.getResources();
+        if(myContext != null) myResources = myContext.getResources();
 
         cslInitial = ColorStateList.valueOf(myResources.getColor(R.color.initial));
         cslBlue = ColorStateList.valueOf(myResources.getColor(R.color.blue));

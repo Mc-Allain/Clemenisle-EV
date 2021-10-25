@@ -46,16 +46,17 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
         editor.putBoolean("remember", false);
         editor.putString("emailAddress", null);
         editor.putString("password", null);
+        editor.putBoolean("inDriverModule", false);
 
         editor.apply();
     }
 
-    private void sendDriverModePreferences() {
+    private void sendDriverModePreferences(boolean value) {
         SharedPreferences sharedPreferences = myContext.getSharedPreferences(
                 "login", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
-        editor.putBoolean("isDriver", true);
+        editor.putBoolean("inDriverModule", value);
         editor.putBoolean("remember", true);
         editor.apply();
     }
@@ -146,16 +147,24 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
                     myContext.startActivity(intent);
                     break;
                 }
-                case "Driver Mode": {
-                    sendDriverModePreferences();
+                case "Driver Module": {
+                    sendDriverModePreferences(true);
+
+                    Intent intent = new Intent(myContext, DriverActivity.class);
+                    myContext.startActivity(intent);
+                    ((Activity) myContext).finishAffinity();
+                    break;
+                }
+                case "Exit Driver Module": {
+                    sendDriverModePreferences(false);
 
                     Toast.makeText(
                             myContext,
-                            "You are now accessed the Driver Mode",
+                            "You exited the Driver Module",
                             Toast.LENGTH_LONG
                     ).show();
 
-                    Intent intent = new Intent(myContext, DriverActivity.class);
+                    Intent intent = new Intent(myContext, MainActivity.class);
                     myContext.startActivity(intent);
                     ((Activity) myContext).finishAffinity();
                     break;

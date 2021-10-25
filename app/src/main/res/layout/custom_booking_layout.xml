@@ -211,7 +211,7 @@
             android:textColor="@color/blue"
             android:textSize="18sp"
             android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="@id/extvMessage"
+            app:layout_constraintBottom_toTopOf="@id/extvMessage"
             app:layout_constraintStart_toStartOf="@+id/tvSchedule"
             app:layout_constraintTop_toBottomOf="@+id/tvEndStation2" />
 

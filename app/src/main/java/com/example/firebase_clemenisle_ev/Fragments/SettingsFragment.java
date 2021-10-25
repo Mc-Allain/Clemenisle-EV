@@ -46,18 +46,20 @@ public class SettingsFragment extends Fragment {
             new Setting(R.drawable.ic_baseline_info_24, "About"),
             new Setting(R.drawable.ic_baseline_settings_24, "Preferences"),
             new Setting(R.drawable.ic_baseline_help_24, "Help"),
-            new Setting(R.drawable.ic_baseline_electric_rickshaw_24, "Driver Mode"),
+            new Setting(R.drawable.ic_baseline_electric_rickshaw_24, "Driver Module"),
+            new Setting(R.drawable.ic_baseline_close_24, "Exit Driver Module"),
             new Setting(R.drawable.ic_baseline_logout_24, "Log out")
     );
     List<Setting> settings = new ArrayList<>();
 
     String userId;
-    boolean isLoggedIn = false, isDriver = false;
+    boolean isLoggedIn = false, isDriver = false, inDriverModule = false;
 
     private void initSharedPreferences() {
         SharedPreferences sharedPreferences = myContext
                 .getSharedPreferences("login", Context.MODE_PRIVATE);
         isLoggedIn = sharedPreferences.getBoolean("isLoggedIn", false);
+        inDriverModule = sharedPreferences.getBoolean("inDriverModule", false);
     }
 
     private void sendLoginPreferences() {
@@ -111,24 +113,29 @@ public class SettingsFragment extends Fragment {
         settingsAdapter = new SettingsAdapter(myContext, settings);
         settingsView.setAdapter(settingsAdapter);
 
-        if(userId == null) setSettings();
+        if(userId == null) initSettings();
         else checkIfDriver();
 
         return view;
     }
 
-    private void setSettings() {
+    private void initSettings() {
         settings.clear();
 
         for(Setting setting : settingList) {
-            if(setting.getSettingName().equals("Log out")) {
-                if(isLoggedIn) settings.add(setting);
-            }
-            else if(setting.getSettingName().equals("Driver Mode")) {
-                if(isDriver) settings.add(setting);
-            }
-            else {
-                settings.add(setting);
+            switch (setting.getSettingName()) {
+                case "Log out":
+                    if(isLoggedIn) settings.add(setting);
+                    break;
+                case "Driver Module":
+                    if(isDriver && !inDriverModule) settings.add(setting);
+                    break;
+                case "Exit Driver Module":
+                    if(isDriver && inDriverModule) settings.add(setting);
+                    break;
+                default:
+                    settings.add(setting);
+                    break;
             }
         }
 
@@ -143,7 +150,7 @@ public class SettingsFragment extends Fragment {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         if(snapshot.exists()) isDriver = true;
-                        setSettings();
+                        initSettings();
                     }
 
                     @Override
@@ -154,7 +161,7 @@ public class SettingsFragment extends Fragment {
                                 Toast.LENGTH_LONG
                         ).show();
 
-                        setSettings();
+                        initSettings();
                     }
                 });
     }

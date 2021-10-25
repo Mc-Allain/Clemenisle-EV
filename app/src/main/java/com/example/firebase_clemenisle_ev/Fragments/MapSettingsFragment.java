@@ -101,7 +101,7 @@ public class MapSettingsFragment extends Fragment {
         swMapAutoFocus = view.findViewById(R.id.swMapAutoFocus);
 
         myContext = getContext();
-        myResources = myContext.getResources();
+        if(myContext != null) myResources = myContext.getResources();
 
         colorBlue = myResources.getColor(R.color.blue);
         colorInitial = myResources.getColor(R.color.initial);

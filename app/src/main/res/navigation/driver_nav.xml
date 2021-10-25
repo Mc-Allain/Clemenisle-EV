@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/driver_nav"
+    app:startDestination="@id/pendingListFragment">
+
+    <fragment
+        android:id="@+id/pendingListFragment"
+        android:name="com.example.firebase_clemenisle_ev.Fragments.PendingListFragment"
+        android:label="fragment_pending_list"
+        tools:layout="@layout/fragment_pending_list" />
+    <fragment
+        android:id="@+id/driverTaskListFragment"
+        android:name="com.example.firebase_clemenisle_ev.Fragments.DriverTaskListFragment"
+        android:label="fragment_driver_task_list"
+        tools:layout="@layout/fragment_driver_task_list" />
+    <fragment
+        android:id="@+id/settingsFragment2"
+        android:name="com.example.firebase_clemenisle_ev.Fragments.SettingsFragment"
+        android:label="fragment_settings"
+        tools:layout="@layout/fragment_settings" />
+    <fragment
+        android:id="@+id/loggedInUserProfileFragment"
+        android:name="com.example.firebase_clemenisle_ev.Fragments.LoggedInUserProfileFragment"
+        android:label="fragment_logged_in_user_profile"
+        tools:layout="@layout/fragment_logged_in_user_profile" />
+</navigation>

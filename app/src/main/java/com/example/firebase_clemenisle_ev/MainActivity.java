@@ -198,11 +198,17 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(
                         myContext,
                         "Failed to get the current user",
-                        Toast.LENGTH_SHORT
+                        Toast.LENGTH_LONG
                 ).show();
             }
             else {
                 userId = firebaseUser.getUid();
+
+                Toast.makeText(
+                        myContext,
+                        "You are logged in using " + firebaseUser.getEmail(),
+                        Toast.LENGTH_LONG
+                ).show();
             }
         }
 

@@ -246,6 +246,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
                 List<SimpleTouristSpot> likedSpots = user.getLikedSpots();
                 for(SimpleTouristSpot likedSpot : likedSpots) {
                     if(likedSpot.getId().equals(spotId)) {
+                        badgeLayout.setVisibility(View.VISIBLE);
                         likerImage.setVisibility(View.VISIBLE);
                         likerImage.setOnLongClickListener(view -> {
                             Toast.makeText(

@@ -108,18 +108,19 @@ public class TouristSpotListAdapter extends RecyclerView.Adapter<TouristSpotList
         Handler optionHandler = new Handler();
         Runnable optionRunnable = () -> closeOption(buttonLayout, backgroundLayout, moreImage, tvOption);
 
-        String id = touristSpots.get(position).getId();
-        String name = touristSpots.get(position).getName();
-        String img = touristSpots.get(position).getImg();
-        int likes = touristSpots.get(position).getLikes();
-        int visits = touristSpots.get(position).getVisits();
-        int books = touristSpots.get(position).getBooks();
-        int comments = touristSpots.get(position).getComments();
-        double lat = touristSpots.get(position).getLat();
-        double lng = touristSpots.get(position).getLng();
-        boolean deactivated = touristSpots.get(position).isDeactivated();
+        DetailedTouristSpot detailedTouristSpot = touristSpots.get(position);
 
-        SimpleTouristSpot touristSpot = new SimpleTouristSpot(deactivated, id, img, name);
+        String id = detailedTouristSpot.getId();
+        String name = detailedTouristSpot.getName();
+        String img = detailedTouristSpot.getImg();
+        int likes = detailedTouristSpot.getLikes();
+        int visits = detailedTouristSpot.getVisits();
+        int books = detailedTouristSpot.getBooks();
+        int comments = detailedTouristSpot.getComments();
+        double lat = detailedTouristSpot.getLat();
+        double lng = detailedTouristSpot.getLng();
+
+        SimpleTouristSpot touristSpot = new SimpleTouristSpot(detailedTouristSpot);
 
         try {
             Glide.with(myContext).load(img).
