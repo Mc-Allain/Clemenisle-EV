@@ -127,9 +127,11 @@ public class DriverActivity extends AppCompatActivity {
         if(navHostFragment != null) driverNavCtrlr = navHostFragment.getNavController();
         NavigationUI.setupWithNavController(driverNav, driverNavCtrlr);
 
-        if(driverNav.getSelectedItemId() == R.id.settingsFragment2)
-            headerLayout.setVisibility(View.GONE);
-        else headerLayout.setVisibility(View.VISIBLE);
+        driverNavCtrlr.addOnDestinationChangedListener((controller, destination, arguments) -> {
+            if(driverNav.getSelectedItemId() == R.id.settingsFragment2)
+                headerLayout.setVisibility(View.GONE);
+            else headerLayout.setVisibility(View.VISIBLE);
+        });
 
         getProcessingBooking();
     }
