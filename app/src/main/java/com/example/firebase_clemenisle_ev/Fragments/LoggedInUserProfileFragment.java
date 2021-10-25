@@ -215,8 +215,8 @@ public class LoggedInUserProfileFragment extends Fragment {
 
         progressBar = view.findViewById(R.id.progressBar);
 
-        myContext = inflater.getContext();
-        myResources = myContext.getResources();
+        myContext = getContext();
+        myResources = getResources();
 
         cslInitial = ColorStateList.valueOf(myResources.getColor(R.color.initial));
         cslBlue = ColorStateList.valueOf(myResources.getColor(R.color.blue));

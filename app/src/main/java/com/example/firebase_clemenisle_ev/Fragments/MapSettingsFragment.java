@@ -101,7 +101,7 @@ public class MapSettingsFragment extends Fragment {
         swMapAutoFocus = view.findViewById(R.id.swMapAutoFocus);
 
         myContext = getContext();
-        if(myContext != null) myResources = myContext.getResources();
+        myResources = getResources();
 
         colorBlue = myResources.getColor(R.color.blue);
         colorInitial = myResources.getColor(R.color.initial);
@@ -447,6 +447,10 @@ public class MapSettingsFragment extends Fragment {
                 .getSharedPreferences("mapSetting", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
+        if(value != R.drawable.ic_baseline_tour_24 &&
+                value != R.drawable.ic_baseline_location_on_24)
+            value = R.drawable.ic_baseline_tour_24;
+
         editor.putInt("tsMarkIcon", value);
         editor.apply();
     }
@@ -455,6 +459,10 @@ public class MapSettingsFragment extends Fragment {
         SharedPreferences sharedPreferences = myContext
                 .getSharedPreferences("mapSetting", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        if(value != R.drawable.ic_baseline_ev_station_24 &&
+                value != R.drawable.ic_baseline_location_on_24)
+            value = R.drawable.ic_baseline_ev_station_24;
 
         editor.putInt("sMarkIcon", value);
         editor.apply();

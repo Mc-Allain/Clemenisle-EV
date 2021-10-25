@@ -65,7 +65,7 @@ public class PendingListFragment extends Fragment {
         progressBar = view.findViewById(R.id.progressBar);
 
         myContext = getContext();
-        if(myContext != null) myResources = myContext.getResources();
+        myResources = getResources();
 
         try {
             Glide.with(myContext).load(R.drawable.magnify_4s_256px).into(reloadImage);

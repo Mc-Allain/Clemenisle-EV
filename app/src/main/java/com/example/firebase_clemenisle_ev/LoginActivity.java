@@ -1,21 +1,20 @@
 package com.example.firebase_clemenisle_ev;
 
+import android.os.Bundle;
+
+import com.example.firebase_clemenisle_ev.Adapters.LoginTabFragmentAdapter;
+import com.example.firebase_clemenisle_ev.Fragments.LoginFragment;
+import com.example.firebase_clemenisle_ev.Fragments.RegisterFragment;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.viewpager2.widget.ViewPager2;
-
-import android.os.Bundle;
-
-import com.example.firebase_clemenisle_ev.Fragments.LoginFragment;
-import com.example.firebase_clemenisle_ev.Adapters.LoginTabFragmentAdapter;
-import com.example.firebase_clemenisle_ev.Fragments.RegisterFragment;
 
 public class LoginActivity extends AppCompatActivity implements LoginFragment.TabPosInterface {
 
     ViewPager2 viewPager;
     LoginTabFragmentAdapter tabAdapter;
 
-    LoginFragment loginFragment = new LoginFragment();
     RegisterFragment registerFragment = new RegisterFragment();
 
     int tabPos;
@@ -28,7 +27,7 @@ public class LoginActivity extends AppCompatActivity implements LoginFragment.Ta
         viewPager = findViewById(R.id.viewPager);
 
         FragmentManager fragmentManager = getSupportFragmentManager();
-        tabAdapter = new LoginTabFragmentAdapter(fragmentManager, getLifecycle(), loginFragment, registerFragment);
+        tabAdapter = new LoginTabFragmentAdapter(fragmentManager, getLifecycle(), registerFragment);
         viewPager.setAdapter(tabAdapter);
 
         viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {

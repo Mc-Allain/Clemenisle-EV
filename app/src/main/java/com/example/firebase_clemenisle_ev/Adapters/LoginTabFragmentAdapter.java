@@ -11,22 +11,20 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 public class LoginTabFragmentAdapter extends FragmentStateAdapter {
 
-    LoginFragment loginFragment;
+    LoginFragment loginFragment = new LoginFragment();
     RegisterFragment registerFragment;
 
     public LoginTabFragmentAdapter(@NonNull FragmentManager fragmentManager, @NonNull Lifecycle lifecycle,
-                                   LoginFragment loginFragment, RegisterFragment registerFragment) {
+                                   RegisterFragment registerFragment) {
         super(fragmentManager, lifecycle);
-        this.loginFragment = loginFragment;
         this.registerFragment = registerFragment;
     }
 
     @NonNull
     @Override
     public Fragment createFragment(int position) {
-        if (position == 1) {
+        if (position == 1)
             return registerFragment;
-        }
 
         return loginFragment;
     }

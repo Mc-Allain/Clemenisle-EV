@@ -125,8 +125,8 @@ public class MapFragment extends Fragment {
 
         resetButton = view.findViewById(R.id.resetButton);
 
-        myContext = inflater.getContext();
-        myResources = myContext.getResources();
+        myContext = getContext();
+        myResources = getResources();
 
         initSharedPreferences();
 

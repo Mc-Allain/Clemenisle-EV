@@ -58,7 +58,7 @@ implements MapTouristSpotFragment.OnComboBoxClickListener,
     String name;
 
     int bottom;
-    boolean isPlaceViewShown = false, fromBooking = false, isMapSettingsChanged = false;
+    boolean isPlaceViewShown = false, fromBooking = false;
 
     ColorStateList cslRed, cslBlue;
 

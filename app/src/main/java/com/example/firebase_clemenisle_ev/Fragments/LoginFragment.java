@@ -94,8 +94,8 @@ public class LoginFragment extends Fragment {
         continueButton = view.findViewById(R.id.continueButton);
         progressBar = view.findViewById(R.id.progressBar);
 
-        myContext = inflater.getContext();
-        myResources = myContext.getResources();
+        myContext = getContext();
+        myResources = getResources();
 
         initEmailAddressDialog();
 

@@ -41,7 +41,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:tabGravity="start"
+            app:tabGravity="center"
             app:tabInlineLabel="true"
             app:tabMode="scrollable"
             app:tabTextAppearance="@android:style/TextAppearance.Widget.TabWidget">

@@ -136,8 +136,8 @@ public class LoggedInBookingListFragment extends Fragment {
         reloadImage = view.findViewById(R.id.reloadImage);
         progressBar = view.findViewById(R.id.progressBar);
 
-        myContext = inflater.getContext();
-        myResources = myContext.getResources();
+        myContext = getContext();
+        myResources = getResources();
 
         initSharedPreferences();
 

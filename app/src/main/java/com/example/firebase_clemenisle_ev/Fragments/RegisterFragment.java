@@ -118,8 +118,8 @@ public class RegisterFragment extends Fragment {
 
         progressBar = view.findViewById(R.id.progressBar);
 
-        myContext = inflater.getContext();
-        myResources = myContext.getResources();
+        myContext = getContext();
+        myResources = getResources();
 
         colorGreen = myResources.getColor(R.color.green);
         colorRed = myResources.getColor(R.color.red);
