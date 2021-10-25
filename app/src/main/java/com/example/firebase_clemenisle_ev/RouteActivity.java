@@ -414,7 +414,7 @@ public class RouteActivity extends AppCompatActivity implements
         if(isPaid) paidImage.setVisibility(View.VISIBLE);
         else paidImage.setVisibility(View.GONE);
 
-        paidImage.setColorFilter(color);
+        paidImage.getDrawable().setTint(color);
     }
 
     private void openMap(Station station) {
@@ -445,7 +445,7 @@ public class RouteActivity extends AppCompatActivity implements
         isOptionShown = true;
         moreImage.setEnabled(true);
         moreImage.setImageResource(R.drawable.ic_baseline_close_24);
-        moreImage.setColorFilter(myContext.getResources().getColor(R.color.red));
+        moreImage.getDrawable().setTint(myContext.getResources().getColor(R.color.red));
 
         optionHandler.postDelayed(optionRunnable, 3000);
     }
@@ -466,7 +466,7 @@ public class RouteActivity extends AppCompatActivity implements
         isOptionShown = false;
         moreImage.setEnabled(true);
         moreImage.setImageResource(R.drawable.ic_baseline_more_horiz_24);
-        moreImage.setColorFilter(myContext.getResources().getColor(R.color.black));
+        moreImage.getDrawable().setTint(myContext.getResources().getColor(R.color.black));
     }
 
     private void setTransition(ConstraintLayout constraintLayout) {

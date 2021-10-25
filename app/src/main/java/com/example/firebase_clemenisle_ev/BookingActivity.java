@@ -1134,16 +1134,16 @@ public class BookingActivity extends AppCompatActivity implements
         if(value) {
             progressBar7.setVisibility(View.GONE);
             if(tvCurrentLocation != null) tvCurrentLocation.setTextColor(colorBlue);
-            if(currentLocationImage != null) currentLocationImage.setColorFilter(colorBlue);
+            if(currentLocationImage != null) currentLocationImage.getDrawable().setTint(colorBlue);
             if(tvLocateOnTheSpot != null) tvLocateOnTheSpot.setTextColor(colorBlue);
-            if(locateOnTheSpotImage != null) locateOnTheSpotImage.setColorFilter(colorBlue);
+            if(locateOnTheSpotImage != null) locateOnTheSpotImage.getDrawable().setTint(colorBlue);
         }
         else {
             progressBar7.setVisibility(View.VISIBLE);
             if(tvCurrentLocation != null) tvCurrentLocation.setTextColor(colorInitial);
-            if(currentLocationImage != null) currentLocationImage.setColorFilter(colorInitial);
+            if(currentLocationImage != null) currentLocationImage.getDrawable().setTint(colorInitial);
             if(tvLocateOnTheSpot != null) tvLocateOnTheSpot.setTextColor(colorInitial);
-            if(locateOnTheSpotImage != null) locateOnTheSpotImage.setColorFilter(colorInitial);
+            if(locateOnTheSpotImage != null) locateOnTheSpotImage.getDrawable().setTint(colorInitial);
         }
     }
 
@@ -1959,15 +1959,15 @@ public class BookingActivity extends AppCompatActivity implements
         submitButton2.setEnabled(value);
 
         if(value) {
-            dialogCloseImage.setColorFilter(colorRed);
-            locateImage.setColorFilter(colorBlue);
-            locateImage2.setColorFilter(colorBlue);
+            dialogCloseImage.getDrawable().setTint(colorRed);
+            locateImage.getDrawable().setTint(colorBlue);
+            locateImage2.getDrawable().setTint(colorBlue);
             tvLocate.setTextColor(colorBlue);
             tvLocate2.setTextColor(colorBlue);
 
-            dialog3CloseImage.setColorFilter(colorRed);
-            locateImage3.setColorFilter(colorBlue);
-            locateImage4.setColorFilter(colorBlue);
+            dialog3CloseImage.getDrawable().setTint(colorRed);
+            locateImage3.getDrawable().setTint(colorBlue);
+            locateImage4.getDrawable().setTint(colorBlue);
             tvLocate3.setTextColor(colorBlue);
             tvLocate4.setTextColor(colorBlue);
 
@@ -1975,15 +1975,15 @@ public class BookingActivity extends AppCompatActivity implements
             dialog3ProgressBar.setVisibility(View.GONE);
         }
         else {
-            dialogCloseImage.setColorFilter(colorInitial);
-            locateImage.setColorFilter(colorInitial);
-            locateImage2.setColorFilter(colorInitial);
+            dialogCloseImage.getDrawable().setTint(colorInitial);
+            locateImage.getDrawable().setTint(colorInitial);
+            locateImage2.getDrawable().setTint(colorInitial);
             tvLocate.setTextColor(colorInitial);
             tvLocate2.setTextColor(colorInitial);
 
-            dialog3CloseImage.setColorFilter(colorInitial);
-            locateImage3.setColorFilter(colorInitial);
-            locateImage4.setColorFilter(colorInitial);
+            dialog3CloseImage.getDrawable().setTint(colorInitial);
+            locateImage3.getDrawable().setTint(colorInitial);
+            locateImage4.getDrawable().setTint(colorInitial);
             tvLocate3.setTextColor(colorInitial);
             tvLocate4.setTextColor(colorInitial);
 

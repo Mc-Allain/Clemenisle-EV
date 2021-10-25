@@ -339,11 +339,11 @@ public class LoggedInUserProfileFragment extends Fragment {
         pwNumberCheckImage.setImageResource(R.drawable.ic_baseline_check_circle_24);
         pwSymbolCheckImage.setImageResource(R.drawable.ic_baseline_check_circle_24);
 
-        pwLengthCheckImage.setColorFilter(colorInitial);
-        pwUpperCheckImage.setColorFilter(colorInitial);
-        pwLowerCheckImage.setColorFilter(colorInitial);
-        pwNumberCheckImage.setColorFilter(colorInitial);
-        pwSymbolCheckImage.setColorFilter(colorInitial);
+        pwLengthCheckImage.getDrawable().setTint(colorInitial);
+        pwUpperCheckImage.getDrawable().setTint(colorInitial);
+        pwLowerCheckImage.getDrawable().setTint(colorInitial);
+        pwNumberCheckImage.getDrawable().setTint(colorInitial);
+        pwSymbolCheckImage.getDrawable().setTint(colorInitial);
 
         vPWL = false; vPWU = false; vPWLw = false; vPWN = false; vPWS = false; vCPW = false;
 
@@ -570,8 +570,8 @@ public class LoggedInUserProfileFragment extends Fragment {
         removeButton.setEnabled(value);
         uploadButton.setEnabled(value);
 
-        if(value) profileImageDialogCloseImage.setColorFilter(colorRed);
-        else profileImageDialogCloseImage.setColorFilter(colorInitial);
+        if(value) profileImageDialogCloseImage.getDrawable().setTint(colorRed);
+        else profileImageDialogCloseImage.getDrawable().setTint(colorInitial);
     }
 
     private void initFullNameDialog() {
@@ -781,8 +781,8 @@ public class LoggedInUserProfileFragment extends Fragment {
         tlFirstName.setEnabled(value);
         tlMiddleName.setEnabled(value);
 
-        if(value) fullNameDialogCloseImage.setColorFilter(colorRed);
-        else fullNameDialogCloseImage.setColorFilter(colorInitial);
+        if(value) fullNameDialogCloseImage.getDrawable().setTint(colorRed);
+        else fullNameDialogCloseImage.getDrawable().setTint(colorInitial);
     }
 
     private void setFullNameUpdateStatusToFalse() {
@@ -904,8 +904,8 @@ public class LoggedInUserProfileFragment extends Fragment {
         emailAddressUpdateButton.setEnabled(value);
         tlEmailAddress.setEnabled(value);
 
-        if(value) emailAddressDialogCloseImage.setColorFilter(colorRed);
-        else emailAddressDialogCloseImage.setColorFilter(colorInitial);
+        if(value) emailAddressDialogCloseImage.getDrawable().setTint(colorRed);
+        else emailAddressDialogCloseImage.getDrawable().setTint(colorInitial);
     }
 
     private void updateAccount() {
@@ -1124,65 +1124,65 @@ public class LoggedInUserProfileFragment extends Fragment {
             case 1:
                 if(newPassword.length() >= 6) {
                     pwLengthCheckImage.setImageResource(R.drawable.ic_baseline_check_circle_24);
-                    pwLengthCheckImage.setColorFilter(colorGreen);
+                    pwLengthCheckImage.getDrawable().setTint(colorGreen);
                     tvPWLength.setTextColor(colorGreen);
                     vPWL = true;
                 }
                 else {
                     pwLengthCheckImage.setImageResource(R.drawable.ic_baseline_error_24);
-                    pwLengthCheckImage.setColorFilter(colorRed);
+                    pwLengthCheckImage.getDrawable().setTint(colorRed);
                     tvPWLength.setTextColor(colorRed);
                     vPWL = false;
                 }
 
                 if(newPassword.matches(".*[A-Z].*")) {
                     pwUpperCheckImage.setImageResource(R.drawable.ic_baseline_check_circle_24);
-                    pwUpperCheckImage.setColorFilter(colorGreen);
+                    pwUpperCheckImage.getDrawable().setTint(colorGreen);
                     tvPWUpper.setTextColor(colorGreen);
                     vPWU = true;
                 }
                 else {
                     pwUpperCheckImage.setImageResource(R.drawable.ic_baseline_error_24);
-                    pwUpperCheckImage.setColorFilter(colorRed);
+                    pwUpperCheckImage.getDrawable().setTint(colorRed);
                     tvPWUpper.setTextColor(colorRed);
                     vPWU = false;
                 }
 
                 if(newPassword.matches(".*[a-z].*")) {
                     pwLowerCheckImage.setImageResource(R.drawable.ic_baseline_check_circle_24);
-                    pwLowerCheckImage.setColorFilter(colorGreen);
+                    pwLowerCheckImage.getDrawable().setTint(colorGreen);
                     tvPWLower.setTextColor(colorGreen);
                     vPWLw = true;
                 }
                 else {
                     pwLowerCheckImage.setImageResource(R.drawable.ic_baseline_error_24);
-                    pwLowerCheckImage.setColorFilter(colorRed);
+                    pwLowerCheckImage.getDrawable().setTint(colorRed);
                     tvPWLower.setTextColor(colorRed);
                     vPWLw = false;
                 }
 
                 if(newPassword.matches(".*[0-9].*")) {
                     pwNumberCheckImage.setImageResource(R.drawable.ic_baseline_check_circle_24);
-                    pwNumberCheckImage.setColorFilter(colorGreen);
+                    pwNumberCheckImage.getDrawable().setTint(colorGreen);
                     tvPWNumber.setTextColor(colorGreen);
                     vPWN = true;
                 }
                 else {
                     pwNumberCheckImage.setImageResource(R.drawable.ic_baseline_error_24);
-                    pwNumberCheckImage.setColorFilter(colorRed);
+                    pwNumberCheckImage.getDrawable().setTint(colorRed);
                     tvPWNumber.setTextColor(colorRed);
                     vPWN = false;
                 }
 
                 if(newPassword.matches("[A-Za-z0-9]*")) {
                     pwSymbolCheckImage.setImageResource(R.drawable.ic_baseline_check_circle_24);
-                    pwSymbolCheckImage.setColorFilter(colorGreen);
+                    pwSymbolCheckImage.getDrawable().setTint(colorGreen);
                     tvPWSymbol.setTextColor(colorGreen);
                     vPWS = true;
                 }
                 else {
                     pwSymbolCheckImage.setImageResource(R.drawable.ic_baseline_error_24);
-                    pwSymbolCheckImage.setColorFilter(colorRed);
+                    pwSymbolCheckImage.getDrawable().setTint(colorRed);
                     tvPWSymbol.setTextColor(colorRed);
                     vPWS = false;
                 }
@@ -1275,8 +1275,8 @@ public class LoggedInUserProfileFragment extends Fragment {
         tlPassword.setEnabled(value);
         tlConfirmPassword.setEnabled(value);
 
-        if(value) passwordDialogCloseImage.setColorFilter(colorRed);
-        else passwordDialogCloseImage.setColorFilter(colorInitial);
+        if(value) passwordDialogCloseImage.getDrawable().setTint(colorRed);
+        else passwordDialogCloseImage.getDrawable().setTint(colorInitial);
     }
 
     private void finishPasswordUpdate() {

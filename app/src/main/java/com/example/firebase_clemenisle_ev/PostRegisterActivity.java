@@ -384,7 +384,7 @@ public class PostRegisterActivity extends AppCompatActivity {
         tvActivityName.setTextColor(selectedColor);
         tvCaption.setText(caption);
         tvCaption.setTextColor(selectedColor);
-        activityIconImage.setColorFilter(selectedColor);
+        activityIconImage.getDrawable().setTint(selectedColor);
     }
 
     private long getMSec(int min, int sec) {
@@ -564,12 +564,12 @@ public class PostRegisterActivity extends AppCompatActivity {
         dialogCloseImage.setEnabled(value);
 
         if(value) {
-            closeImage.setColorFilter(colorRed);
-            dialogCloseImage.setColorFilter(colorRed);
+            closeImage.getDrawable().setTint(colorRed);
+            dialogCloseImage.getDrawable().setTint(colorRed);
         }
         else {
-            closeImage.setColorFilter(colorInitial);
-            dialogCloseImage.setColorFilter(colorInitial);
+            closeImage.getDrawable().setTint(colorInitial);
+            dialogCloseImage.getDrawable().setTint(colorInitial);
         }
     }
 }

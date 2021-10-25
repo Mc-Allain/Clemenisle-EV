@@ -191,15 +191,15 @@ public class RegisterFragment extends Fragment {
                 pwNumberCheckImage.setImageResource(R.drawable.ic_baseline_check_circle_24);
                 pwSymbolCheckImage.setImageResource(R.drawable.ic_baseline_check_circle_24);
 
-                pwLengthCheckImage.setColorFilter(colorInitial);
+                pwLengthCheckImage.getDrawable().setTint(colorInitial);
                 tvPWLength.setTextColor(colorInitial);
-                pwUpperCheckImage.setColorFilter(colorInitial);
+                pwUpperCheckImage.getDrawable().setTint(colorInitial);
                 tvPWUpper.setTextColor(colorInitial);
-                pwLowerCheckImage.setColorFilter(colorInitial);
+                pwLowerCheckImage.getDrawable().setTint(colorInitial);
                 tvPWLower.setTextColor(colorInitial);
-                pwNumberCheckImage.setColorFilter(colorInitial);
+                pwNumberCheckImage.getDrawable().setTint(colorInitial);
                 tvPWNumber.setTextColor(colorInitial);
-                pwSymbolCheckImage.setColorFilter(colorInitial);
+                pwSymbolCheckImage.getDrawable().setTint(colorInitial);
                 tvPWSymbol.setTextColor(colorInitial);
 
                 checkNameInput(0);
@@ -615,65 +615,65 @@ public class RegisterFragment extends Fragment {
             case 1:
                 if(password.length() >= 6) {
                     pwLengthCheckImage.setImageResource(R.drawable.ic_baseline_check_circle_24);
-                    pwLengthCheckImage.setColorFilter(colorGreen);
+                    pwLengthCheckImage.getDrawable().setTint(colorGreen);
                     tvPWLength.setTextColor(colorGreen);
                     vPWL = true;
                 }
                 else {
                     pwLengthCheckImage.setImageResource(R.drawable.ic_baseline_error_24);
-                    pwLengthCheckImage.setColorFilter(colorRed);
+                    pwLengthCheckImage.getDrawable().setTint(colorRed);
                     tvPWLength.setTextColor(colorRed);
                     vPWL = false;
                 }
 
                 if(password.matches(".*[A-Z].*")) {
                     pwUpperCheckImage.setImageResource(R.drawable.ic_baseline_check_circle_24);
-                    pwUpperCheckImage.setColorFilter(colorGreen);
+                    pwUpperCheckImage.getDrawable().setTint(colorGreen);
                     tvPWUpper.setTextColor(colorGreen);
                     vPWU = true;
                 }
                 else {
                     pwUpperCheckImage.setImageResource(R.drawable.ic_baseline_error_24);
-                    pwUpperCheckImage.setColorFilter(colorRed);
+                    pwUpperCheckImage.getDrawable().setTint(colorRed);
                     tvPWUpper.setTextColor(colorRed);
                     vPWU = false;
                 }
 
                 if(password.matches(".*[a-z].*")) {
                     pwLowerCheckImage.setImageResource(R.drawable.ic_baseline_check_circle_24);
-                    pwLowerCheckImage.setColorFilter(colorGreen);
+                    pwLowerCheckImage.getDrawable().setTint(colorGreen);
                     tvPWLower.setTextColor(colorGreen);
                     vPWLw = true;
                 }
                 else {
                     pwLowerCheckImage.setImageResource(R.drawable.ic_baseline_error_24);
-                    pwLowerCheckImage.setColorFilter(colorRed);
+                    pwLowerCheckImage.getDrawable().setTint(colorRed);
                     tvPWLower.setTextColor(colorRed);
                     vPWLw = false;
                 }
 
                 if(password.matches(".*[0-9].*")) {
                     pwNumberCheckImage.setImageResource(R.drawable.ic_baseline_check_circle_24);
-                    pwNumberCheckImage.setColorFilter(colorGreen);
+                    pwNumberCheckImage.getDrawable().setTint(colorGreen);
                     tvPWNumber.setTextColor(colorGreen);
                     vPWN = true;
                 }
                 else {
                     pwNumberCheckImage.setImageResource(R.drawable.ic_baseline_error_24);
-                    pwNumberCheckImage.setColorFilter(colorRed);
+                    pwNumberCheckImage.getDrawable().setTint(colorRed);
                     tvPWNumber.setTextColor(colorRed);
                     vPWN = false;
                 }
 
                 if(password.matches("[A-Za-z0-9]*")) {
                     pwSymbolCheckImage.setImageResource(R.drawable.ic_baseline_check_circle_24);
-                    pwSymbolCheckImage.setColorFilter(colorGreen);
+                    pwSymbolCheckImage.getDrawable().setTint(colorGreen);
                     tvPWSymbol.setTextColor(colorGreen);
                     vPWS = true;
                 }
                 else {
                     pwSymbolCheckImage.setImageResource(R.drawable.ic_baseline_error_24);
-                    pwSymbolCheckImage.setColorFilter(colorRed);
+                    pwSymbolCheckImage.getDrawable().setTint(colorRed);
                     tvPWSymbol.setTextColor(colorRed);
                     vPWS = false;
                 }

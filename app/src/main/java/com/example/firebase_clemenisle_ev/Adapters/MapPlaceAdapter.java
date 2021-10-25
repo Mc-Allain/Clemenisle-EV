@@ -73,18 +73,18 @@ public class MapPlaceAdapter extends RecyclerView.Adapter<MapPlaceAdapter.ViewHo
             selectedPlaces.add(place);
             cbName.setChecked(true);
             locateImage.setEnabled(true);
-            locateImage.setColorFilter(colorBlue);
+            locateImage.getDrawable().setTint(colorBlue);
         }
         else {
             if(inSelectedPlaces(place)) {
                 cbName.setChecked(true);
                 locateImage.setEnabled(true);
-                locateImage.setColorFilter(colorBlue);
+                locateImage.getDrawable().setTint(colorBlue);
             }
             else {
                 cbName.setChecked(false);
                 locateImage.setEnabled(false);
-                locateImage.setColorFilter(colorInitial);
+                locateImage.getDrawable().setTint(colorInitial);
             }
         }
 
@@ -92,13 +92,13 @@ public class MapPlaceAdapter extends RecyclerView.Adapter<MapPlaceAdapter.ViewHo
             if(cbName.isChecked()) {
                 selectedPlaces.add(place);
                 locateImage.setEnabled(true);
-                locateImage.setColorFilter(colorBlue);
+                locateImage.getDrawable().setTint(colorBlue);
             }
             else {
                 if(id.equals(initialId)) initialId = null;
                 removeSelectedPlace(place);
                 locateImage.setEnabled(false);
-                locateImage.setColorFilter(colorInitial);
+                locateImage.getDrawable().setTint(colorInitial);
             }
 
             onItemClickListener.sendDataSet(selectedPlaces, type, cbName.isChecked());

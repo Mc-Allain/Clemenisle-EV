@@ -112,7 +112,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
 
             setOnScreenEnabled(true, reportImage, deactivateImage, appealImage, editImage,
                     upVoteImage, downVoteImage);
-            editImage.setColorFilter(colorBlue);
+            editImage.getDrawable().setTint(colorBlue);
 
             try {
                 Glide.with(myContext).load(user.getProfileImage())
@@ -152,10 +152,10 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
                         String status = defaultStatusText;
                         if(appealed) {
                             appealImage.setEnabled(false);
-                            appealImage.setColorFilter(colorInitial);
+                            appealImage.getDrawable().setTint(colorInitial);
                             status = defaultStatusText + " " + appealedtext;
                         }
-                        else appealImage.setColorFilter(colorBlue);
+                        else appealImage.getDrawable().setTint(colorBlue);
 
                         tvCommentStatus.setText(status);
                     }
@@ -176,7 +176,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
                         tvCommentStatus.setText(notActiveText);
 
                         deactivateImage.setImageResource(R.drawable.ic_baseline_comment_24);
-                        deactivateImage.setColorFilter(colorBlue);
+                        deactivateImage.getDrawable().setTint(colorBlue);
 
                         extvComment.setVisibility(View.GONE);
                         voteLayout.setVisibility(View.GONE);
@@ -188,7 +188,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
                         voteLayout.setVisibility(View.VISIBLE);
 
                         deactivateImage.setImageResource(R.drawable.ic_baseline_comments_disabled_24);
-                        deactivateImage.setColorFilter(colorRed);
+                        deactivateImage.getDrawable().setTint(colorRed);
 
                         backgroundLayout.setPadding(0, 0, 0, 0);
                     }
@@ -283,7 +283,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
             else backgroundLayout.setVisibility(View.GONE);
 
             reportImage.setEnabled(true);
-            reportImage.setColorFilter(colorRed);
+            reportImage.getDrawable().setTint(colorRed);
 
             int upVotes = 0, downVotes = 0;
             for(User user1 : users) {
@@ -318,7 +318,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
                     for(Comment comment : reportedComments) {
                         if(comment.getId().equals(spotId) && comment.getUserId().equals(user.getId())) {
                             reportImage.setEnabled(false);
-                            reportImage.setColorFilter(colorInitial);
+                            reportImage.getDrawable().setTint(colorInitial);
                             upVoteImage.setEnabled(false);
                             upVoteImage.getDrawable().setTint(colorInitial);
                             isReported = true;
@@ -470,10 +470,10 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
         downVoteImage.setEnabled(value);
 
         if(!value) {
-            reportImage.setColorFilter(colorInitial);
-            deactivateImage.setColorFilter(colorInitial);
-            appealImage.setColorFilter(colorInitial);
-            editImage.setColorFilter(colorInitial);
+            reportImage.getDrawable().setTint(colorInitial);
+            deactivateImage.getDrawable().setTint(colorInitial);
+            appealImage.getDrawable().setTint(colorInitial);
+            editImage.getDrawable().setTint(colorInitial);
             upVoteImage.getDrawable().setTint(colorInitial);
             downVoteImage.getDrawable().setTint(colorInitial);
         }

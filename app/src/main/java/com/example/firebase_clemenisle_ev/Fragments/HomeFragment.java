@@ -610,14 +610,14 @@ public class HomeFragment extends Fragment implements
         viewModeImage.setEnabled(value);
 
         if(value) {
-            searchImage.setColorFilter(colorBlack);
-            sortImage.setColorFilter(colorBlack);
-            viewModeImage.setColorFilter(colorBlack);
+            searchImage.getDrawable().setTint(colorBlack);
+            sortImage.getDrawable().setTint(colorBlack);
+            viewModeImage.getDrawable().setTint(colorBlack);
         }
         else {
-            searchImage.setColorFilter(colorInitial);
-            sortImage.setColorFilter(colorInitial);
-            viewModeImage.setColorFilter(colorInitial);
+            searchImage.getDrawable().setTint(colorInitial);
+            sortImage.getDrawable().setTint(colorInitial);
+            viewModeImage.getDrawable().setTint(colorInitial);
         }
     }
 

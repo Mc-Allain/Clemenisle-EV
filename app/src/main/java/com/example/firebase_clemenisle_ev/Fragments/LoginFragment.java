@@ -348,8 +348,8 @@ public class LoginFragment extends Fragment {
         submitButton.setEnabled(value);
         dialogCloseImage.setEnabled(value);
 
-        if(value) dialogCloseImage.setColorFilter(colorRed);
-        else dialogCloseImage.setColorFilter(colorInitial);
+        if(value) dialogCloseImage.getDrawable().setTint(colorRed);
+        else dialogCloseImage.getDrawable().setTint(colorInitial);
     }
 
     private void loginAccount() {

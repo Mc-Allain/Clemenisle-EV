@@ -87,13 +87,13 @@ public class OnTheSpotAdapter extends RecyclerView.Adapter<OnTheSpotAdapter.View
             backgroundLayout.setBackgroundColor(colorBlue);
             tvName.setTextColor(colorWhite);
             tvLocate.setTextColor(colorWhite);
-            locateImage.setColorFilter(colorWhite);
+            locateImage.getDrawable().setTint(colorWhite);
         }
         else {
             backgroundLayout.setBackgroundColor(colorWhite);
             tvName.setTextColor(colorBlack);
             tvLocate.setTextColor(colorBlue);
-            locateImage.setColorFilter(colorBlue);
+            locateImage.getDrawable().setTint(colorBlue);
         }
 
         int top = dpToPx(0), bottom = dpToPx(0);

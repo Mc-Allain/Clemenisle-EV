@@ -186,7 +186,7 @@ public class TouristSpotAdapter extends RecyclerView.Adapter<TouristSpotAdapter.
         int color;
         if(!isLiked) color = myResources.getColor(R.color.black);
         else color = myResources.getColor(R.color.blue);
-        likeImage.setColorFilter(color);
+        likeImage.getDrawable().setTint(color);
 
         closeOption(buttonLayout, connectingLayout, moreImage, tvOption);
 
@@ -375,7 +375,7 @@ public class TouristSpotAdapter extends RecyclerView.Adapter<TouristSpotAdapter.
         tvOption.setText("true");
         moreImage.setEnabled(true);
         moreImage.setImageResource(R.drawable.ic_baseline_close_24);
-        moreImage.setColorFilter(myResources.getColor(R.color.red));
+        moreImage.getDrawable().setTint(myResources.getColor(R.color.red));
 
         optionHandler.postDelayed(optionRunnable, 3000);
     }
@@ -398,7 +398,7 @@ public class TouristSpotAdapter extends RecyclerView.Adapter<TouristSpotAdapter.
         tvOption.setText("false");
         moreImage.setEnabled(true);
         moreImage.setImageResource(R.drawable.ic_baseline_more_horiz_24);
-        moreImage.setColorFilter(myResources.getColor(R.color.black));
+        moreImage.getDrawable().setTint(myResources.getColor(R.color.black));
     }
 
     private void setTransition(ConstraintLayout constraintLayout) {

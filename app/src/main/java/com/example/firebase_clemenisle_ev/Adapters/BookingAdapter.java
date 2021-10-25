@@ -227,7 +227,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
             if(isPaid) paidImage.setVisibility(View.VISIBLE);
             else paidImage.setVisibility(View.GONE);
 
-            paidImage.setColorFilter(color);
+            paidImage.getDrawable().setTint(color);
 
             tvLocate.setOnClickListener(view -> openMap(startStation));
 
@@ -479,7 +479,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
         tvOption.setText("true");
         moreImage.setEnabled(true);
         moreImage.setImageResource(R.drawable.ic_baseline_close_24);
-        moreImage.setColorFilter(myContext.getResources().getColor(R.color.red));
+        moreImage.getDrawable().setTint(myContext.getResources().getColor(R.color.red));
 
         optionHandler.postDelayed(optionRunnable, 3000);
     }
@@ -501,7 +501,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
         tvOption.setText("false");
         moreImage.setEnabled(true);
         moreImage.setImageResource(R.drawable.ic_baseline_more_horiz_24);
-        moreImage.setColorFilter(myContext.getResources().getColor(R.color.black));
+        moreImage.getDrawable().setTint(myContext.getResources().getColor(R.color.black));
     }
 
     private void setTransition(ConstraintLayout constraintLayout) {

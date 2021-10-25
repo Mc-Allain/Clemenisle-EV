@@ -91,12 +91,12 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
         settingIconImage.setImageResource(settingIcon);
         tvSettingName.setText(settingName);
 
-        if(settingName.equals("Log out")) {
-            settingIconImage.setColorFilter(colorRed);
+        if(settingName.equals("Log out") || settingName.equals("Exit Driver Module")) {
+            settingIconImage.getDrawable().setTint(colorRed);
             tvSettingName.setTextColor(colorRed);
         }
         else {
-            settingIconImage.setColorFilter(colorBlack);
+            settingIconImage.getDrawable().setTint(colorBlack);
             tvSettingName.setTextColor(colorBlack);
         }
 

@@ -226,17 +226,17 @@ public class MapSettingsFragment extends Fragment {
 
     private void changeTSMarkIcon() {
         tvTSDefault.setTextColor(colorInitial);
-        tsDefaultImage.setColorFilter(colorInitial);
+        tsDefaultImage.getDrawable().setTint(colorInitial);
         tvTSMapPin.setTextColor(colorInitial);
-        tsMapPinImage.setColorFilter(colorInitial);
+        tsMapPinImage.getDrawable().setTint(colorInitial);
 
         if(tsMarkIcon == R.drawable.ic_baseline_tour_24) {
             tvTSDefault.setTextColor(colorBlue);
-            tsDefaultImage.setColorFilter(colorBlue);
+            tsDefaultImage.getDrawable().setTint(colorBlue);
         }
         else {
             tvTSMapPin.setTextColor(colorBlue);
-            tsMapPinImage.setColorFilter(colorBlue);
+            tsMapPinImage.getDrawable().setTint(colorBlue);
         }
     }
 
@@ -256,17 +256,17 @@ public class MapSettingsFragment extends Fragment {
 
     private void changeSMarkIcon() {
         tvSDefault.setTextColor(colorInitial);
-        sDefaultImage.setColorFilter(colorInitial);
+        sDefaultImage.getDrawable().setTint(colorInitial);
         tvSMapPin.setTextColor(colorInitial);
-        sMapPinImage.setColorFilter(colorInitial);
+        sMapPinImage.getDrawable().setTint(colorInitial);
 
         if(sMarkIcon == R.drawable.ic_baseline_ev_station_24) {
             tvSDefault.setTextColor(colorBlue);
-            sDefaultImage.setColorFilter(colorBlue);
+            sDefaultImage.getDrawable().setTint(colorBlue);
         }
         else {
             tvSMapPin.setTextColor(colorBlue);
-            sMapPinImage.setColorFilter(colorBlue);
+            sMapPinImage.getDrawable().setTint(colorBlue);
         }
     }
 
@@ -286,17 +286,17 @@ public class MapSettingsFragment extends Fragment {
 
     private void changeMapType() {
         tvMSDefault.setTextColor(colorInitial);
-        msDefaultImage.setColorFilter(colorInitial);
+        msDefaultImage.getDrawable().setTint(colorInitial);
         tvMSSat.setTextColor(colorInitial);
-        msSatImage.setColorFilter(colorInitial);
+        msSatImage.getDrawable().setTint(colorInitial);
 
         if(mapType == 1) {
             tvMSDefault.setTextColor(colorBlue);
-            msDefaultImage.setColorFilter(colorBlue);
+            msDefaultImage.getDrawable().setTint(colorBlue);
         }
         else if(mapType == 2) {
             tvMSSat.setTextColor(colorBlue);
-            msSatImage.setColorFilter(colorBlue);
+            msSatImage.getDrawable().setTint(colorBlue);
         }
     }
 
@@ -342,7 +342,7 @@ public class MapSettingsFragment extends Fragment {
     }
 
     private void changeSelectedTSColor() {
-        tsColorImage.setColorFilter(tsMarkColor);
+        tsColorImage.getDrawable().setTint(tsMarkColor);
     }
 
     private void openTSColorLayout() {
@@ -390,7 +390,7 @@ public class MapSettingsFragment extends Fragment {
     }
 
     private void changeSelectedSColor() {
-        sColorImage.setColorFilter(sMarkColor);
+        sColorImage.getDrawable().setTint(sMarkColor);
     }
 
     private void openSColorLayout() {

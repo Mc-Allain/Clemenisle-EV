@@ -256,7 +256,7 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
         commentShowingAnimation = defaultValueForAnimation;
 
         sendImage.setEnabled(false);
-        sendImage.setColorFilter(colorInitial);
+        sendImage.getDrawable().setTint(colorInitial);
 
         firebaseAuth = FirebaseAuth.getInstance();
         if(isLoggedIn) {
@@ -402,11 +402,11 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
 
                 if(inputComment.length() > 0) {
                     sendImage.setEnabled(true);
-                    sendImage.setColorFilter(colorBlue);
+                    sendImage.getDrawable().setTint(colorBlue);
                 }
                 else {
                     sendImage.setEnabled(false);
-                    sendImage.setColorFilter(colorInitial);
+                    sendImage.getDrawable().setTint(colorInitial);
                 }
             }
         });
@@ -753,9 +753,9 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
         editImage.setEnabled(value);
 
         if(!value) {
-            deactivateImage.setColorFilter(colorInitial);
-            appealImage.setColorFilter(colorInitial);
-            editImage.setColorFilter(colorInitial);
+            deactivateImage.getDrawable().setTint(colorInitial);
+            appealImage.getDrawable().setTint(colorInitial);
+            editImage.getDrawable().setTint(colorInitial);
         }
     }
 
@@ -904,7 +904,11 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
         commentProgressBar.setVisibility(View.VISIBLE);
         comment.setUserId(senderUserId);
 
-        if(isUpVoted) upVotedCommentsRef.child(spotId).child(senderUserId).removeValue();
+        if(isUpVoted) upVotedCommentsRef.child(spotId).child(senderUserId).removeValue()
+                .addOnCompleteListener(task -> {
+                    updateCommentUI(currentUserComment);
+                    commentProgressBar.setVisibility(View.GONE);
+                });
         else if(isDownVoted) downVotedCommentsRef.child(spotId).child(senderUserId).removeValue();
         if(!isUpVoted) upVotedCommentsRef.child(spotId).child(senderUserId).setValue(comment)
                 .addOnCompleteListener(task -> {
@@ -921,7 +925,11 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
         comment.setUserId(senderUserId);
 
         if(isUpVoted) upVotedCommentsRef.child(spotId).child(senderUserId).removeValue();
-        if(isDownVoted) downVotedCommentsRef.child(spotId).child(senderUserId).removeValue();
+        if(isDownVoted) downVotedCommentsRef.child(spotId).child(senderUserId).removeValue()
+                .addOnCompleteListener(task -> {
+                    updateCommentUI(currentUserComment);
+                    commentProgressBar.setVisibility(View.GONE);
+                });
         if(!isDownVoted) downVotedCommentsRef.child(spotId).child(senderUserId).setValue(comment)
                 .addOnCompleteListener(task -> {
                     updateCommentUI(currentUserComment);
@@ -1056,7 +1064,7 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
 
     private void updateCommentUI(Comment comment) {
         setCommentOnScreenEnabled(true);
-        editImage.setColorFilter(colorBlue);
+        editImage.getDrawable().setTint(colorBlue);
 
         if(isOnScreen) {
             try {
@@ -1075,7 +1083,6 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
         developerImage.setVisibility(View.GONE);
         adminImage.setVisibility(View.GONE);
         driverImage.setVisibility(View.GONE);
-        likerImage.setVisibility(View.GONE);
 
         if(user.isDeveloper()) {
             badgeLayout.setVisibility(View.VISIBLE);
@@ -1113,6 +1120,19 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
                 return false;
             });
         }
+        if(!isLiked) likerImage.setVisibility(View.GONE);
+        else {
+            badgeLayout.setVisibility(View.VISIBLE);
+            likerImage.setVisibility(View.VISIBLE);
+            likerImage.setOnLongClickListener(view -> {
+                Toast.makeText(
+                        myContext,
+                        "Liker",
+                        Toast.LENGTH_SHORT
+                ).show();
+                return false;
+            });
+        }
 
         commentValue = comment.getValue();
         extvComment.setText(commentValue);
@@ -1130,10 +1150,10 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
             String status = defaultStatusText;
             if(comment.isAppealed()) {
                 appealImage.setEnabled(false);
-                appealImage.setColorFilter(colorInitial);
+                appealImage.getDrawable().setTint(colorInitial);
                 status = defaultStatusText + " " + appealedText;
             }
-            else appealImage.setColorFilter(colorBlue);
+            else appealImage.getDrawable().setTint(colorBlue);
 
             tvCommentStatus.setText(status);
         }
@@ -1148,7 +1168,7 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
                 tvCommentStatus.setText(notActiveText);
 
                 deactivateImage.setImageResource(R.drawable.ic_baseline_comment_24);
-                deactivateImage.setColorFilter(colorBlue);
+                deactivateImage.getDrawable().setTint(colorBlue);
                 currentDeactivateText = activateText;
             }
             else {
@@ -1156,7 +1176,7 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
                 tvCommentStatus.setText(defaultStatusText);
 
                 deactivateImage.setImageResource(R.drawable.ic_baseline_comments_disabled_24);
-                deactivateImage.setColorFilter(colorRed);
+                deactivateImage.getDrawable().setTint(colorRed);
                 currentDeactivateText = deactivateText;
             }
         }
@@ -1364,7 +1384,7 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
         isOptionShown = true;
         moreImage.setEnabled(true);
         moreImage.setImageResource(R.drawable.ic_baseline_close_24);
-        moreImage.setColorFilter(myContext.getResources().getColor(R.color.red));
+        moreImage.getDrawable().setTint(myContext.getResources().getColor(R.color.red));
 
         optionRunnable = () -> closeOption();
 
@@ -1388,7 +1408,7 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
         isOptionShown = false;
         moreImage.setEnabled(true);
         moreImage.setImageResource(R.drawable.ic_baseline_more_horiz_24);
-        moreImage.setColorFilter(myContext.getResources().getColor(R.color.black));
+        moreImage.getDrawable().setTint(myContext.getResources().getColor(R.color.black));
     }
 
     private void setTransition(ConstraintLayout constraintLayout) {
@@ -1565,23 +1585,9 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
         isLiked = isInLikedSpots(selectedSpot);
 
         int color;
-        if(!isLiked) {
-            color = myResources.getColor(R.color.black);
-            likerImage.setVisibility(View.GONE);
-        }
-        else {
-            color = myResources.getColor(R.color.blue);
-            likerImage.setVisibility(View.VISIBLE);
-            likerImage.setOnLongClickListener(view -> {
-                Toast.makeText(
-                        myContext,
-                        "Liker",
-                        Toast.LENGTH_SHORT
-                ).show();
-                return false;
-            });
-        }
-        likeImage.setColorFilter(color);
+        if(!isLiked) color = myResources.getColor(R.color.black);
+        else color = myResources.getColor(R.color.blue);
+        likeImage.getDrawable().setTint(color);
 
         likeImage.setEnabled(true);
 

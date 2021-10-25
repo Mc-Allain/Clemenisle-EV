@@ -126,14 +126,14 @@ public class BookingRouteAdapter extends RecyclerView.Adapter<BookingRouteAdapte
                 tvEndStationName.setTextColor(colorWhite);
                 tvSpotCount.setTextColor(colorWhite);
                 tvLocate.setTextColor(colorWhite);
-                locateImage.setColorFilter(colorWhite);
+                locateImage.getDrawable().setTint(colorWhite);
             }
             else {
                 backgroundLayout.setBackgroundColor(colorWhite);
                 tvEndStationName.setTextColor(colorBlack);
                 tvSpotCount.setTextColor(colorBlack);
                 tvLocate.setTextColor(colorBlue);
-                locateImage.setColorFilter(colorBlue);
+                locateImage.getDrawable().setTint(colorBlue);
             }
         }
         else {

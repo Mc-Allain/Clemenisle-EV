@@ -94,7 +94,7 @@ implements MapTouristSpotFragment.OnComboBoxClickListener,
         mapFragment.setArguments(bundle);
 
         fab = findViewById(R.id.floatingActionButton);
-        fab.setColorFilter(myResources.getColor(R.color.white));
+        fab.getDrawable().setTint(myResources.getColor(R.color.white));
 
         FragmentManager fragmentManager = getSupportFragmentManager();
 
@@ -136,7 +136,7 @@ implements MapTouristSpotFragment.OnComboBoxClickListener,
             transition2(constraintSet);
             transition3(constraintSet);
 
-            fab.setColorFilter(myResources.getColor(R.color.white));
+            fab.getDrawable().setTint(myResources.getColor(R.color.white));
             isPlaceViewShown = !isPlaceViewShown;
             fab.setEnabled(true);
         });
