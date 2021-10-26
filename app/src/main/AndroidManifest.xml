@@ -10,25 +10,33 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.FirebaseClemenisleEV">
         <activity
-            android:name=".QRCodeActivity"
+            android:name=".Classes.Capture"
+            android:screenOrientation="portrait"
+            android:stateNotNeeded="true"
+            android:theme="@style/zxing_CaptureTheme"
             android:exported="true" />
         <activity
             android:name=".DriverActivity"
+            android:screenOrientation="portrait"
             android:exported="true" />
         <activity
             android:name=".OnTheSpotActivity"
+            android:screenOrientation="portrait"
             android:exported="true" />
         <activity
             android:name=".PreferenceActivity"
+            android:screenOrientation="portrait"
             android:exported="true" />
         <activity
             android:name=".HelpActivity"
+            android:screenOrientation="portrait"
             android:exported="true" />
         <activity
             android:name=".WebViewActivity"
             android:exported="true" />
         <activity
             android:name=".AppStatusActivity"
+            android:screenOrientation="portrait"
             android:exported="true" />
         <activity
             android:name=".AboutActivity"
@@ -83,10 +91,11 @@
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
     </application>
+
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.CAMERA" />
 
 </manifest>

@@ -1,5 +1,6 @@
 package com.example.firebase_clemenisle_ev;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
@@ -31,6 +32,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.firebase_clemenisle_ev.Adapters.RouteAdapter;
 import com.example.firebase_clemenisle_ev.Classes.Booking;
+import com.example.firebase_clemenisle_ev.Classes.Capture;
 import com.example.firebase_clemenisle_ev.Classes.FirebaseURL;
 import com.example.firebase_clemenisle_ev.Classes.Route;
 import com.example.firebase_clemenisle_ev.Classes.Station;
@@ -46,6 +48,8 @@ import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
 import com.ms.square.android.expandabletextview.ExpandableTextView;
 
@@ -53,6 +57,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
@@ -364,6 +369,9 @@ public class RouteActivity extends AppCompatActivity implements
                                     passImage.setVisibility(View.VISIBLE);
                                     tvCheck.setVisibility(View.VISIBLE);
                                     checkImage.setVisibility(View.VISIBLE);
+
+                                    tvCheck.setOnClickListener(view -> scanQRCode());
+                                    checkImage.setOnClickListener(view -> scanQRCode());
                                 }
 
                                 return;
@@ -469,6 +477,41 @@ public class RouteActivity extends AppCompatActivity implements
         dialog.setCanceledOnTouchOutside(false);
     }
 
+    @SuppressWarnings("deprecation")
+    public void scanQRCode() {
+        IntentIntegrator intentIntegrator = new IntentIntegrator((Activity) myContext);
+        intentIntegrator.setPrompt("Press volume up key to toggle flash.");
+        intentIntegrator.setBeepEnabled(true);
+        intentIntegrator.setOrientationLocked(false);
+        intentIntegrator.setCaptureActivity(Capture.class);
+        intentIntegrator.initiateScan();
+    }
+
+    @Override
+    @SuppressWarnings("deprecation")
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        IntentResult intentResult = IntentIntegrator.parseActivityResult(
+                requestCode, resultCode, data
+        );
+
+        if(intentResult.getContents() != null) {
+            Toast.makeText(
+                    myContext,
+                    intentResult.getContents(),
+                    Toast.LENGTH_LONG
+            ).show();
+        }
+        else {
+            Toast.makeText(
+                    myContext,
+                    "There is no QR Code scanned",
+                    Toast.LENGTH_LONG
+            ).show();
+        }
+    }
+
     private void initQRCodeDialog() {
         qrCodeDialog = new Dialog(myContext);
         qrCodeDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -479,7 +522,7 @@ public class RouteActivity extends AppCompatActivity implements
 
         qrCodeDialogCloseImage.setOnClickListener(view -> qrCodeDialog.dismiss());
 
-        qrCodeDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
+        qrCodeDialog.getWindow().setLayout(ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
         qrCodeDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
     }

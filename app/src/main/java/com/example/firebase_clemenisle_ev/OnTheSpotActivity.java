@@ -33,6 +33,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.Target;
 import com.example.firebase_clemenisle_ev.Classes.Booking;
+import com.example.firebase_clemenisle_ev.Classes.Capture;
 import com.example.firebase_clemenisle_ev.Classes.FirebaseURL;
 import com.example.firebase_clemenisle_ev.Classes.Route;
 import com.example.firebase_clemenisle_ev.Classes.SimpleTouristSpot;
@@ -50,6 +51,8 @@ import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
 import com.ms.square.android.expandabletextview.ExpandableTextView;
 
@@ -124,6 +127,8 @@ public class OnTheSpotActivity extends AppCompatActivity {
 
     Dialog qrCodeDialog;
     ImageView qrCodeDialogCloseImage, qrCodeImage;
+
+    boolean isScanning = false;
 
     private void initSharedPreferences() {
         SharedPreferences sharedPreferences = myContext
@@ -366,6 +371,9 @@ public class OnTheSpotActivity extends AppCompatActivity {
                                     passImage.setVisibility(View.VISIBLE);
                                     tvCheck.setVisibility(View.VISIBLE);
                                     checkImage.setVisibility(View.VISIBLE);
+
+                                    tvCheck.setOnClickListener(view -> scanQRCode());
+                                    checkImage.setOnClickListener(view -> scanQRCode());
                                 }
 
                                 return;
@@ -379,6 +387,51 @@ public class OnTheSpotActivity extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError error) {
             }
         });
+    }
+
+    @SuppressWarnings("deprecation")
+    public void scanQRCode() {
+        IntentIntegrator intentIntegrator = new IntentIntegrator((Activity) myContext);
+        intentIntegrator.setPrompt("Press volume up key to toggle flash.");
+        intentIntegrator.setBeepEnabled(true);
+        intentIntegrator.setOrientationLocked(false);
+        intentIntegrator.setCaptureActivity(Capture.class);
+        intentIntegrator.initiateScan();
+        isScanning = true;
+    }
+
+    @Override
+    @SuppressWarnings("deprecation")
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(isScanning) {
+            IntentResult intentResult = IntentIntegrator.parseActivityResult(
+                    requestCode, resultCode, data
+            );
+
+            if(intentResult.getContents() != null) {
+                Toast.makeText(
+                        myContext,
+                        intentResult.getContents(),
+                        Toast.LENGTH_LONG
+                ).show();
+            }
+            else {
+                Toast.makeText(
+                        myContext,
+                        "There is no QR Code scanned",
+                        Toast.LENGTH_LONG
+                ).show();
+            }
+
+            isScanning = false;
+        }
+        else {
+            if(resultCode == RESULT_OK && requestCode == MAP_SETTINGS_REQUEST) {
+                mapFragment.mapSettingsRequestResult();
+            }
+        }
     }
 
     private void takeTask(Booking booking) {
@@ -463,14 +516,6 @@ public class OnTheSpotActivity extends AppCompatActivity {
         ((Activity) myContext).startActivityForResult(intent, MAP_SETTINGS_REQUEST);
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if(resultCode == RESULT_OK && requestCode == MAP_SETTINGS_REQUEST) {
-            mapFragment.mapSettingsRequestResult();
-        }
-    }
-
     private void initBookingAlertDialog() {
         dialog = new Dialog(myContext);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -500,7 +545,7 @@ public class OnTheSpotActivity extends AppCompatActivity {
 
         qrCodeDialogCloseImage.setOnClickListener(view -> qrCodeDialog.dismiss());
 
-        qrCodeDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
+        qrCodeDialog.getWindow().setLayout(ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
         qrCodeDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
     }

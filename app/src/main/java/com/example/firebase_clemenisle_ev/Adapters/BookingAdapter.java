@@ -88,6 +88,8 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
     Dialog qrCodeDialog;
     ImageView qrCodeDialogCloseImage, qrCodeImage;
 
+    OnScanQRCodeListener onScanQRCodeListener;
+
     public void setInDriverMode(boolean inDriverMode) {
         this.inDriverMode = inDriverMode;
         notifyDataSetChanged();
@@ -380,7 +382,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
 
         qrCodeDialogCloseImage.setOnClickListener(view -> qrCodeDialog.dismiss());
 
-        qrCodeDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
+        qrCodeDialog.getWindow().setLayout(ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
         qrCodeDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
     }
@@ -507,6 +509,9 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                                     passImage.setVisibility(View.VISIBLE);
                                     tvCheck.setVisibility(View.VISIBLE);
                                     checkImage.setVisibility(View.VISIBLE);
+
+                                    tvCheck.setOnClickListener(view -> onScanQRCodeListener.scanQRCode());
+                                    checkImage.setOnClickListener(view -> onScanQRCodeListener.scanQRCode());
                                 }
 
                                 return;
@@ -520,6 +525,14 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
             public void onCancelled(@NonNull DatabaseError error) {
             }
         });
+    }
+
+    public interface OnScanQRCodeListener {
+        void scanQRCode();
+    }
+
+    public void setOnScanQRCodeListener(OnScanQRCodeListener onScanQRCodeListener) {
+        this.onScanQRCodeListener = onScanQRCodeListener;
     }
 
     private void takeTask(Booking booking, String passengerUserId) {

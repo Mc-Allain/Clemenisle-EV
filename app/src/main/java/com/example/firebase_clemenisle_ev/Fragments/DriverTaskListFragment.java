@@ -18,6 +18,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.firebase_clemenisle_ev.Adapters.BookingAdapter;
 import com.example.firebase_clemenisle_ev.Classes.Booking;
+import com.example.firebase_clemenisle_ev.Classes.Capture;
 import com.example.firebase_clemenisle_ev.Classes.FirebaseURL;
 import com.example.firebase_clemenisle_ev.R;
 import com.google.firebase.auth.FirebaseAuth;
@@ -27,6 +28,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.zxing.integration.android.IntentIntegrator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +40,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class DriverTaskListFragment extends Fragment {
+public class DriverTaskListFragment extends Fragment implements BookingAdapter.OnScanQRCodeListener {
 
     private final static String firebaseURL = FirebaseURL.getFirebaseURL();
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance(firebaseURL);
@@ -162,6 +164,7 @@ public class DriverTaskListFragment extends Fragment {
         upcomingView.setLayoutManager(linearLayout1);
         adapter1 = new BookingAdapter(myContext, bookingList1);
         upcomingView.setAdapter(adapter1);
+        adapter1.setOnScanQRCodeListener(this);
 
         LinearLayoutManager linearLayout2 = new LinearLayoutManager(myContext, LinearLayoutManager.VERTICAL, false);
         requestView.setLayoutManager(linearLayout2);
@@ -245,6 +248,16 @@ public class DriverTaskListFragment extends Fragment {
         });
 
         return view;
+    }
+
+    @SuppressWarnings("deprecation")
+    public void scanQRCode() {
+        IntentIntegrator intentIntegrator = new IntentIntegrator(getActivity());
+        intentIntegrator.setPrompt("Press volume up key to toggle flash.");
+        intentIntegrator.setBeepEnabled(true);
+        intentIntegrator.setOrientationLocked(false);
+        intentIntegrator.setCaptureActivity(Capture.class);
+        intentIntegrator.initiateScan();
     }
 
     private void connectConstraintBottom() {
