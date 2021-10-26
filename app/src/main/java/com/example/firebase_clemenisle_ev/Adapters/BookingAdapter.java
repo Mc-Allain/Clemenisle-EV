@@ -319,7 +319,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
         }
         else {
             userInfoLayout.setVisibility(View.GONE);
-            driverInfoLayout.setVisibility(View.VISIBLE);
+            driverInfoLayout.setVisibility(View.GONE);
 
             tvViewQR.setVisibility(View.VISIBLE);
             viewQRImage.setVisibility(View.VISIBLE);
@@ -328,7 +328,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
             viewQRImage.setOnClickListener(view -> viewQRCode(bookingId));
 
             extvMessage.setText(null);
-            getDriverInfo(bookingId, tvDriverFullName, driverProfileImage);
+            getDriverInfo(bookingId, tvDriverFullName, driverProfileImage, driverInfoLayout);
         }
 
         int top = dpToPx(4), bottom = dpToPx(4);
@@ -353,7 +353,8 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
         backgroundLayout.setLayoutParams(layoutParams);
     }
 
-    private void getDriverInfo(String bookingId, TextView tvDriverFullName, ImageView driverProfileImage) {
+    private void getDriverInfo(String bookingId, TextView tvDriverFullName,
+                               ImageView driverProfileImage, ConstraintLayout driverInfoLayout) {
         usersRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -374,6 +375,9 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                                             .into(driverProfileImage);
                                 }
                                 catch (Exception ignored) {}
+
+                                driverInfoLayout.setVisibility(View.VISIBLE);
+
                                 return;
                             }
                         }

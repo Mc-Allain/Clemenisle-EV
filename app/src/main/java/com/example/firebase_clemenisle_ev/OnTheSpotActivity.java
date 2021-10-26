@@ -316,7 +316,7 @@ public class OnTheSpotActivity extends AppCompatActivity {
         }
         else {
             userInfoLayout.setVisibility(View.GONE);
-            driverInfoLayout.setVisibility(View.VISIBLE);
+            driverInfoLayout.setVisibility(View.GONE);
 
             tvViewQR.setVisibility(View.VISIBLE);
             viewQRImage.setVisibility(View.VISIBLE);
@@ -352,6 +352,10 @@ public class OnTheSpotActivity extends AppCompatActivity {
                                             .into(driverProfileImage);
                                 }
                                 catch (Exception ignored) {}
+
+                                driverUserId = thisUser.getId();
+                                driverInfoLayout.setVisibility(View.VISIBLE);
+
                                 return;
                             }
                         }
@@ -897,14 +901,31 @@ public class OnTheSpotActivity extends AppCompatActivity {
     }
 
     private void cancelBooking() {
-        DatabaseReference usersRef = firebaseDatabase.getReference("users").child(userId)
-                .child("bookingList").child(bookingId).child("status");
-        usersRef.setValue("Cancelled")
+        String prevStatus = status;
+        usersRef.child(userId).child("bookingList").child(bookingId).child("status").setValue("Cancelled")
                 .addOnCompleteListener(task -> {
                     progressBar.setVisibility(View.GONE);
 
                     if(task.isSuccessful()) {
-                        onBackPressed();
+                        if(prevStatus.equals("Booked")) {
+                            usersRef.child(driverUserId).child("taskList").child(bookingId).
+                                    child("status").setValue("Failed").addOnCompleteListener(task1 -> {
+                                        if(task1.isSuccessful()) onBackPressed();
+                                        else {
+                                            usersRef.child(userId).child("bookingList").child(bookingId).
+                                                    child("status").setValue(prevStatus);
+
+                                            errorToast = Toast.makeText(myContext,
+                                                    "Failed to cancel the booking. Please try again.",
+                                                    Toast.LENGTH_LONG);
+                                            errorToast.show();
+
+                                            cancelButton.setEnabled(true);
+                                            cancelButton.setText(cancelButtonText);
+                                        }
+                                    });
+                        }
+                        else onBackPressed();
                     }
                     else {
                         errorToast = Toast.makeText(myContext,

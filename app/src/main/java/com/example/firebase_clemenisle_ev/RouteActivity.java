@@ -306,7 +306,7 @@ public class RouteActivity extends AppCompatActivity implements
         }
         else {
             userInfoLayout.setVisibility(View.GONE);
-            driverInfoLayout.setVisibility(View.VISIBLE);
+            driverInfoLayout.setVisibility(View.GONE);
 
             tvViewQR.setVisibility(View.VISIBLE);
             viewQRImage.setVisibility(View.VISIBLE);
@@ -342,6 +342,9 @@ public class RouteActivity extends AppCompatActivity implements
                                             .into(driverProfileImage);
                                 }
                                 catch (Exception ignored) {}
+
+                                driverInfoLayout.setVisibility(View.VISIBLE);
+
                                 return;
                             }
                         }
