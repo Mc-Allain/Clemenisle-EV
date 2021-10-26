@@ -200,7 +200,10 @@ public class DateTimeToString {
 
     private String getRawHourFromFormattedHour() {
         if(_12HrFormat > 0) {
-            if(timeMode.equals("PM")) _12HrFormat += 12;
+            if(_12HrFormat == 12 && timeMode.equals("AM"))
+                _12HrFormat = 0;
+            if(_12HrFormat != 12 && timeMode.equals("PM"))
+                _12HrFormat += 12;
             return String.valueOf(_12HrFormat);
         }
         return "Invalid Time";

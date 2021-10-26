@@ -396,6 +396,11 @@ public class MainActivity extends AppCompatActivity {
         }.start();
     }
 
+    private void setBookingStatusToFailed(String bookingId) {
+        usersRef.child(userId).child("bookingList").
+                child(bookingId).child("status").setValue("Failed");
+    }
+
     private void checkBooking(Booking booking) {
         dateTimeToString = new DateTimeToString();
         dateTimeToString.setFormattedSchedule(booking.getSchedule());
@@ -411,9 +416,8 @@ public class MainActivity extends AppCompatActivity {
                 (bookingMonth < calendarMonth && bookingYear == calendarYear) ||
                 (bookingDay < calendarDay && bookingMonth == calendarMonth && bookingYear == calendarYear)) {
 
-            usersRef.child(userId).child("bookingList").
-                    child(booking.getId()).child("status").setValue("Failed");
-            changeTaskStatusToFailed(booking.getId());
+            setBookingStatusToFailed(booking.getId());
+            setTaskStatusToFailed(booking.getId());
         }
 
         checkingForBookingNotification(booking, bookingDay, bookingMonth, bookingYear);
@@ -475,21 +479,19 @@ public class MainActivity extends AppCompatActivity {
         if(booking.getStatus().equals("Processing") &&
                 !booking.getBookingType().getId().equals("BT99") &&
                 (hrDifference < 0 || (hrDifference == 0 && minDifference == 0)))
-            usersRef.child(userId).child("bookingList").
-                    child(booking.getId()).child("status").setValue("Failed");
+            setBookingStatusToFailed(booking.getId());
     }
 
     private void setOnTheSpotBookingStatusToFailed(Booking booking, int hrDifference, int minDifference) {
-        if(booking.getStatus().equals("Booked") &&
+        if(booking.getStatus().equals("Processing") &&
                 booking.getBookingType().getId().equals("BT99") &&
                 (hrDifference < -1 || (hrDifference == -1 && minDifference <= 50))) {
-            usersRef.child(userId).child("bookingList").
-                    child(booking.getId()).child("status").setValue("Failed");
-            changeTaskStatusToFailed(booking.getId());
+            setBookingStatusToFailed(booking.getId());
+            setTaskStatusToFailed(booking.getId());
         }
     }
 
-    private void changeTaskStatusToFailed(String bookingId) {
+    private void setTaskStatusToFailed(String bookingId) {
         usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {

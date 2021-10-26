@@ -209,6 +209,11 @@ public class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.ViewHolder> 
         usersRef.child("visited").setValue(false);
     }
 
+    public void setLatest(boolean latest) {
+        isLatest = latest;
+        notifyDataSetChanged();
+    }
+
     public void setStatus(String status) {
         this.status = status;
         notifyDataSetChanged();

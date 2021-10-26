@@ -99,7 +99,6 @@ public class OnTheSpotActivity extends AppCompatActivity {
 
     String bookingId, schedule, typeName, price, status, message;
     LatLng originLocation, destinationSpotLocation;
-    boolean isLatest;
 
     SimpleTouristSpot destinationSpot;
 
@@ -197,7 +196,6 @@ public class OnTheSpotActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         bookingId = intent.getStringExtra("bookingId");
-        isLatest = intent.getBooleanExtra("isLatest", false);
         inDriverMode = intent.getBooleanExtra("inDriverMode", false);
 
         isOnScreen = true;
@@ -215,6 +213,9 @@ public class OnTheSpotActivity extends AppCompatActivity {
                 if(inDriverMode) {
                     driverUserId = firebaseUser.getUid();
                     userId = intent.getStringExtra("userId");
+                    isScanning = intent.getBooleanExtra("isScanning", false);
+
+                    if(isScanning) scanQRCode();
                 }
                 else userId = firebaseUser.getUid();
             }
@@ -375,6 +376,14 @@ public class OnTheSpotActivity extends AppCompatActivity {
                                     tvCheck.setOnClickListener(view -> scanQRCode());
                                     checkImage.setOnClickListener(view -> scanQRCode());
                                 }
+                                else {
+                                    tvDriver.setVisibility(View.GONE);
+                                    driverImage.setVisibility(View.GONE);
+                                    tvPass.setVisibility(View.GONE);
+                                    passImage.setVisibility(View.GONE);
+                                    tvCheck.setVisibility(View.GONE);
+                                    checkImage.setVisibility(View.GONE);
+                                }
 
                                 return;
                             }
@@ -533,7 +542,7 @@ public class OnTheSpotActivity extends AppCompatActivity {
     private void initBookingAlertDialog() {
         dialog = new Dialog(myContext);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setContentView(R.layout.dialog_booking_alert_layout);
+        dialog.setContentView(R.layout.dialog_on_the_spot_booking_alert_layout);
 
         dialogCloseImage = dialog.findViewById(R.id.dialogCloseImage);
         tvMessage = dialog.findViewById(R.id.tvMessage);

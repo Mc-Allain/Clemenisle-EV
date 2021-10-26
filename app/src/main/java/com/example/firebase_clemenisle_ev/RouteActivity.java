@@ -92,12 +92,13 @@ public class RouteActivity extends AppCompatActivity implements
 
     String userId, driverUserId;
 
-    boolean isLoggedIn = false, inDriverMode = false;
+    boolean isLoggedIn = false, inDriverMode = false, isScanning;
 
     DatabaseReference bookingListRef;
 
     String bookingId, schedule, typeName, price, startStationName, endStationName, status, message;
     boolean isLatest, isPaid;
+    String prevStatus;
 
     Station startStation, endStation;
 
@@ -187,8 +188,9 @@ public class RouteActivity extends AppCompatActivity implements
 
         Intent intent = getIntent();
         bookingId = intent.getStringExtra("bookingId");
-        isLatest = intent.getBooleanExtra("isLatest", false);
         inDriverMode = intent.getBooleanExtra("inDriverMode", false);
+        isLatest = intent.getBooleanExtra("isLatest", false);
+        if(!inDriverMode) prevStatus = intent.getStringExtra("status");
 
         isOnScreen = true;
 
@@ -205,6 +207,9 @@ public class RouteActivity extends AppCompatActivity implements
                 if(inDriverMode) {
                     driverUserId = firebaseUser.getUid();
                     userId = intent.getStringExtra("userId");
+                    isScanning = intent.getBooleanExtra("isScanning", false);
+
+                    if(isScanning) scanQRCode();
                 }
                 else userId = firebaseUser.getUid();
             }
@@ -373,6 +378,14 @@ public class RouteActivity extends AppCompatActivity implements
 
                                     tvCheck.setOnClickListener(view -> scanQRCode());
                                     checkImage.setOnClickListener(view -> scanQRCode());
+                                }
+                                else {
+                                    tvDriver.setVisibility(View.GONE);
+                                    driverImage.setVisibility(View.GONE);
+                                    tvPass.setVisibility(View.GONE);
+                                    passImage.setVisibility(View.GONE);
+                                    tvCheck.setVisibility(View.GONE);
+                                    checkImage.setVisibility(View.GONE);
                                 }
 
                                 return;
@@ -583,17 +596,33 @@ public class RouteActivity extends AppCompatActivity implements
                     cancelButton.setVisibility(View.GONE);
                     if(isShowBookingAlertEnabled) dialog.show();
                 }
-
                 break;
             case "Completed":
                 color = myResources.getColor(R.color.blue);
                 backgroundDrawable = myResources.getDrawable(R.color.blue);
+
+                if(!inDriverMode) {
+                    if(!prevStatus.equals(status) &&
+                            prevStatus.equals("Booked")) {
+                        isLatest = true;
+                        routeAdapter.setLatest(true);
+                    }
+                }
                 break;
             case "Cancelled":
             case "Failed":
                 color = myResources.getColor(R.color.red);
                 backgroundDrawable = myResources.getDrawable(R.color.red);
                 break;
+        }
+
+        if(!inDriverMode) {
+            prevStatus = status;
+
+            if(!status.equals("Completed")) {
+                isLatest = false;
+                routeAdapter.setLatest(false);
+            }
         }
 
         tvBookingId.setBackground(backgroundDrawable);

@@ -505,9 +505,9 @@ public class BookingActivity extends AppCompatActivity implements
 
         tvSteps.setText(getStepText());
 
-        initOnTheSpotBookingInformationDialog();
         initBookingInformationDialog();
         initAllSpotsDialog();
+        initOnTheSpotBookingInformationDialog();
 
         try {
             Glide.with(myContext).load(R.drawable.magnify_4s_256px).into(reloadImage1);
@@ -1842,6 +1842,7 @@ public class BookingActivity extends AppCompatActivity implements
                         Toast.LENGTH_SHORT
                 ).show();
 
+                dialog3.dismiss();
                 proceedToNextActivity(bookingId);
             }
             else {
@@ -1916,6 +1917,7 @@ public class BookingActivity extends AppCompatActivity implements
                                         Toast.LENGTH_SHORT
                                 ).show();
 
+                                dialog.dismiss();
                                 proceedToNextActivity(bookingId);
                             }
                         }

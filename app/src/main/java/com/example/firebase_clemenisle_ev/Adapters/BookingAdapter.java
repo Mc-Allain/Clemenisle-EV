@@ -88,8 +88,6 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
     Dialog qrCodeDialog;
     ImageView qrCodeDialogCloseImage, qrCodeImage;
 
-    OnScanQRCodeListener onScanQRCodeListener;
-
     public void setInDriverMode(boolean inDriverMode) {
         this.inDriverMode = inDriverMode;
         notifyDataSetChanged();
@@ -307,8 +305,8 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
             }
         });
 
-        tvOpen.setOnClickListener(view -> openItem(booking));
-        openImage.setOnClickListener(view -> openItem(booking));
+        tvOpen.setOnClickListener(view -> openItem(booking, false));
+        openImage.setOnClickListener(view -> openItem(booking, false));
 
         if(inDriverMode) {
             userInfoLayout.setVisibility(View.VISIBLE);
@@ -417,22 +415,31 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
         myContext.startActivity(intent);
     }
 
-    private void openItem(Booking booking) {
+    private void openItem(Booking booking, boolean isScanning) {
+        boolean isOnTheSpot = booking.getBookingType().getId().equals("BT99");
+
         Intent intent;
 
-        if(booking.getBookingType().getId().equals("BT99"))
+        if(isOnTheSpot)
             intent = new Intent(myContext, OnTheSpotActivity.class);
         else
             intent = new Intent(myContext, RouteActivity.class);
 
         intent.putExtra("bookingId", booking.getId());
         intent.putExtra("inDriverMode", inDriverMode);
-        if(inDriverMode) getUserId(booking.getId(), intent);
+        if(inDriverMode) {
+            intent.putExtra("isScanning", isScanning);
+            getUserId(booking.getId(), intent);
+        }
         else {
-            intent.putExtra("isLatest",
-                    bookingList.get(0).getId().equals(booking.getId()) &&
-                            booking.getStatus().equals("Completed") &&
-                            !booking.getBookingType().getId().equals("BT99"));
+            if(!isOnTheSpot) {
+                boolean isLatest = bookingList.get(0).getId().equals(booking.getId()) &&
+                        booking.getStatus().equals("Completed") &&
+                        !booking.getBookingType().getId().equals("BT99");
+
+                intent.putExtra("isLatest", isLatest);
+                intent.putExtra("status", booking.getStatus());
+            }
             myContext.startActivity(intent);
         }
     }
@@ -512,8 +519,16 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                                     tvCheck.setVisibility(View.VISIBLE);
                                     checkImage.setVisibility(View.VISIBLE);
 
-                                    tvCheck.setOnClickListener(view -> onScanQRCodeListener.scanQRCode());
-                                    checkImage.setOnClickListener(view -> onScanQRCodeListener.scanQRCode());
+                                    tvCheck.setOnClickListener(view -> openItem(booking, true));
+                                    checkImage.setOnClickListener(view -> openItem(booking, true));
+                                }
+                                else {
+                                    tvDriver.setVisibility(View.GONE);
+                                    driverImage.setVisibility(View.GONE);
+                                    tvPass.setVisibility(View.GONE);
+                                    passImage.setVisibility(View.GONE);
+                                    tvCheck.setVisibility(View.GONE);
+                                    checkImage.setVisibility(View.GONE);
                                 }
 
                                 return;
@@ -527,14 +542,6 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
             public void onCancelled(@NonNull DatabaseError error) {
             }
         });
-    }
-
-    public interface OnScanQRCodeListener {
-        void scanQRCode();
-    }
-
-    public void setOnScanQRCodeListener(OnScanQRCodeListener onScanQRCodeListener) {
-        this.onScanQRCodeListener = onScanQRCodeListener;
     }
 
     private void takeTask(Booking booking, String passengerUserId) {

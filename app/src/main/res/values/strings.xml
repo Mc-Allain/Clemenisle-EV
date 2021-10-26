@@ -20,7 +20,8 @@
         \n• Prepare your payment.
         \n• Go to your designated Starting Station.
         \n• Find the plate number of your assigned driver\'s E-Vehicle.
-        \n• Validate your Booking ID and then status should become \"Completed\".
+        \n• Show and let your assigned driver scan the QR Code of your booking record.
+        \n• Please check carefully the status of your booking record. It should become \"Completed\".
         \n• Ride into the E-Vehicle with your assigned driver.
     </string>
     <string name="bookingProcess2">
