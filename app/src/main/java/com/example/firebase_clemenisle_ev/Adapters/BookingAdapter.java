@@ -426,13 +426,15 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
             intent = new Intent(myContext, RouteActivity.class);
 
         intent.putExtra("bookingId", booking.getId());
-        intent.putExtra("isLatest",
-                bookingList.get(0).getId().equals(booking.getId()) &&
-                        booking.getStatus().equals("Completed") &&
-                        !booking.getBookingType().getId().equals("BT99"));
         intent.putExtra("inDriverMode", inDriverMode);
         if(inDriverMode) getUserId(booking.getId(), intent);
-        else myContext.startActivity(intent);
+        else {
+            intent.putExtra("isLatest",
+                    bookingList.get(0).getId().equals(booking.getId()) &&
+                            booking.getStatus().equals("Completed") &&
+                            !booking.getBookingType().getId().equals("BT99"));
+            myContext.startActivity(intent);
+        }
     }
 
     private void getUserId(String bookingId, Intent intent) {

@@ -213,7 +213,8 @@ public class RouteActivity extends AppCompatActivity implements
         GridLayoutManager gridLayoutManager =
                 new GridLayoutManager(myContext, columnCount, GridLayoutManager.VERTICAL, false);
         routeView.setLayoutManager(gridLayoutManager);
-        routeAdapter = new RouteAdapter(myContext, routeList, columnCount, bookingId, status, isLatest, isLoggedIn);
+        routeAdapter = new RouteAdapter(myContext, routeList, columnCount, bookingId, status,
+                isLatest, isLoggedIn, inDriverMode);
         routeView.setAdapter(routeAdapter);
         routeAdapter.setOnVisitClickListener(this);
 
@@ -503,11 +504,19 @@ public class RouteActivity extends AppCompatActivity implements
         );
 
         if(intentResult.getContents() != null) {
-            Toast.makeText(
-                    myContext,
-                    intentResult.getContents(),
-                    Toast.LENGTH_LONG
-            ).show();
+            if(intentResult.getContents().equals(bookingId)) {
+                usersRef.child(userId).child("bookingList").
+                        child(bookingId).child("status").setValue("Completed");
+                usersRef.child(driverUserId).child("taskList").
+                        child(bookingId).child("status").setValue("Completed");
+            }
+            else {
+                Toast.makeText(
+                        myContext,
+                        "QR Code does not matched",
+                        Toast.LENGTH_LONG
+                ).show();
+            }
         }
         else {
             Toast.makeText(

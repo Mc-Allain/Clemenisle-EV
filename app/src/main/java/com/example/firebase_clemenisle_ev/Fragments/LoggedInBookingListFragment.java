@@ -24,6 +24,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
@@ -43,6 +44,7 @@ public class LoggedInBookingListFragment extends Fragment {
 
     private final static String firebaseURL = FirebaseURL.getFirebaseURL();
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance(firebaseURL);
+    DatabaseReference usersRef = firebaseDatabase.getReference("users");
     FirebaseAuth firebaseAuth;
     FirebaseUser firebaseUser;
 
@@ -441,8 +443,8 @@ public class LoggedInBookingListFragment extends Fragment {
         resetConstraint();
         setScreenEnabled(false);
 
-        Query booking1Query = firebaseDatabase.getReference("users").
-                child(userId).child("bookingList").orderByChild("status").equalTo("Processing");
+        Query booking1Query = usersRef.child(userId).child("bookingList").
+                orderByChild("status").equalTo("Processing");
 
         success1 = false;
         booking1Query.addValueEventListener(new ValueEventListener() {
@@ -474,8 +476,8 @@ public class LoggedInBookingListFragment extends Fragment {
             }
         });
 
-        Query booking2Query = firebaseDatabase.getReference("users").
-                child(userId).child("bookingList").orderByChild("status").equalTo("Booked");
+        Query booking2Query = usersRef.child(userId).child("bookingList").
+                orderByChild("status").equalTo("Booked");
 
         success2 = false;
         booking2Query.addValueEventListener(new ValueEventListener() {
@@ -507,8 +509,8 @@ public class LoggedInBookingListFragment extends Fragment {
             }
         });
 
-        Query booking3Query = firebaseDatabase.getReference("users").
-                child(userId).child("bookingList").orderByChild("status").equalTo("Completed");
+        Query booking3Query = usersRef.child(userId).child("bookingList").
+                orderByChild("status").equalTo("Completed");
 
         success3 = false;
         booking3Query.addValueEventListener(new ValueEventListener() {
@@ -540,8 +542,8 @@ public class LoggedInBookingListFragment extends Fragment {
             }
         });
 
-        Query booking4Query = firebaseDatabase.getReference("users").
-                child(userId).child("bookingList").orderByChild("status").equalTo("Cancelled");
+        Query booking4Query = usersRef.child(userId).child("bookingList").
+                orderByChild("status").equalTo("Cancelled");
 
         success4 = false;
         booking4Query.addValueEventListener(new ValueEventListener() {
@@ -573,8 +575,8 @@ public class LoggedInBookingListFragment extends Fragment {
             }
         });
 
-        Query booking5Query = firebaseDatabase.getReference("users").
-                child(userId).child("bookingList").orderByChild("status").equalTo("Failed");
+        Query booking5Query = usersRef.child(userId).child("bookingList").
+                orderByChild("status").equalTo("Failed");
 
         success5 = false;
         booking5Query.addValueEventListener(new ValueEventListener() {

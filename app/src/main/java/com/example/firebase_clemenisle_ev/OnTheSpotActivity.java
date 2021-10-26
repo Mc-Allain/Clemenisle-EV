@@ -417,11 +417,19 @@ public class OnTheSpotActivity extends AppCompatActivity {
             );
 
             if(intentResult.getContents() != null) {
-                Toast.makeText(
-                        myContext,
-                        intentResult.getContents(),
-                        Toast.LENGTH_LONG
-                ).show();
+                if(intentResult.getContents().equals(bookingId)) {
+                    usersRef.child(userId).child("bookingList").
+                            child(bookingId).child("status").setValue("Completed");
+                    usersRef.child(driverUserId).child("taskList").
+                            child(bookingId).child("status").setValue("Completed");
+                }
+                else {
+                    Toast.makeText(
+                            myContext,
+                            "QR Code does not matched",
+                            Toast.LENGTH_LONG
+                    ).show();
+                }
             }
             else {
                 Toast.makeText(

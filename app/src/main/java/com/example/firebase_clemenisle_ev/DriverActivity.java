@@ -57,7 +57,7 @@ public class DriverActivity extends AppCompatActivity {
     Context myContext;
     Resources myResources;
 
-    List<Booking> processingBookingList = new ArrayList<>();
+    List<Booking> pendingList = new ArrayList<>();
     List<Booking> taskList = new ArrayList<>();
 
     DateTimeToString dateTimeToString;
@@ -139,16 +139,16 @@ public class DriverActivity extends AppCompatActivity {
             else headerLayout.setVisibility(View.VISIBLE);
         });
 
-        getBookingList();
+        getPendingList();
     }
 
-    private void getBookingList() {
+    private void getPendingList() {
         DatabaseReference usersRef = firebaseDatabase.getReference("users");
         usersRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 taskList.clear();
-                processingBookingList.clear();
+                pendingList.clear();
 
                 if(snapshot.exists()) {
                     for(DataSnapshot dataSnapshot : snapshot.getChildren()) {
@@ -157,7 +157,7 @@ public class DriverActivity extends AppCompatActivity {
 
                         for(Booking booking : bookingList) {
                             if(booking.getStatus().equals("Processing"))
-                                processingBookingList.add(booking);
+                                pendingList.add(booking);
                         }
 
                         if(thisUser.getId().equals(userId))
@@ -165,10 +165,10 @@ public class DriverActivity extends AppCompatActivity {
                     }
                 }
 
-                Collections.sort(processingBookingList, (booking, t1) ->
+                Collections.sort(pendingList, (booking, t1) ->
                         booking.getId().compareToIgnoreCase(t1.getId()));
 
-                if(processingBookingList.size() > 0) startTimer();
+                if(pendingList.size() > 0) startTimer();
             }
 
             @Override
@@ -190,7 +190,7 @@ public class DriverActivity extends AppCompatActivity {
 
             @Override
             public void onFinish() {
-                for(Booking booking : processingBookingList) {
+                for(Booking booking : pendingList) {
                     checkBooking(booking);
                 }
 
