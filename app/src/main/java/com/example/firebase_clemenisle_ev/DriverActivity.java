@@ -44,6 +44,7 @@ public class DriverActivity extends AppCompatActivity {
 
     private final static String firebaseURL = FirebaseURL.getFirebaseURL();
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance(firebaseURL);
+    DatabaseReference usersRef = firebaseDatabase.getReference("users");
     FirebaseAuth firebaseAuth;
     FirebaseUser firebaseUser;
 
@@ -57,6 +58,7 @@ public class DriverActivity extends AppCompatActivity {
     Resources myResources;
 
     List<Booking> processingBookingList = new ArrayList<>();
+    List<Booking> taskList = new ArrayList<>();
 
     DateTimeToString dateTimeToString;
 
@@ -137,14 +139,15 @@ public class DriverActivity extends AppCompatActivity {
             else headerLayout.setVisibility(View.VISIBLE);
         });
 
-        getProcessingBooking();
+        getBookingList();
     }
 
-    private void getProcessingBooking() {
+    private void getBookingList() {
         DatabaseReference usersRef = firebaseDatabase.getReference("users");
         usersRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                taskList.clear();
                 processingBookingList.clear();
 
                 if(snapshot.exists()) {
@@ -156,6 +159,9 @@ public class DriverActivity extends AppCompatActivity {
                             if(booking.getStatus().equals("Processing"))
                                 processingBookingList.add(booking);
                         }
+
+                        if(thisUser.getId().equals(userId))
+                            taskList = thisUser.getTaskList();
                     }
                 }
 
@@ -188,14 +194,17 @@ public class DriverActivity extends AppCompatActivity {
                     checkBooking(booking);
                 }
 
+                for(Booking booking : taskList) {
+                    checkBooking(booking);
+                }
+
                 start();
             }
         }.start();
     }
 
     private void changeBookingStatusToFailed(String bookingId) {
-        DatabaseReference usersRef = firebaseDatabase.getReference("users");
-        usersRef.addValueEventListener(new ValueEventListener() {
+        usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if(snapshot.exists()) {
@@ -205,7 +214,7 @@ public class DriverActivity extends AppCompatActivity {
 
                         for(Booking booking : bookingList) {
                             if(booking.getId().equals(bookingId)) {
-                                usersRef.child(thisUser.getId()). child("bookingList").
+                                usersRef.child(thisUser.getId()).child("bookingList").
                                         child(booking.getId()).child("status").setValue("Failed");
                                 return;
                             }
@@ -260,6 +269,7 @@ public class DriverActivity extends AppCompatActivity {
             }
 
             setBookingStatusFromProcessingToFailed(booking, hrDifference, minDifference);
+            setOnTheSpotBookingStatusToFailed(booking, hrDifference, minDifference);
         }
     }
 
@@ -268,6 +278,26 @@ public class DriverActivity extends AppCompatActivity {
                 !booking.getBookingType().getId().equals("BT99") &&
                 (hrDifference < 0 || (hrDifference == 0 && minDifference == 0)))
             changeBookingStatusToFailed(booking.getId());
+    }
+
+    private void setOnTheSpotBookingStatusToFailed(Booking booking, int hrDifference, int minDifference) {
+        if(booking.getStatus().equals("Booked") &&
+                booking.getBookingType().getId().equals("BT99") &&
+                (hrDifference < -1 || (hrDifference == -1 && minDifference <= 50))) {
+            changeBookingStatusToFailed(booking.getId());
+            DatabaseReference taskRef = usersRef.child(userId).child("taskList").child(booking.getId());
+            taskRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if(snapshot.exists()) taskRef.child("status").setValue("Failed");
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+        }
     }
 
     private boolean hasBookingToday(int bookingDay, int bookingMonth, int bookingYear) {

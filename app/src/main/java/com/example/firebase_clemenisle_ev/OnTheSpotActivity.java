@@ -398,6 +398,12 @@ public class OnTheSpotActivity extends AppCompatActivity {
         intentIntegrator.setCaptureActivity(Capture.class);
         intentIntegrator.initiateScan();
         isScanning = true;
+
+        Toast.makeText(
+                myContext,
+                "Please scan the QR Code of your passenger's booking Record",
+                Toast.LENGTH_LONG
+        ).show();
     }
 
     @Override

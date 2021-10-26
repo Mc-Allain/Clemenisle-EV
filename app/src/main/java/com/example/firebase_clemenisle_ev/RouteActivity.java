@@ -485,6 +485,12 @@ public class RouteActivity extends AppCompatActivity implements
         intentIntegrator.setOrientationLocked(false);
         intentIntegrator.setCaptureActivity(Capture.class);
         intentIntegrator.initiateScan();
+
+        Toast.makeText(
+                myContext,
+                "Please scan the QR Code of your passenger's booking Record",
+                Toast.LENGTH_LONG
+        ).show();
     }
 
     @Override

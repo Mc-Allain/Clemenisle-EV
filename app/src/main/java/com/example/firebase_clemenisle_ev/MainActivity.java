@@ -34,6 +34,7 @@ import com.example.firebase_clemenisle_ev.Classes.AppMetaData;
 import com.example.firebase_clemenisle_ev.Classes.Booking;
 import com.example.firebase_clemenisle_ev.Classes.DateTimeToString;
 import com.example.firebase_clemenisle_ev.Classes.FirebaseURL;
+import com.example.firebase_clemenisle_ev.Classes.User;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputLayout;
@@ -67,6 +68,7 @@ public class MainActivity extends AppCompatActivity {
 
     private final static String firebaseURL = FirebaseURL.getFirebaseURL();
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance(firebaseURL);
+    DatabaseReference usersRef = firebaseDatabase.getReference("users");
     FirebaseAuth firebaseAuth;
     FirebaseUser firebaseUser;
 
@@ -409,8 +411,9 @@ public class MainActivity extends AppCompatActivity {
                 (bookingMonth < calendarMonth && bookingYear == calendarYear) ||
                 (bookingDay < calendarDay && bookingMonth == calendarMonth && bookingYear == calendarYear)) {
 
-            firebaseDatabase.getReference("users").child(userId).
-                    child("bookingList").child(booking.getId()).child("status").setValue("Failed");
+            usersRef.child(userId).child("bookingList").
+                    child(booking.getId()).child("status").setValue("Failed");
+            changeTaskStatusToFailed(booking.getId());
         }
 
         checkingForBookingNotification(booking, bookingDay, bookingMonth, bookingYear);
@@ -444,7 +447,8 @@ public class MainActivity extends AppCompatActivity {
                 else minDifference = 0;
             }
 
-            setBookingStatusToFailed(booking, hrDifference, minDifference);
+            setBookingStatusFromProcessingToFailed(booking, hrDifference, minDifference);
+            setOnTheSpotBookingStatusToFailed(booking, hrDifference, minDifference);
 
             if(booking.getStatus().equals("Booked")) {
                 initNotificationInHours(booking, hourArray, hrDifference + 1, minArray, minDifference, sec);
@@ -467,12 +471,48 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void setBookingStatusToFailed(Booking booking, int hrDifference, int minDifference) {
+    private void setBookingStatusFromProcessingToFailed(Booking booking, int hrDifference, int minDifference) {
         if(booking.getStatus().equals("Processing") &&
                 !booking.getBookingType().getId().equals("BT99") &&
                 (hrDifference < 0 || (hrDifference == 0 && minDifference == 0)))
-            firebaseDatabase.getReference("users").child(userId).
-                    child("bookingList").child(booking.getId()).child("status").setValue("Failed");
+            usersRef.child(userId).child("bookingList").
+                    child(booking.getId()).child("status").setValue("Failed");
+    }
+
+    private void setOnTheSpotBookingStatusToFailed(Booking booking, int hrDifference, int minDifference) {
+        if(booking.getStatus().equals("Booked") &&
+                booking.getBookingType().getId().equals("BT99") &&
+                (hrDifference < -1 || (hrDifference == -1 && minDifference <= 50))) {
+            usersRef.child(userId).child("bookingList").
+                    child(booking.getId()).child("status").setValue("Failed");
+            changeTaskStatusToFailed(booking.getId());
+        }
+    }
+
+    private void changeTaskStatusToFailed(String bookingId) {
+        usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(snapshot.exists()) {
+                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        User thisUser = new User(dataSnapshot);
+                        List<Booking> taskList = thisUser.getTaskList();
+
+                        for(Booking booking : taskList) {
+                            if(booking.getId().equals(bookingId)) {
+                                usersRef.child(thisUser.getId()).child("taskList").
+                                        child(booking.getId()).child("status").setValue("Failed");
+                                return;
+                            }
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+            }
+        });
     }
 
     private void initNotificationInHours(Booking booking, List<String> hourArray, int hrDifference,
@@ -502,8 +542,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getBooking() {
-        Query booking1Query = firebaseDatabase.getReference("users").
-                child(userId).child("bookingList").orderByChild("status").equalTo("Processing");
+        Query booking1Query = usersRef.child(userId).child("bookingList")
+                .orderByChild("status").equalTo("Processing");
 
         booking1Query.addValueEventListener(new ValueEventListener() {
             @Override
@@ -533,8 +573,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        Query booking2Query = firebaseDatabase.getReference("users").
-                child(userId).child("bookingList").orderByChild("status").equalTo("Booked");
+        Query booking2Query = usersRef.child(userId).child("bookingList").
+                orderByChild("status").equalTo("Booked");
 
         success2 = false;
         booking2Query.addValueEventListener(new ValueEventListener() {

@@ -258,6 +258,12 @@ public class DriverTaskListFragment extends Fragment implements BookingAdapter.O
         intentIntegrator.setOrientationLocked(false);
         intentIntegrator.setCaptureActivity(Capture.class);
         intentIntegrator.initiateScan();
+
+        Toast.makeText(
+                myContext,
+                "Please scan the QR Code of your passenger's booking Record",
+                Toast.LENGTH_LONG
+        ).show();
     }
 
     private void connectConstraintBottom() {

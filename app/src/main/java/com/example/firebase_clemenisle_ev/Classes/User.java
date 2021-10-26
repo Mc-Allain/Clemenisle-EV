@@ -14,6 +14,7 @@ public class User {
     private final List<Comment> upVotedComments = new ArrayList<>();
     private final List<Comment> downVotedComments = new ArrayList<>();
     private final List<Comment> reportedComments = new ArrayList<>();
+    private final List<Booking> taskList = new ArrayList<>();
     private boolean developer, admin, driver;
 
     public User() {
@@ -106,6 +107,17 @@ public class User {
             }
         }
 
+        taskList.clear();
+        DataSnapshot taskSnapshot = dataSnapshot.child("taskList");
+        if(taskSnapshot.exists()) {
+            for(DataSnapshot dataSnapshot1 : taskSnapshot.getChildren()) {
+                if(dataSnapshot1.hasChildren()) {
+                    Booking booking = new Booking(dataSnapshot1);
+                    taskList.add(booking);
+                }
+            }
+        }
+
         if(dataSnapshot.child("developer").exists())
             developer = dataSnapshot.child("developer").getValue(Boolean.class);
         if(dataSnapshot.child("admin").exists())
@@ -163,6 +175,10 @@ public class User {
 
     public List<Comment> getReportedComments() {
         return reportedComments;
+    }
+
+    public List<Booking> getTaskList() {
+        return taskList;
     }
 
     public boolean isDeveloper() {
