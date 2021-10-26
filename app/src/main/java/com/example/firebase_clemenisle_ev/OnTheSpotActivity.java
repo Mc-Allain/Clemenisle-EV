@@ -81,12 +81,12 @@ public class OnTheSpotActivity extends AppCompatActivity {
 
     private final static int MAP_SETTINGS_REQUEST = 1;
 
-    ImageView profileImage, thumbnail, moreImage, locateImage, locateDestinationImage, viewQRImage,
+    ImageView profileImage, driverProfileImage, thumbnail, moreImage, locateImage, locateDestinationImage, viewQRImage,
             driverImage, passImage, checkImage, reloadImage;
-    TextView tvUserFullName, tvBookingId, tvSchedule, tvTypeName, tvPrice, tvOriginLocation2, tvDestinationSpot2,
+    TextView tvUserFullName, tvDriverFullName, tvBookingId, tvSchedule, tvTypeName, tvPrice, tvOriginLocation2, tvDestinationSpot2,
             tvLocate, tvLocateDestination, tvViewQR, tvDriver, tvPass, tvCheck, tvLog;
     ExpandableTextView extvMessage;
-    ConstraintLayout buttonLayout, bookingInfoLayout, bookingInfoButtonLayout, userInfoLayout;
+    ConstraintLayout buttonLayout, bookingInfoLayout, bookingInfoButtonLayout, userInfoLayout, driverInfoLayout;
     Button cancelButton;
     FrameLayout mapLayout;
     ProgressBar progressBar;
@@ -159,6 +159,10 @@ public class OnTheSpotActivity extends AppCompatActivity {
         userInfoLayout = findViewById(R.id.userInfoLayout);
         tvUserFullName = findViewById(R.id.tvUserFullName);
         profileImage = findViewById(R.id.profileImage);
+
+        driverInfoLayout = findViewById(R.id.driverInfoLayout);
+        tvDriverFullName = findViewById(R.id.tvDriverFullName);
+        driverProfileImage = findViewById(R.id.driverProfileImage);
 
         thumbnail = findViewById(R.id.thumbnail);
         tvBookingId = findViewById(R.id.tvBookingId);
@@ -305,18 +309,60 @@ public class OnTheSpotActivity extends AppCompatActivity {
         tvMapSettings.setOnClickListener(view -> openMapSettings());
 
         if(inDriverMode) {
+            driverInfoLayout.setVisibility(View.GONE);
             userInfoLayout.setVisibility(View.VISIBLE);
 
             getUserInfo(bookingId);
         }
         else {
             userInfoLayout.setVisibility(View.GONE);
+            driverInfoLayout.setVisibility(View.VISIBLE);
+
+            tvViewQR.setVisibility(View.VISIBLE);
+            viewQRImage.setVisibility(View.VISIBLE);
+
             tvViewQR.setVisibility(View.VISIBLE);
             viewQRImage.setVisibility(View.VISIBLE);
 
             tvViewQR.setOnClickListener(view -> viewQRCode());
             viewQRImage.setOnClickListener(view -> viewQRCode());
+
+            getDriverInfo(bookingId);
         }
+    }
+
+    private void getDriverInfo(String bookingId) {
+        usersRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(snapshot.exists()) {
+                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        User thisUser = new User(dataSnapshot);
+                        List<Booking> taskList = thisUser.getTaskList();
+
+                        for(Booking booking : taskList) {
+                            if(booking.getId().equals(bookingId)) {
+                                String fullName = "<b>" + thisUser.getLastName() + "</b>, " + thisUser.getFirstName();
+                                if(thisUser.getMiddleName().length() > 0) fullName += " " + thisUser.getMiddleName();
+                                tvDriverFullName.setText(fromHtml(fullName));
+
+                                try {
+                                    Glide.with(myContext).load(thisUser.getProfileImage())
+                                            .placeholder(R.drawable.image_loading_placeholder)
+                                            .into(driverProfileImage);
+                                }
+                                catch (Exception ignored) {}
+                                return;
+                            }
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+            }
+        });
     }
 
     private void startTimer(Booking booking) {

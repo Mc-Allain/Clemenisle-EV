@@ -73,13 +73,13 @@ public class RouteActivity extends AppCompatActivity implements
     FirebaseAuth firebaseAuth;
     FirebaseUser firebaseUser;
 
-    ImageView profileImage, thumbnail, moreImage, locateImage, locateEndImage, viewQRImage,
+    ImageView profileImage, driverProfileImage, thumbnail, moreImage, locateImage, locateEndImage, viewQRImage,
             driverImage, passImage, checkImage, reloadImage, paidImage;
-    TextView tvUserFullName, tvBookingId, tvSchedule, tvTypeName, tvPrice, tvStartStation2, tvEndStation2,
+    TextView tvUserFullName, tvDriverFullName, tvBookingId, tvSchedule, tvTypeName, tvPrice, tvStartStation2, tvEndStation2,
             tvLocate, tvLocateEnd, tvViewQR, tvDriver, tvPass, tvCheck, tvLog;
     ExpandableTextView extvMessage;
     RecyclerView routeView;
-    ConstraintLayout buttonLayout, bookingInfoLayout, bookingInfoButtonLayout, userInfoLayout;
+    ConstraintLayout buttonLayout, bookingInfoLayout, bookingInfoButtonLayout, userInfoLayout, driverInfoLayout;
     Button cancelButton, onlinePaymentButton;
     ProgressBar progressBar;
 
@@ -141,6 +141,10 @@ public class RouteActivity extends AppCompatActivity implements
         userInfoLayout = findViewById(R.id.userInfoLayout);
         tvUserFullName = findViewById(R.id.tvUserFullName);
         profileImage = findViewById(R.id.profileImage);
+
+        driverInfoLayout = findViewById(R.id.driverInfoLayout);
+        tvDriverFullName = findViewById(R.id.tvDriverFullName);
+        driverProfileImage = findViewById(R.id.driverProfileImage);
 
         thumbnail = findViewById(R.id.thumbnail);
         tvBookingId = findViewById(R.id.tvBookingId);
@@ -295,18 +299,60 @@ public class RouteActivity extends AppCompatActivity implements
         });
 
         if(inDriverMode) {
+            driverInfoLayout.setVisibility(View.GONE);
             userInfoLayout.setVisibility(View.VISIBLE);
 
             getUserInfo(bookingId);
         }
         else {
             userInfoLayout.setVisibility(View.GONE);
+            driverInfoLayout.setVisibility(View.VISIBLE);
+
+            tvViewQR.setVisibility(View.VISIBLE);
+            viewQRImage.setVisibility(View.VISIBLE);
+
             tvViewQR.setVisibility(View.VISIBLE);
             viewQRImage.setVisibility(View.VISIBLE);
 
             tvViewQR.setOnClickListener(view -> viewQRCode());
             viewQRImage.setOnClickListener(view -> viewQRCode());
+
+            getDriverInfo(bookingId);
         }
+    }
+
+    private void getDriverInfo(String bookingId) {
+        usersRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(snapshot.exists()) {
+                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        User thisUser = new User(dataSnapshot);
+                        List<Booking> taskList = thisUser.getTaskList();
+
+                        for(Booking booking : taskList) {
+                            if(booking.getId().equals(bookingId)) {
+                                String fullName = "<b>" + thisUser.getLastName() + "</b>, " + thisUser.getFirstName();
+                                if(thisUser.getMiddleName().length() > 0) fullName += " " + thisUser.getMiddleName();
+                                tvDriverFullName.setText(fromHtml(fullName));
+
+                                try {
+                                    Glide.with(myContext).load(thisUser.getProfileImage())
+                                            .placeholder(R.drawable.image_loading_placeholder)
+                                            .into(driverProfileImage);
+                                }
+                                catch (Exception ignored) {}
+                                return;
+                            }
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+            }
+        });
     }
 
     private void viewQRCode() {

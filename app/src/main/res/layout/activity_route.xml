@@ -65,6 +65,66 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/headerLayout">
 
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/driverInfoLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/userInfoLayout">
+
+            <TextView
+                android:id="@+id/tvDriverFullName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:fontFamily="@font/ubuntu"
+                android:text="Driver's Full Name"
+                android:textColor="@color/black"
+                app:layout_constraintBottom_toTopOf="@+id/tvDriverFullName2"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/driverProfileImage"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tvDriverFullName2"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:fontFamily="@font/ubuntu"
+                android:text="Your Assigned Driver"
+                android:textColor="@color/initial"
+                app:layout_constraintBottom_toBottomOf="@+id/driverProfileImage"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/driverProfileImage"
+                app:layout_constraintTop_toBottomOf="@+id/tvDriverFullName" />
+
+            <View
+                style="@style/line_color"
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/driverProfileImage"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:scaleType="centerCrop"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/image_loading_placeholder" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
         <com.ms.square.android.expandabletextview.ExpandableTextView
             android:id="@+id/extvMessage"
             android:layout_width="0dp"
@@ -238,7 +298,7 @@
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="@+id/thumbnail"
             app:layout_constraintStart_toStartOf="@+id/thumbnail"
-            app:layout_constraintTop_toBottomOf="@+id/userInfoLayout" />
+            app:layout_constraintTop_toBottomOf="@+id/driverInfoLayout" />
 
         <TextView
             android:id="@+id/tvTypeName"
