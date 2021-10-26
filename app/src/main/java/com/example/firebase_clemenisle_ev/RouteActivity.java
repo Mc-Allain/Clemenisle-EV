@@ -62,9 +62,10 @@ public class RouteActivity extends AppCompatActivity implements
     FirebaseAuth firebaseAuth;
     FirebaseUser firebaseUser;
 
-    ImageView profileImage, thumbnail, moreImage, locateImage, locateEndImage, driverImage, reloadImage, paidImage;
+    ImageView profileImage, thumbnail, moreImage, locateImage, locateEndImage, viewQRImage,
+            driverImage, passImage, checkImage, reloadImage, paidImage;
     TextView tvUserFullName, tvBookingId, tvSchedule, tvTypeName, tvPrice, tvStartStation2, tvEndStation2,
-            tvLocate, tvLocateEnd, tvDriver, tvLog;
+            tvLocate, tvLocateEnd, tvViewQR, tvDriver, tvPass, tvCheck, tvLog;
     ExpandableTextView extvMessage;
     RecyclerView routeView;
     ConstraintLayout buttonLayout, bookingInfoLayout, bookingInfoButtonLayout, userInfoLayout;
@@ -147,8 +148,15 @@ public class RouteActivity extends AppCompatActivity implements
         moreImage = findViewById(R.id.moreImage);
         locateImage = findViewById(R.id.locateImage);
         locateEndImage = findViewById(R.id.locateEndImage);
+
+        tvViewQR = findViewById(R.id.tvViewQR);
+        viewQRImage = findViewById(R.id.viewQRImage);
         tvDriver = findViewById(R.id.tvDriver);
         driverImage = findViewById(R.id.driverImage);
+        tvPass = findViewById(R.id.tvPass);
+        passImage = findViewById(R.id.passImage);
+        tvCheck = findViewById(R.id.tvCheck);
+        checkImage = findViewById(R.id.checkImage);
 
         reloadImage = findViewById(R.id.reloadImage);
         paidImage = findViewById(R.id.paidImage);
@@ -265,16 +273,15 @@ public class RouteActivity extends AppCompatActivity implements
             return false;
         });
 
-
         if(inDriverMode) {
             userInfoLayout.setVisibility(View.VISIBLE);
 
             getUserInfo(bookingId);
         }
         else {
-            tvDriver.setVisibility(View.GONE);
-            driverImage.setVisibility(View.GONE);
             userInfoLayout.setVisibility(View.GONE);
+            tvViewQR.setVisibility(View.VISIBLE);
+            viewQRImage.setVisibility(View.VISIBLE);
         }
     }
 
@@ -300,17 +307,28 @@ public class RouteActivity extends AppCompatActivity implements
                                 }
                                 catch (Exception ignored) {}
 
-                                if(driverUserId.equals(thisUser.getId()) ||
-                                        !status.equals("Processing")) {
+                                if(driverUserId.equals(thisUser.getId())) {
                                     tvDriver.setVisibility(View.GONE);
                                     driverImage.setVisibility(View.GONE);
                                 }
-                                else {
+                                else if(status.equals("Processing")) {
                                     tvDriver.setVisibility(View.VISIBLE);
                                     driverImage.setVisibility(View.VISIBLE);
+                                    tvPass.setVisibility(View.GONE);
+                                    passImage.setVisibility(View.GONE);
+                                    tvCheck.setVisibility(View.GONE);
+                                    checkImage.setVisibility(View.GONE);
 
                                     tvDriver.setOnClickListener(view -> takeTask(booking));
                                     driverImage.setOnClickListener(view -> takeTask(booking));
+                                }
+                                else if(status.equals("Booked")) {
+                                    tvDriver.setVisibility(View.GONE);
+                                    driverImage.setVisibility(View.GONE);
+                                    tvPass.setVisibility(View.VISIBLE);
+                                    passImage.setVisibility(View.VISIBLE);
+                                    tvCheck.setVisibility(View.VISIBLE);
+                                    checkImage.setVisibility(View.VISIBLE);
                                 }
 
                                 return;

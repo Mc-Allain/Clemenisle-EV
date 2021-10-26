@@ -258,7 +258,7 @@
             app:layout_constraintTop_toBottomOf="parent">
 
             <ImageView
-                android:id="@+id/driverImage"
+                android:id="@+id/checkImage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="4dp"
@@ -266,7 +266,43 @@
                 android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/locateImage"
+                app:srcCompat="@drawable/ic_baseline_check_24"
+                app:tint="@color/green" />
+
+            <ImageView
+                android:id="@+id/passImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                android:padding="4dp"
+                android:visibility="gone"
+                app:layout_constraintBottom_toTopOf="@+id/checkImage"
+                app:layout_constraintStart_toStartOf="@+id/locateImage"
                 app:srcCompat="@drawable/ic_baseline_electric_rickshaw_24"
+                app:tint="@color/blue" />
+
+            <ImageView
+                android:id="@+id/driverImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                android:padding="4dp"
+                android:visibility="gone"
+                app:layout_constraintBottom_toTopOf="@+id/passImage"
+                app:layout_constraintStart_toStartOf="@+id/locateImage"
+                app:srcCompat="@drawable/ic_baseline_electric_rickshaw_24"
+                app:tint="@color/blue" />
+
+            <ImageView
+                android:id="@+id/viewQRImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                android:padding="4dp"
+                android:visibility="gone"
+                app:layout_constraintBottom_toTopOf="@+id/driverImage"
+                app:layout_constraintStart_toStartOf="@+id/locateImage"
+                app:srcCompat="@drawable/ic_baseline_qr_code_2_24"
                 app:tint="@color/blue" />
 
             <ImageView
@@ -276,7 +312,7 @@
                 android:layout_marginTop="4dp"
                 android:layout_marginBottom="4dp"
                 android:padding="4dp"
-                app:layout_constraintBottom_toTopOf="@+id/driverImage"
+                app:layout_constraintBottom_toTopOf="@+id/viewQRImage"
                 app:layout_constraintStart_toStartOf="@+id/locateImage"
                 app:layout_constraintTop_toBottomOf="@+id/locateImage"
                 app:srcCompat="@drawable/ic_baseline_location_searching_24"
@@ -306,10 +342,39 @@
                 app:tint="@color/blue" />
 
             <TextView
+                android:id="@+id/tvCheck"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:fontFamily="@font/ubuntu"
+                android:gravity="center_vertical"
+                android:text="Mark as Completed"
+                android:textColor="@color/green"
+                android:textStyle="bold"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@+id/checkImage"
+                app:layout_constraintEnd_toEndOf="@+id/tvLocateEnd"
+                app:layout_constraintStart_toEndOf="@+id/checkImage"
+                app:layout_constraintTop_toTopOf="@+id/checkImage" />
+
+            <TextView
+                android:id="@+id/tvPass"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:fontFamily="@font/ubuntu"
+                android:gravity="center_vertical"
+                android:text="Pass Task"
+                android:textColor="@color/blue"
+                android:textStyle="bold"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@+id/passImage"
+                app:layout_constraintEnd_toEndOf="@+id/tvLocateEnd"
+                app:layout_constraintStart_toEndOf="@+id/passImage"
+                app:layout_constraintTop_toTopOf="@+id/passImage" />
+
+            <TextView
                 android:id="@+id/tvDriver"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:layout_marginStart="1dp"
                 android:fontFamily="@font/ubuntu"
                 android:gravity="center_vertical"
                 android:text="Take Task"
@@ -320,6 +385,22 @@
                 app:layout_constraintEnd_toEndOf="@+id/tvLocateEnd"
                 app:layout_constraintStart_toEndOf="@+id/driverImage"
                 app:layout_constraintTop_toTopOf="@+id/driverImage" />
+
+            <TextView
+                android:id="@+id/tvViewQR"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginStart="1dp"
+                android:fontFamily="@font/ubuntu"
+                android:gravity="center_vertical"
+                android:text="View QR Code"
+                android:textColor="@color/blue"
+                android:textStyle="bold"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@+id/viewQRImage"
+                app:layout_constraintEnd_toEndOf="@+id/tvLocateEnd"
+                app:layout_constraintStart_toEndOf="@+id/viewQRImage"
+                app:layout_constraintTop_toTopOf="@+id/viewQRImage" />
 
             <TextView
                 android:id="@+id/tvLocateEnd"

@@ -115,13 +115,17 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
         ImageView profileImage = holder.profileImage, thumbnail = holder.thumbnail,
                 moreImage = holder.moreImage, openImage = holder.openImage,
                 locateImage = holder.locateImage, locateEndImage = holder.locateEndImage,
-                driverImage = holder.driverImage, paidImage = holder.paidImage;
+                viewQRImage = holder.viewQRImage, driverImage = holder.driverImage,
+                passImage = holder.passImage, checkImage = holder.checkImage,
+                paidImage = holder.paidImage;
         TextView tvUserFullName = holder.tvUserFullName, tvBookingId = holder.tvBookingId,
                 tvSchedule = holder.tvSchedule, tvTypeName = holder.tvTypeName, tvPrice = holder.tvPrice,
                 tvStartStation = holder.tvStartStation, tvEndStation = holder.tvEndStation,
                 tvStartStation2 = holder.tvStartStation2, tvEndStation2 = holder.tvEndStation2,
                 tvOption = holder.tvOption, tvOpen = holder.tvOpen,
-                tvLocate = holder.tvLocate, tvLocateEnd = holder.tvLocateEnd, tvDriver = holder.tvDriver;
+                tvLocate = holder.tvLocate, tvLocateEnd = holder.tvLocateEnd,
+                tvViewQR = holder.tvViewQR, tvDriver = holder.tvDriver,
+                tvPass = holder.tvPass, tvCheck = holder.tvCheck;
         ExpandableTextView extvMessage = holder.extvMessage;
         ConstraintLayout backgroundLayout = holder.backgroundLayout, buttonLayout = holder.buttonLayout,
                 userInfoLayout = holder.userInfoLayout;
@@ -291,16 +295,17 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
 
         openImage.setOnClickListener(view -> openItem(booking));
 
-        if(inDriverMode && status.equals("Processing")) {
+        if(inDriverMode) {
             userInfoLayout.setVisibility(View.VISIBLE);
 
             extvMessage.setText(message);
-            getUserInfo(bookingId, tvUserFullName, profileImage, tvDriver, driverImage);
+            getUserInfo(bookingId, status, tvUserFullName, profileImage,
+                    tvDriver, driverImage, tvPass, passImage, tvCheck, checkImage);
         }
         else {
-            tvDriver.setVisibility(View.GONE);
-            driverImage.setVisibility(View.GONE);
             userInfoLayout.setVisibility(View.GONE);
+            tvViewQR.setVisibility(View.VISIBLE);
+            viewQRImage.setVisibility(View.VISIBLE);
 
             extvMessage.setText(null);
         }
@@ -401,8 +406,11 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
         });
     }
 
-    private void getUserInfo(String bookingId, TextView tvUserFullName, ImageView profileImage,
-                             TextView tvDriver, ImageView driverImage) {
+    private void getUserInfo(String bookingId, String status,
+                             TextView tvUserFullName, ImageView profileImage,
+                             TextView tvDriver, ImageView driverImage,
+                             TextView tvPass, ImageView passImage,
+                             TextView tvCheck, ImageView checkImage) {
         usersRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -428,12 +436,24 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                                     tvDriver.setVisibility(View.GONE);
                                     driverImage.setVisibility(View.GONE);
                                 }
-                                else {
+                                else if(status.equals("Processing")) {
                                     tvDriver.setVisibility(View.VISIBLE);
                                     driverImage.setVisibility(View.VISIBLE);
+                                    tvPass.setVisibility(View.GONE);
+                                    passImage.setVisibility(View.GONE);
+                                    tvCheck.setVisibility(View.GONE);
+                                    checkImage.setVisibility(View.GONE);
 
                                     tvDriver.setOnClickListener(view -> takeTask(booking, thisUser.getId()));
                                     driverImage.setOnClickListener(view -> takeTask(booking, thisUser.getId()));
+                                }
+                                else if(status.equals("Booked")) {
+                                    tvDriver.setVisibility(View.GONE);
+                                    driverImage.setVisibility(View.GONE);
+                                    tvPass.setVisibility(View.VISIBLE);
+                                    passImage.setVisibility(View.VISIBLE);
+                                    tvCheck.setVisibility(View.VISIBLE);
+                                    checkImage.setVisibility(View.VISIBLE);
                                 }
 
                                 return;
@@ -582,11 +602,11 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        ImageView profileImage, thumbnail, moreImage, openImage, locateImage, locateEndImage,
-                driverImage, paidImage;
+        ImageView profileImage, thumbnail, moreImage, openImage, locateImage, locateEndImage, viewQRImage,
+                driverImage, passImage, checkImage, paidImage;
         TextView tvUserFullName, tvBookingId, tvSchedule, tvTypeName, tvPrice,
                 tvStartStation, tvStartStation2, tvEndStation, tvEndStation2,
-                tvOption, tvOpen, tvLocate, tvLocateEnd, tvDriver;
+                tvOption, tvOpen, tvLocate, tvLocateEnd, tvViewQR, tvDriver, tvPass, tvCheck;
         ExpandableTextView extvMessage;
         ConstraintLayout backgroundLayout, buttonLayout, userInfoLayout;
 
@@ -620,8 +640,15 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
             locateImage = itemView.findViewById(R.id.locateImage);
             tvLocateEnd = itemView.findViewById(R.id.tvLocateEnd);
             locateEndImage = itemView.findViewById(R.id.locateEndImage);
+
+            tvViewQR = itemView.findViewById(R.id.tvViewQR);
+            viewQRImage = itemView.findViewById(R.id.viewQRImage);
             tvDriver = itemView.findViewById(R.id.tvDriver);
             driverImage = itemView.findViewById(R.id.driverImage);
+            tvPass = itemView.findViewById(R.id.tvPass);
+            passImage = itemView.findViewById(R.id.passImage);
+            tvCheck = itemView.findViewById(R.id.tvCheck);
+            checkImage = itemView.findViewById(R.id.checkImage);
         }
     }
 }

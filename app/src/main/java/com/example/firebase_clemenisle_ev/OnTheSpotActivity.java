@@ -66,9 +66,10 @@ public class OnTheSpotActivity extends AppCompatActivity {
 
     private final static int MAP_SETTINGS_REQUEST = 1;
 
-    ImageView profileImage, thumbnail, moreImage, locateImage, locateDestinationImage, driverImage, reloadImage;
+    ImageView profileImage, thumbnail, moreImage, locateImage, locateDestinationImage, viewQRImage,
+            driverImage, passImage, checkImage, reloadImage;
     TextView tvUserFullName, tvBookingId, tvSchedule, tvTypeName, tvPrice, tvOriginLocation2, tvDestinationSpot2,
-            tvLocate, tvLocateDestination, tvDriver, tvLog;
+            tvLocate, tvLocateDestination, tvViewQR, tvDriver, tvPass, tvCheck, tvLog;
     ExpandableTextView extvMessage;
     ConstraintLayout buttonLayout, bookingInfoLayout, bookingInfoButtonLayout, userInfoLayout;
     Button cancelButton;
@@ -152,8 +153,15 @@ public class OnTheSpotActivity extends AppCompatActivity {
         moreImage = findViewById(R.id.moreImage);
         locateImage = findViewById(R.id.locateImage);
         locateDestinationImage = findViewById(R.id.locateDestinationImage);
+
+        tvViewQR = findViewById(R.id.tvViewQR);
+        viewQRImage = findViewById(R.id.viewQRImage);
         tvDriver = findViewById(R.id.tvDriver);
         driverImage = findViewById(R.id.driverImage);
+        tvPass = findViewById(R.id.tvPass);
+        passImage = findViewById(R.id.passImage);
+        tvCheck = findViewById(R.id.tvCheck);
+        checkImage = findViewById(R.id.checkImage);
 
         reloadImage = findViewById(R.id.reloadImage);
         mapLayout = findViewById(R.id.mapLayout);
@@ -273,9 +281,9 @@ public class OnTheSpotActivity extends AppCompatActivity {
             getUserInfo(bookingId);
         }
         else {
-            tvDriver.setVisibility(View.GONE);
-            driverImage.setVisibility(View.GONE);
             userInfoLayout.setVisibility(View.GONE);
+            tvViewQR.setVisibility(View.VISIBLE);
+            viewQRImage.setVisibility(View.VISIBLE);
         }
     }
 
@@ -301,17 +309,28 @@ public class OnTheSpotActivity extends AppCompatActivity {
                                 }
                                 catch (Exception ignored) {}
 
-                                if(driverUserId.equals(thisUser.getId()) ||
-                                        !status.equals("Processing")) {
+                                if(driverUserId.equals(thisUser.getId())) {
                                     tvDriver.setVisibility(View.GONE);
                                     driverImage.setVisibility(View.GONE);
                                 }
-                                else {
+                                else if(status.equals("Processing")) {
                                     tvDriver.setVisibility(View.VISIBLE);
                                     driverImage.setVisibility(View.VISIBLE);
+                                    tvPass.setVisibility(View.GONE);
+                                    passImage.setVisibility(View.GONE);
+                                    tvCheck.setVisibility(View.GONE);
+                                    checkImage.setVisibility(View.GONE);
 
                                     tvDriver.setOnClickListener(view -> takeTask(booking));
                                     driverImage.setOnClickListener(view -> takeTask(booking));
+                                }
+                                else if(status.equals("Booked")) {
+                                    tvDriver.setVisibility(View.GONE);
+                                    driverImage.setVisibility(View.GONE);
+                                    tvPass.setVisibility(View.VISIBLE);
+                                    passImage.setVisibility(View.VISIBLE);
+                                    tvCheck.setVisibility(View.VISIBLE);
+                                    checkImage.setVisibility(View.VISIBLE);
                                 }
 
                                 return;
