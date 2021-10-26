@@ -12,6 +12,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.text.Html;
 import android.text.SpannableString;
@@ -34,6 +35,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.Target;
 import com.example.firebase_clemenisle_ev.Classes.Booking;
 import com.example.firebase_clemenisle_ev.Classes.Capture;
+import com.example.firebase_clemenisle_ev.Classes.DateTimeToString;
 import com.example.firebase_clemenisle_ev.Classes.FirebaseURL;
 import com.example.firebase_clemenisle_ev.Classes.Route;
 import com.example.firebase_clemenisle_ev.Classes.SimpleTouristSpot;
@@ -56,7 +58,11 @@ import com.google.zxing.integration.android.IntentResult;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
 import com.ms.square.android.expandabletextview.ExpandableTextView;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -119,8 +125,8 @@ public class OnTheSpotActivity extends AppCompatActivity {
     String cancelButtonText = "Cancel Booking", cancellingButtonText = "Cancelling…";
 
     Dialog dialog;
-    ImageView dialogCloseImage;
-    TextView tvMessage, tvMessage2;
+    ImageView dialogCloseImage, preferencesImage;
+    TextView tvMessage, tvMessage2, tvPreferences;
 
     boolean isShowBookingAlertEnabled;
 
@@ -128,6 +134,13 @@ public class OnTheSpotActivity extends AppCompatActivity {
     ImageView qrCodeDialogCloseImage, qrCodeImage;
 
     boolean isScanning = false;
+
+    DateTimeToString dateTimeToString;
+
+    Calendar calendar = Calendar.getInstance();
+    int calendarYear, calendarMonth, calendarDay;
+
+    CountDownTimer statusTimer;
 
     private void initSharedPreferences() {
         SharedPreferences sharedPreferences = myContext
@@ -304,6 +317,66 @@ public class OnTheSpotActivity extends AppCompatActivity {
             tvViewQR.setOnClickListener(view -> viewQRCode());
             viewQRImage.setOnClickListener(view -> viewQRCode());
         }
+    }
+
+    private void startTimer(Booking booking) {
+        if(statusTimer != null) statusTimer.cancel();
+        statusTimer = new CountDownTimer(5000, 1000) {
+            @Override
+            public void onTick(long l) {}
+
+            @Override
+            public void onFinish() {
+                if(userId != null) {
+                    checkBooking(booking);
+                }
+
+                start();
+            }
+        }.start();
+    }
+
+    private void checkBooking(Booking booking) {
+        dateTimeToString = new DateTimeToString();
+        dateTimeToString.setFormattedSchedule(booking.getSchedule());
+        int bookingYear = Integer.parseInt(dateTimeToString.getYear());
+        int bookingMonth = Integer.parseInt(dateTimeToString.getMonthNo());
+        int bookingDay = Integer.parseInt(dateTimeToString.getDay());
+
+        calendarYear = calendar.get(Calendar.YEAR);
+        calendarMonth = calendar.get(Calendar.MONTH);
+        calendarDay = calendar.get(Calendar.DAY_OF_MONTH);
+
+        SimpleDateFormat sdf = new SimpleDateFormat("H:mm:ss", Locale.getDefault());
+        String currentTime = sdf.format(new Date().getTime());
+        int hour = Integer.parseInt(currentTime.split(":")[0]);
+        int min = Integer.parseInt(currentTime.split(":")[1]);
+
+        int bookingHour = Integer.parseInt(dateTimeToString.getRawHour());
+        int bookingMin = Integer.parseInt(dateTimeToString.getMin());
+
+        int minDifference;
+        int hrDifference;
+
+        if(hasBookingToday(bookingDay, bookingMonth, bookingYear)) {
+            hrDifference = bookingHour - hour;
+
+            if(min < bookingMin) minDifference = bookingMin - min;
+            else {
+                minDifference = 60 - (min - bookingMin);
+                if(minDifference < 60) hrDifference--;
+                else minDifference = 0;
+            }
+
+            if(booking.getStatus().equals("Booked") &&
+                    booking.getBookingType().getId().equals("BT99") &&
+                    (hrDifference < -1 || (hrDifference == -1 && minDifference <= 50)))
+                buttonLayout.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private boolean hasBookingToday(int bookingDay, int bookingMonth, int bookingYear) {
+        return (bookingDay == calendarDay && bookingMonth == calendarMonth && bookingYear == calendarYear);
     }
 
     private void viewQRCode() {
@@ -547,8 +620,13 @@ public class OnTheSpotActivity extends AppCompatActivity {
         dialogCloseImage = dialog.findViewById(R.id.dialogCloseImage);
         tvMessage = dialog.findViewById(R.id.tvMessage);
         tvMessage2 = dialog.findViewById(R.id.tvMessage2);
+        tvPreferences = dialog.findViewById(R.id.tvPreferences);
+        preferencesImage = dialog.findViewById(R.id.preferencesImage);
 
         dialogCloseImage.setOnClickListener(view -> dialog.dismiss());
+
+        preferencesImage.setOnClickListener(view -> openPreferences());
+        tvPreferences.setOnClickListener(view -> openPreferences());
 
         dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -556,6 +634,11 @@ public class OnTheSpotActivity extends AppCompatActivity {
         dialog.getWindow().getAttributes().windowAnimations = R.style.animBottomSlide;
         dialog.getWindow().setGravity(Gravity.BOTTOM);
         dialog.setCanceledOnTouchOutside(false);
+    }
+
+    private void openPreferences() {
+        Intent intent = new Intent(myContext, PreferenceActivity.class);
+        myContext.startActivity(intent);
     }
 
     private void initQRCodeDialog() {
@@ -727,6 +810,7 @@ public class OnTheSpotActivity extends AppCompatActivity {
                     price = String.valueOf(booking.getBookingType().getPrice());
                     if(price.split("\\.")[1].length() == 1) price += 0;
 
+                    startTimer(booking);
                     finishLoading();
                 }
                 else errorLoading(defaultLogText);

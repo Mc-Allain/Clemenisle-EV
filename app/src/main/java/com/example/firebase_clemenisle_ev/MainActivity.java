@@ -131,8 +131,8 @@ public class MainActivity extends AppCompatActivity {
 
     CountDownTimer updateAppTimer;
     Dialog dialog;
-    ImageView dialogCloseImage;
-    TextView tvAppVersion;
+    ImageView dialogCloseImage, preferencesImage;
+    TextView tvAppVersion, tvPreferences;
     Button updateAppButton;
 
     Dialog appVersionInfoDialog;
@@ -364,6 +364,11 @@ public class MainActivity extends AppCompatActivity {
         appVersionInfoDialogCloseImage = appVersionInfoDialog.findViewById(R.id.dialogCloseImage);
         tvAppVersionInfoDialogTitle = appVersionInfoDialog.findViewById(R.id.tvDialogTitle);
         extvNewlyAddedFeatures = appVersionInfoDialog.findViewById(R.id.extvNewlyAddedFeatures);
+        tvPreferences = appVersionInfoDialog.findViewById(R.id.tvPreferences);
+        preferencesImage = appVersionInfoDialog.findViewById(R.id.preferencesImage);
+
+        preferencesImage.setOnClickListener(view -> openPreferences());
+        tvPreferences.setOnClickListener(view -> openPreferences());
 
         appVersionInfoDialogCloseImage.setOnClickListener(view -> appVersionInfoDialog.dismiss());
 
@@ -372,6 +377,11 @@ public class MainActivity extends AppCompatActivity {
         appVersionInfoDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
         appVersionInfoDialog.getWindow().getAttributes().windowAnimations = R.style.animBottomSlide;
         appVersionInfoDialog.getWindow().setGravity(Gravity.BOTTOM);
+    }
+
+    private void openPreferences() {
+        Intent intent = new Intent(myContext, PreferenceActivity.class);
+        myContext.startActivity(intent);
     }
 
     private void startTimer() {

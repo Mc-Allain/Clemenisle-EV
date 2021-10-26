@@ -19,15 +19,42 @@
         please do the following:
         \n• Prepare your payment.
         \n• Go to your designated Starting Station.
+        \n• Always check on the chat between you and the driver regarding on possible concerns.
         \n• Find the plate number of your assigned driver\'s E-Vehicle.
         \n• Show and let your assigned driver scan the QR Code of your booking record.
         \n• Please check carefully the status of your booking record. It should become \"Completed\".
+        \n• Settle the payment.
         \n• Ride into the E-Vehicle with your assigned driver.
+        \n• Have fun.
     </string>
     <string name="bookingProcess2">
         You can only cancel your booking while it is \"Processing\".
         Once the status becomes \"Booked\", you cannot cancel it anymore.
-        Please be sure of your decision.
+        Please be sure of your decision and please be polite as always.
+    </string>
+    <string name="bookingProcess3">
+        Things to do while waiting for your assigned driver:
+        \n• Prepare your payment.
+        \n• Do not leave your current position.
+        \n• Always check on the chat between you and the driver regarding on possible concerns.
+    </string>
+    <string name="bookingProcess4">
+        Things to do when your assigned driver arrived:
+        \n• Validate the plate number of your assigned driver\'s E-Vehicle.
+        \n• Show and let your assigned driver scan the QR Code of your booking record.
+        \n• Please check carefully the status of your booking record. It should become \"Completed\".
+        \n• Settle the payment.
+        \n• Ride into the E-Vehicle with your assigned driver.
+        \n• Have fun.
+    </string>
+    <string name="bookingProcess5">
+        If your booking record is still \"Processing\" for 10 minutes,
+        it will be mark automatically as \"Failed\",
+        but you are freely to cancel your booking before then.
+        Once the status becomes \"Booked\", you are only able to cancel it
+        if the driver is not yet arrived by 10 minutes since the time of the schedule of your booking.
+        Until then, please consider waiting for your driver and send kind regards before cancelling.
+        Please be polite as always.
     </string>
     <string name="onlinePayment1">
         Online Payment must be settled until 24 HOURS BEFORE THE BOOKING SCHEDULE,

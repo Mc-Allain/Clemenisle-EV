@@ -116,8 +116,8 @@ public class RouteActivity extends AppCompatActivity implements
     String cancelButtonText = "Cancel Booking", cancellingButtonText = "Cancelling…";
 
     Dialog dialog;
-    ImageView dialogCloseImage;
-    TextView tvMessage, tvMessage2;
+    ImageView dialogCloseImage, preferencesImage;
+    TextView tvMessage, tvMessage2, tvPreferences;
 
     boolean isShowBookingAlertEnabled;
 
@@ -480,6 +480,11 @@ public class RouteActivity extends AppCompatActivity implements
         dialogCloseImage = dialog.findViewById(R.id.dialogCloseImage);
         tvMessage = dialog.findViewById(R.id.tvMessage);
         tvMessage2 = dialog.findViewById(R.id.tvMessage2);
+        tvPreferences = dialog.findViewById(R.id.tvPreferences);
+        preferencesImage = dialog.findViewById(R.id.preferencesImage);
+
+        preferencesImage.setOnClickListener(view -> openPreferences());
+        tvPreferences.setOnClickListener(view -> openPreferences());
 
         dialogCloseImage.setOnClickListener(view -> dialog.dismiss());
 
@@ -489,6 +494,11 @@ public class RouteActivity extends AppCompatActivity implements
         dialog.getWindow().getAttributes().windowAnimations = R.style.animBottomSlide;
         dialog.getWindow().setGravity(Gravity.BOTTOM);
         dialog.setCanceledOnTouchOutside(false);
+    }
+
+    private void openPreferences() {
+        Intent intent = new Intent(myContext, PreferenceActivity.class);
+        myContext.startActivity(intent);
     }
 
     @SuppressWarnings("deprecation")

@@ -190,12 +190,14 @@ public class DriverActivity extends AppCompatActivity {
 
             @Override
             public void onFinish() {
-                for(Booking booking : pendingList) {
-                    checkBooking(booking);
-                }
+                if(userId != null) {
+                    for(Booking booking : pendingList) {
+                        checkBooking(booking);
+                    }
 
-                for(Booking booking : taskList) {
-                    checkBooking(booking);
+                    for(Booking booking : taskList) {
+                        checkBooking(booking);
+                    }
                 }
 
                 start();
