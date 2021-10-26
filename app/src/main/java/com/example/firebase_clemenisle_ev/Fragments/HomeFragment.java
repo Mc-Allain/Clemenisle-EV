@@ -73,6 +73,8 @@ public class HomeFragment extends Fragment implements
     Context myContext;
     Resources myResources;
 
+    int colorBlack, colorInitial;
+
     TouristSpotAdapter touristSpotAdapter;
     TouristSpotListAdapter touristSpotListAdapter;
     List<DetailedTouristSpot> touristSpotList = new ArrayList<>(), copy = new ArrayList<>();
@@ -161,6 +163,9 @@ public class HomeFragment extends Fragment implements
 
         myContext = getContext();
         myResources = getResources();
+
+        colorBlack = myResources.getColor(R.color.black);
+        colorInitial = myResources.getColor(R.color.initial);
 
         cslInitial = ColorStateList.valueOf(myResources.getColor(R.color.initial));
         cslBlue = ColorStateList.valueOf(myResources.getColor(R.color.blue));
@@ -602,9 +607,6 @@ public class HomeFragment extends Fragment implements
     }
 
     private void setActionButtonEnabled(boolean value) {
-        int colorBlack = myContext.getResources().getColor(R.color.black);
-        int colorInitial = myContext.getResources().getColor(R.color.initial);
-
         searchImage.setEnabled(value);
         sortImage.setEnabled(value);
         viewModeImage.setEnabled(value);
@@ -662,6 +664,7 @@ public class HomeFragment extends Fragment implements
             touristSpotView.setAdapter(touristSpotAdapter);
             touristSpotAdapter.setOnLikeClickListener(this);
         }
+        viewModeImage.getDrawable().setTint(colorBlack);
     }
 
     private void getCurrentUserLikedSpots() {

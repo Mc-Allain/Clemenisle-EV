@@ -1,9 +1,13 @@
 package com.example.firebase_clemenisle_ev.Adapters;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Handler;
@@ -16,6 +20,7 @@ import android.transition.TransitionManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -40,6 +45,11 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.MultiFormatWriter;
+import com.google.zxing.WriterException;
+import com.google.zxing.common.BitMatrix;
+import com.journeyapps.barcodescanner.BarcodeEncoder;
 import com.ms.square.android.expandabletextview.ExpandableTextView;
 
 import java.util.List;
@@ -74,6 +84,9 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
             locateDestinationSpotText = "Locate Destination Spot";
 
     boolean inDriverMode = false;
+
+    Dialog qrCodeDialog;
+    ImageView qrCodeDialogCloseImage, qrCodeImage;
 
     public void setInDriverMode(boolean inDriverMode) {
         this.inDriverMode = inDriverMode;
@@ -133,6 +146,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
         myContext = inflater.getContext();
 
         initSharedPreferences();
+        initQRCodeDialog();
 
         firebaseAuth = FirebaseAuth.getInstance();
         if(isLoggedIn) {
@@ -292,7 +306,6 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
         });
 
         tvOpen.setOnClickListener(view -> openItem(booking));
-
         openImage.setOnClickListener(view -> openItem(booking));
 
         if(inDriverMode) {
@@ -306,6 +319,9 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
             userInfoLayout.setVisibility(View.GONE);
             tvViewQR.setVisibility(View.VISIBLE);
             viewQRImage.setVisibility(View.VISIBLE);
+
+            tvViewQR.setOnClickListener(view -> viewQRCode(bookingId));
+            viewQRImage.setOnClickListener(view -> viewQRCode(bookingId));
 
             extvMessage.setText(null);
         }
@@ -330,6 +346,43 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                 ConstraintLayout.LayoutParams) backgroundLayout.getLayoutParams();
         layoutParams.setMargins(layoutParams.leftMargin, top, layoutParams.rightMargin, bottom);
         backgroundLayout.setLayoutParams(layoutParams);
+    }
+
+    private void viewQRCode(String bookingId) {
+        MultiFormatWriter writer = new MultiFormatWriter();
+
+        try {
+            BitMatrix matrix = writer.encode(bookingId, BarcodeFormat.QR_CODE,
+                    1024, 1024);
+            BarcodeEncoder encoder = new BarcodeEncoder();
+            Bitmap bitmap = encoder.createBitmap(matrix);
+
+            qrCodeImage.setImageBitmap(bitmap);
+            qrCodeDialog.show();
+        } catch (WriterException e) {
+            e.printStackTrace();
+
+            Toast.makeText(
+                    myContext,
+                    "Failed to view QR Code. Please try again later.",
+                    Toast.LENGTH_LONG
+            ).show();
+        }
+    }
+
+    private void initQRCodeDialog() {
+        qrCodeDialog = new Dialog(myContext);
+        qrCodeDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        qrCodeDialog.setContentView(R.layout.dialog_qrcode_layout);
+
+        qrCodeDialogCloseImage = qrCodeDialog.findViewById(R.id.dialogCloseImage);
+        qrCodeImage = qrCodeDialog.findViewById(R.id.qrCodeImage);
+
+        qrCodeDialogCloseImage.setOnClickListener(view -> qrCodeDialog.dismiss());
+
+        qrCodeDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT);
+        qrCodeDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
     }
 
     private void openMap(Station startStation) {

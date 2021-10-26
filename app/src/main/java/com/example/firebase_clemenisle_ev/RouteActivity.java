@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -41,6 +42,11 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.MultiFormatWriter;
+import com.google.zxing.WriterException;
+import com.google.zxing.common.BitMatrix;
+import com.journeyapps.barcodescanner.BarcodeEncoder;
 import com.ms.square.android.expandabletextview.ExpandableTextView;
 
 import java.util.ArrayList;
@@ -109,6 +115,9 @@ public class RouteActivity extends AppCompatActivity implements
 
     boolean isShowBookingAlertEnabled;
 
+    Dialog qrCodeDialog;
+    ImageView qrCodeDialogCloseImage, qrCodeImage;
+
     private void initSharedPreferences() {
         SharedPreferences sharedPreferences = myContext
                 .getSharedPreferences("login", Context.MODE_PRIVATE);
@@ -169,6 +178,7 @@ public class RouteActivity extends AppCompatActivity implements
 
         initSharedPreferences();
         initBookingAlertDialog();
+        initQRCodeDialog();
 
         Intent intent = getIntent();
         bookingId = intent.getStringExtra("bookingId");
@@ -282,6 +292,31 @@ public class RouteActivity extends AppCompatActivity implements
             userInfoLayout.setVisibility(View.GONE);
             tvViewQR.setVisibility(View.VISIBLE);
             viewQRImage.setVisibility(View.VISIBLE);
+
+            tvViewQR.setOnClickListener(view -> viewQRCode());
+            viewQRImage.setOnClickListener(view -> viewQRCode());
+        }
+    }
+
+    private void viewQRCode() {
+        MultiFormatWriter writer = new MultiFormatWriter();
+
+        try {
+            BitMatrix matrix = writer.encode(bookingId, BarcodeFormat.QR_CODE,
+                    1024, 1024);
+            BarcodeEncoder encoder = new BarcodeEncoder();
+            Bitmap bitmap = encoder.createBitmap(matrix);
+
+            qrCodeImage.setImageBitmap(bitmap);
+            qrCodeDialog.show();
+        } catch (WriterException e) {
+            e.printStackTrace();
+
+            Toast.makeText(
+                    myContext,
+                    "Failed to view QR Code. Please try again later.",
+                    Toast.LENGTH_LONG
+            ).show();
         }
     }
 
@@ -432,6 +467,21 @@ public class RouteActivity extends AppCompatActivity implements
         dialog.getWindow().getAttributes().windowAnimations = R.style.animBottomSlide;
         dialog.getWindow().setGravity(Gravity.BOTTOM);
         dialog.setCanceledOnTouchOutside(false);
+    }
+
+    private void initQRCodeDialog() {
+        qrCodeDialog = new Dialog(myContext);
+        qrCodeDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        qrCodeDialog.setContentView(R.layout.dialog_qrcode_layout);
+
+        qrCodeDialogCloseImage = qrCodeDialog.findViewById(R.id.dialogCloseImage);
+        qrCodeImage = qrCodeDialog.findViewById(R.id.qrCodeImage);
+
+        qrCodeDialogCloseImage.setOnClickListener(view -> qrCodeDialog.dismiss());
+
+        qrCodeDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT);
+        qrCodeDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
     }
 
     private void updateInfo() {
