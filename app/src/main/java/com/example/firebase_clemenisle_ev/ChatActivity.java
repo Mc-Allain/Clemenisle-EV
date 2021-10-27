@@ -16,7 +16,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.example.firebase_clemenisle_ev.Adapters.ChatAdapter;
 import com.example.firebase_clemenisle_ev.Classes.Booking;
+import com.example.firebase_clemenisle_ev.Classes.Chat;
 import com.example.firebase_clemenisle_ev.Classes.FirebaseURL;
 import com.example.firebase_clemenisle_ev.Classes.User;
 import com.google.android.material.textfield.TextInputLayout;
@@ -28,11 +30,14 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class ChatActivity extends AppCompatActivity {
@@ -54,8 +59,11 @@ public class ChatActivity extends AppCompatActivity {
     Context myContext;
     Resources myResources;
 
-    String bookingId, passengerId;
+    String bookingId, userId, passengerUserId, driverUserId, initialMessage;
     boolean isLoggedIn = false, inDriverMode = false;
+
+    ChatAdapter chatAdapter;
+    List<Chat> chats = new ArrayList<>();
 
     private void initSharedPreferences() {
         SharedPreferences sharedPreferences = myContext
@@ -89,7 +97,6 @@ public class ChatActivity extends AppCompatActivity {
         tvDriverFullName2 = findViewById(R.id.tvDriverFullName2);
         chatView = findViewById(R.id.chatView);
 
-
         tlMessage = findViewById(R.id.tlMessage);
         etMessage = findViewById(R.id.etMessage);
         sendImage = findViewById(R.id.sendImage);
@@ -104,7 +111,7 @@ public class ChatActivity extends AppCompatActivity {
         inDriverMode = intent.getBooleanExtra("inDriverMode", false);
 
         firebaseAuth = FirebaseAuth.getInstance();
-        if(isLoggedIn && !inDriverMode) {
+        if(isLoggedIn) {
             firebaseUser = firebaseAuth.getCurrentUser();
             if(firebaseUser != null) firebaseUser.reload();
             if(firebaseUser == null) {
@@ -117,16 +124,56 @@ public class ChatActivity extends AppCompatActivity {
                         Toast.LENGTH_LONG
                 ).show();
             }
-            else passengerId = firebaseUser.getUid();
+            else {
+                if(inDriverMode) driverUserId = firebaseUser.getUid();
+                else passengerUserId = firebaseUser.getUid();
+                userId = firebaseUser.getUid();
+            }
         }
 
         if(inDriverMode) getUserInfo();
         else getDriverInfo();
 
+        LinearLayoutManager linearLayout =
+                new LinearLayoutManager(myContext, LinearLayoutManager.VERTICAL, true);
+        chatView.setLayoutManager(linearLayout);
+        chatAdapter = new ChatAdapter(myContext, chats, userId, passengerUserId, driverUserId,
+                initialMessage, inDriverMode);
+        chatView.setAdapter(chatAdapter);
+
         sendImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
+            }
+        });
+    }
+
+    private void getChats() {
+        usersRef.child(passengerUserId).child("chats").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                chats.clear();
+                if(snapshot.exists()) {
+                    for(DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        Chat chat = dataSnapshot.getValue(Chat.class);
+                        chats.add(chat);
+                    }
+                }
+
+                Collections.reverse(chats);
+                chatAdapter.setPassengerUserId(passengerUserId);
+                chatAdapter.setDriverUserId(driverUserId);
+                chatAdapter.setInitialMessage(initialMessage);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(
+                        myContext,
+                        error.toString(),
+                        Toast.LENGTH_LONG
+                ).show();
             }
         });
     }
@@ -155,6 +202,10 @@ public class ChatActivity extends AppCompatActivity {
 
                                 driverInfoLayout.setVisibility(View.VISIBLE);
                                 userInfoLayout.setVisibility(View.GONE);
+
+                                driverUserId = thisUser.getId();
+                                initialMessage = booking.getMessage();
+                                getChats();
 
                                 return;
                             }
@@ -194,7 +245,9 @@ public class ChatActivity extends AppCompatActivity {
                                 userInfoLayout.setVisibility(View.VISIBLE);
                                 driverInfoLayout.setVisibility(View.GONE);
 
-                                passengerId = thisUser.getId();
+                                passengerUserId = thisUser.getId();
+                                initialMessage = booking.getMessage();
+                                getChats();
 
                                 return;
                             }

@@ -529,24 +529,28 @@ public class MainActivity extends AppCompatActivity {
 
     private void initNotificationInHours(Booking booking, List<String> hourArray, int hrDifference,
                                          List<String> minArray, int minDifference, int sec) {
-        if(hourArray.contains(String.valueOf(hrDifference)) &&
-                (minArray.contains(String.valueOf(minDifference)) || minDifference == 0) && sec < 5) {
-            showUpcomingBookingNotification(booking, hrDifference, "hours");
-        }
-        else if(hrDifference % 24 == 0) {
-            if((minArray.contains(String.valueOf(minDifference)) || minDifference == 0) && sec < 5)
-                showUpcomingBookingNotification(booking, hrDifference/24, "day");
+        if(!booking.getBookingType().getId().equals("BT99")) {
+            if(hourArray.contains(String.valueOf(hrDifference)) &&
+                    (minArray.contains(String.valueOf(minDifference)) || minDifference == 0) && sec < 5) {
+                showUpcomingBookingNotification(booking, hrDifference, "hours");
+            }
+            else if(hrDifference % 24 == 0) {
+                if((minArray.contains(String.valueOf(minDifference)) || minDifference == 0) && sec < 5)
+                    showUpcomingBookingNotification(booking, hrDifference/24, "day");
+            }
         }
     }
 
     private void initNotificationInMinutes(Booking booking, int hrDifference,
                                            List<String> minArray, int minDifference, int sec) {
-        if(hrDifference == 0 && minArray.contains(String.valueOf(minDifference)) && sec < 5) {
-            if(minDifference == 1) showUpcomingBookingNotification(booking, minDifference, "minute");
-            else showUpcomingBookingNotification(booking, minDifference, "minutes");
+        if(!booking.getBookingType().getId().equals("BT99")) {
+            if(hrDifference == 0 && minArray.contains(String.valueOf(minDifference)) && sec < 5) {
+                if(minDifference == 1) showUpcomingBookingNotification(booking, minDifference, "minute");
+                else showUpcomingBookingNotification(booking, minDifference, "minutes");
+            }
+            else if(hrDifference == 1 && minDifference == 0 && sec < 5)
+                showUpcomingBookingNotification(booking, hrDifference, "hour");
         }
-        else if(hrDifference == 1 && minDifference == 0 && sec < 5)
-            showUpcomingBookingNotification(booking, hrDifference, "hour");
     }
 
     private boolean hasBookingToday(int bookingDay, int bookingMonth, int bookingYear) {
