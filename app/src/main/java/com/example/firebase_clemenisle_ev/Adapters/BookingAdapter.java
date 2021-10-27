@@ -27,6 +27,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.Target;
+import com.example.firebase_clemenisle_ev.ChatActivity;
 import com.example.firebase_clemenisle_ev.Classes.Booking;
 import com.example.firebase_clemenisle_ev.Classes.BookingType;
 import com.example.firebase_clemenisle_ev.Classes.FirebaseURL;
@@ -129,6 +130,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                 thumbnail = holder.thumbnail, moreImage = holder.moreImage,
                 openImage = holder.openImage, locateImage = holder.locateImage,
                 locateEndImage = holder.locateEndImage, viewQRImage = holder.viewQRImage,
+                chatImage = holder.chatImage,
                 driverImage = holder.driverImage, passImage = holder.passImage,
                 checkImage = holder.checkImage, paidImage = holder.paidImage;
         TextView tvUserFullName = holder.tvUserFullName, tvDriverFullName = holder.tvDriverFullName,
@@ -138,6 +140,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                 tvStartStation2 = holder.tvStartStation2, tvEndStation2 = holder.tvEndStation2,
                 tvOption = holder.tvOption, tvOpen = holder.tvOpen,
                 tvLocate = holder.tvLocate, tvLocateEnd = holder.tvLocateEnd,
+                tvChat = holder.tvChat,
                 tvViewQR = holder.tvViewQR, tvDriver = holder.tvDriver,
                 tvPass = holder.tvPass, tvCheck = holder.tvCheck;
         ExpandableTextView extvMessage = holder.extvMessage;
@@ -314,7 +317,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
             userInfoLayout.setVisibility(View.VISIBLE);
 
             extvMessage.setText(message);
-            getUserInfo(bookingId, status, tvUserFullName, profileImage,
+            getUserInfo(bookingId, status, tvUserFullName, profileImage, tvChat, chatImage,
                     tvDriver, driverImage, tvPass, passImage, tvCheck, checkImage);
         }
         else {
@@ -326,6 +329,18 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
 
             tvViewQR.setOnClickListener(view -> viewQRCode(bookingId));
             viewQRImage.setOnClickListener(view -> viewQRCode(bookingId));
+
+            if(status.equals("Booked")) {
+                tvChat.setVisibility(View.VISIBLE);
+                chatImage.setVisibility(View.VISIBLE);
+
+                tvChat.setOnClickListener(view -> openChat(false, bookingId));
+                chatImage.setOnClickListener(view -> openChat(false, bookingId));
+            }
+            else {
+                tvChat.setVisibility(View.GONE);
+                chatImage.setVisibility(View.GONE);
+            }
 
             extvMessage.setText(null);
             getDriverInfo(bookingId, tvDriverFullName, driverProfileImage, driverInfoLayout);
@@ -351,6 +366,13 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                 ConstraintLayout.LayoutParams) backgroundLayout.getLayoutParams();
         layoutParams.setMargins(layoutParams.leftMargin, top, layoutParams.rightMargin, bottom);
         backgroundLayout.setLayoutParams(layoutParams);
+    }
+
+    private void openChat(boolean inDriverMode, String bookingId) {
+        Intent intent = new Intent(myContext, ChatActivity.class);
+        intent.putExtra("bookingId", bookingId);
+        intent.putExtra("inDriverMode", inDriverMode);
+        myContext.startActivity(intent);
     }
 
     private void getDriverInfo(String bookingId, TextView tvDriverFullName,
@@ -515,6 +537,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
 
     private void getUserInfo(String bookingId, String status,
                              TextView tvUserFullName, ImageView profileImage,
+                             TextView tvChat, ImageView chatImage,
                              TextView tvDriver, ImageView driverImage,
                              TextView tvPass, ImageView passImage,
                              TextView tvCheck, ImageView checkImage) {
@@ -544,6 +567,8 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                                     driverImage.setVisibility(View.GONE);
                                 }
                                 else if(status.equals("Processing")) {
+                                    tvChat.setVisibility(View.GONE);
+                                    chatImage.setVisibility(View.GONE);
                                     tvDriver.setVisibility(View.VISIBLE);
                                     driverImage.setVisibility(View.VISIBLE);
                                     tvPass.setVisibility(View.GONE);
@@ -555,6 +580,12 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                                     driverImage.setOnClickListener(view -> takeTask(booking, thisUser.getId()));
                                 }
                                 else if(status.equals("Booked")) {
+                                    tvChat.setVisibility(View.VISIBLE);
+                                    chatImage.setVisibility(View.VISIBLE);
+
+                                    tvChat.setOnClickListener(view -> openChat(true, bookingId));
+                                    chatImage.setOnClickListener(view -> openChat(true, bookingId));
+
                                     tvDriver.setVisibility(View.GONE);
                                     driverImage.setVisibility(View.GONE);
                                     tvPass.setVisibility(View.VISIBLE);
@@ -566,6 +597,8 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                                     checkImage.setOnClickListener(view -> openItem(booking, true));
                                 }
                                 else {
+                                    tvChat.setVisibility(View.GONE);
+                                    chatImage.setVisibility(View.GONE);
                                     tvDriver.setVisibility(View.GONE);
                                     driverImage.setVisibility(View.GONE);
                                     tvPass.setVisibility(View.GONE);
@@ -721,11 +754,11 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView profileImage, driverProfileImage, thumbnail, moreImage,
-                openImage, locateImage, locateEndImage, viewQRImage,
+                openImage, locateImage, locateEndImage, viewQRImage, chatImage,
                 driverImage, passImage, checkImage, paidImage;
         TextView tvUserFullName, tvDriverFullName, tvBookingId, tvSchedule, tvTypeName, tvPrice,
                 tvStartStation, tvStartStation2, tvEndStation, tvEndStation2,
-                tvOption, tvOpen, tvLocate, tvLocateEnd, tvViewQR, tvDriver, tvPass, tvCheck;
+                tvOption, tvOpen, tvLocate, tvLocateEnd, tvViewQR, tvChat, tvDriver, tvPass, tvCheck;
         ExpandableTextView extvMessage;
         ConstraintLayout backgroundLayout, buttonLayout, userInfoLayout, driverInfoLayout;
 
@@ -766,6 +799,8 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
 
             tvViewQR = itemView.findViewById(R.id.tvViewQR);
             viewQRImage = itemView.findViewById(R.id.viewQRImage);
+            tvChat = itemView.findViewById(R.id.tvChat);
+            chatImage = itemView.findViewById(R.id.chatImage);
             tvDriver = itemView.findViewById(R.id.tvDriver);
             driverImage = itemView.findViewById(R.id.driverImage);
             tvPass = itemView.findViewById(R.id.tvPass);

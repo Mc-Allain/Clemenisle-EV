@@ -82,9 +82,9 @@ public class OnTheSpotActivity extends AppCompatActivity {
     private final static int MAP_SETTINGS_REQUEST = 1;
 
     ImageView profileImage, driverProfileImage, thumbnail, moreImage, locateImage, locateDestinationImage, viewQRImage,
-            driverImage, passImage, checkImage, reloadImage;
+            chatImage, driverImage, passImage, checkImage, reloadImage;
     TextView tvUserFullName, tvDriverFullName, tvBookingId, tvSchedule, tvTypeName, tvPrice, tvOriginLocation2, tvDestinationSpot2,
-            tvLocate, tvLocateDestination, tvViewQR, tvDriver, tvPass, tvCheck, tvLog;
+            tvLocate, tvLocateDestination, tvViewQR, tvChat, tvDriver, tvPass, tvCheck, tvLog;
     ExpandableTextView extvMessage;
     ConstraintLayout buttonLayout, bookingInfoLayout, bookingInfoButtonLayout, userInfoLayout, driverInfoLayout;
     Button cancelButton;
@@ -186,6 +186,8 @@ public class OnTheSpotActivity extends AppCompatActivity {
 
         tvViewQR = findViewById(R.id.tvViewQR);
         viewQRImage = findViewById(R.id.viewQRImage);
+        tvChat = findViewById(R.id.tvChat);
+        chatImage = findViewById(R.id.chatImage);
         tvDriver = findViewById(R.id.tvDriver);
         driverImage = findViewById(R.id.driverImage);
         tvPass = findViewById(R.id.tvPass);
@@ -205,7 +207,9 @@ public class OnTheSpotActivity extends AppCompatActivity {
         mapSettingsImage = findViewById(R.id.mapSettingsImage);
 
         myContext = OnTheSpotActivity.this;
-        myResources = getResources();optionRunnable = () -> closeOption();
+        myResources = getResources();
+
+        optionRunnable = () -> closeOption();
 
         initSharedPreferences();
         initBookingAlertDialog();
@@ -312,7 +316,7 @@ public class OnTheSpotActivity extends AppCompatActivity {
             driverInfoLayout.setVisibility(View.GONE);
             userInfoLayout.setVisibility(View.VISIBLE);
 
-            getUserInfo(bookingId);
+            getUserInfo();
         }
         else {
             userInfoLayout.setVisibility(View.GONE);
@@ -327,11 +331,18 @@ public class OnTheSpotActivity extends AppCompatActivity {
             tvViewQR.setOnClickListener(view -> viewQRCode());
             viewQRImage.setOnClickListener(view -> viewQRCode());
 
-            getDriverInfo(bookingId);
+            getDriverInfo();
         }
     }
 
-    private void getDriverInfo(String bookingId) {
+    private void openChat() {
+        Intent intent = new Intent(myContext, ChatActivity.class);
+        intent.putExtra("bookingId", bookingId);
+        intent.putExtra("inDriverMode", inDriverMode);
+        myContext.startActivity(intent);
+    }
+
+    private void getDriverInfo() {
         usersRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -451,7 +462,7 @@ public class OnTheSpotActivity extends AppCompatActivity {
         }
     }
 
-    private void getUserInfo(String bookingId) {
+    private void getUserInfo() {
         usersRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -478,6 +489,8 @@ public class OnTheSpotActivity extends AppCompatActivity {
                                     driverImage.setVisibility(View.GONE);
                                 }
                                 else if(status.equals("Processing")) {
+                                    tvChat.setVisibility(View.GONE);
+                                    chatImage.setVisibility(View.GONE);
                                     tvDriver.setVisibility(View.VISIBLE);
                                     driverImage.setVisibility(View.VISIBLE);
                                     tvPass.setVisibility(View.GONE);
@@ -489,6 +502,12 @@ public class OnTheSpotActivity extends AppCompatActivity {
                                     driverImage.setOnClickListener(view -> takeTask(booking));
                                 }
                                 else if(status.equals("Booked")) {
+                                    tvChat.setVisibility(View.VISIBLE);
+                                    chatImage.setVisibility(View.VISIBLE);
+
+                                    tvChat.setOnClickListener(view -> openChat());
+                                    chatImage.setOnClickListener(view -> openChat());
+
                                     tvDriver.setVisibility(View.GONE);
                                     driverImage.setVisibility(View.GONE);
                                     tvPass.setVisibility(View.VISIBLE);
@@ -500,6 +519,8 @@ public class OnTheSpotActivity extends AppCompatActivity {
                                     checkImage.setOnClickListener(view -> scanQRCode());
                                 }
                                 else {
+                                    tvChat.setVisibility(View.GONE);
+                                    chatImage.setVisibility(View.GONE);
                                     tvDriver.setVisibility(View.GONE);
                                     driverImage.setVisibility(View.GONE);
                                     tvPass.setVisibility(View.GONE);
@@ -775,6 +796,18 @@ public class OnTheSpotActivity extends AppCompatActivity {
 
         fragmentManager.beginTransaction().replace(mapLayout.getId(), mapFragment).commit();
         mapFragment.setCurrentLocation(originLocation);
+
+        if(status.equals("Booked")) {
+            tvChat.setVisibility(View.VISIBLE);
+            chatImage.setVisibility(View.VISIBLE);
+
+            tvChat.setOnClickListener(view -> openChat());
+            chatImage.setOnClickListener(view -> openChat());
+        }
+        else {
+            tvChat.setVisibility(View.GONE);
+            chatImage.setVisibility(View.GONE);
+        }
     }
 
     private void openMap(String id, LatLng latlng, String name, int type) {

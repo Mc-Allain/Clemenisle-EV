@@ -459,7 +459,6 @@ public class LoggedInBookingListFragment extends Fragment {
                     }
                 }
                 success1 = true;
-                Collections.reverse(bookingList1);
                 finishLoading();
             }
 
@@ -492,7 +491,6 @@ public class LoggedInBookingListFragment extends Fragment {
                     }
                 }
                 success2 = true;
-                Collections.reverse(bookingList2);
                 finishLoading();
             }
 

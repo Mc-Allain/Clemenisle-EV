@@ -400,13 +400,25 @@
                 app:tint="@color/blue" />
 
             <ImageView
-                android:id="@+id/viewQRImage"
+                android:id="@+id/chatImage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="4dp"
                 android:padding="4dp"
                 android:visibility="gone"
                 app:layout_constraintBottom_toTopOf="@+id/driverImage"
+                app:layout_constraintStart_toStartOf="@+id/locateImage"
+                app:srcCompat="@drawable/ic_baseline_chat_24"
+                app:tint="@color/blue" />
+
+            <ImageView
+                android:id="@+id/viewQRImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                android:padding="4dp"
+                android:visibility="gone"
+                app:layout_constraintBottom_toTopOf="@+id/chatImage"
                 app:layout_constraintStart_toStartOf="@+id/locateImage"
                 app:srcCompat="@drawable/ic_baseline_qr_code_2_24"
                 app:tint="@color/blue" />
@@ -479,6 +491,21 @@
                 app:layout_constraintEnd_toEndOf="@+id/tvLocateEnd"
                 app:layout_constraintStart_toEndOf="@+id/driverImage"
                 app:layout_constraintTop_toTopOf="@+id/driverImage" />
+
+            <TextView
+                android:id="@+id/tvChat"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:fontFamily="@font/ubuntu"
+                android:gravity="center_vertical"
+                android:text="Chat"
+                android:textColor="@color/blue"
+                android:textStyle="bold"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@+id/chatImage"
+                app:layout_constraintEnd_toEndOf="@+id/tvLocateEnd"
+                app:layout_constraintStart_toEndOf="@+id/chatImage"
+                app:layout_constraintTop_toTopOf="@+id/chatImage" />
 
             <TextView
                 android:id="@+id/tvViewQR"

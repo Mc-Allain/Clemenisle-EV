@@ -540,7 +540,7 @@
                     android:fontFamily="@font/ubuntu"
                     android:hint="Please input your comment here…"
                     android:inputType="textLongMessage|textMultiLine|textCapSentences"
-                    android:maxLength="128"
+                    android:maxLength="256"
                     android:textColor="@color/black"
                     android:textSize="14sp"
                     tools:ignore="SpeakableTextPresentCheck" />

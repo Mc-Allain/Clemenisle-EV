@@ -74,9 +74,9 @@ public class RouteActivity extends AppCompatActivity implements
     FirebaseUser firebaseUser;
 
     ImageView profileImage, driverProfileImage, thumbnail, moreImage, locateImage, locateEndImage, viewQRImage,
-            driverImage, passImage, checkImage, reloadImage, paidImage;
+            chatImage, driverImage, passImage, checkImage, reloadImage, paidImage;
     TextView tvUserFullName, tvDriverFullName, tvBookingId, tvSchedule, tvTypeName, tvPrice, tvStartStation2, tvEndStation2,
-            tvLocate, tvLocateEnd, tvViewQR, tvDriver, tvPass, tvCheck, tvLog;
+            tvLocate, tvLocateEnd, tvViewQR, tvChat, tvDriver, tvPass, tvCheck, tvLog;
     ExpandableTextView extvMessage;
     RecyclerView routeView;
     ConstraintLayout buttonLayout, bookingInfoLayout, bookingInfoButtonLayout, userInfoLayout, driverInfoLayout;
@@ -170,6 +170,8 @@ public class RouteActivity extends AppCompatActivity implements
 
         tvViewQR = findViewById(R.id.tvViewQR);
         viewQRImage = findViewById(R.id.viewQRImage);
+        tvChat = findViewById(R.id.tvChat);
+        chatImage = findViewById(R.id.chatImage);
         tvDriver = findViewById(R.id.tvDriver);
         driverImage = findViewById(R.id.driverImage);
         tvPass = findViewById(R.id.tvPass);
@@ -302,7 +304,7 @@ public class RouteActivity extends AppCompatActivity implements
             driverInfoLayout.setVisibility(View.GONE);
             userInfoLayout.setVisibility(View.VISIBLE);
 
-            getUserInfo(bookingId);
+            getUserInfo();
         }
         else {
             userInfoLayout.setVisibility(View.GONE);
@@ -317,11 +319,18 @@ public class RouteActivity extends AppCompatActivity implements
             tvViewQR.setOnClickListener(view -> viewQRCode());
             viewQRImage.setOnClickListener(view -> viewQRCode());
 
-            getDriverInfo(bookingId);
+            getDriverInfo();
         }
     }
 
-    private void getDriverInfo(String bookingId) {
+    private void openChat() {
+        Intent intent = new Intent(myContext, ChatActivity.class);
+        intent.putExtra("bookingId", bookingId);
+        intent.putExtra("inDriverMode", inDriverMode);
+        myContext.startActivity(intent);
+    }
+
+    private void getDriverInfo() {
         usersRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -380,7 +389,7 @@ public class RouteActivity extends AppCompatActivity implements
         }
     }
 
-    private void getUserInfo(String bookingId) {
+    private void getUserInfo() {
         usersRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -407,6 +416,8 @@ public class RouteActivity extends AppCompatActivity implements
                                     driverImage.setVisibility(View.GONE);
                                 }
                                 else if(status.equals("Processing")) {
+                                    tvChat.setVisibility(View.GONE);
+                                    chatImage.setVisibility(View.GONE);
                                     tvDriver.setVisibility(View.VISIBLE);
                                     driverImage.setVisibility(View.VISIBLE);
                                     tvPass.setVisibility(View.GONE);
@@ -418,6 +429,12 @@ public class RouteActivity extends AppCompatActivity implements
                                     driverImage.setOnClickListener(view -> takeTask(booking));
                                 }
                                 else if(status.equals("Booked")) {
+                                    tvChat.setVisibility(View.VISIBLE);
+                                    chatImage.setVisibility(View.VISIBLE);
+
+                                    tvChat.setOnClickListener(view -> openChat());
+                                    chatImage.setOnClickListener(view -> openChat());
+
                                     tvDriver.setVisibility(View.GONE);
                                     driverImage.setVisibility(View.GONE);
                                     tvPass.setVisibility(View.VISIBLE);
@@ -429,6 +446,8 @@ public class RouteActivity extends AppCompatActivity implements
                                     checkImage.setOnClickListener(view -> scanQRCode());
                                 }
                                 else {
+                                    tvChat.setVisibility(View.GONE);
+                                    chatImage.setVisibility(View.GONE);
                                     tvDriver.setVisibility(View.GONE);
                                     driverImage.setVisibility(View.GONE);
                                     tvPass.setVisibility(View.GONE);
@@ -691,6 +710,18 @@ public class RouteActivity extends AppCompatActivity implements
         else paidImage.setVisibility(View.GONE);
 
         paidImage.getDrawable().setTint(color);
+
+        if(status.equals("Booked")) {
+            tvChat.setVisibility(View.VISIBLE);
+            chatImage.setVisibility(View.VISIBLE);
+
+            tvChat.setOnClickListener(view -> openChat());
+            chatImage.setOnClickListener(view -> openChat());
+        }
+        else {
+            tvChat.setVisibility(View.GONE);
+            chatImage.setVisibility(View.GONE);
+        }
     }
 
     private void openMap(Station station) {

@@ -29,6 +29,7 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -458,6 +459,7 @@ public class DriverTaskListFragment extends Fragment {
                     }
                 }
                 success3 = true;
+                Collections.reverse(bookingList3);
                 finishLoading();
             }
 
@@ -490,6 +492,7 @@ public class DriverTaskListFragment extends Fragment {
                     }
                 }
                 success4 = true;
+                Collections.reverse(bookingList4);
                 finishLoading();
             }
 
