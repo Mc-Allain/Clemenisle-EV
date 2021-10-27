@@ -6,9 +6,11 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.Html;
 import android.text.SpannableString;
 import android.text.Spanned;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -19,9 +21,11 @@ import com.bumptech.glide.Glide;
 import com.example.firebase_clemenisle_ev.Adapters.ChatAdapter;
 import com.example.firebase_clemenisle_ev.Classes.Booking;
 import com.example.firebase_clemenisle_ev.Classes.Chat;
+import com.example.firebase_clemenisle_ev.Classes.DateTimeToString;
 import com.example.firebase_clemenisle_ev.Classes.FirebaseURL;
 import com.example.firebase_clemenisle_ev.Classes.User;
-import com.google.android.material.textfield.TextInputLayout;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -53,17 +57,22 @@ public class ChatActivity extends AppCompatActivity {
     TextView tvUserFullName, tvDriverFullName, tvDriverFullName2;
     RecyclerView chatView;
 
-    TextInputLayout tlMessage;
     EditText etMessage;
 
     Context myContext;
     Resources myResources;
+
+    int colorBlue, colorInitial;
 
     String bookingId, userId, passengerUserId, driverUserId, initialMessage;
     boolean isLoggedIn = false, inDriverMode = false;
 
     ChatAdapter chatAdapter;
     List<Chat> chats = new ArrayList<>();
+    List<User> users = new ArrayList<>();
+
+    String message;
+
 
     private void initSharedPreferences() {
         SharedPreferences sharedPreferences = myContext
@@ -97,18 +106,23 @@ public class ChatActivity extends AppCompatActivity {
         tvDriverFullName2 = findViewById(R.id.tvDriverFullName2);
         chatView = findViewById(R.id.chatView);
 
-        tlMessage = findViewById(R.id.tlMessage);
         etMessage = findViewById(R.id.etMessage);
         sendImage = findViewById(R.id.sendImage);
 
         myContext = ChatActivity.this;
         myResources = getResources();
 
+        colorBlue = myResources.getColor(R.color.blue);
+        colorInitial = myResources.getColor(R.color.initial);
+
         initSharedPreferences();
 
         Intent intent = getIntent();
         bookingId = intent.getStringExtra("bookingId");
         inDriverMode = intent.getBooleanExtra("inDriverMode", false);
+
+        sendImage.setEnabled(false);
+        sendImage.getDrawable().setTint(colorInitial);
 
         firebaseAuth = FirebaseAuth.getInstance();
         if(isLoggedIn) {
@@ -137,20 +151,80 @@ public class ChatActivity extends AppCompatActivity {
         LinearLayoutManager linearLayout =
                 new LinearLayoutManager(myContext, LinearLayoutManager.VERTICAL, true);
         chatView.setLayoutManager(linearLayout);
-        chatAdapter = new ChatAdapter(myContext, chats, userId, passengerUserId, driverUserId,
+        chatAdapter = new ChatAdapter(myContext, chats, users, userId, passengerUserId, driverUserId,
                 initialMessage, inDriverMode);
         chatView.setAdapter(chatAdapter);
 
-        sendImage.setOnClickListener(new View.OnClickListener() {
+        etMessage.addTextChangedListener(new TextWatcher() {
             @Override
-            public void onClick(View view) {
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                message = etMessage.getText().toString();
+
+                if(message.length() > 0) {
+                    sendImage.setEnabled(true);
+                    sendImage.getDrawable().setTint(colorBlue);
+                }
+                else {
+                    sendImage.setEnabled(false);
+                    sendImage.getDrawable().setTint(colorInitial);
+                }
+            }
+        });
+
+        sendImage.setOnClickListener(view -> sendMessage());
+    }
+
+    private void sendMessage() {
+        String chatIdSuffix = String.valueOf(chats.size() + 1);
+        if(chatIdSuffix.length() == 1) chatIdSuffix = "0" + chatIdSuffix;
+        String chatId = "C" + chatIdSuffix;
+
+        String schedule = new DateTimeToString().getDateAndTime();
+        Chat chat = new Chat(chatId, userId, message, schedule);
+
+        usersRef.child(passengerUserId).child("bookingList").child(bookingId).child("chats")
+                .child(chatId).setValue(chat).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                message = "";
+                etMessage.setText(message);
+            }
+        });
+    }
+
+    private void getUsers() {
+        usersRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                users.clear();
+                if(snapshot.exists()) {
+                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        User user = new User(dataSnapshot);
+                        users.add(user);
+                    }
+                }
+                getChats();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
             }
         });
     }
 
     private void getChats() {
-        usersRef.child(passengerUserId).child("chats").addValueEventListener(new ValueEventListener() {
+        usersRef.child(passengerUserId).child("bookingList").child(bookingId).child("chats")
+                .addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 chats.clear();
@@ -205,7 +279,7 @@ public class ChatActivity extends AppCompatActivity {
 
                                 driverUserId = thisUser.getId();
                                 initialMessage = booking.getMessage();
-                                getChats();
+                                getUsers();
 
                                 return;
                             }
@@ -247,7 +321,7 @@ public class ChatActivity extends AppCompatActivity {
 
                                 passengerUserId = thisUser.getId();
                                 initialMessage = booking.getMessage();
-                                getChats();
+                                getUsers();
 
                                 return;
                             }

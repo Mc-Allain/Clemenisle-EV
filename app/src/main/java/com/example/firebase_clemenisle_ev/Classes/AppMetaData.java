@@ -13,7 +13,8 @@ public class AppMetaData {
                     "• Help Section Added\n" +
                     "• Preference Section Added\n" +
                     "• On The Spot(Single Spot) Service Added\n" +
-                    "• Driver's Module Added";
+                    "• Driver's Module Added\n" +
+                    "• Booking Chat Added";
     double currentVersion = 0.3, latestVersion = 0;
     String status;
     boolean isDeveloper = true;
