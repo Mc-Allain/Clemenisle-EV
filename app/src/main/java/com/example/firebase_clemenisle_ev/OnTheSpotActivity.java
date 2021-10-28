@@ -59,6 +59,7 @@ import com.journeyapps.barcodescanner.BarcodeEncoder;
 import com.ms.square.android.expandabletextview.ExpandableTextView;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -141,6 +142,8 @@ public class OnTheSpotActivity extends AppCompatActivity {
     int calendarYear, calendarMonth, calendarDay;
 
     CountDownTimer statusTimer;
+
+    List<User> users = new ArrayList<>();
 
     private void initSharedPreferences() {
         SharedPreferences sharedPreferences = myContext
@@ -312,27 +315,49 @@ public class OnTheSpotActivity extends AppCompatActivity {
         mapSettingsImage.setOnClickListener(view -> openMapSettings());
         tvMapSettings.setOnClickListener(view -> openMapSettings());
 
-        if(inDriverMode) {
-            driverInfoLayout.setVisibility(View.GONE);
-            userInfoLayout.setVisibility(View.VISIBLE);
+        getUsers();
+    }
 
-            getUserInfo();
-        }
-        else {
-            userInfoLayout.setVisibility(View.GONE);
-            driverInfoLayout.setVisibility(View.GONE);
+    private void getUsers() {
+        usersRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                users.clear();
+                if(snapshot.exists()) {
+                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        User user = new User(dataSnapshot);
+                        users.add(user);
+                    }
+                }
 
-            tvViewQR.setVisibility(View.VISIBLE);
-            viewQRImage.setVisibility(View.VISIBLE);
+                if(inDriverMode) {
+                    driverInfoLayout.setVisibility(View.GONE);
+                    userInfoLayout.setVisibility(View.VISIBLE);
 
-            tvViewQR.setVisibility(View.VISIBLE);
-            viewQRImage.setVisibility(View.VISIBLE);
+                    getUserInfo();
+                }
+                else {
+                    userInfoLayout.setVisibility(View.GONE);
+                    driverInfoLayout.setVisibility(View.GONE);
 
-            tvViewQR.setOnClickListener(view -> viewQRCode());
-            viewQRImage.setOnClickListener(view -> viewQRCode());
+                    tvViewQR.setVisibility(View.VISIBLE);
+                    viewQRImage.setVisibility(View.VISIBLE);
 
-            getDriverInfo();
-        }
+                    tvViewQR.setVisibility(View.VISIBLE);
+                    viewQRImage.setVisibility(View.VISIBLE);
+
+                    tvViewQR.setOnClickListener(view -> viewQRCode());
+                    viewQRImage.setOnClickListener(view -> viewQRCode());
+
+                    getDriverInfo();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
 
     private void openChat() {
@@ -344,41 +369,29 @@ public class OnTheSpotActivity extends AppCompatActivity {
     }
 
     private void getDriverInfo() {
-        usersRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if(snapshot.exists()) {
-                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                        User thisUser = new User(dataSnapshot);
-                        List<Booking> taskList = thisUser.getTaskList();
+        for(User user : users) {
+            List<Booking> taskList = user.getTaskList();
 
-                        for(Booking booking : taskList) {
-                            if(booking.getId().equals(bookingId)) {
-                                String fullName = "<b>" + thisUser.getLastName() + "</b>, " + thisUser.getFirstName();
-                                if(thisUser.getMiddleName().length() > 0) fullName += " " + thisUser.getMiddleName();
-                                tvDriverFullName.setText(fromHtml(fullName));
+            for(Booking booking : taskList) {
+                if(booking.getId().equals(bookingId)) {
+                    String fullName = "<b>" + user.getLastName() + "</b>, " + user.getFirstName();
+                    if(user.getMiddleName().length() > 0) fullName += " " + user.getMiddleName();
+                    tvDriverFullName.setText(fromHtml(fullName));
 
-                                try {
-                                    Glide.with(myContext).load(thisUser.getProfileImage())
-                                            .placeholder(R.drawable.image_loading_placeholder)
-                                            .into(driverProfileImage);
-                                }
-                                catch (Exception ignored) {}
-
-                                driverUserId = thisUser.getId();
-                                driverInfoLayout.setVisibility(View.VISIBLE);
-
-                                return;
-                            }
-                        }
+                    try {
+                        Glide.with(myContext).load(user.getProfileImage())
+                                .placeholder(R.drawable.image_loading_placeholder)
+                                .into(driverProfileImage);
                     }
+                    catch (Exception ignored) {}
+
+                    driverUserId = user.getId();
+                    driverInfoLayout.setVisibility(View.VISIBLE);
+
+                    return;
                 }
             }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-            }
-        });
+        }
     }
 
     private void startTimer(Booking booking) {
@@ -464,83 +477,114 @@ public class OnTheSpotActivity extends AppCompatActivity {
     }
 
     private void getUserInfo() {
-        usersRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if(snapshot.exists()) {
-                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                        User thisUser = new User(dataSnapshot);
-                        List<Booking> bookingList = thisUser.getBookingList();
+        for(User user : users) {
+            List<Booking> bookingList = user.getBookingList();
+            for(Booking booking : bookingList) {
+                if(booking.getId().equals(bookingId)) {
+                    String fullName = "<b>" + user.getLastName() + "</b>, " + user.getFirstName();
+                    if(user.getMiddleName().length() > 0) fullName += " " + user.getMiddleName();
+                    tvUserFullName.setText(fromHtml(fullName));
 
-                        for(Booking booking : bookingList) {
-                            if(booking.getId().equals(bookingId)) {
-                                String fullName = "<b>" + thisUser.getLastName() + "</b>, " + thisUser.getFirstName();
-                                if(thisUser.getMiddleName().length() > 0) fullName += " " + thisUser.getMiddleName();
-                                tvUserFullName.setText(fromHtml(fullName));
-
-                                try {
-                                    Glide.with(myContext).load(thisUser.getProfileImage())
-                                            .placeholder(R.drawable.image_loading_placeholder)
-                                            .into(profileImage);
-                                }
-                                catch (Exception ignored) {}
-
-                                if(driverUserId.equals(thisUser.getId())) {
-                                    tvDriver.setVisibility(View.GONE);
-                                    driverImage.setVisibility(View.GONE);
-                                }
-                                else if(status.equals("Processing")) {
-                                    tvChat.setVisibility(View.GONE);
-                                    chatImage.setVisibility(View.GONE);
-                                    tvDriver.setVisibility(View.VISIBLE);
-                                    driverImage.setVisibility(View.VISIBLE);
-                                    tvPass.setVisibility(View.GONE);
-                                    passImage.setVisibility(View.GONE);
-                                    tvCheck.setVisibility(View.GONE);
-                                    checkImage.setVisibility(View.GONE);
-
-                                    tvDriver.setOnClickListener(view -> takeTask(booking));
-                                    driverImage.setOnClickListener(view -> takeTask(booking));
-                                }
-                                else if(status.equals("Booked")) {
-                                    tvChat.setVisibility(View.VISIBLE);
-                                    chatImage.setVisibility(View.VISIBLE);
-
-                                    tvChat.setOnClickListener(view -> openChat());
-                                    chatImage.setOnClickListener(view -> openChat());
-
-                                    tvDriver.setVisibility(View.GONE);
-                                    driverImage.setVisibility(View.GONE);
-                                    tvPass.setVisibility(View.VISIBLE);
-                                    passImage.setVisibility(View.VISIBLE);
-                                    tvCheck.setVisibility(View.VISIBLE);
-                                    checkImage.setVisibility(View.VISIBLE);
-
-                                    tvCheck.setOnClickListener(view -> scanQRCode());
-                                    checkImage.setOnClickListener(view -> scanQRCode());
-                                }
-                                else {
-                                    tvChat.setVisibility(View.GONE);
-                                    chatImage.setVisibility(View.GONE);
-                                    tvDriver.setVisibility(View.GONE);
-                                    driverImage.setVisibility(View.GONE);
-                                    tvPass.setVisibility(View.GONE);
-                                    passImage.setVisibility(View.GONE);
-                                    tvCheck.setVisibility(View.GONE);
-                                    checkImage.setVisibility(View.GONE);
-                                }
-
-                                return;
-                            }
-                        }
+                    try {
+                        Glide.with(myContext).load(user.getProfileImage())
+                                .placeholder(R.drawable.image_loading_placeholder)
+                                .into(profileImage);
                     }
+                    catch (Exception ignored) {}
+
+                    if(status.equals("Processing")) {
+                        tvChat.setVisibility(View.GONE);
+                        chatImage.setVisibility(View.GONE);
+
+                        if(driverUserId.equals(user.getId())) {
+                            tvDriver.setVisibility(View.GONE);
+                            driverImage.setVisibility(View.GONE);
+                        }
+                        else {
+                            tvDriver.setVisibility(View.VISIBLE);
+                            driverImage.setVisibility(View.VISIBLE);
+
+                            tvDriver.setOnClickListener(view -> takeTask(booking));
+                            driverImage.setOnClickListener(view -> takeTask(booking));
+                        }
+
+                        tvPass.setVisibility(View.GONE);
+                        passImage.setVisibility(View.GONE);
+                        tvCheck.setVisibility(View.GONE);
+                        checkImage.setVisibility(View.GONE);
+                    }
+                    else if(status.equals("Booked")) {
+                        tvChat.setVisibility(View.VISIBLE);
+                        chatImage.setVisibility(View.VISIBLE);
+
+                        tvChat.setOnClickListener(view -> openChat());
+                        chatImage.setOnClickListener(view -> openChat());
+
+                        tvDriver.setVisibility(View.GONE);
+                        driverImage.setVisibility(View.GONE);
+                        tvPass.setVisibility(View.VISIBLE);
+                        passImage.setVisibility(View.VISIBLE);
+                        tvCheck.setVisibility(View.VISIBLE);
+                        checkImage.setVisibility(View.VISIBLE);
+
+                        tvCheck.setOnClickListener(view -> scanQRCode());
+                        checkImage.setOnClickListener(view -> scanQRCode());
+                    }
+                    else if(!status.equals("Request")) {
+                        tvChat.setVisibility(View.GONE);
+                        chatImage.setVisibility(View.GONE);
+                        tvDriver.setVisibility(View.GONE);
+                        driverImage.setVisibility(View.GONE);
+                        tvPass.setVisibility(View.GONE);
+                        passImage.setVisibility(View.GONE);
+                        tvCheck.setVisibility(View.GONE);
+                        checkImage.setVisibility(View.GONE);
+                    }
+
+                    break;
                 }
             }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
+            List<Booking> taskList = user.getTaskList();
+            for(Booking task : taskList) {
+                if(task.getId().equals(bookingId)) {
+                    if(status.equals("Request")) {
+                        if(userId.equals(user.getId())) {
+                            tvChat.setVisibility(View.VISIBLE);
+                            chatImage.setVisibility(View.VISIBLE);
+
+                            tvChat.setOnClickListener(view -> openChat());
+                            chatImage.setOnClickListener(view -> openChat());
+
+                            tvDriver.setVisibility(View.GONE);
+                            driverImage.setVisibility(View.GONE);
+                            tvCheck.setVisibility(View.VISIBLE);
+                            checkImage.setVisibility(View.VISIBLE);
+
+                            tvCheck.setOnClickListener(view -> scanQRCode());
+                            checkImage.setOnClickListener(view -> scanQRCode());
+                        }
+                        else {
+                            tvChat.setVisibility(View.GONE);
+                            chatImage.setVisibility(View.GONE);
+
+                            tvDriver.setVisibility(View.VISIBLE);
+                            driverImage.setVisibility(View.VISIBLE);
+                            tvCheck.setVisibility(View.GONE);
+                            checkImage.setVisibility(View.GONE);
+
+                            tvDriver.setOnClickListener(view -> takeTask(task));
+                            driverImage.setOnClickListener(view -> takeTask(task));
+                        }
+
+                        tvPass.setVisibility(View.GONE);
+                        passImage.setVisibility(View.GONE);
+                    }
+
+                    break;
+                }
             }
-        });
+        }
     }
 
     @SuppressWarnings("deprecation")
@@ -764,6 +808,7 @@ public class OnTheSpotActivity extends AppCompatActivity {
                 }
 
                 break;
+            case "Request":
             case "Booked":
                 color = myResources.getColor(R.color.green);
                 backgroundDrawable = myResources.getDrawable(R.color.green);

@@ -152,23 +152,22 @@ public class DriverActivity extends AppCompatActivity {
 
                 if(snapshot.exists()) {
                     for(DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                        User thisUser = new User(dataSnapshot);
-                        List<Booking> bookingList = thisUser.getBookingList();
+                        User user = new User(dataSnapshot);
+                        List<Booking> bookingList = user.getBookingList();
 
                         for(Booking booking : bookingList) {
                             if(booking.getStatus().equals("Processing"))
                                 pendingList.add(booking);
                         }
 
-                        if(thisUser.getId().equals(userId))
-                            taskList = thisUser.getTaskList();
+                        taskList.addAll(user.getTaskList());
                     }
                 }
 
                 Collections.sort(pendingList, (booking, t1) ->
                         booking.getId().compareToIgnoreCase(t1.getId()));
 
-                if(pendingList.size() > 0) startTimer();
+                startTimer();
             }
 
             @Override
@@ -195,8 +194,11 @@ public class DriverActivity extends AppCompatActivity {
                         checkBooking(booking);
                     }
 
-                    for(Booking booking : taskList) {
-                        checkBooking(booking);
+                    for(Booking task : taskList) {
+                        if(task.getStatus().equals("Processing") ||
+                                task.getStatus().equals("Booked") ||
+                                task.getStatus().equals("Request"))
+                            checkBooking(task);
                     }
                 }
 
@@ -211,13 +213,15 @@ public class DriverActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if(snapshot.exists()) {
                     for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                        User thisUser = new User(dataSnapshot);
-                        List<Booking> bookingList = thisUser.getBookingList();
+                        User user = new User(dataSnapshot);
+                        List<Booking> bookingList = user.getBookingList();
 
                         for(Booking booking : bookingList) {
                             if(booking.getId().equals(bookingId)) {
-                                usersRef.child(thisUser.getId()).child("bookingList").
-                                        child(booking.getId()).child("status").setValue("Failed");
+                                DatabaseReference bookingListRef = usersRef.child(user.getId()).
+                                        child("bookingList").child(bookingId);
+                                bookingListRef.child("status").setValue("Failed");
+                                bookingListRef.child("chats").removeValue();
                                 return;
                             }
                         }
@@ -293,16 +297,27 @@ public class DriverActivity extends AppCompatActivity {
     }
 
     private void setTaskStatusToFailed(String bookingId) {
-        DatabaseReference taskRef = usersRef.child(userId).child("taskList").child(bookingId);
-        taskRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if(snapshot.exists()) taskRef.child("status").setValue("Failed");
+                if(snapshot.exists()) {
+                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        User thisUser = new User(dataSnapshot);
+                        List<Booking> taskList = thisUser.getTaskList();
+
+                        for(Booking booking : taskList) {
+                            if(booking.getId().equals(bookingId)) {
+                                usersRef.child(thisUser.getId()).child("taskList").
+                                        child(booking.getId()).child("status").setValue("Failed");
+                                return;
+                            }
+                        }
+                    }
+                }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
             }
         });
     }

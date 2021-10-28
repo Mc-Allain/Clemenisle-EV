@@ -19,6 +19,7 @@ import com.bumptech.glide.Glide;
 import com.example.firebase_clemenisle_ev.Adapters.BookingAdapter;
 import com.example.firebase_clemenisle_ev.Classes.Booking;
 import com.example.firebase_clemenisle_ev.Classes.FirebaseURL;
+import com.example.firebase_clemenisle_ev.Classes.User;
 import com.example.firebase_clemenisle_ev.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -66,10 +67,10 @@ public class DriverTaskListFragment extends Fragment {
 
     BookingAdapter adapter1, adapter2, adapter3, adapter4;
 
-    List<Booking> bookingList1 = new ArrayList<>();
-    List<Booking> bookingList2 = new ArrayList<>();
-    List<Booking> bookingList3 = new ArrayList<>();
-    List<Booking> bookingList4 = new ArrayList<>();
+    List<Booking> taskList1 = new ArrayList<>();
+    List<Booking> taskList2 = new ArrayList<>();
+    List<Booking> taskList3 = new ArrayList<>();
+    List<Booking> taskList4 = new ArrayList<>();
 
     boolean success1, success2, success3, success4;
 
@@ -161,22 +162,22 @@ public class DriverTaskListFragment extends Fragment {
 
         LinearLayoutManager linearLayout1 = new LinearLayoutManager(myContext, LinearLayoutManager.VERTICAL, false);
         upcomingView.setLayoutManager(linearLayout1);
-        adapter1 = new BookingAdapter(myContext, bookingList1);
+        adapter1 = new BookingAdapter(myContext, taskList1);
         upcomingView.setAdapter(adapter1);
 
         LinearLayoutManager linearLayout2 = new LinearLayoutManager(myContext, LinearLayoutManager.VERTICAL, false);
         requestView.setLayoutManager(linearLayout2);
-        adapter2 = new BookingAdapter(myContext, bookingList2);
+        adapter2 = new BookingAdapter(myContext, taskList2);
         requestView.setAdapter(adapter2);
 
         LinearLayoutManager linearLayout3 = new LinearLayoutManager(myContext, LinearLayoutManager.VERTICAL, false);
         completedView.setLayoutManager(linearLayout3);
-        adapter3 = new BookingAdapter(myContext, bookingList3);
+        adapter3 = new BookingAdapter(myContext, taskList3);
         completedView.setAdapter(adapter3);
 
         LinearLayoutManager linearLayout4 = new LinearLayoutManager(myContext, LinearLayoutManager.VERTICAL, false);
         failedView.setLayoutManager(linearLayout4);
-        adapter4 = new BookingAdapter(myContext, bookingList4);
+        adapter4 = new BookingAdapter(myContext, taskList4);
         failedView.setAdapter(adapter4);
 
         getBookings();
@@ -379,19 +380,19 @@ public class DriverTaskListFragment extends Fragment {
         resetConstraint();
         setScreenEnabled(false);
 
-        Query booking1Query = firebaseDatabase.getReference("users").
+        Query task1Query = firebaseDatabase.getReference("users").
                 child(userId).child("taskList").orderByChild("status").equalTo("Booked");
 
         success1 = false;
-        booking1Query.addValueEventListener(new ValueEventListener() {
+        task1Query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                bookingList1.clear();
+                taskList1.clear();
 
                 if(snapshot.exists()) {
                     for(DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                        Booking booking = new Booking(dataSnapshot);
-                        bookingList1.add(booking);
+                        Booking task = new Booking(dataSnapshot);
+                        taskList1.add(task);
                     }
                 }
                 success1 = true;
@@ -411,19 +412,24 @@ public class DriverTaskListFragment extends Fragment {
             }
         });
 
-        Query booking2Query = firebaseDatabase.getReference("users").
-                child(userId).child("taskList").orderByChild("status").equalTo("Request");
+        Query driverQuery = firebaseDatabase.getReference("users").
+                orderByChild("driver").equalTo(true);
 
         success2 = false;
-        booking2Query.addValueEventListener(new ValueEventListener() {
+        driverQuery.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                bookingList2.clear();
+                taskList2.clear();
 
                 if(snapshot.exists()) {
                     for(DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                        Booking booking = new Booking(dataSnapshot);
-                        bookingList2.add(booking);
+                        User user = new User(dataSnapshot);
+                        List<Booking> userTaskList = user.getTaskList();
+
+                        for(Booking task : userTaskList) {
+                            if(task.getStatus().equals("Request"))
+                                taskList2.add(task);
+                        }
                     }
                 }
                 success2 = true;
@@ -443,23 +449,23 @@ public class DriverTaskListFragment extends Fragment {
             }
         });
 
-        Query booking3Query = firebaseDatabase.getReference("users").
+        Query task3Query = firebaseDatabase.getReference("users").
                 child(userId).child("taskList").orderByChild("status").equalTo("Completed");
 
         success3 = false;
-        booking3Query.addValueEventListener(new ValueEventListener() {
+        task3Query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                bookingList3.clear();
+                taskList3.clear();
 
                 if(snapshot.exists()) {
                     for(DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                        Booking booking = new Booking(dataSnapshot);
-                        bookingList3.add(booking);
+                        Booking task = new Booking(dataSnapshot);
+                        taskList3.add(task);
                     }
                 }
                 success3 = true;
-                Collections.reverse(bookingList3);
+                Collections.reverse(taskList3);
                 finishLoading();
             }
 
@@ -476,23 +482,23 @@ public class DriverTaskListFragment extends Fragment {
             }
         });
 
-        Query booking4Query = firebaseDatabase.getReference("users").
+        Query task4Query = firebaseDatabase.getReference("users").
                 child(userId).child("taskList").orderByChild("status").equalTo("Failed");
 
         success4 = false;
-        booking4Query.addValueEventListener(new ValueEventListener() {
+        task4Query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                bookingList4.clear();
+                taskList4.clear();
 
                 if(snapshot.exists()) {
                     for(DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                        Booking booking = new Booking(dataSnapshot);
-                        bookingList4.add(booking);
+                        Booking task = new Booking(dataSnapshot);
+                        taskList4.add(task);
                     }
                 }
                 success4 = true;
-                Collections.reverse(bookingList4);
+                Collections.reverse(taskList4);
                 finishLoading();
             }
 
@@ -518,13 +524,13 @@ public class DriverTaskListFragment extends Fragment {
 
             setScreenEnabled(true);
 
-            badgeText1.setText(String.valueOf(bookingList1.size()));
-            badgeText2.setText(String.valueOf(bookingList2.size()));
-            badgeText3.setText(String.valueOf(bookingList3.size()));
-            badgeText4.setText(String.valueOf(bookingList4.size()));
+            badgeText1.setText(String.valueOf(taskList1.size()));
+            badgeText2.setText(String.valueOf(taskList2.size()));
+            badgeText3.setText(String.valueOf(taskList3.size()));
+            badgeText4.setText(String.valueOf(taskList4.size()));
 
-            if(bookingList1.size() + bookingList2.size() +
-                    bookingList3.size() + bookingList4.size() == 0) {
+            if(taskList1.size() + taskList2.size() +
+                    taskList3.size() + taskList4.size() == 0) {
                 tvLog.setText(defaultLogText);
                 tvLog.setVisibility(View.VISIBLE);
                 reloadImage.setVisibility(View.VISIBLE);
@@ -540,10 +546,10 @@ public class DriverTaskListFragment extends Fragment {
 
     private void errorLoading(String error) {
         if(!(success1 && success2 && success3 && success4)) {
-            bookingList1.clear();
-            bookingList2.clear();
-            bookingList3.clear();
-            bookingList4.clear();
+            taskList1.clear();
+            taskList2.clear();
+            taskList3.clear();
+            taskList4.clear();
             updateAdapter();
 
             tvLog.setText(error);
