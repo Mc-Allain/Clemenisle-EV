@@ -115,6 +115,22 @@ public class MapFragment extends Fragment {
         sMarkIcon = sharedPreferences.getInt("sMarkIcon", R.drawable.ic_baseline_ev_station_24);
         mapType = sharedPreferences.getInt("mapType", 1);
         mapAutoFocus = sharedPreferences.getBoolean("mapAutoFocus", true);
+
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        if(tsMarkIcon != R.drawable.ic_baseline_tour_24 &&
+                tsMarkIcon != R.drawable.ic_baseline_location_on_24) {
+            tsMarkIcon = R.drawable.ic_baseline_tour_24;
+            editor.putInt("tsMarkIcon", tsMarkIcon);
+            editor.apply();
+        }
+
+        if(sMarkIcon != R.drawable.ic_baseline_ev_station_24 &&
+                sMarkIcon != R.drawable.ic_baseline_location_on_24) {
+            sMarkIcon = R.drawable.ic_baseline_ev_station_24;
+            editor.putInt("sMarkIcon", sMarkIcon);
+            editor.apply();
+        }
     }
 
     @Override

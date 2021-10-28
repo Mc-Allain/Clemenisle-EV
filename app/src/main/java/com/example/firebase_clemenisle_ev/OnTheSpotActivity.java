@@ -420,7 +420,7 @@ public class OnTheSpotActivity extends AppCompatActivity {
         int minDifference;
         int hrDifference;
 
-        if(hasBookingToday(bookingDay, bookingMonth, bookingYear)) {
+        if(isToday(bookingDay, bookingMonth, bookingYear)) {
             hrDifference = bookingHour - hour;
 
             if(min < bookingMin) minDifference = bookingMin - min;
@@ -437,7 +437,7 @@ public class OnTheSpotActivity extends AppCompatActivity {
         }
     }
 
-    private boolean hasBookingToday(int bookingDay, int bookingMonth, int bookingYear) {
+    private boolean isToday(int bookingDay, int bookingMonth, int bookingYear) {
         return (bookingDay == calendarDay && bookingMonth == calendarMonth && bookingYear == calendarYear);
     }
 

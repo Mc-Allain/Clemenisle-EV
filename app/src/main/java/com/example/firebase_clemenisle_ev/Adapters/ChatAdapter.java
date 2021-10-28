@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.firebase_clemenisle_ev.Classes.Chat;
+import com.example.firebase_clemenisle_ev.Classes.DateTimeToString;
 import com.example.firebase_clemenisle_ev.R;
 
 import java.util.List;
@@ -37,6 +38,8 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
     Resources myResources;
 
     int loadChatItemPosition = 10, incrementLoadedItems = 10;
+
+    DateTimeToString dateTimeToString;
 
     public ChatAdapter(Context context, List<Chat> chats, String startPointId, boolean inDriverMode) {
         this.chats = chats;
@@ -185,6 +188,10 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
                 tvStartPointMessage.setText(message);
                 tvStartPointTimestamp.setText(timestamp);
 
+                if(position != 0)
+                    checkTimestamp(timestamp, chats.get(position - 1).getTimestamp(),
+                            tvStartPointTimestamp);
+
                 tvStartPointMessage.setOnClickListener(view -> copyTextToClipboard(message));
 
                 if(state) {
@@ -202,6 +209,10 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
                 endPointLayout.setVisibility(View.VISIBLE);
                 tvEndPointMessage.setText(message);
                 tvEndPointTimestamp.setText(timestamp);
+
+                if(position != 0)
+                    checkTimestamp(timestamp, chats.get(position - 1).getTimestamp(),
+                            tvEndPointTimestamp);
 
                 tvEndPointMessage.setOnClickListener(view -> copyTextToClipboard(message));
 
@@ -234,6 +245,40 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
             });
         }
         else backgroundLayout.setVisibility(View.GONE);
+    }
+
+    private void checkTimestamp(String timestamp, String timestamp1, TextView tvTimestamp) {
+        dateTimeToString = new DateTimeToString();
+
+        dateTimeToString.setFormattedSchedule(timestamp);
+        int stampYear = Integer.parseInt(dateTimeToString.getYear());
+        int stampMonth = Integer.parseInt(dateTimeToString.getMonthNo());
+        int stampDay = Integer.parseInt(dateTimeToString.getDay());
+
+        int stampHour = Integer.parseInt(dateTimeToString.getRawHour());
+        int stampMin = Integer.parseInt(dateTimeToString.getMin());
+
+        dateTimeToString.setFormattedSchedule(timestamp1);
+        int stampYear1 = Integer.parseInt(dateTimeToString.getYear());
+        int stampMonth1 = Integer.parseInt(dateTimeToString.getMonthNo());
+        int stampDay1 = Integer.parseInt(dateTimeToString.getDay());
+
+        int stampHour1 = Integer.parseInt(dateTimeToString.getRawHour());
+        int stampMin1 = Integer.parseInt(dateTimeToString.getMin());
+
+        int yearDifference, monthDifference, dayDifference, hrDifference, minDifference;
+
+        yearDifference = stampYear1 - stampYear;
+        monthDifference = stampMonth1 - stampMonth;
+        dayDifference = stampDay1 - stampDay;
+        hrDifference = stampHour1 - stampHour;
+        minDifference = stampMin1 - stampMin;
+
+        boolean state = yearDifference > 1 || monthDifference > 1 || dayDifference > 1 ||
+                hrDifference > 1 || minDifference > 5;
+
+        if(state) tvTimestamp.setVisibility(View.VISIBLE);
+        else tvTimestamp.setVisibility(View.GONE);
     }
 
     private void copyTextToClipboard(String value) {
