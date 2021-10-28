@@ -1,9 +1,16 @@
 package com.example.firebase_clemenisle_ev;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.view.View;
@@ -26,6 +33,7 @@ import com.google.zxing.integration.android.IntentResult;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -36,6 +44,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.app.NotificationCompat;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
@@ -72,6 +81,8 @@ public class DriverActivity extends AppCompatActivity {
 
     String userId;
     boolean isLoggedIn = false;
+
+    List<User> users = new ArrayList<>();
 
     private void initSharedPreferences() {
         SharedPreferences sharedPreferences = getSharedPreferences("login", Context.MODE_PRIVATE);
@@ -140,6 +151,7 @@ public class DriverActivity extends AppCompatActivity {
         });
 
         getPendingList();
+        getUsers();
     }
 
     private void getPendingList() {
@@ -160,7 +172,8 @@ public class DriverActivity extends AppCompatActivity {
                                 pendingList.add(booking);
                         }
 
-                        taskList.addAll(user.getTaskList());
+                        if(user.getId().equals(userId))
+                            taskList.addAll(user.getTaskList());
                     }
                 }
 
@@ -195,9 +208,7 @@ public class DriverActivity extends AppCompatActivity {
                     }
 
                     for(Booking task : taskList) {
-                        if(task.getStatus().equals("Processing") ||
-                                task.getStatus().equals("Booked") ||
-                                task.getStatus().equals("Request"))
+                        if(task.getStatus().equals("Booked") || task.getStatus().equals("Request"))
                             checkBooking(task);
                     }
                 }
@@ -258,9 +269,13 @@ public class DriverActivity extends AppCompatActivity {
         String currentTime = sdf.format(new Date().getTime());
         int hour = Integer.parseInt(currentTime.split(":")[0]);
         int min = Integer.parseInt(currentTime.split(":")[1]);
+        int sec = Integer.parseInt(currentTime.split(":")[2]);
 
         int bookingHour = Integer.parseInt(dateTimeToString.getRawHour());
         int bookingMin = Integer.parseInt(dateTimeToString.getMin());
+
+        List<String> hourArray = Arrays.asList("2", "4", "8", "12", "16", "20");
+        List<String> minArray = Arrays.asList("1", "5", "10", "15", "20", "30", "45");
 
         int minDifference;
         int hrDifference;
@@ -277,6 +292,25 @@ public class DriverActivity extends AppCompatActivity {
 
             setBookingStatusFromProcessingToFailed(booking, hrDifference, minDifference);
             setOnTheSpotBookingStatusToFailed(booking, hrDifference, minDifference);
+
+            if(booking.getStatus().equals("Booked") || booking.getStatus().equals("Request")) {
+                initNotificationInHours(booking, hourArray, hrDifference + 1, minArray, minDifference, sec);
+                initNotificationInMinutes(booking, hrDifference, minArray, minDifference, sec);
+            }
+        }
+        else if(booking.getStatus().equals("Booked") || booking.getStatus().equals("Request")) {
+            int dayDifference = bookingDay - calendarDay;
+
+            hrDifference = (bookingHour + (24 * dayDifference)) - hour;
+
+            if(min < bookingMin) minDifference = bookingMin - min;
+            else {
+                minDifference = 60 - (min - bookingMin);
+                if(minDifference < 60) hrDifference--;
+                else minDifference = 0;
+            }
+
+            initNotificationInHours(booking, hourArray, hrDifference + 1, minArray, minDifference, sec);
         }
     }
 
@@ -318,6 +352,114 @@ public class DriverActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
+            }
+        });
+    }
+
+    private void initNotificationInHours(Booking booking, List<String> hourArray, int hrDifference,
+                                         List<String> minArray, int minDifference, int sec) {
+        if(!booking.getBookingType().getId().equals("BT99")) {
+            if(hourArray.contains(String.valueOf(hrDifference)) &&
+                    (minArray.contains(String.valueOf(minDifference)) || minDifference == 0) && sec < 5) {
+                showUpcomingBookingNotification(booking, hrDifference, "hours");
+            }
+            else if(hrDifference % 24 == 0) {
+                if((minArray.contains(String.valueOf(minDifference)) || minDifference == 0) && sec < 5)
+                    showUpcomingBookingNotification(booking, hrDifference/24, "day");
+            }
+        }
+    }
+
+    private void initNotificationInMinutes(Booking booking, int hrDifference,
+                                           List<String> minArray, int minDifference, int sec) {
+        if(!booking.getBookingType().getId().equals("BT99")) {
+            if(hrDifference == 0 && minArray.contains(String.valueOf(minDifference)) && sec < 5) {
+                if(minDifference == 1) showUpcomingBookingNotification(booking, minDifference, "minute");
+                else showUpcomingBookingNotification(booking, minDifference, "minutes");
+            }
+            else if(hrDifference == 1 && minDifference == 0 && sec < 5)
+                showUpcomingBookingNotification(booking, hrDifference, "hour");
+        }
+    }
+
+    private NotificationManager getNotificationManager(String channelId) {
+        NotificationManager notificationManager =
+                (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel notificationChannel =
+                    new NotificationChannel(
+                            channelId,
+                            "Clemenisle-EV",
+                            NotificationManager.IMPORTANCE_HIGH
+                    );
+            notificationChannel.setDescription("Task Notification");
+            notificationManager.createNotificationChannel(notificationChannel);
+        }
+
+        return notificationManager;
+    }
+
+    private void showUpcomingBookingNotification(Booking booking, int value, String unit) {
+        NotificationManager notificationManager = getNotificationManager(booking.getId());
+        Bitmap icon = BitmapFactory.decodeResource(myResources, R.drawable.front_icon);
+
+        NotificationCompat.Builder builder =
+                new NotificationCompat.Builder(myContext, booking.getId())
+                        .setSmallIcon(R.drawable.front_icon).setLargeIcon(icon)
+                        .setContentTitle("Clemenisle-EV Task Reminder")
+                        .setContentText("You only have less than " + value + " " + unit +
+                                " before the schedule of your Task (ID: " + booking.getId() +").")
+                        .setCategory(NotificationCompat.CATEGORY_REMINDER)
+                        .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                        .setDefaults(NotificationCompat.DEFAULT_ALL)
+                        .setAutoCancel(false);
+
+        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
+            builder.setPriority(Notification.PRIORITY_HIGH);
+
+        Intent notificationIntent = new Intent(myContext, RouteActivity.class);
+        notificationIntent.putExtra("bookingId", booking.getId());
+        notificationIntent.putExtra("inDriverMode", true);
+        notificationIntent.putExtra("status", booking.getStatus());
+        notificationIntent.putExtra("userId", getPassengerUserId(booking.getId()));
+
+        PendingIntent pendingIntent = PendingIntent.getActivity(
+                myContext, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT
+        );
+        builder.setContentIntent(pendingIntent);
+        builder.setFullScreenIntent(pendingIntent, true);
+        notificationManager.notify(1, builder.build());
+    }
+
+    private String getPassengerUserId(String bookingId) {
+        for(User user : users) {
+            List<Booking> bookingList = user.getBookingList();
+            for(Booking booking : bookingList) {
+                if(booking.getId().equals(bookingId)) {
+                    return user.getId();
+                }
+            }
+        }
+        return null;
+    }
+
+    private void getUsers() {
+        usersRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                users.clear();
+                if(snapshot.exists()) {
+                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        User user = new User(dataSnapshot);
+                        users.add(user);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
             }
         });
     }

@@ -684,8 +684,7 @@ public class MainActivity extends AppCompatActivity {
 
         Intent notificationIntent = new Intent(myContext, RouteActivity.class);
         notificationIntent.putExtra("bookingId", booking.getId());
-        notificationIntent.putExtra("startStationId", booking.getStartStation().getId());
-        notificationIntent.putExtra("endStationId", booking.getEndStation().getId());
+        notificationIntent.putExtra("status", booking.getStatus());
 
         PendingIntent pendingIntent = PendingIntent.getActivity(
                 myContext, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT
