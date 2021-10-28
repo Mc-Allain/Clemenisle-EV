@@ -539,6 +539,10 @@ public class OnTheSpotActivity extends AppCompatActivity {
                             driverImage.setVisibility(View.GONE);
                             tvPass.setVisibility(View.VISIBLE);
                             passImage.setVisibility(View.VISIBLE);
+
+                            tvPass.setOnClickListener(view -> passTask(booking));
+                            passImage.setOnClickListener(view -> passTask(booking));
+
                             tvCheck.setVisibility(View.VISIBLE);
                             checkImage.setVisibility(View.VISIBLE);
 
@@ -607,6 +611,27 @@ public class OnTheSpotActivity extends AppCompatActivity {
                 }
             }
         }
+    }
+
+    private void passTask(Booking booking) {
+        usersRef.child(driverUserId).child("taskList").
+                child(booking.getId()).child("status").setValue("Request")
+                .addOnCompleteListener(task -> {
+                    if(task.isSuccessful()) {
+                        Toast.makeText(
+                                myContext,
+                                "Your Task is now on request",
+                                Toast.LENGTH_LONG
+                        ).show();
+                    }
+                    else {
+                        Toast.makeText(
+                                myContext,
+                                "Failed to pass the task",
+                                Toast.LENGTH_LONG
+                        ).show();
+                    }
+                });
     }
 
     @SuppressWarnings("deprecation")

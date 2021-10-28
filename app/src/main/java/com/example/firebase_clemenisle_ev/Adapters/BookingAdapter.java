@@ -615,6 +615,10 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                             driverImage.setVisibility(View.GONE);
                             tvPass.setVisibility(View.VISIBLE);
                             passImage.setVisibility(View.VISIBLE);
+
+                            tvPass.setOnClickListener(view -> passTask(booking));
+                            passImage.setOnClickListener(view -> passTask(booking));
+
                             tvCheck.setVisibility(View.VISIBLE);
                             checkImage.setVisibility(View.VISIBLE);
 
@@ -683,6 +687,27 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                 }
             }
         }
+    }
+
+    private void passTask(Booking booking) {
+        usersRef.child(userId).child("taskList").
+                child(booking.getId()).child("status").setValue("Request")
+                .addOnCompleteListener(task -> {
+                    if(task.isSuccessful()) {
+                        Toast.makeText(
+                                myContext,
+                                "Your Task is now on request",
+                                Toast.LENGTH_LONG
+                        ).show();
+                    }
+                    else {
+                        Toast.makeText(
+                                myContext,
+                                "Failed to pass the task",
+                                Toast.LENGTH_LONG
+                        ).show();
+                    }
+                });
     }
 
     private void takeTask(Booking booking, String passengerUserId, boolean fromRequest) {
