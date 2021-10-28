@@ -197,8 +197,21 @@ public class ChatActivity extends AppCompatActivity {
         String schedule = new DateTimeToString().getDateAndTime();
         Chat chat = new Chat(chatId, userId, value, schedule);
 
-        usersRef.child(passengerUserId).child("bookingList").child(bookingId).child("chats")
-                .child(chatId).setValue(chat);
+        DatabaseReference bookingListRef = usersRef.child(driverUserId).child("bookingList").child(bookingId),
+        taskListRef = usersRef.child(passengerUserId).child("taskList").child(bookingId);
+
+        bookingListRef.child("chats").child(chatId).setValue(chat);
+
+        if(inDriverMode) {
+            bookingListRef.child("notify").setValue(true);
+            bookingListRef.child("notificationTimestamp").
+                    setValue(new DateTimeToString().getDate());
+        }
+        else {
+            taskListRef.child("notify").setValue(true);
+            taskListRef.child("notificationTimestamp").
+                    setValue(new DateTimeToString().getDate());
+        }
     }
 
     private void getUsers() {

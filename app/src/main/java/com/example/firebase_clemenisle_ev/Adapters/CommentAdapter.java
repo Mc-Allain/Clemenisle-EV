@@ -430,7 +430,8 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
             if(loadCommentItemPosition + incrementLoadedItems > users.size())
                 itemsCountToIncrement = users.size() - loadCommentItemPosition;
 
-            String loadCommentText = "Load " + itemsCountToIncrement + " more comments";
+            String loadCommentText = "Load " + itemsCountToIncrement + " more ";
+            loadCommentText += itemsCountToIncrement == 1  ? "comment" : "comments";
             tvLoadComment.setText(loadCommentText);
 
             loadCommentLayout.setOnClickListener(view -> {

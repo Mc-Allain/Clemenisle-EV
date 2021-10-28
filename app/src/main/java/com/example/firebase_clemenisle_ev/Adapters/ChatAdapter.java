@@ -80,10 +80,13 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
         myContext = inflater.getContext();
         myResources = myContext.getResources();
 
-        int additionalItemCount = initialMessage == null ? 1 : 2;
+        if(loadChatItemPosition < incrementLoadedItems) loadChatItemPosition = incrementLoadedItems;
+
+        int additionalItemCount = initialMessage == null || initialMessage.length() == 0 ? 1 : 2;
 
         if(chats.size() + additionalItemCount < loadChatItemPosition && chats.size() != 0)
             loadChatItemPosition = chats.size() + additionalItemCount;
+
 
         backgroundLayout.setVisibility(View.VISIBLE);
         startPointLayout.setVisibility(View.VISIBLE);
@@ -102,7 +105,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
         }
         backgroundLayout.setLayoutParams(layoutParams);
 
-        if(position == chats.size() + 1 && position < loadChatItemPosition) {
+        if(position == chats.size() + 1 && position < loadChatItemPosition && additionalItemCount == 2) {
             if(inDriverMode) {
                 startPointLayout.setVisibility(View.GONE);
                 endPointLayout.setVisibility(View.VISIBLE);
@@ -110,8 +113,10 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
                 String message = "<i>Loading…</i>";
                 tvEndPointMessage.setText(fromHtml(message));
 
-                getProfileImage(passengerUserId, endPointProfileImage, tvEndPointMessage,
-                        endPointLayout, tvEndPointTimestamp, position);
+                getProfileImage(passengerUserId, endPointProfileImage);
+
+                tvEndPointMessage.setText(initialMessage);
+                tvEndPointTimestamp.setText(bookingTimestamp);
             }
             else {
                 startPointLayout.setVisibility(View.VISIBLE);
@@ -120,8 +125,10 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
                 String message = "<i>Loading…</i>";
                 tvStartPointMessage.setText(fromHtml(message));
 
-                getProfileImage(passengerUserId, startPointProfileImage, tvStartPointMessage,
-                        startPointLayout, tvStartPointTimestamp, position);
+                getProfileImage(passengerUserId, startPointProfileImage);
+
+                tvStartPointMessage.setText(initialMessage);
+                tvStartPointTimestamp.setText(bookingTimestamp);
             }
         }
         else if(position == chats.size() && position < loadChatItemPosition) {
@@ -129,21 +136,47 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
                 startPointLayout.setVisibility(View.VISIBLE);
                 endPointLayout.setVisibility(View.GONE);
 
-                getProfileImage(driverUserId, startPointProfileImage, tvStartPointMessage,
-                        startPointLayout, tvStartPointTimestamp, position);
+                String message = "<i>Loading…</i>";
+                tvStartPointMessage.setText(fromHtml(message));
+
+                getProfileImage(driverUserId, startPointProfileImage);
+
+                if(users.size() > 0) {
+                    for(User user : users) {
+                        String fullName = "<b>" + user.getLastName() + "</b>, " + user.getFirstName();
+                        if(user.getMiddleName().length() > 0) fullName += " " + user.getMiddleName();
+
+                        message = "こんにちは (Hello), I am " + fullName + ", your assigned driver.";
+                        tvStartPointMessage.setText(fromHtml(message));
+                        tvStartPointTimestamp.setText(taskTimestamp);
+                    }
+                }
             }
             else {
                 startPointLayout.setVisibility(View.GONE);
                 endPointLayout.setVisibility(View.VISIBLE);
 
-                getProfileImage(driverUserId, endPointProfileImage, tvEndPointMessage,
-                        endPointLayout, tvEndPointTimestamp, position);
+                String message = "<i>Loading…</i>";
+                tvEndPointMessage.setText(fromHtml(message));
+
+                getProfileImage(driverUserId, endPointProfileImage);
+
+                if(users.size() > 0) {
+                    for(User user : users) {
+                        String fullName = "<b>" + user.getLastName() + "</b>, " + user.getFirstName();
+                        if(user.getMiddleName().length() > 0) fullName += " " + user.getMiddleName();
+
+                        message = "こんにちは (Hello), I am " + fullName + ", your assigned driver.";
+                        tvEndPointMessage.setText(fromHtml(message));
+                        tvEndPointTimestamp.setText(taskTimestamp);
+                    }
+                }
             }
         }
         else if(position < loadChatItemPosition && chats.size() != 0) {
             Chat chat = chats.get(position);
             String senderId = chat.getSenderId();
-            String message = chat.getMessage();
+            String message = chat.getMessage() + " " + position;
             String timestamp = chat.getTimestamp();
 
             boolean state;
@@ -162,8 +195,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
 
                 if(state) {
                     startPointProfileImage.setVisibility(View.VISIBLE);
-                    getProfileImage(senderId, startPointProfileImage, tvStartPointMessage,
-                            startPointLayout, tvStartPointTimestamp, position);
+                    getProfileImage(senderId, startPointProfileImage);
                 }
                 else startPointProfileImage.setVisibility(View.INVISIBLE);
             }
@@ -176,8 +208,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
 
                 if(state) {
                     endPointProfileImage.setVisibility(View.VISIBLE);
-                    getProfileImage(senderId, endPointProfileImage, tvEndPointMessage,
-                            endPointLayout, tvEndPointTimestamp, position);
+                    getProfileImage(senderId, endPointProfileImage);
                 }
                 else endPointProfileImage.setVisibility(View.INVISIBLE);
             }
@@ -194,7 +225,8 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
             if(loadChatItemPosition + incrementLoadedItems > chats.size() + additionalItemCount)
                 itemsCountToIncrement = chats.size() + additionalItemCount - loadChatItemPosition;
 
-            String loadChatText = "Load " + itemsCountToIncrement + " more messages";
+            String loadChatText = "Load " + itemsCountToIncrement + " more ";
+            loadChatText += itemsCountToIncrement == 1  ? "message" : "messages";
             tvLoadChat.setText(loadChatText);
 
             loadChatLayout.setOnClickListener(view -> {
@@ -223,9 +255,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
         return (int) px;
     }
 
-    private void getProfileImage(String senderId, ImageView profileImage,
-                                 TextView tvMessage, ConstraintLayout messageLayout,
-                                 TextView tvTimestamp, int position) {
+    private void getProfileImage(String senderId, ImageView profileImage) {
         if(users.size() > 0) {
             for (User thisUser : users) {
                 if(thisUser.getId().equals(senderId)) {
@@ -235,32 +265,6 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
                                 .into(profileImage);
                     }
                     catch (Exception ignored) {}
-
-                    profileImage.setVisibility(View.VISIBLE);
-                    messageLayout.setVisibility(View.VISIBLE);
-                    tvTimestamp.setVisibility(View.VISIBLE);
-
-                    if(position == chats.size() + 1) {
-                        if(initialMessage == null || initialMessage.length() == 0)
-                            messageLayout.setVisibility(View.GONE);
-                        else {
-                            messageLayout.setVisibility(View.VISIBLE);
-                            tvMessage.setText(initialMessage);
-                            tvTimestamp.setText(bookingTimestamp);
-                        }
-                    }
-                    if(position == chats.size()) {
-                        messageLayout.setVisibility(View.VISIBLE);
-                        String fullName = "<b>" + thisUser.getLastName() + "</b>, " + thisUser.getFirstName();
-                        if(thisUser.getMiddleName().length() > 0) fullName += " " + thisUser.getMiddleName();
-
-                        String message = "こんにちは (Hello), I am " + fullName + ", your assigned driver.";
-                        tvMessage.setText(fromHtml(message));
-                        tvTimestamp.setText(taskTimestamp);
-                    }
-
-                    tvMessage.setOnClickListener(view ->
-                            copyTextToClipboard(tvMessage.getText().toString()));
                 }
             }
         }
