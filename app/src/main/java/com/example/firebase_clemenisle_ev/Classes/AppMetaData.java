@@ -14,10 +14,11 @@ public class AppMetaData {
                     "• Preference Section Added\n" +
                     "• On The Spot(Single Spot) Service Added\n" +
                     "• Driver's Module Added\n" +
-                    "• Booking Chat Added";
+                    "• Booking Chat Added\n" +
+                    "• Pass Task Added";
     double currentVersion = 0.3, latestVersion = 0;
     String status;
-    boolean isDeveloper = true;
+    boolean isDeveloper = false;
 
     public AppMetaData() {
     }
