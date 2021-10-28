@@ -230,6 +230,10 @@ public class MapSettingsFragment extends Fragment {
         tvTSMapPin.setTextColor(colorInitial);
         tsMapPinImage.getDrawable().setTint(colorInitial);
 
+        if(tsMarkIcon != R.drawable.ic_baseline_tour_24 &&
+                tsMarkIcon != R.drawable.ic_baseline_location_on_24)
+            tsMarkIcon = R.drawable.ic_baseline_tour_24;
+
         if(tsMarkIcon == R.drawable.ic_baseline_tour_24) {
             tvTSDefault.setTextColor(colorBlue);
             tsDefaultImage.getDrawable().setTint(colorBlue);
@@ -259,6 +263,10 @@ public class MapSettingsFragment extends Fragment {
         sDefaultImage.getDrawable().setTint(colorInitial);
         tvSMapPin.setTextColor(colorInitial);
         sMapPinImage.getDrawable().setTint(colorInitial);
+
+        if(sMarkIcon != R.drawable.ic_baseline_ev_station_24 &&
+                sMarkIcon != R.drawable.ic_baseline_location_on_24)
+            sMarkIcon = R.drawable.ic_baseline_ev_station_24;
 
         if(sMarkIcon == R.drawable.ic_baseline_ev_station_24) {
             tvSDefault.setTextColor(colorBlue);
@@ -447,10 +455,6 @@ public class MapSettingsFragment extends Fragment {
                 .getSharedPreferences("mapSetting", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
-        if(value != R.drawable.ic_baseline_tour_24 &&
-                value != R.drawable.ic_baseline_location_on_24)
-            value = R.drawable.ic_baseline_tour_24;
-
         editor.putInt("tsMarkIcon", value);
         editor.apply();
     }
@@ -459,10 +463,6 @@ public class MapSettingsFragment extends Fragment {
         SharedPreferences sharedPreferences = myContext
                 .getSharedPreferences("mapSetting", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
-
-        if(value != R.drawable.ic_baseline_ev_station_24 &&
-                value != R.drawable.ic_baseline_location_on_24)
-            value = R.drawable.ic_baseline_ev_station_24;
 
         editor.putInt("sMarkIcon", value);
         editor.apply();

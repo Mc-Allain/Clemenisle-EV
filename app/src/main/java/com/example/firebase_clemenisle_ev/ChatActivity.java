@@ -62,12 +62,12 @@ public class ChatActivity extends AppCompatActivity {
 
     int colorBlue, colorInitial;
 
-    String bookingId, userId, passengerUserId, driverUserId, initialMessage;
+    String bookingId, userId, passengerUserId, driverUserId, passengerProfileImg,
+            driverProfileImg, driverFullName, initialMessage;
     boolean isLoggedIn = false, inDriverMode = false;
 
     ChatAdapter chatAdapter;
     List<Chat> chats = new ArrayList<>();
-    List<User> users = new ArrayList<>();
     String bookingTimestamp, taskTimestamp;
 
     String message;
@@ -92,6 +92,7 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
@@ -152,8 +153,7 @@ public class ChatActivity extends AppCompatActivity {
         LinearLayoutManager linearLayout =
                 new LinearLayoutManager(myContext, LinearLayoutManager.VERTICAL, true);
         chatView.setLayoutManager(linearLayout);
-        chatAdapter = new ChatAdapter(myContext, chats, users, userId, passengerUserId, driverUserId,
-                initialMessage, bookingTimestamp, taskTimestamp, inDriverMode);
+        chatAdapter = new ChatAdapter(myContext, chats, userId, inDriverMode);
         chatView.setAdapter(chatAdapter);
 
         etMessage.addTextChangedListener(new TextWatcher() {
@@ -197,20 +197,20 @@ public class ChatActivity extends AppCompatActivity {
         String schedule = new DateTimeToString().getDateAndTime();
         Chat chat = new Chat(chatId, userId, value, schedule);
 
-        DatabaseReference bookingListRef = usersRef.child(driverUserId).child("bookingList").child(bookingId),
-        taskListRef = usersRef.child(passengerUserId).child("taskList").child(bookingId);
+        DatabaseReference bookingListRef = usersRef.child(passengerUserId).child("bookingList").child(bookingId),
+        taskListRef = usersRef.child(driverUserId).child("taskList").child(bookingId);
 
         bookingListRef.child("chats").child(chatId).setValue(chat);
 
         if(inDriverMode) {
             bookingListRef.child("notify").setValue(true);
             bookingListRef.child("notificationTimestamp").
-                    setValue(new DateTimeToString().getDate());
+                    setValue(new DateTimeToString().getDateAndTime());
         }
         else {
             taskListRef.child("notify").setValue(true);
             taskListRef.child("notificationTimestamp").
-                    setValue(new DateTimeToString().getDate());
+                    setValue(new DateTimeToString().getDateAndTime());
         }
     }
 
@@ -218,11 +218,9 @@ public class ChatActivity extends AppCompatActivity {
         usersRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                users.clear();
                 if(snapshot.exists()) {
                     for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                         User user = new User(dataSnapshot);
-                        users.add(user);
 
                         List<Booking> taskList = user.getTaskList();
                         for(Booking booking : taskList) {
@@ -242,6 +240,8 @@ public class ChatActivity extends AppCompatActivity {
                                 userInfoLayout.setVisibility(View.GONE);
 
                                 driverUserId = user.getId();
+                                driverProfileImg = user.getProfileImage();
+                                driverFullName = fullName;
                                 initialMessage = booking.getMessage();
                                 taskTimestamp = booking.getTimestamp();
 
@@ -267,6 +267,7 @@ public class ChatActivity extends AppCompatActivity {
                                 driverInfoLayout.setVisibility(View.GONE);
 
                                 passengerUserId = user.getId();
+                                passengerProfileImg = user.getProfileImage();
                                 initialMessage = booking.getMessage();
                                 bookingTimestamp = booking.getTimestamp();
 
@@ -298,8 +299,8 @@ public class ChatActivity extends AppCompatActivity {
                 }
 
                 Collections.reverse(chats);
-                chatAdapter.setValues(passengerUserId, driverUserId, initialMessage,
-                        bookingTimestamp, taskTimestamp);
+                chatAdapter.setValues(passengerUserId, driverUserId, passengerProfileImg, driverProfileImg,
+                        driverFullName, initialMessage, bookingTimestamp, taskTimestamp);
             }
 
             @Override

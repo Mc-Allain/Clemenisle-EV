@@ -17,7 +17,6 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.firebase_clemenisle_ev.Classes.Chat;
-import com.example.firebase_clemenisle_ev.Classes.User;
 import com.example.firebase_clemenisle_ev.R;
 
 import java.util.List;
@@ -29,8 +28,8 @@ import androidx.recyclerview.widget.RecyclerView;
 public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
 
     List<Chat> chats;
-    List<User> users;
-    String startPointId, passengerUserId, driverUserId, initialMessage, bookingTimestamp, taskTimestamp;
+    String startPointId, passengerUserId, driverUserId, passengerProfileImg, driverProfileImg,
+            driverFullName, initialMessage, bookingTimestamp, taskTimestamp;
     boolean inDriverMode;
     LayoutInflater inflater;
 
@@ -39,17 +38,9 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
 
     int loadChatItemPosition = 10, incrementLoadedItems = 10;
 
-    public ChatAdapter(Context context, List<Chat> chats, List<User> users, String startPointId,
-                       String passengerUserId, String driverUserId, String initialMessage,
-                       String bookingTimestamp, String taskTimestamp, boolean inDriverMode) {
+    public ChatAdapter(Context context, List<Chat> chats, String startPointId, boolean inDriverMode) {
         this.chats = chats;
-        this.users = users;
         this.startPointId = startPointId;
-        this.passengerUserId = passengerUserId;
-        this.driverUserId = driverUserId;
-        this.initialMessage = initialMessage;
-        this.bookingTimestamp = bookingTimestamp;
-        this.taskTimestamp = taskTimestamp;
         this.inDriverMode = inDriverMode;
         this.inflater = LayoutInflater.from(context);
     }
@@ -67,8 +58,6 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
                 startPointLayout = holder.startPointLayout,
                 endPointLayout = holder.endPointLayout,
                 loadChatLayout = holder.loadChatLayout;
-        /*ConstraintLayout startPointMessageLayout = holder.startPointMessageLayout,
-                endPointMessageLayout = holder.endPointMessageLayout;*/
         TextView tvStartPointMessage = holder.tvStartPointMessage,
                 tvEndPointMessage = holder.tvEndPointMessage,
                 tvStartPointTimestamp = holder.tvStartPointTimestamp,
@@ -89,8 +78,8 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
 
 
         backgroundLayout.setVisibility(View.VISIBLE);
-        startPointLayout.setVisibility(View.VISIBLE);
-        endPointLayout.setVisibility(View.VISIBLE);
+        startPointLayout.setVisibility(View.GONE);
+        endPointLayout.setVisibility(View.GONE);
         loadChatLayout.setVisibility(View.GONE);
 
         ConstraintLayout.LayoutParams layoutParams =
@@ -106,119 +95,129 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
         backgroundLayout.setLayoutParams(layoutParams);
 
         if(position == chats.size() + 1 && position < loadChatItemPosition && additionalItemCount == 2) {
+            String profileImg = passengerProfileImg;
+
             if(inDriverMode) {
-                startPointLayout.setVisibility(View.GONE);
                 endPointLayout.setVisibility(View.VISIBLE);
 
-                String message = "<i>Loading…</i>";
-                tvEndPointMessage.setText(fromHtml(message));
-
-                getProfileImage(passengerUserId, endPointProfileImage);
+                try {
+                    Glide.with(myContext).load(profileImg)
+                            .placeholder(R.drawable.image_loading_placeholder)
+                            .into(endPointProfileImage);
+                }
+                catch (Exception ignored) {}
 
                 tvEndPointMessage.setText(initialMessage);
                 tvEndPointTimestamp.setText(bookingTimestamp);
+
+                tvEndPointMessage.setOnClickListener(view -> copyTextToClipboard(initialMessage));
             }
             else {
                 startPointLayout.setVisibility(View.VISIBLE);
-                endPointLayout.setVisibility(View.GONE);
 
-                String message = "<i>Loading…</i>";
-                tvStartPointMessage.setText(fromHtml(message));
-
-                getProfileImage(passengerUserId, startPointProfileImage);
+                try {
+                    Glide.with(myContext).load(profileImg)
+                            .placeholder(R.drawable.image_loading_placeholder)
+                            .into(startPointProfileImage);
+                }
+                catch (Exception ignored) {}
 
                 tvStartPointMessage.setText(initialMessage);
                 tvStartPointTimestamp.setText(bookingTimestamp);
+
+                tvStartPointMessage.setOnClickListener(view -> copyTextToClipboard(initialMessage));
             }
         }
         else if(position == chats.size() && position < loadChatItemPosition) {
+            String profileImg = driverProfileImg;
+
             if(inDriverMode) {
                 startPointLayout.setVisibility(View.VISIBLE);
-                endPointLayout.setVisibility(View.GONE);
 
-                String message = "<i>Loading…</i>";
-                tvStartPointMessage.setText(fromHtml(message));
-
-                getProfileImage(driverUserId, startPointProfileImage);
-
-                if(users.size() > 0) {
-                    for(User user : users) {
-                        String fullName = "<b>" + user.getLastName() + "</b>, " + user.getFirstName();
-                        if(user.getMiddleName().length() > 0) fullName += " " + user.getMiddleName();
-
-                        message = "こんにちは (Hello), I am " + fullName + ", your assigned driver.";
-                        tvStartPointMessage.setText(fromHtml(message));
-                        tvStartPointTimestamp.setText(taskTimestamp);
-                    }
+                try {
+                    Glide.with(myContext).load(profileImg)
+                            .placeholder(R.drawable.image_loading_placeholder)
+                            .into(startPointProfileImage);
                 }
+                catch (Exception ignored) {}
+
+                String message = "こんにちは (Hello), I am " + driverFullName + ", your assigned driver.";
+                tvStartPointMessage.setText(fromHtml(message));
+                tvStartPointTimestamp.setText(taskTimestamp);
+
+                tvStartPointMessage.setOnClickListener(view -> copyTextToClipboard(message));
             }
             else {
-                startPointLayout.setVisibility(View.GONE);
                 endPointLayout.setVisibility(View.VISIBLE);
 
-                String message = "<i>Loading…</i>";
-                tvEndPointMessage.setText(fromHtml(message));
-
-                getProfileImage(driverUserId, endPointProfileImage);
-
-                if(users.size() > 0) {
-                    for(User user : users) {
-                        String fullName = "<b>" + user.getLastName() + "</b>, " + user.getFirstName();
-                        if(user.getMiddleName().length() > 0) fullName += " " + user.getMiddleName();
-
-                        message = "こんにちは (Hello), I am " + fullName + ", your assigned driver.";
-                        tvEndPointMessage.setText(fromHtml(message));
-                        tvEndPointTimestamp.setText(taskTimestamp);
-                    }
+                try {
+                    Glide.with(myContext).load(profileImg)
+                            .placeholder(R.drawable.image_loading_placeholder)
+                            .into(endPointProfileImage);
                 }
+                catch (Exception ignored) {}
+
+                String message = "こんにちは (Hello), I am " + driverFullName + ", your assigned driver.";
+                tvEndPointMessage.setText(fromHtml(message));
+                tvEndPointTimestamp.setText(taskTimestamp);
+
+                tvEndPointMessage.setOnClickListener(view -> copyTextToClipboard(message));
             }
         }
         else if(position < loadChatItemPosition && chats.size() != 0) {
             Chat chat = chats.get(position);
             String senderId = chat.getSenderId();
-            String message = chat.getMessage() + " " + position;
+            String message = chat.getMessage();
             String timestamp = chat.getTimestamp();
+            String profileImg;
+
+            if(senderId.equals(passengerUserId)) profileImg = passengerProfileImg;
+            else profileImg = driverProfileImg;
 
             boolean state;
             if(position != chats.size() - 1)
                 state = !(chats.get(position + 1).getSenderId().equals(senderId) &&
                         position + 1 < loadChatItemPosition);
-            else
-                state = !(senderId.equals(driverUserId) && position + 1 < loadChatItemPosition);
+            else state = !(senderId.equals(driverUserId) && position + 1 < loadChatItemPosition);
 
             if(senderId.equals(startPointId)) {
                 startPointLayout.setVisibility(View.VISIBLE);
-                endPointLayout.setVisibility(View.GONE);
-
                 tvStartPointMessage.setText(message);
                 tvStartPointTimestamp.setText(timestamp);
 
+                tvStartPointMessage.setOnClickListener(view -> copyTextToClipboard(message));
+
                 if(state) {
                     startPointProfileImage.setVisibility(View.VISIBLE);
-                    getProfileImage(senderId, startPointProfileImage);
+                    try {
+                        Glide.with(myContext).load(profileImg)
+                                .placeholder(R.drawable.image_loading_placeholder)
+                                .into(startPointProfileImage);
+                    }
+                    catch (Exception ignored) {}
                 }
                 else startPointProfileImage.setVisibility(View.INVISIBLE);
             }
             else {
-                startPointLayout.setVisibility(View.GONE);
                 endPointLayout.setVisibility(View.VISIBLE);
-
                 tvEndPointMessage.setText(message);
                 tvEndPointTimestamp.setText(timestamp);
 
+                tvEndPointMessage.setOnClickListener(view -> copyTextToClipboard(message));
+
                 if(state) {
                     endPointProfileImage.setVisibility(View.VISIBLE);
-                    getProfileImage(senderId, endPointProfileImage);
+                    try {
+                        Glide.with(myContext).load(profileImg)
+                                .placeholder(R.drawable.image_loading_placeholder)
+                                .into(endPointProfileImage);
+                    }
+                    catch (Exception ignored) {}
                 }
                 else endPointProfileImage.setVisibility(View.INVISIBLE);
             }
-
-            tvStartPointMessage.setOnClickListener(view -> copyTextToClipboard(message));
-            tvEndPointMessage.setOnClickListener(view -> copyTextToClipboard(message));
         }
         else if(position == loadChatItemPosition && position != chats.size() + additionalItemCount) {
-            startPointLayout.setVisibility(View.GONE);
-            endPointLayout.setVisibility(View.GONE);
             loadChatLayout.setVisibility(View.VISIBLE);
 
             int itemsCountToIncrement = incrementLoadedItems;
@@ -253,21 +252,6 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
     private int dpToPx(int dp) {
         float px = dp * myResources.getDisplayMetrics().density;
         return (int) px;
-    }
-
-    private void getProfileImage(String senderId, ImageView profileImage) {
-        if(users.size() > 0) {
-            for (User thisUser : users) {
-                if(thisUser.getId().equals(senderId)) {
-                    try {
-                        Glide.with(myContext).load(thisUser.getProfileImage())
-                                .placeholder(R.drawable.image_loading_placeholder)
-                                .into(profileImage);
-                    }
-                    catch (Exception ignored) {}
-                }
-            }
-        }
     }
 
     @SuppressWarnings("deprecation")
@@ -313,13 +297,18 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
             tvStartPointTimestamp = itemView.findViewById(R.id.tvStartPointTimestamp);
             endPointMessageLayout = itemView.findViewById(R.id.endPointMessageLayout);
             tvEndPointTimestamp = itemView.findViewById(R.id.tvEndPointTimestamp);
+
+            setIsRecyclable(false);
         }
     }
 
-    public void setValues(String passengerUserId, String driverUserId, String initialMessage,
-                                   String bookingTimestamp, String taskTimestamp) {
+    public void setValues(String passengerUserId, String driverUserId, String passengerProfileImg, String driverProfileImg,
+                          String driverFullName, String initialMessage, String bookingTimestamp, String taskTimestamp) {
         this.passengerUserId = passengerUserId;
         this.driverUserId = driverUserId;
+        this.passengerProfileImg = passengerProfileImg;
+        this.driverProfileImg = driverProfileImg;
+        this.driverFullName = driverFullName;
         this.initialMessage = initialMessage;
         this.bookingTimestamp = bookingTimestamp;
         this.taskTimestamp = taskTimestamp;
