@@ -533,7 +533,7 @@ public class BookingActivity extends AppCompatActivity implements
         LinearLayoutManager linearLayout1 =
                 new LinearLayoutManager(myContext, LinearLayoutManager.VERTICAL, false);
         bookingTypeView.setLayoutManager(linearLayout1);
-        bookingTypeAdapter = new BookingTypeAdapter(myContext, bookingTypeList);
+        bookingTypeAdapter = new BookingTypeAdapter(myContext, bookingTypeList, userId);
         bookingTypeView.setAdapter(bookingTypeAdapter);
         bookingTypeAdapter.setOnItemClickListener(this);
 

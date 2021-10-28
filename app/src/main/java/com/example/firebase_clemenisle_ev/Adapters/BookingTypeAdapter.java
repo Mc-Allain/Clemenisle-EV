@@ -7,8 +7,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.example.firebase_clemenisle_ev.Classes.Booking;
 import com.example.firebase_clemenisle_ev.Classes.BookingType;
+import com.example.firebase_clemenisle_ev.Classes.FirebaseURL;
 import com.example.firebase_clemenisle_ev.R;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.List;
 
@@ -17,14 +23,17 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class BookingTypeAdapter extends RecyclerView.Adapter<BookingTypeAdapter.ViewHolder> {
+    private final static String firebaseURL = FirebaseURL.getFirebaseURL();
+    FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance(firebaseURL);
 
     List<BookingType> bookingTypeList;
+    String userId;
     LayoutInflater inflater;
 
     Context myContext;
     Resources myResources;
 
-    int colorBlue, colorWhite, colorBlack, colorInitial;
+    int colorBlue, colorWhite, colorBlack, colorInitial, colorRed;
 
     String defaultRouteCountText = "Recommended Route(s): ";
 
@@ -34,8 +43,9 @@ public class BookingTypeAdapter extends RecyclerView.Adapter<BookingTypeAdapter.
 
     OnItemClickListener onItemClickListener;
 
-    public BookingTypeAdapter(Context context, List<BookingType> bookingTypeList) {
+    public BookingTypeAdapter(Context context, List<BookingType> bookingTypeList, String userId) {
         this.bookingTypeList = bookingTypeList;
+        this.userId = userId;
         this.inflater = LayoutInflater.from(context);
     }
 
@@ -64,14 +74,15 @@ public class BookingTypeAdapter extends RecyclerView.Adapter<BookingTypeAdapter.
         colorWhite = myResources.getColor(R.color.white);
         colorBlack = myResources.getColor(R.color.black);
         colorInitial = myResources.getColor(R.color.initial);
+        colorRed = myResources.getColor(R.color.red);
 
         BookingType bookingType = bookingTypeList.get(position);
 
-        String id = bookingTypeList.get(position).getId();
-        String typeName = bookingTypeList.get(position).getName();
-        String price = "₱" + bookingTypeList.get(position).getPrice();
+        String id = bookingType.getId();
+        String typeName = bookingType.getName();
+        String price = "₱" + bookingType.getPrice();
         if(price.split("\\.")[1].length() == 1) price += 0;
-        int routeCount = bookingTypeList.get(position).getRouteList().size();
+        int routeCount = bookingType.getRouteList().size();
         String routeCountText = defaultRouteCountText + routeCount;
 
         if(routeCount == 0) routeCountText = "One spot at a time";
@@ -105,6 +116,9 @@ public class BookingTypeAdapter extends RecyclerView.Adapter<BookingTypeAdapter.
             tvRouteCount.setTextColor(colorInitial);
         }
 
+        if(id.equals("BT99"))
+            checkIfHasOngoingOnTheSpot(backgroundLayout, tvTypeName, tvPrice, tvRouteCount, routeCount, id);
+
         int top = dpToPx(0), bottom = dpToPx(0);
 
         boolean isFirstItem = position + 1 == 1, isLastItem = position + 1 == getItemCount();
@@ -128,6 +142,60 @@ public class BookingTypeAdapter extends RecyclerView.Adapter<BookingTypeAdapter.
                 notifyDataSetChanged();
             }
         });
+    }
+
+    private void checkIfHasOngoingOnTheSpot(ConstraintLayout backgroundLayout, TextView tvTypeName,
+                                            TextView tvPrice, TextView tvRouteCount,
+                                            int routeCount, String id) {
+        firebaseDatabase.getReference("users").child(userId).child("bookingList").
+                addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if(snapshot.exists()) {
+                            for(DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                                Booking booking = new Booking(dataSnapshot);
+                                BookingType bookingType = booking.getBookingType();
+                                String status = booking.getStatus();
+
+                                if(bookingType.getId().equals("BT99") &&
+                                        (status.equals("Processing") || status.equals("Booked"))) {
+                                    backgroundLayout.setBackgroundColor(colorWhite);
+                                    tvTypeName.setTextColor(colorInitial);
+                                    tvPrice.setTextColor(colorInitial);
+
+                                    String caption = "You have this Booking Type ongoing right now";
+                                    tvRouteCount.setText(caption);
+                                    tvRouteCount.setTextColor(colorRed);
+
+                                    backgroundLayout.setOnClickListener(null);
+                                    return;
+                                }
+                                else {
+                                    backgroundLayout.setBackgroundColor(colorWhite);
+                                    tvTypeName.setTextColor(colorBlack);
+                                    tvPrice.setTextColor(colorBlue);
+
+                                    String routeCountText = "One spot at a time";
+                                    tvRouteCount.setText(routeCountText);
+                                    tvRouteCount.setTextColor(colorBlack);
+
+                                    backgroundLayout.setOnClickListener(view -> {
+                                        if(routeCount > 0 || !isZeroCountDisable) {
+                                            bookingTypeId = id;
+                                            onItemClickListener.sendBookingType(bookingType);
+                                            notifyDataSetChanged();
+                                        }
+                                    });
+                                }
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
     }
 
     public interface OnItemClickListener {
