@@ -93,8 +93,6 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
 
     List<User> users = new ArrayList<>();
 
-    String driverUserId;
-
     public void setInDriverMode(boolean inDriverMode) {
         this.inDriverMode = inDriverMode;
         notifyDataSetChanged();
@@ -208,7 +206,6 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                 color = resources.getColor(R.color.orange);
                 backgroundDrawable = resources.getDrawable(R.color.orange);
                 break;
-            case "Request":
             case "Booked":
                 color = resources.getColor(R.color.green);
                 backgroundDrawable = resources.getDrawable(R.color.green);
@@ -568,64 +565,29 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                     }
                     catch (Exception ignored) {}
 
-                    if(status.equals("Processing")) {
-                        tvChat.setVisibility(View.GONE);
-                        chatImage.setVisibility(View.GONE);
+                    switch (status) {
+                        case "Processing":
+                            tvChat.setVisibility(View.GONE);
+                            chatImage.setVisibility(View.GONE);
 
-                        if(userId.equals(user.getId())) {
-                            tvDriver.setVisibility(View.GONE);
-                            driverImage.setVisibility(View.GONE);
-                        }
-                        else {
-                            tvDriver.setVisibility(View.VISIBLE);
-                            driverImage.setVisibility(View.VISIBLE);
+                            if (userId.equals(user.getId())) {
+                                tvDriver.setVisibility(View.GONE);
+                                driverImage.setVisibility(View.GONE);
+                            }
+                            else {
+                                tvDriver.setVisibility(View.VISIBLE);
+                                driverImage.setVisibility(View.VISIBLE);
 
-                            tvDriver.setOnClickListener(view -> takeTask(booking, user.getId()));
-                            driverImage.setOnClickListener(view -> takeTask(booking, user.getId()));
-                        }
+                                tvDriver.setOnClickListener(view -> takeTask(booking, user.getId()));
+                                driverImage.setOnClickListener(view -> takeTask(booking, user.getId()));
+                            }
 
-                        tvPass.setVisibility(View.GONE);
-                        passImage.setVisibility(View.GONE);
-                        tvCheck.setVisibility(View.GONE);
-                        checkImage.setVisibility(View.GONE);
-                    }
-                    else if(status.equals("Booked")) {
-                        tvChat.setVisibility(View.VISIBLE);
-                        chatImage.setVisibility(View.VISIBLE);
-
-                        tvChat.setOnClickListener(view -> openChat(true, bookingId));
-                        chatImage.setOnClickListener(view -> openChat(true, bookingId));
-
-                        tvDriver.setVisibility(View.GONE);
-                        driverImage.setVisibility(View.GONE);
-                        tvPass.setVisibility(View.VISIBLE);
-                        passImage.setVisibility(View.VISIBLE);
-                        tvCheck.setVisibility(View.VISIBLE);
-                        checkImage.setVisibility(View.VISIBLE);
-
-                        tvCheck.setOnClickListener(view -> openItem(booking, true));
-                        checkImage.setOnClickListener(view -> openItem(booking, true));
-                    }
-                    else if(!status.equals("Request")) {
-                        tvChat.setVisibility(View.GONE);
-                        chatImage.setVisibility(View.GONE);
-                        tvDriver.setVisibility(View.GONE);
-                        driverImage.setVisibility(View.GONE);
-                        tvPass.setVisibility(View.GONE);
-                        passImage.setVisibility(View.GONE);
-                        tvCheck.setVisibility(View.GONE);
-                        checkImage.setVisibility(View.GONE);
-                    }
-
-                    break;
-                }
-            }
-
-            List<Booking> taskList = user.getTaskList();
-            for(Booking task : taskList) {
-                if(task.getId().equals(bookingId)) {
-                    if(status.equals("Request")) {
-                        if(userId.equals(user.getId())) {
+                            tvPass.setVisibility(View.GONE);
+                            passImage.setVisibility(View.GONE);
+                            tvCheck.setVisibility(View.GONE);
+                            checkImage.setVisibility(View.GONE);
+                            break;
+                        case "Booked":
                             tvChat.setVisibility(View.VISIBLE);
                             chatImage.setVisibility(View.VISIBLE);
 
@@ -634,27 +596,24 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
 
                             tvDriver.setVisibility(View.GONE);
                             driverImage.setVisibility(View.GONE);
+                            tvPass.setVisibility(View.VISIBLE);
+                            passImage.setVisibility(View.VISIBLE);
                             tvCheck.setVisibility(View.VISIBLE);
                             checkImage.setVisibility(View.VISIBLE);
 
-                            tvCheck.setOnClickListener(view -> openItem(task, true));
-                            checkImage.setOnClickListener(view -> openItem(task, true));
-                        }
-                        else {
+                            tvCheck.setOnClickListener(view -> openItem(booking, true));
+                            checkImage.setOnClickListener(view -> openItem(booking, true));
+                            break;
+                        default:
                             tvChat.setVisibility(View.GONE);
                             chatImage.setVisibility(View.GONE);
-
-                            tvDriver.setVisibility(View.VISIBLE);
-                            driverImage.setVisibility(View.VISIBLE);
+                            tvDriver.setVisibility(View.GONE);
+                            driverImage.setVisibility(View.GONE);
+                            tvPass.setVisibility(View.GONE);
+                            passImage.setVisibility(View.GONE);
                             tvCheck.setVisibility(View.GONE);
                             checkImage.setVisibility(View.GONE);
-
-                            tvDriver.setOnClickListener(view -> takeTask(task, user.getId()));
-                            driverImage.setOnClickListener(view -> takeTask(task, user.getId()));
-                        }
-
-                        tvPass.setVisibility(View.GONE);
-                        passImage.setVisibility(View.GONE);
+                            break;
                     }
 
                     break;

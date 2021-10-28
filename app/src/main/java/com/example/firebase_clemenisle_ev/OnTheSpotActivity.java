@@ -492,64 +492,29 @@ public class OnTheSpotActivity extends AppCompatActivity {
                     }
                     catch (Exception ignored) {}
 
-                    if(status.equals("Processing")) {
-                        tvChat.setVisibility(View.GONE);
-                        chatImage.setVisibility(View.GONE);
+                    switch (status) {
+                        case "Processing":
+                            tvChat.setVisibility(View.GONE);
+                            chatImage.setVisibility(View.GONE);
 
-                        if(driverUserId.equals(user.getId())) {
-                            tvDriver.setVisibility(View.GONE);
-                            driverImage.setVisibility(View.GONE);
-                        }
-                        else {
-                            tvDriver.setVisibility(View.VISIBLE);
-                            driverImage.setVisibility(View.VISIBLE);
+                            if (driverUserId.equals(user.getId())) {
+                                tvDriver.setVisibility(View.GONE);
+                                driverImage.setVisibility(View.GONE);
+                            }
+                            else {
+                                tvDriver.setVisibility(View.VISIBLE);
+                                driverImage.setVisibility(View.VISIBLE);
 
-                            tvDriver.setOnClickListener(view -> takeTask(booking));
-                            driverImage.setOnClickListener(view -> takeTask(booking));
-                        }
+                                tvDriver.setOnClickListener(view -> takeTask(booking));
+                                driverImage.setOnClickListener(view -> takeTask(booking));
+                            }
 
-                        tvPass.setVisibility(View.GONE);
-                        passImage.setVisibility(View.GONE);
-                        tvCheck.setVisibility(View.GONE);
-                        checkImage.setVisibility(View.GONE);
-                    }
-                    else if(status.equals("Booked")) {
-                        tvChat.setVisibility(View.VISIBLE);
-                        chatImage.setVisibility(View.VISIBLE);
-
-                        tvChat.setOnClickListener(view -> openChat());
-                        chatImage.setOnClickListener(view -> openChat());
-
-                        tvDriver.setVisibility(View.GONE);
-                        driverImage.setVisibility(View.GONE);
-                        tvPass.setVisibility(View.VISIBLE);
-                        passImage.setVisibility(View.VISIBLE);
-                        tvCheck.setVisibility(View.VISIBLE);
-                        checkImage.setVisibility(View.VISIBLE);
-
-                        tvCheck.setOnClickListener(view -> scanQRCode());
-                        checkImage.setOnClickListener(view -> scanQRCode());
-                    }
-                    else if(!status.equals("Request")) {
-                        tvChat.setVisibility(View.GONE);
-                        chatImage.setVisibility(View.GONE);
-                        tvDriver.setVisibility(View.GONE);
-                        driverImage.setVisibility(View.GONE);
-                        tvPass.setVisibility(View.GONE);
-                        passImage.setVisibility(View.GONE);
-                        tvCheck.setVisibility(View.GONE);
-                        checkImage.setVisibility(View.GONE);
-                    }
-
-                    break;
-                }
-            }
-
-            List<Booking> taskList = user.getTaskList();
-            for(Booking task : taskList) {
-                if(task.getId().equals(bookingId)) {
-                    if(status.equals("Request")) {
-                        if(userId.equals(user.getId())) {
+                            tvPass.setVisibility(View.GONE);
+                            passImage.setVisibility(View.GONE);
+                            tvCheck.setVisibility(View.GONE);
+                            checkImage.setVisibility(View.GONE);
+                            break;
+                        case "Booked":
                             tvChat.setVisibility(View.VISIBLE);
                             chatImage.setVisibility(View.VISIBLE);
 
@@ -558,27 +523,24 @@ public class OnTheSpotActivity extends AppCompatActivity {
 
                             tvDriver.setVisibility(View.GONE);
                             driverImage.setVisibility(View.GONE);
+                            tvPass.setVisibility(View.VISIBLE);
+                            passImage.setVisibility(View.VISIBLE);
                             tvCheck.setVisibility(View.VISIBLE);
                             checkImage.setVisibility(View.VISIBLE);
 
                             tvCheck.setOnClickListener(view -> scanQRCode());
                             checkImage.setOnClickListener(view -> scanQRCode());
-                        }
-                        else {
+                            break;
+                        default:
                             tvChat.setVisibility(View.GONE);
                             chatImage.setVisibility(View.GONE);
-
-                            tvDriver.setVisibility(View.VISIBLE);
-                            driverImage.setVisibility(View.VISIBLE);
+                            tvDriver.setVisibility(View.GONE);
+                            driverImage.setVisibility(View.GONE);
+                            tvPass.setVisibility(View.GONE);
+                            passImage.setVisibility(View.GONE);
                             tvCheck.setVisibility(View.GONE);
                             checkImage.setVisibility(View.GONE);
-
-                            tvDriver.setOnClickListener(view -> takeTask(task));
-                            driverImage.setOnClickListener(view -> takeTask(task));
-                        }
-
-                        tvPass.setVisibility(View.GONE);
-                        passImage.setVisibility(View.GONE);
+                            break;
                     }
 
                     break;
@@ -808,7 +770,6 @@ public class OnTheSpotActivity extends AppCompatActivity {
                 }
 
                 break;
-            case "Request":
             case "Booked":
                 color = myResources.getColor(R.color.green);
                 backgroundDrawable = myResources.getDrawable(R.color.green);
