@@ -84,7 +84,7 @@ public class OnTheSpotActivity extends AppCompatActivity {
 
     ImageView profileImage, driverProfileImage, thumbnail, moreImage, locateImage, locateDestinationImage, viewQRImage,
             chatImage, driverImage, passImage, checkImage, reloadImage;
-    TextView tvUserFullName, tvDriverFullName, tvBookingId, tvSchedule, tvTypeName, tvPrice, tvOriginLocation2, tvDestinationSpot2,
+    TextView tvUserFullName, tvPassTaskNote, tvDriverFullName, tvBookingId, tvSchedule, tvTypeName, tvPrice, tvOriginLocation2, tvDestinationSpot2,
             tvLocate, tvLocateDestination, tvViewQR, tvChat, tvDriver, tvPass, tvCheck, tvLog;
     ExpandableTextView extvMessage;
     ConstraintLayout buttonLayout, bookingInfoLayout, bookingInfoButtonLayout, userInfoLayout, driverInfoLayout;
@@ -98,7 +98,7 @@ public class OnTheSpotActivity extends AppCompatActivity {
     Context myContext;
     Resources myResources;
 
-    String userId, driverUserId;
+    String userId, driverUserId, taskDriverUserId;
 
     boolean isLoggedIn = false, inDriverMode = false;
 
@@ -161,6 +161,7 @@ public class OnTheSpotActivity extends AppCompatActivity {
 
         userInfoLayout = findViewById(R.id.userInfoLayout);
         tvUserFullName = findViewById(R.id.tvUserFullName);
+        tvPassTaskNote = findViewById(R.id.tvPassTaskNote);
         profileImage = findViewById(R.id.profileImage);
 
         driverInfoLayout = findViewById(R.id.driverInfoLayout);
@@ -221,6 +222,7 @@ public class OnTheSpotActivity extends AppCompatActivity {
         Intent intent = getIntent();
         bookingId = intent.getStringExtra("bookingId");
         inDriverMode = intent.getBooleanExtra("inDriverMode", false);
+        if(inDriverMode)  status = intent.getStringExtra("status");
 
         isOnScreen = true;
 
@@ -394,6 +396,18 @@ public class OnTheSpotActivity extends AppCompatActivity {
         }
     }
 
+    private void getDriverUserId() {
+        for(User user : users) {
+            List<Booking> taskList = user.getTaskList();
+            for(Booking booking : taskList) {
+                if(booking.getId().equals(bookingId)) {
+                    taskDriverUserId = user.getId();
+                    return;
+                }
+            }
+        }
+    }
+
     private void startTimer(Booking booking) {
         if(statusTimer != null) statusTimer.cancel();
         statusTimer = new CountDownTimer(5000, 1000) {
@@ -530,6 +544,52 @@ public class OnTheSpotActivity extends AppCompatActivity {
 
                             tvCheck.setOnClickListener(view -> scanQRCode());
                             checkImage.setOnClickListener(view -> scanQRCode());
+                            break;
+                        case "Request":
+                            getDriverUserId();
+
+                            tvPassTaskNote.setVisibility(View.GONE);
+
+                            if(driverUserId.equals(taskDriverUserId)) {
+                                tvPassTaskNote.setVisibility(View.VISIBLE);
+
+                                tvChat.setVisibility(View.VISIBLE);
+                                chatImage.setVisibility(View.VISIBLE);
+
+                                tvChat.setOnClickListener(view -> openChat());
+                                chatImage.setOnClickListener(view -> openChat());
+
+                                tvDriver.setVisibility(View.GONE);
+                                driverImage.setVisibility(View.GONE);
+                                tvPass.setVisibility(View.GONE);
+                                passImage.setVisibility(View.GONE);
+                                tvCheck.setVisibility(View.VISIBLE);
+                                checkImage.setVisibility(View.VISIBLE);
+
+                                tvCheck.setOnClickListener(view -> scanQRCode());
+                                checkImage.setOnClickListener(view -> scanQRCode());
+                            }
+                            else {
+                                tvChat.setVisibility(View.GONE);
+                                chatImage.setVisibility(View.GONE);
+
+                                if(driverUserId.equals(userId)) {
+                                    tvDriver.setVisibility(View.GONE);
+                                    driverImage.setVisibility(View.GONE);
+                                }
+                                else {
+                                    tvDriver.setVisibility(View.VISIBLE);
+                                    driverImage.setVisibility(View.VISIBLE);
+
+                                    tvDriver.setOnClickListener(view -> takeTask(booking));
+                                    driverImage.setOnClickListener(view -> takeTask(booking));
+                                }
+
+                                tvPass.setVisibility(View.GONE);
+                                passImage.setVisibility(View.GONE);
+                                tvCheck.setVisibility(View.GONE);
+                                checkImage.setVisibility(View.GONE);
+                            }
                             break;
                         default:
                             tvChat.setVisibility(View.GONE);
@@ -770,6 +830,7 @@ public class OnTheSpotActivity extends AppCompatActivity {
                 }
 
                 break;
+            case "Request":
             case "Booked":
                 color = myResources.getColor(R.color.green);
                 backgroundDrawable = myResources.getDrawable(R.color.green);
@@ -812,7 +873,7 @@ public class OnTheSpotActivity extends AppCompatActivity {
             tvChat.setOnClickListener(view -> openChat());
             chatImage.setOnClickListener(view -> openChat());
         }
-        else {
+        else if(!status.equals("Request")) {
             tvChat.setVisibility(View.GONE);
             chatImage.setVisibility(View.GONE);
         }
@@ -894,7 +955,7 @@ public class OnTheSpotActivity extends AppCompatActivity {
                             new LatLng(booking.getOriginLat(), booking.getOriginLng());
 
                     schedule = booking.getSchedule();
-                    status = booking.getStatus();
+                    if(!inDriverMode) status = booking.getStatus();
                     message = booking.getMessage();
 
                     typeName = booking.getBookingType().getName();

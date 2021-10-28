@@ -412,28 +412,59 @@ public class DriverTaskListFragment extends Fragment {
             }
         });
 
-        Query driverQuery = firebaseDatabase.getReference("users").
-                orderByChild("driver").equalTo(true);
+        Query task2Query = firebaseDatabase.getReference("users").
+                child(userId).child("taskList").orderByChild("status").equalTo("Request");
 
         success2 = false;
-        driverQuery.addValueEventListener(new ValueEventListener() {
+        task2Query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                taskList2.clear();
+                List<Booking> taskList = new ArrayList<>();
 
                 if(snapshot.exists()) {
                     for(DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                        User user = new User(dataSnapshot);
-                        List<Booking> userTaskList = user.getTaskList();
-
-                        for(Booking task : userTaskList) {
-                            if(task.getStatus().equals("Request"))
-                                taskList2.add(task);
-                        }
+                        Booking task = new Booking(dataSnapshot);
+                        taskList.add(task);
                     }
                 }
-                success2 = true;
-                finishLoading();
+
+                Query driverQuery = firebaseDatabase.getReference("users").
+                        orderByChild("driver").equalTo(true);
+
+                driverQuery.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        taskList2.clear();
+                        taskList2.addAll(taskList);
+
+                        if(snapshot.exists()) {
+                            for(DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                                User user = new User(dataSnapshot);
+                                List<Booking> userTaskList = user.getTaskList();
+
+                                for(Booking task : userTaskList) {
+                                    if(task.getStatus().equals("Request") &&
+                                            !user.getId().equals(userId))
+                                        taskList2.add(task);
+                                }
+                            }
+                        }
+                        success2 = true;
+                        finishLoading();
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Toast.makeText(
+                                myContext,
+                                error.toString(),
+                                Toast.LENGTH_LONG
+                        ).show();
+
+                        success2 = false;
+                        errorLoading(error.toString());
+                    }
+                });
             }
 
             @Override
