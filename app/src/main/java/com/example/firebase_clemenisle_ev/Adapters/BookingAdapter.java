@@ -595,8 +595,8 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                                 tvDriver.setVisibility(View.VISIBLE);
                                 driverImage.setVisibility(View.VISIBLE);
 
-                                tvDriver.setOnClickListener(view -> takeTask(booking, user.getId()));
-                                driverImage.setOnClickListener(view -> takeTask(booking, user.getId()));
+                                tvDriver.setOnClickListener(view -> takeTask(booking, user.getId(), false));
+                                driverImage.setOnClickListener(view -> takeTask(booking, user.getId(), false));
                             }
 
                             tvPass.setVisibility(View.GONE);
@@ -657,8 +657,8 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                                     tvDriver.setVisibility(View.VISIBLE);
                                     driverImage.setVisibility(View.VISIBLE);
 
-                                    tvDriver.setOnClickListener(view -> takeTask(booking, user.getId()));
-                                    driverImage.setOnClickListener(view -> takeTask(booking, user.getId()));
+                                    tvDriver.setOnClickListener(view -> takeTask(booking, user.getId(), true));
+                                    driverImage.setOnClickListener(view -> takeTask(booking, user.getId(), true));
                                 }
 
                                 tvPass.setVisibility(View.GONE);
@@ -685,39 +685,56 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
         }
     }
 
-    private void takeTask(Booking booking, String passengerUserId) {
+    private void takeTask(Booking booking, String passengerUserId, boolean fromRequest) {
         String status = "Booked";
         List<Route> bookingRouteList = booking.getRouteList();
         booking.setTimestamp(new DateTimeToString().getDateAndTime());
         booking.setStatus(status);
         Booking driverTask = new Booking(booking);
 
+        if(fromRequest) {
+            usersRef.child(taskDriverUserId).child("taskList").
+                    child(driverTask.getId()).removeValue();
+        }
+
+        DatabaseReference bookingListRef = usersRef.child(passengerUserId).
+                child("bookingList").child(driverTask.getId());
+
         DatabaseReference taskListRef = usersRef.child(userId).child("taskList").
                 child(booking.getId());
         taskListRef.setValue(driverTask).addOnCompleteListener(task -> {
             if(task.isSuccessful()) {
-                usersRef.child(passengerUserId).child("bookingList").
-                        child(driverTask.getId()).child("status").setValue(status).
-                addOnCompleteListener(task1 -> {
-                    if(task1.isSuccessful())
-                        addBookingRoute(bookingRouteList, taskListRef);
-                    else {
-                        Toast.makeText(
-                                myContext,
-                                "Failed to take the task. Please try again.",
-                                Toast.LENGTH_LONG
-                        ).show();
-                    }
-                });
+                bookingListRef.child("notify").setValue(true);
+                bookingListRef.child("notificationTimestamp").
+                        setValue(new DateTimeToString().getDateAndTime());
+
+                if(fromRequest) {
+                    bookingListRef.child("chats").removeValue().
+                            addOnCompleteListener(task2 -> {
+                                if(task2.isSuccessful())
+                                    addBookingRoute(bookingRouteList, taskListRef);
+                                else errorTask();
+                            });
+                }
+                else {
+                    bookingListRef.child("status").setValue(status).
+                            addOnCompleteListener(task1 -> {
+                                if(task1.isSuccessful())
+                                    addBookingRoute(bookingRouteList, taskListRef);
+                                else errorTask();
+                            });
+                }
             }
-            else {
-                Toast.makeText(
-                        myContext,
-                        "Failed to take the task. Please try again.",
-                        Toast.LENGTH_LONG
-                ).show();
-            }
+            else errorTask();
         });
+    }
+
+    private void errorTask() {
+        Toast.makeText(
+                myContext,
+                "Failed to take the task. Please try again.",
+                Toast.LENGTH_LONG
+        ).show();
     }
 
     private void addBookingRoute(List<Route> bookingRouteList,
