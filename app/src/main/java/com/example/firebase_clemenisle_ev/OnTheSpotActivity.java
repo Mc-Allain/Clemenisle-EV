@@ -605,6 +605,7 @@ public class OnTheSpotActivity extends AppCompatActivity {
     private void takeTask(Booking booking) {
         String status = "Booked";
         List<Route> bookingRouteList = booking.getRouteList();
+        booking.setTimestamp(new DateTimeToString().getDateAndTime());
         booking.setStatus(status);
         Booking driverTask = new Booking(booking);
 

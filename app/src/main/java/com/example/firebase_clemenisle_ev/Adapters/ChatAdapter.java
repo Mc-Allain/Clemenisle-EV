@@ -30,7 +30,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
 
     List<Chat> chats;
     List<User> users;
-    String startPointId, passengerUserId, driverUserId, initialMessage;
+    String startPointId, passengerUserId, driverUserId, initialMessage, bookingTimestamp, taskTimestamp;
     boolean inDriverMode;
     LayoutInflater inflater;
 
@@ -39,13 +39,15 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
 
     public ChatAdapter(Context context, List<Chat> chats, List<User> users, String startPointId,
                        String passengerUserId, String driverUserId, String initialMessage,
-                       boolean inDriverMode) {
+                       String bookingTimestamp, String taskTimestamp, boolean inDriverMode) {
         this.chats = chats;
         this.users = users;
         this.startPointId = startPointId;
         this.passengerUserId = passengerUserId;
         this.driverUserId = driverUserId;
         this.initialMessage = initialMessage;
+        this.bookingTimestamp = bookingTimestamp;
+        this.taskTimestamp = taskTimestamp;
         this.inDriverMode = inDriverMode;
         this.inflater = LayoutInflater.from(context);
     }
@@ -126,9 +128,10 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
             String message = chat.getMessage();
             String timestamp = chat.getTimestamp();
 
-            boolean state = true;
+            boolean state;
             if(position != chats.size() - 1)
                 state = !chats.get(position + 1).getSenderId().equals(senderId);
+            else state = !senderId.equals(driverUserId);
 
             if(senderId.equals(startPointId)) {
                 startPointLayout.setVisibility(View.VISIBLE);
@@ -205,7 +208,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
                         else {
                             messageLayout.setVisibility(View.VISIBLE);
                             tvMessage.setText(initialMessage);
-                            tvTimestamp.setVisibility(View.GONE);
+                            tvTimestamp.setText(bookingTimestamp);
                         }
                     }
                     if(position == chats.size()) {
@@ -215,7 +218,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
 
                         String message = "こんにちは (Hello), I am " + fullName + ", your assigned driver.";
                         tvMessage.setText(fromHtml(message));
-                        tvTimestamp.setVisibility(View.GONE);
+                        tvTimestamp.setText(taskTimestamp);
                     }
 
                     tvMessage.setOnClickListener(view ->
@@ -268,18 +271,13 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
         }
     }
 
-    public void setPassengerUserId(String passengerUserId) {
+    public void setValues(String passengerUserId, String driverUserId, String initialMessage,
+                                   String bookingTimestamp, String taskTimestamp) {
         this.passengerUserId = passengerUserId;
-        notifyDataSetChanged();
-    }
-
-    public void setDriverUserId(String driverUserId) {
         this.driverUserId = driverUserId;
-        notifyDataSetChanged();
-    }
-
-    public void setInitialMessage(String initialMessage) {
         this.initialMessage = initialMessage;
+        this.bookingTimestamp = bookingTimestamp;
+        this.taskTimestamp = taskTimestamp;
         notifyDataSetChanged();
     }
 }

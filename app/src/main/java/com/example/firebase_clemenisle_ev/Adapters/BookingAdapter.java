@@ -30,6 +30,7 @@ import com.bumptech.glide.request.target.Target;
 import com.example.firebase_clemenisle_ev.ChatActivity;
 import com.example.firebase_clemenisle_ev.Classes.Booking;
 import com.example.firebase_clemenisle_ev.Classes.BookingType;
+import com.example.firebase_clemenisle_ev.Classes.DateTimeToString;
 import com.example.firebase_clemenisle_ev.Classes.FirebaseURL;
 import com.example.firebase_clemenisle_ev.Classes.Route;
 import com.example.firebase_clemenisle_ev.Classes.SimpleTouristSpot;
@@ -623,6 +624,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
     private void takeTask(Booking booking, String passengerUserId) {
         String status = "Booked";
         List<Route> bookingRouteList = booking.getRouteList();
+        booking.setTimestamp(new DateTimeToString().getDateAndTime());
         booking.setStatus(status);
         Booking driverTask = new Booking(booking);
 

@@ -8,7 +8,7 @@ import java.util.List;
 public class Booking {
     private BookingType bookingType;
     private Station endStation;
-    private String id, message, schedule;
+    private String id, message, schedule, timestamp;
     private boolean paid;
     private Station startStation;
     private String status;
@@ -26,6 +26,7 @@ public class Booking {
         this.id = booking.getId();
         this.message = booking.getMessage();
         this.schedule = booking.getSchedule();
+        this.timestamp = booking.getTimestamp();
         this.paid = booking.isPaid();
         this.startStation = booking.getStartStation();
         this.status = booking.getStatus();
@@ -43,7 +44,7 @@ public class Booking {
 
     public Booking(BookingType bookingType, DetailedTouristSpot destinationSpot,
                    double originLat, double originLng, String id, String message,
-                   String schedule, String status) {
+                   String schedule, String timestamp, String status) {
         this.bookingType = bookingType;
         this.destinationSpot = new SimpleTouristSpot(destinationSpot);
         this.originLat = originLat;
@@ -51,15 +52,18 @@ public class Booking {
         this.id = id;
         this.message = message;
         this.schedule = schedule;
+        this.timestamp = timestamp;
         this.status = status;
     }
 
     public Booking(DataSnapshot dataSnapshot) {
         this.id = dataSnapshot.child("id").getValue(String.class);
         this.message = dataSnapshot.child("message").getValue(String.class);
+        this.schedule = dataSnapshot.child("schedule").getValue(String.class);
+        this.timestamp = dataSnapshot.child("timestamp").getValue(String.class);
+
         if(dataSnapshot.child("paid").exists())
             this.paid = dataSnapshot.child("paid").getValue(Boolean.class);
-        this.schedule = dataSnapshot.child("schedule").getValue(String.class);
         if(dataSnapshot.child("startStation").exists())
             this.startStation = dataSnapshot.child("startStation").getValue(Station.class);
         if(dataSnapshot.child("endStation").exists())
@@ -89,13 +93,14 @@ public class Booking {
     }
 
     public Booking(BookingType bookingType, Station endStation, String id, String message,
-                    boolean paid, String schedule, Station startStation, String status) {
+                   String schedule, String timestamp, boolean paid, Station startStation, String status) {
         this.bookingType = bookingType;
         this.endStation = endStation;
         this.id = id;
         this.message = message;
-        this.paid = paid;
         this.schedule = schedule;
+        this.timestamp = timestamp;
+        this.paid = paid;
         this.startStation = startStation;
         this.status = status;
         this.originLat = startStation.getLat();
@@ -124,6 +129,14 @@ public class Booking {
 
     public String getSchedule() {
         return schedule;
+    }
+
+    public String getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(String timestamp) {
+        this.timestamp = timestamp;
     }
 
     public Station getStartStation() {

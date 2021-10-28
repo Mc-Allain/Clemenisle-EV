@@ -24,8 +24,6 @@ import com.example.firebase_clemenisle_ev.Classes.Chat;
 import com.example.firebase_clemenisle_ev.Classes.DateTimeToString;
 import com.example.firebase_clemenisle_ev.Classes.FirebaseURL;
 import com.example.firebase_clemenisle_ev.Classes.User;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -70,6 +68,7 @@ public class ChatActivity extends AppCompatActivity {
     ChatAdapter chatAdapter;
     List<Chat> chats = new ArrayList<>();
     List<User> users = new ArrayList<>();
+    String bookingTimestamp, taskTimestamp;
 
     String message;
 
@@ -145,6 +144,8 @@ public class ChatActivity extends AppCompatActivity {
             }
         }
 
+        getUsers();
+
         if(inDriverMode) getUserInfo();
         else getDriverInfo();
 
@@ -152,7 +153,7 @@ public class ChatActivity extends AppCompatActivity {
                 new LinearLayoutManager(myContext, LinearLayoutManager.VERTICAL, true);
         chatView.setLayoutManager(linearLayout);
         chatAdapter = new ChatAdapter(myContext, chats, users, userId, passengerUserId, driverUserId,
-                initialMessage, inDriverMode);
+                initialMessage, bookingTimestamp, taskTimestamp, inDriverMode);
         chatView.setAdapter(chatAdapter);
 
         etMessage.addTextChangedListener(new TextWatcher() {
@@ -185,21 +186,19 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private void sendMessage() {
+        String value = message;
+        message = "";
+        etMessage.setText(message);
+
         String chatIdSuffix = String.valueOf(chats.size() + 1);
         if(chatIdSuffix.length() == 1) chatIdSuffix = "0" + chatIdSuffix;
         String chatId = "C" + chatIdSuffix;
 
         String schedule = new DateTimeToString().getDateAndTime();
-        Chat chat = new Chat(chatId, userId, message, schedule);
+        Chat chat = new Chat(chatId, userId, value, schedule);
 
         usersRef.child(passengerUserId).child("bookingList").child(bookingId).child("chats")
-                .child(chatId).setValue(chat).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                message = "";
-                etMessage.setText(message);
-            }
-        });
+                .child(chatId).setValue(chat);
     }
 
     private void getUsers() {
@@ -211,6 +210,56 @@ public class ChatActivity extends AppCompatActivity {
                     for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                         User user = new User(dataSnapshot);
                         users.add(user);
+
+                        List<Booking> taskList = user.getTaskList();
+                        for(Booking booking : taskList) {
+                            if(booking.getId().equals(bookingId)) {
+                                String fullName = "<b>" + user.getLastName() + "</b>, " + user.getFirstName();
+                                if(user.getMiddleName().length() > 0) fullName += " " + user.getMiddleName();
+                                tvDriverFullName.setText(fromHtml(fullName));
+
+                                try {
+                                    Glide.with(myContext).load(user.getProfileImage())
+                                            .placeholder(R.drawable.image_loading_placeholder)
+                                            .into(driverProfileImage);
+                                }
+                                catch (Exception ignored) {}
+
+                                driverInfoLayout.setVisibility(View.VISIBLE);
+                                userInfoLayout.setVisibility(View.GONE);
+
+                                driverUserId = user.getId();
+                                initialMessage = booking.getMessage();
+                                taskTimestamp = booking.getTimestamp();
+
+                                break;
+                            }
+                        }
+
+                        List<Booking> bookingList = user.getBookingList();
+                        for(Booking booking : bookingList) {
+                            if(booking.getId().equals(bookingId)) {
+                                String fullName = "<b>" + user.getLastName() + "</b>, " + user.getFirstName();
+                                if(user.getMiddleName().length() > 0) fullName += " " + user.getMiddleName();
+                                tvUserFullName.setText(fromHtml(fullName));
+
+                                try {
+                                    Glide.with(myContext).load(user.getProfileImage())
+                                            .placeholder(R.drawable.image_loading_placeholder)
+                                            .into(profileImage);
+                                }
+                                catch (Exception ignored) {}
+
+                                userInfoLayout.setVisibility(View.VISIBLE);
+                                driverInfoLayout.setVisibility(View.GONE);
+
+                                passengerUserId = user.getId();
+                                initialMessage = booking.getMessage();
+                                bookingTimestamp = booking.getTimestamp();
+
+                                break;
+                            }
+                        }
                     }
                 }
                 getChats();
@@ -236,9 +285,8 @@ public class ChatActivity extends AppCompatActivity {
                 }
 
                 Collections.reverse(chats);
-                chatAdapter.setPassengerUserId(passengerUserId);
-                chatAdapter.setDriverUserId(driverUserId);
-                chatAdapter.setInitialMessage(initialMessage);
+                chatAdapter.setValues(passengerUserId, driverUserId, initialMessage,
+                        bookingTimestamp, taskTimestamp);
             }
 
             @Override
@@ -259,31 +307,7 @@ public class ChatActivity extends AppCompatActivity {
                 if(snapshot.exists()) {
                     for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                         User thisUser = new User(dataSnapshot);
-                        List<Booking> taskList = thisUser.getTaskList();
 
-                        for(Booking booking : taskList) {
-                            if(booking.getId().equals(bookingId)) {
-                                String fullName = "<b>" + thisUser.getLastName() + "</b>, " + thisUser.getFirstName();
-                                if(thisUser.getMiddleName().length() > 0) fullName += " " + thisUser.getMiddleName();
-                                tvDriverFullName.setText(fromHtml(fullName));
-
-                                try {
-                                    Glide.with(myContext).load(thisUser.getProfileImage())
-                                            .placeholder(R.drawable.image_loading_placeholder)
-                                            .into(driverProfileImage);
-                                }
-                                catch (Exception ignored) {}
-
-                                driverInfoLayout.setVisibility(View.VISIBLE);
-                                userInfoLayout.setVisibility(View.GONE);
-
-                                driverUserId = thisUser.getId();
-                                initialMessage = booking.getMessage();
-                                getUsers();
-
-                                return;
-                            }
-                        }
                     }
                 }
             }
@@ -301,31 +325,7 @@ public class ChatActivity extends AppCompatActivity {
                 if(snapshot.exists()) {
                     for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                         User thisUser = new User(dataSnapshot);
-                        List<Booking> bookingList = thisUser.getBookingList();
 
-                        for(Booking booking : bookingList) {
-                            if(booking.getId().equals(bookingId)) {
-                                String fullName = "<b>" + thisUser.getLastName() + "</b>, " + thisUser.getFirstName();
-                                if(thisUser.getMiddleName().length() > 0) fullName += " " + thisUser.getMiddleName();
-                                tvUserFullName.setText(fromHtml(fullName));
-
-                                try {
-                                    Glide.with(myContext).load(thisUser.getProfileImage())
-                                            .placeholder(R.drawable.image_loading_placeholder)
-                                            .into(profileImage);
-                                }
-                                catch (Exception ignored) {}
-
-                                userInfoLayout.setVisibility(View.VISIBLE);
-                                driverInfoLayout.setVisibility(View.GONE);
-
-                                passengerUserId = thisUser.getId();
-                                initialMessage = booking.getMessage();
-                                getUsers();
-
-                                return;
-                            }
-                        }
                     }
                 }
             }

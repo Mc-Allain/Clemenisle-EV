@@ -33,6 +33,7 @@ import com.bumptech.glide.Glide;
 import com.example.firebase_clemenisle_ev.Adapters.RouteAdapter;
 import com.example.firebase_clemenisle_ev.Classes.Booking;
 import com.example.firebase_clemenisle_ev.Classes.Capture;
+import com.example.firebase_clemenisle_ev.Classes.DateTimeToString;
 import com.example.firebase_clemenisle_ev.Classes.FirebaseURL;
 import com.example.firebase_clemenisle_ev.Classes.Route;
 import com.example.firebase_clemenisle_ev.Classes.Station;
@@ -473,6 +474,7 @@ public class RouteActivity extends AppCompatActivity implements
     private void takeTask(Booking booking) {
         String status = "Booked";
         List<Route> bookingRouteList = booking.getRouteList();
+        booking.setTimestamp(new DateTimeToString().getDateAndTime());
         booking.setStatus(status);
         Booking driverTask = new Booking(booking);
 
