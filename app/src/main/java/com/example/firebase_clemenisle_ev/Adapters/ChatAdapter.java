@@ -37,6 +37,8 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
     Context myContext;
     Resources myResources;
 
+    int loadChatItemPosition = 10, incrementLoadedItems = 10;
+
     public ChatAdapter(Context context, List<Chat> chats, List<User> users, String startPointId,
                        String passengerUserId, String driverUserId, String initialMessage,
                        String bookingTimestamp, String taskTimestamp, boolean inDriverMode) {
@@ -64,27 +66,43 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
         ConstraintLayout backgroundLayout = holder.backgroundLayout,
                 startPointLayout = holder.startPointLayout,
                 endPointLayout = holder.endPointLayout,
-                startPointMessageLayout = holder.startPointMessageLayout,
-                endPointMessageLayout = holder.endPointMessageLayout;
+                loadChatLayout = holder.loadChatLayout;
+        /*ConstraintLayout startPointMessageLayout = holder.startPointMessageLayout,
+                endPointMessageLayout = holder.endPointMessageLayout;*/
         TextView tvStartPointMessage = holder.tvStartPointMessage,
                 tvEndPointMessage = holder.tvEndPointMessage,
                 tvStartPointTimestamp = holder.tvStartPointTimestamp,
-                tvEndPointTimestamp = holder.tvEndPointTimestamp;
+                tvEndPointTimestamp = holder.tvEndPointTimestamp,
+                tvLoadChat = holder.tvLoadChat;
         ImageView startPointProfileImage = holder.startPointProfileImage,
                 endPointProfileImage = holder.endPointProfileImage;
 
         myContext = inflater.getContext();
         myResources = myContext.getResources();
 
+        int additionalItemCount = initialMessage == null ? 1 : 2;
+
+        if(chats.size() + additionalItemCount < loadChatItemPosition && chats.size() != 0)
+            loadChatItemPosition = chats.size() + additionalItemCount;
+
+        backgroundLayout.setVisibility(View.VISIBLE);
+        startPointLayout.setVisibility(View.VISIBLE);
+        endPointLayout.setVisibility(View.VISIBLE);
+        loadChatLayout.setVisibility(View.GONE);
+
+        ConstraintLayout.LayoutParams layoutParams =
+                (ConstraintLayout.LayoutParams) backgroundLayout.getLayoutParams();
         if(position == 0) {
-            ConstraintLayout.LayoutParams layoutParams =
-                    (ConstraintLayout.LayoutParams) backgroundLayout.getLayoutParams();
             layoutParams.setMargins(layoutParams.leftMargin, layoutParams.topMargin,
                     layoutParams.rightMargin, dpToPx(16));
-            backgroundLayout.setLayoutParams(layoutParams);
         }
+        else {
+            layoutParams.setMargins(layoutParams.leftMargin, layoutParams.topMargin,
+                    layoutParams.rightMargin, 0);
+        }
+        backgroundLayout.setLayoutParams(layoutParams);
 
-        if(position == chats.size() + 1) {
+        if(position == chats.size() + 1 && position < loadChatItemPosition) {
             if(inDriverMode) {
                 startPointLayout.setVisibility(View.GONE);
                 endPointLayout.setVisibility(View.VISIBLE);
@@ -106,7 +124,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
                         startPointLayout, tvStartPointTimestamp, position);
             }
         }
-        else if(position == chats.size()) {
+        else if(position == chats.size() && position < loadChatItemPosition) {
             if(inDriverMode) {
                 startPointLayout.setVisibility(View.VISIBLE);
                 endPointLayout.setVisibility(View.GONE);
@@ -122,7 +140,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
                         endPointLayout, tvEndPointTimestamp, position);
             }
         }
-        else {
+        else if(position < loadChatItemPosition && chats.size() != 0) {
             Chat chat = chats.get(position);
             String senderId = chat.getSenderId();
             String message = chat.getMessage();
@@ -130,8 +148,10 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
 
             boolean state;
             if(position != chats.size() - 1)
-                state = !chats.get(position + 1).getSenderId().equals(senderId);
-            else state = !senderId.equals(driverUserId);
+                state = !(chats.get(position + 1).getSenderId().equals(senderId) &&
+                        position + 1 < loadChatItemPosition);
+            else
+                state = !(senderId.equals(driverUserId) && position + 1 < loadChatItemPosition);
 
             if(senderId.equals(startPointId)) {
                 startPointLayout.setVisibility(View.VISIBLE);
@@ -165,6 +185,24 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
             tvStartPointMessage.setOnClickListener(view -> copyTextToClipboard(message));
             tvEndPointMessage.setOnClickListener(view -> copyTextToClipboard(message));
         }
+        else if(position == loadChatItemPosition && position != chats.size() + additionalItemCount) {
+            startPointLayout.setVisibility(View.GONE);
+            endPointLayout.setVisibility(View.GONE);
+            loadChatLayout.setVisibility(View.VISIBLE);
+
+            int itemsCountToIncrement = incrementLoadedItems;
+            if(loadChatItemPosition + incrementLoadedItems > chats.size() + additionalItemCount)
+                itemsCountToIncrement = chats.size() + additionalItemCount - loadChatItemPosition;
+
+            String loadChatText = "Load " + itemsCountToIncrement + " more messages";
+            tvLoadChat.setText(loadChatText);
+
+            loadChatLayout.setOnClickListener(view -> {
+                loadChatItemPosition += incrementLoadedItems;
+                notifyDataSetChanged();
+            });
+        }
+        else backgroundLayout.setVisibility(View.GONE);
     }
 
     private void copyTextToClipboard(String value) {
@@ -243,20 +281,23 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
 
     @Override
     public int getItemCount() {
-        return chats.size() + 2;
+        return chats.size() + 3;
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         ConstraintLayout backgroundLayout, startPointLayout, endPointLayout,
-                startPointMessageLayout, endPointMessageLayout;
+                startPointMessageLayout, endPointMessageLayout, loadChatLayout;
         TextView tvStartPointMessage, tvEndPointMessage,
-                tvStartPointTimestamp, tvEndPointTimestamp;
+                tvStartPointTimestamp, tvEndPointTimestamp, tvLoadChat;
         ImageView startPointProfileImage, endPointProfileImage;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
             backgroundLayout = itemView.findViewById(R.id.backgroundLayout);
+            loadChatLayout = itemView.findViewById(R.id.loadChatLayout);
+            tvLoadChat = itemView.findViewById(R.id.tvLoadChat);
+
             startPointLayout = itemView.findViewById(R.id.startPointLayout);
             endPointLayout = itemView.findViewById(R.id.endPointLayout);
             tvStartPointMessage = itemView.findViewById(R.id.tvStartPointMessage);
