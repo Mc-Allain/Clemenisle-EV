@@ -168,6 +168,9 @@ public class LoggedInUserProfileFragment extends Fragment {
 
     boolean isOnScreen = false;
 
+    Dialog passwordChangeReLoginDialog;
+    ImageView passwordChangeReLoginDialogCloseImage;
+
     private void initSharedPreferences() {
         SharedPreferences sharedPreferences = myContext
                 .getSharedPreferences("login", Context.MODE_PRIVATE);
@@ -257,6 +260,7 @@ public class LoggedInUserProfileFragment extends Fragment {
         initFullNameDialog();
         initEmailAddressDialog();
         initPasswordDialog();
+        initPasswordChangeLoginDialog();
 
         getCurrentUser();
 
@@ -931,6 +935,8 @@ public class LoggedInUserProfileFragment extends Fragment {
                                     "Please log in again before trying this request.",
                                     Toast.LENGTH_LONG
                             ).show();
+
+                            passwordChangeReLoginDialog.show();
                         }
                         else if(error.contains("UserCollision")) {
                             error = "This Email Address is already registered";
@@ -1260,10 +1266,31 @@ public class LoggedInUserProfileFragment extends Fragment {
                                             "Please log in again before trying this request.",
                                     Toast.LENGTH_LONG
                             ).show();
+
+                            passwordChangeReLoginDialog.show();
                         }
                         else errorPasswordUpdate();
                     }
                 });
+    }
+
+    private void initPasswordChangeLoginDialog() {
+        passwordChangeReLoginDialog = new Dialog(myContext);
+        passwordChangeReLoginDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        passwordChangeReLoginDialog.setContentView(R.layout.dialog_password_change_relogin_layout);
+
+        passwordChangeReLoginDialogCloseImage =
+                passwordChangeReLoginDialog.findViewById(R.id.dialogCloseImage);
+
+        passwordChangeReLoginDialog.setCanceledOnTouchOutside(false);
+
+        passwordChangeReLoginDialogCloseImage.setOnClickListener(view -> passwordChangeReLoginDialog.dismiss());
+
+        passwordChangeReLoginDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT);
+        passwordChangeReLoginDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+        passwordChangeReLoginDialog.getWindow().getAttributes().windowAnimations = R.style.animBottomSlide;
+        passwordChangeReLoginDialog.getWindow().setGravity(Gravity.BOTTOM);
     }
 
     private void setPasswordDialogScreenEnabled(boolean value) {

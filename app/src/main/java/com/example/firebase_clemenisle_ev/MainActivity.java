@@ -145,6 +145,9 @@ public class MainActivity extends AppCompatActivity {
 
     List<User> users = new ArrayList<>();
 
+    Dialog passwordChangeReLoginDialog;
+    ImageView passwordChangeReLoginDialogCloseImage;
+
     private void initSharedPreferences() {
         SharedPreferences sharedPreferences = getSharedPreferences("login", Context.MODE_PRIVATE);
         isLoggedIn = sharedPreferences.getBoolean("isLoggedIn", false);
@@ -189,6 +192,7 @@ public class MainActivity extends AppCompatActivity {
 
         initUpdateApplicationDialog();
         initAppVersionInfoDialog();
+        initPasswordChangeLoginDialog();
 
         firebaseAuth = FirebaseAuth.getInstance();
         if(isLoggedIn) {
@@ -771,20 +775,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private boolean isCurrentPasswordValid() {
-        if(password.length() >= 8) vCPWL = true;
-        else vCPWL = false;
+        vCPWL = password.length() >= 8;
 
-        if(password.matches(".*[A-Z].*"))vCPWU = true;
-        else vCPWU = false;
+        vCPWU = password.matches(".*[A-Z].*");
 
-        if(password.matches(".*[a-z].*"))vCPWLw = true;
-        else vCPWLw = false;
+        vCPWLw = password.matches(".*[a-z].*");
 
-        if(password.matches(".*[0-9].*")) vCPWN = true;
-        else vCPWN = false;
+        vCPWN = password.matches(".*[0-9].*");
 
-        if(password.matches("[A-Za-z0-9]*")) vCPWS = true;
-        else vCPWS = false;
+        vCPWS = password.matches("[A-Za-z0-9]*");
 
         return vCPWL && vCPWU && vCPWLw && vCPWN && vCPWS;
     }
@@ -1080,10 +1079,31 @@ public class MainActivity extends AppCompatActivity {
                                             "Please log in again before trying this request.",
                                     Toast.LENGTH_LONG
                             ).show();
+
+                            passwordChangeReLoginDialog.show();
                         }
                         else errorPasswordUpdate();
                     }
                 });
+    }
+
+    private void initPasswordChangeLoginDialog() {
+        passwordChangeReLoginDialog = new Dialog(myContext);
+        passwordChangeReLoginDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        passwordChangeReLoginDialog.setContentView(R.layout.dialog_password_change_relogin_layout);
+
+        passwordChangeReLoginDialogCloseImage =
+                passwordChangeReLoginDialog.findViewById(R.id.dialogCloseImage);
+
+        passwordChangeReLoginDialog.setCanceledOnTouchOutside(false);
+
+        passwordChangeReLoginDialogCloseImage.setOnClickListener(view -> passwordChangeReLoginDialog.dismiss());
+
+        passwordChangeReLoginDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT);
+        passwordChangeReLoginDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+        passwordChangeReLoginDialog.getWindow().getAttributes().windowAnimations = R.style.animBottomSlide;
+        passwordChangeReLoginDialog.getWindow().setGravity(Gravity.BOTTOM);
     }
 
     private void setPasswordDialogScreenEnabled(boolean value) {
