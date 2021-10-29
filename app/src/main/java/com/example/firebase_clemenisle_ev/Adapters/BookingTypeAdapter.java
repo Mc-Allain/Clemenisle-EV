@@ -117,7 +117,8 @@ public class BookingTypeAdapter extends RecyclerView.Adapter<BookingTypeAdapter.
         }
 
         if(id.equals("BT99"))
-            checkIfHasOngoingOnTheSpot(backgroundLayout, tvTypeName, tvPrice, tvRouteCount, routeCount, id);
+            checkIfHasOngoingOnTheSpot(backgroundLayout, tvTypeName, tvPrice,
+                    tvRouteCount, routeCount, id, isSelected, bookingType);
 
         int top = dpToPx(0), bottom = dpToPx(0);
 
@@ -146,7 +147,8 @@ public class BookingTypeAdapter extends RecyclerView.Adapter<BookingTypeAdapter.
 
     private void checkIfHasOngoingOnTheSpot(ConstraintLayout backgroundLayout, TextView tvTypeName,
                                             TextView tvPrice, TextView tvRouteCount,
-                                            int routeCount, String id) {
+                                            int routeCount, String id, boolean isSelected,
+                                            BookingType bookingType) {
         firebaseDatabase.getReference("users").child(userId).child("bookingList").
                 addValueEventListener(new ValueEventListener() {
                     @Override
@@ -154,10 +156,10 @@ public class BookingTypeAdapter extends RecyclerView.Adapter<BookingTypeAdapter.
                         if(snapshot.exists()) {
                             for(DataSnapshot dataSnapshot : snapshot.getChildren()) {
                                 Booking booking = new Booking(dataSnapshot);
-                                BookingType bookingType = booking.getBookingType();
+                                BookingType thisBookingType = booking.getBookingType();
                                 String status = booking.getStatus();
 
-                                if(bookingType.getId().equals("BT99") &&
+                                if(thisBookingType.getId().equals("BT99") &&
                                         (status.equals("Pending") || status.equals("Booked"))) {
                                     backgroundLayout.setBackgroundColor(colorWhite);
                                     tvTypeName.setTextColor(colorInitial);
@@ -168,24 +170,34 @@ public class BookingTypeAdapter extends RecyclerView.Adapter<BookingTypeAdapter.
                                     tvRouteCount.setTextColor(colorRed);
 
                                     backgroundLayout.setOnClickListener(null);
+
                                     return;
                                 }
                                 else {
-                                    backgroundLayout.setBackgroundColor(colorWhite);
-                                    tvTypeName.setTextColor(colorBlack);
-                                    tvPrice.setTextColor(colorBlue);
+                                    if(isSelected) {
+                                        backgroundLayout.setBackgroundColor(colorBlue);
+                                        tvTypeName.setTextColor(colorWhite);
+                                        tvPrice.setTextColor(colorWhite);
+                                        tvRouteCount.setTextColor(colorWhite);
+                                    }
+                                    else {
+                                        backgroundLayout.setBackgroundColor(colorWhite);
+                                        tvTypeName.setTextColor(colorBlack);
+                                        tvPrice.setTextColor(colorBlue);
+                                        tvRouteCount.setTextColor(colorBlack);
+                                    }
 
                                     String routeCountText = "One spot at a time";
                                     tvRouteCount.setText(routeCountText);
-                                    tvRouteCount.setTextColor(colorBlack);
 
                                     backgroundLayout.setOnClickListener(view -> {
-                                        if(routeCount > 0 || !isZeroCountDisable) {
+                                        if (routeCount > 0 || !isZeroCountDisable) {
                                             bookingTypeId = id;
                                             onItemClickListener.sendBookingType(bookingType);
                                             notifyDataSetChanged();
                                         }
                                     });
+
                                 }
                             }
                         }

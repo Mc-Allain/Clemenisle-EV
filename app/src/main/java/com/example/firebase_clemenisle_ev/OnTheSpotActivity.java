@@ -300,9 +300,9 @@ public class OnTheSpotActivity extends AppCompatActivity {
         });
 
         tvLocate.setOnClickListener(view -> openMap("O-00", originLocation,
-                "Your Location", 2));
+                "Origin Location", 2));
         locateImage.setOnClickListener(view -> openMap("O-00", originLocation,
-                "Your Location", 2));
+                "Origin Location", 2));
 
         tvLocateDestination.setOnClickListener(view -> openMap(destinationSpot.getId(),
                 destinationSpotLocation, destinationSpot.getName(), 0));
@@ -310,12 +310,12 @@ public class OnTheSpotActivity extends AppCompatActivity {
                 destinationSpotLocation, destinationSpot.getName(), 0));
 
         currentLocationImage.setOnClickListener(view ->
-                mapFragment.getUserCurrentLocation(originLocation, "Your Location"));
+                mapFragment.getUserCurrentLocation(originLocation, "Origin Location"));
         tvCurrentLocation.setOnClickListener(view ->
-                mapFragment.getUserCurrentLocation(originLocation, "Your Location"));
+                mapFragment.getUserCurrentLocation(originLocation, "Origin Location"));
 
-        locateOnTheSpotImage.setOnClickListener(view -> mapFragment.locateOnTheSpot());
-        tvLocateOnTheSpot.setOnClickListener(view -> mapFragment.locateOnTheSpot());
+        locateOnTheSpotImage.setOnClickListener(view -> mapFragment.locateOnTheSpot("Origin Location"));
+        tvLocateOnTheSpot.setOnClickListener(view -> mapFragment.locateOnTheSpot("Origin Location"));
 
         mapSettingsImage.setOnClickListener(view -> openMapSettings());
         tvMapSettings.setOnClickListener(view -> openMapSettings());
@@ -695,7 +695,7 @@ public class OnTheSpotActivity extends AppCompatActivity {
         }
         else {
             if(resultCode == RESULT_OK && requestCode == MAP_SETTINGS_REQUEST) {
-                mapFragment.mapSettingsRequestResult();
+                mapFragment.mapSettingsRequestResult("Origin Location");
             }
         }
     }
@@ -926,12 +926,12 @@ public class OnTheSpotActivity extends AppCompatActivity {
         }
     }
 
-    private void openMap(String id, LatLng latlng, String name, int type) {
+    private void openMap(String id, LatLng latlng, String locationName, int type) {
         Intent intent = new Intent(myContext, MapActivity.class);
         intent.putExtra("id", id);
         intent.putExtra("lat", latlng.latitude);
         intent.putExtra("lng", latlng.longitude);
-        intent.putExtra("name", name);
+        intent.putExtra("name", locationName);
         intent.putExtra("type", type);
         myContext.startActivity(intent);
     }

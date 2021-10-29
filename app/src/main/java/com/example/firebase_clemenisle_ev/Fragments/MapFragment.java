@@ -238,7 +238,7 @@ public class MapFragment extends Fragment {
 
             myGoogleMap = googleMap;
 
-            if(fromBookingRecord) locateOnTheSpot();
+            if(fromBookingRecord) locateOnTheSpot("Origin Location");
         });
 
         resetButton.setOnClickListener(view1 -> {
@@ -264,11 +264,11 @@ public class MapFragment extends Fragment {
         return view;
     }
 
-    public void mapSettingsRequestResult() {
+    public void mapSettingsRequestResult(String locationName) {
         initSharedPreferences();
         myGoogleMap.setMapType(mapType);
-        if(selectedType == 0) locateOnTheSpot();
-        if(selectedType == 2) getUserCurrentLocation(currentLocation, "Your Location");
+        if(selectedType == 0) locateOnTheSpot(locationName);
+        if(selectedType == 2) getUserCurrentLocation(currentLocation, locationName);
     }
 
     public void setCurrentLocation(LatLng currentLocation) {
@@ -340,11 +340,11 @@ public class MapFragment extends Fragment {
         myGoogleMap.addMarker(markerOptions).showInfoWindow();
     }
 
-    public void locateOnTheSpot() {
+    public void locateOnTheSpot(String locationName) {
         myGoogleMap.clear();
         selectedType = 0;
 
-        markCurrentLocation(currentLocation, "Your Location");
+        markCurrentLocation(currentLocation, locationName);
 
         LatLng onTheSpotLatLng = new LatLng(selectedPlace.getLat(), selectedPlace.getLng());
         markOnTheSpot(onTheSpotLatLng);
@@ -498,7 +498,7 @@ public class MapFragment extends Fragment {
         }
 
         if(!fromBooking && currentLocation != null)
-            markCurrentLocation(currentLocation, "Your Location");
+            markCurrentLocation(currentLocation, "Origin Location");
 
         for(Place place : firstList) {
             placeMark(place, flType, null);

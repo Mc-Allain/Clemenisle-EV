@@ -1045,8 +1045,8 @@ public class BookingActivity extends AppCompatActivity implements
         currentLocationImage.setOnClickListener(view -> currentLocationOnClick());
         tvCurrentLocation.setOnClickListener(view -> currentLocationOnClick());
 
-        locateOnTheSpotImage.setOnClickListener(view -> mapFragment.locateOnTheSpot());
-        tvLocateOnTheSpot.setOnClickListener(view -> mapFragment.locateOnTheSpot());
+        locateOnTheSpotImage.setOnClickListener(view -> mapFragment.locateOnTheSpot("Origin Location"));
+        tvLocateOnTheSpot.setOnClickListener(view -> mapFragment.locateOnTheSpot("Origin Location"));
 
         mapSettingsImage.setOnClickListener(view -> openMapSettings());
         tvMapSettings.setOnClickListener(view -> openMapSettings());
@@ -1067,7 +1067,7 @@ public class BookingActivity extends AppCompatActivity implements
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(resultCode == RESULT_OK && requestCode == MAP_SETTINGS_REQUEST) {
-            mapFragment.mapSettingsRequestResult();
+            mapFragment.mapSettingsRequestResult("Your Location");
         }
     }
 
