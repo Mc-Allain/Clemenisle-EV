@@ -30,7 +30,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHolder> {
 
-    List<User> users;
+    List<User> users, commentedUsers;
     String spotId, userId;
     LayoutInflater inflater;
 
@@ -46,8 +46,9 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
 
     OnActionButtonClicked onActionButtonClickedListener;
 
-    public CommentAdapter(Context context, List<User> users, String spotId, String userId) {
+    public CommentAdapter(Context context, List<User> users, List<User> commentedUsers, String spotId, String userId) {
         this.users = users;
+        this.commentedUsers = commentedUsers;
         this.spotId = spotId;
         this.userId = userId;
         this.inflater = LayoutInflater.from(context);
@@ -89,15 +90,15 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
         colorBlack = myResources.getColor(R.color.black);
         colorRed = myResources.getColor(R.color.red);
 
-        if(users.size() < loadCommentItemPosition && users.size() != 0)
-            loadCommentItemPosition = users.size();
+        if(commentedUsers.size() < loadCommentItemPosition && commentedUsers.size() != 0)
+            loadCommentItemPosition = commentedUsers.size();
 
-        if(position < loadCommentItemPosition && users.size() != 0) {
+        if(position < loadCommentItemPosition && commentedUsers.size() != 0) {
             backgroundLayout.setVisibility(View.VISIBLE);
             commentLayout.setVisibility(View.VISIBLE);
             loadCommentLayout.setVisibility(View.GONE);
 
-            User user = users.get(position);
+            User user = commentedUsers.get(position);
 
             List<Comment> comments = user.getComments();
 
@@ -421,14 +422,14 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
                 }
             });
         }
-        else if(position == loadCommentItemPosition && position != users.size()) {
+        else if(position == loadCommentItemPosition && position != commentedUsers.size()) {
             backgroundLayout.setVisibility(View.VISIBLE);
             commentLayout.setVisibility(View.GONE);
             loadCommentLayout.setVisibility(View.VISIBLE);
 
             int itemsCountToIncrement = incrementLoadedItems;
-            if(loadCommentItemPosition + incrementLoadedItems > users.size())
-                itemsCountToIncrement = users.size() - loadCommentItemPosition;
+            if(loadCommentItemPosition + incrementLoadedItems > commentedUsers.size())
+                itemsCountToIncrement = commentedUsers.size() - loadCommentItemPosition;
 
             String loadCommentText = "Load " + itemsCountToIncrement + " more ";
             loadCommentText += itemsCountToIncrement == 1  ? "comment" : "comments";
@@ -527,7 +528,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
 
     @Override
     public int getItemCount() {
-        return users.size() + 1;
+        return commentedUsers.size() + 1;
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {

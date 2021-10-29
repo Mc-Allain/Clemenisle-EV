@@ -300,7 +300,7 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
         LinearLayoutManager linearLayout2 =
                 new LinearLayoutManager(myContext, LinearLayoutManager.VERTICAL, false);
         commentView.setLayoutManager(linearLayout2);
-        commentAdapter = new CommentAdapter(myContext, commentedUsers, id, userId);
+        commentAdapter = new CommentAdapter(myContext, users, commentedUsers, id, userId);
         commentView.setAdapter(commentAdapter);
         commentAdapter.setOnActionButtonClickedListener(this);
 
@@ -1063,121 +1063,123 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
     }
 
     private void updateCommentUI(Comment comment) {
-        setCommentOnScreenEnabled(true);
-        editImage.getDrawable().setTint(colorBlue);
+        if(comment != null) {
+            setCommentOnScreenEnabled(true);
+            editImage.getDrawable().setTint(colorBlue);
 
-        if(isOnScreen) {
-            try {
-                Glide.with(myContext).load(user.getProfileImage())
-                        .placeholder(R.drawable.image_loading_placeholder)
-                        .into(profileImage);
+            if(isOnScreen) {
+                try {
+                    Glide.with(myContext).load(user.getProfileImage())
+                            .placeholder(R.drawable.image_loading_placeholder)
+                            .into(profileImage);
+                }
+                catch (Exception ignored) {}
             }
-            catch (Exception ignored) {}
-        }
 
-        String fullName = "<b>" + user.getLastName() + "</b>, " + user.getFirstName();
-        if(user.getMiddleName().length() > 0) fullName += " " + user.getMiddleName();
-        tvUserFullName.setText(fromHtml(fullName));
+            String fullName = "<b>" + user.getLastName() + "</b>, " + user.getFirstName();
+            if(user.getMiddleName().length() > 0) fullName += " " + user.getMiddleName();
+            tvUserFullName.setText(fromHtml(fullName));
 
-        badgeLayout.setVisibility(View.GONE);
-        developerImage.setVisibility(View.GONE);
-        adminImage.setVisibility(View.GONE);
-        driverImage.setVisibility(View.GONE);
+            badgeLayout.setVisibility(View.GONE);
+            developerImage.setVisibility(View.GONE);
+            adminImage.setVisibility(View.GONE);
+            driverImage.setVisibility(View.GONE);
 
-        if(user.isDeveloper()) {
-            badgeLayout.setVisibility(View.VISIBLE);
-            developerImage.setVisibility(View.VISIBLE);
-            developerImage.setOnLongClickListener(view -> {
-                Toast.makeText(
-                        myContext,
-                        "Developer",
-                        Toast.LENGTH_SHORT
-                ).show();
-                return false;
-            });
-        }
-        if(user.isAdmin()) {
-            badgeLayout.setVisibility(View.VISIBLE);
-            adminImage.setVisibility(View.VISIBLE);
-            adminImage.setOnLongClickListener(view -> {
-                Toast.makeText(
-                        myContext,
-                        "Admin",
-                        Toast.LENGTH_SHORT
-                ).show();
-                return false;
-            });
-        }
-        if(user.isDriver()) {
-            badgeLayout.setVisibility(View.VISIBLE);
-            driverImage.setVisibility(View.VISIBLE);
-            driverImage.setOnLongClickListener(view -> {
-                Toast.makeText(
-                        myContext,
-                        "Driver",
-                        Toast.LENGTH_SHORT
-                ).show();
-                return false;
-            });
-        }
-        if(!isLiked) likerImage.setVisibility(View.GONE);
-        else {
-            badgeLayout.setVisibility(View.VISIBLE);
-            likerImage.setVisibility(View.VISIBLE);
-            likerImage.setOnLongClickListener(view -> {
-                Toast.makeText(
-                        myContext,
-                        "Liker",
-                        Toast.LENGTH_SHORT
-                ).show();
-                return false;
-            });
-        }
-
-        commentValue = comment.getValue();
-        extvComment.setText(commentValue);
-
-        String timestamp = comment.getTimestamp();
-        tvTimestamp.setText(timestamp);
-
-        if(comment.isFouled()) {
-            tvCommentStatus.setVisibility(View.VISIBLE);
-
-            appealImage.setEnabled(true);
-            appealImage.setVisibility(View.VISIBLE);
-            deactivateImage.setVisibility(View.GONE);
-
-            String status = defaultStatusText;
-            if(comment.isAppealed()) {
-                appealImage.setEnabled(false);
-                appealImage.getDrawable().setTint(colorInitial);
-                status = defaultStatusText + " " + appealedText;
+            if(user.isDeveloper()) {
+                badgeLayout.setVisibility(View.VISIBLE);
+                developerImage.setVisibility(View.VISIBLE);
+                developerImage.setOnLongClickListener(view -> {
+                    Toast.makeText(
+                            myContext,
+                            "Developer",
+                            Toast.LENGTH_SHORT
+                    ).show();
+                    return false;
+                });
             }
-            else appealImage.getDrawable().setTint(colorBlue);
+            if(user.isAdmin()) {
+                badgeLayout.setVisibility(View.VISIBLE);
+                adminImage.setVisibility(View.VISIBLE);
+                adminImage.setOnLongClickListener(view -> {
+                    Toast.makeText(
+                            myContext,
+                            "Admin",
+                            Toast.LENGTH_SHORT
+                    ).show();
+                    return false;
+                });
+            }
+            if(user.isDriver()) {
+                badgeLayout.setVisibility(View.VISIBLE);
+                driverImage.setVisibility(View.VISIBLE);
+                driverImage.setOnLongClickListener(view -> {
+                    Toast.makeText(
+                            myContext,
+                            "Driver",
+                            Toast.LENGTH_SHORT
+                    ).show();
+                    return false;
+                });
+            }
+            if(!isLiked) likerImage.setVisibility(View.GONE);
+            else {
+                badgeLayout.setVisibility(View.VISIBLE);
+                likerImage.setVisibility(View.VISIBLE);
+                likerImage.setOnLongClickListener(view -> {
+                    Toast.makeText(
+                            myContext,
+                            "Liker",
+                            Toast.LENGTH_SHORT
+                    ).show();
+                    return false;
+                });
+            }
 
-            tvCommentStatus.setText(status);
-        }
-        else {
-            tvCommentStatus.setVisibility(View.GONE);
+            commentValue = comment.getValue();
+            extvComment.setText(commentValue);
 
-            appealImage.setVisibility(View.GONE);
-            deactivateImage.setVisibility(View.VISIBLE);
+            String timestamp = comment.getTimestamp();
+            tvTimestamp.setText(timestamp);
 
-            if(comment.isDeactivated()) {
+            if(comment.isFouled()) {
                 tvCommentStatus.setVisibility(View.VISIBLE);
-                tvCommentStatus.setText(notActiveText);
 
-                deactivateImage.setImageResource(R.drawable.ic_baseline_comment_24);
-                deactivateImage.getDrawable().setTint(colorBlue);
-                currentDeactivateText = activateText;
+                appealImage.setEnabled(true);
+                appealImage.setVisibility(View.VISIBLE);
+                deactivateImage.setVisibility(View.GONE);
+
+                String status = defaultStatusText;
+                if(comment.isAppealed()) {
+                    appealImage.setEnabled(false);
+                    appealImage.getDrawable().setTint(colorInitial);
+                    status = defaultStatusText + " " + appealedText;
+                }
+                else appealImage.getDrawable().setTint(colorBlue);
+
+                tvCommentStatus.setText(status);
             }
             else {
                 tvCommentStatus.setVisibility(View.GONE);
-                tvCommentStatus.setText(defaultStatusText);
 
-                deactivateImage.setImageResource(R.drawable.ic_baseline_comments_disabled_24);
-                deactivateImage.getDrawable().setTint(colorRed);
-                currentDeactivateText = deactivateText;
+                appealImage.setVisibility(View.GONE);
+                deactivateImage.setVisibility(View.VISIBLE);
+
+                if(comment.isDeactivated()) {
+                    tvCommentStatus.setVisibility(View.VISIBLE);
+                    tvCommentStatus.setText(notActiveText);
+
+                    deactivateImage.setImageResource(R.drawable.ic_baseline_comment_24);
+                    deactivateImage.getDrawable().setTint(colorBlue);
+                    currentDeactivateText = activateText;
+                }
+                else {
+                    tvCommentStatus.setVisibility(View.GONE);
+                    tvCommentStatus.setText(defaultStatusText);
+
+                    deactivateImage.setImageResource(R.drawable.ic_baseline_comments_disabled_24);
+                    deactivateImage.getDrawable().setTint(colorRed);
+                    currentDeactivateText = deactivateText;
+                }
             }
         }
     }
@@ -1208,14 +1210,14 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
 
                 if(snapshot.exists()) {
                     for(DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                        User thisUser = new User(dataSnapshot);
-                        users.add(thisUser);
+                        User user = new User(dataSnapshot);
+                        users.add(user);
 
-                        List<Comment> comments = thisUser.getComments();
+                        List<Comment> comments = user.getComments();
                         for(Comment comment : comments) {
                             if(comment.getId().equals(id)) {
-                                if(comment.isFouled()) foulCommentedUsers.add(thisUser);
-                                else commentedUsers.add(thisUser);
+                                if(comment.isFouled()) foulCommentedUsers.add(user);
+                                else commentedUsers.add(user);
                             }
                         }
                     }
@@ -1243,7 +1245,7 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
 
                 if(!isUpdatingComments) {
                     commentLayout.setVisibility(View.VISIBLE);
-                    if(commentedUsers.size() > 0) finishLoading();
+                    if(users.size() > 0) finishLoading();
                     else errorLoading(defaultLogText);
                 }
             }
@@ -1472,14 +1474,14 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
                 if(snapshot.exists()) {
                     for(DataSnapshot dataSnapshot : snapshot.getChildren()) {
                         if(dataSnapshot.hasChildren()) {
-                            User thisUser = new User(dataSnapshot);
+                            User user = new User(dataSnapshot);
 
-                            List<SimpleTouristSpot> userLikedSpots = thisUser.getLikedSpots();
+                            List<SimpleTouristSpot> userLikedSpots = user.getLikedSpots();
                             for(SimpleTouristSpot likedSpot : userLikedSpots) {
                                 if(likedSpot.getId().equals(id)) likes++;
                             }
 
-                            List<Booking> userBookingList = thisUser.getBookingList();
+                            List<Booking> userBookingList = user.getBookingList();
                             for(Booking booking : userBookingList) {
                                 List<Route> routeList = booking.getRouteList();
                                 for(Route route : routeList) {
@@ -1497,7 +1499,7 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
                                 }
                             }
 
-                            List<Comment> userComments = thisUser.getComments();
+                            List<Comment> userComments = user.getComments();
                             for(Comment comment : userComments) {
                                 if(comment.getId().equals(id)) comments++;
                             }
