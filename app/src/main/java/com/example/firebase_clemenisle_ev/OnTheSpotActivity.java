@@ -83,9 +83,10 @@ public class OnTheSpotActivity extends AppCompatActivity {
     private final static int MAP_SETTINGS_REQUEST = 1;
 
     ImageView profileImage, driverProfileImage, thumbnail, moreImage, locateImage, locateDestinationImage, viewQRImage,
-            chatImage, driverImage, passImage, checkImage, reloadImage;
-    TextView tvUserFullName, tvPassTaskNote, tvDriverFullName, tvBookingId, tvSchedule, tvTypeName, tvPrice, tvOriginLocation2, tvDestinationSpot2,
-            tvLocate, tvLocateDestination, tvViewQR, tvChat, tvDriver, tvPass, tvCheck, tvLog;
+            chatImage, driverImage, passImage, stopImage, checkImage, reloadImage;
+    TextView tvUserFullName, tvPassTaskNote, tvDriverFullName, tvBookingId, tvSchedule, tvTypeName,
+            tvPrice, tvOriginLocation2, tvDestinationSpot2, tvLocate, tvLocateDestination, tvViewQR,
+            tvChat, tvDriver, tvPass, tvStop, tvCheck, tvLog;
     ExpandableTextView extvMessage;
     ConstraintLayout buttonLayout, bookingInfoLayout, bookingInfoButtonLayout, userInfoLayout, driverInfoLayout;
     Button cancelButton;
@@ -196,6 +197,8 @@ public class OnTheSpotActivity extends AppCompatActivity {
         driverImage = findViewById(R.id.driverImage);
         tvPass = findViewById(R.id.tvPass);
         passImage = findViewById(R.id.passImage);
+        tvStop = findViewById(R.id.tvStop);
+        stopImage = findViewById(R.id.stopImage);
         tvCheck = findViewById(R.id.tvCheck);
         checkImage = findViewById(R.id.checkImage);
 
@@ -567,6 +570,8 @@ public class OnTheSpotActivity extends AppCompatActivity {
                                 driverImage.setVisibility(View.GONE);
                                 tvPass.setVisibility(View.GONE);
                                 passImage.setVisibility(View.GONE);
+                                tvStop.setVisibility(View.VISIBLE);
+                                stopImage.setVisibility(View.VISIBLE);
                                 tvCheck.setVisibility(View.VISIBLE);
                                 checkImage.setVisibility(View.VISIBLE);
 
@@ -591,6 +596,8 @@ public class OnTheSpotActivity extends AppCompatActivity {
 
                                 tvPass.setVisibility(View.GONE);
                                 passImage.setVisibility(View.GONE);
+                                tvStop.setVisibility(View.GONE);
+                                stopImage.setVisibility(View.GONE);
                                 tvCheck.setVisibility(View.GONE);
                                 checkImage.setVisibility(View.GONE);
                             }
@@ -1004,7 +1011,7 @@ public class OnTheSpotActivity extends AppCompatActivity {
                     price = String.valueOf(booking.getBookingType().getPrice());
                     if(price.split("\\.")[1].length() == 1) price += 0;
 
-                    startTimer(booking);
+                    if(!inDriverMode) startTimer(booking);
                     finishLoading();
                 }
                 else errorLoading(defaultLogText);

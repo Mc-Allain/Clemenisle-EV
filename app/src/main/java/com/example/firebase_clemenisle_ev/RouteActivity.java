@@ -75,9 +75,10 @@ public class RouteActivity extends AppCompatActivity implements
     FirebaseUser firebaseUser;
 
     ImageView profileImage, driverProfileImage, thumbnail, moreImage, locateImage, locateEndImage, viewQRImage,
-            chatImage, driverImage, passImage, checkImage, reloadImage, paidImage;
-    TextView tvUserFullName, tvPassTaskNote, tvDriverFullName, tvBookingId, tvSchedule, tvTypeName, tvPrice, tvStartStation2, tvEndStation2,
-            tvLocate, tvLocateEnd, tvViewQR, tvChat, tvDriver, tvPass, tvCheck, tvLog;
+            chatImage, driverImage, passImage, stopImage, checkImage, reloadImage, paidImage;
+    TextView tvUserFullName, tvPassTaskNote, tvDriverFullName, tvBookingId, tvSchedule, tvTypeName,
+            tvPrice, tvStartStation2, tvEndStation2, tvLocate, tvLocateEnd, tvViewQR, tvChat, tvDriver,
+            tvPass, tvStop, tvCheck, tvLog;
     ExpandableTextView extvMessage;
     RecyclerView routeView;
     ConstraintLayout buttonLayout, bookingInfoLayout, bookingInfoButtonLayout, userInfoLayout, driverInfoLayout;
@@ -180,6 +181,8 @@ public class RouteActivity extends AppCompatActivity implements
         driverImage = findViewById(R.id.driverImage);
         tvPass = findViewById(R.id.tvPass);
         passImage = findViewById(R.id.passImage);
+        tvStop = findViewById(R.id.tvStop);
+        stopImage = findViewById(R.id.stopImage);
         tvCheck = findViewById(R.id.tvCheck);
         checkImage = findViewById(R.id.checkImage);
 
@@ -495,6 +498,8 @@ public class RouteActivity extends AppCompatActivity implements
                                 driverImage.setVisibility(View.GONE);
                                 tvPass.setVisibility(View.GONE);
                                 passImage.setVisibility(View.GONE);
+                                tvStop.setVisibility(View.VISIBLE);
+                                stopImage.setVisibility(View.VISIBLE);
                                 tvCheck.setVisibility(View.VISIBLE);
                                 checkImage.setVisibility(View.VISIBLE);
 
@@ -519,6 +524,8 @@ public class RouteActivity extends AppCompatActivity implements
 
                                 tvPass.setVisibility(View.GONE);
                                 passImage.setVisibility(View.GONE);
+                                tvStop.setVisibility(View.GONE);
+                                stopImage.setVisibility(View.GONE);
                                 tvCheck.setVisibility(View.GONE);
                                 checkImage.setVisibility(View.GONE);
                             }

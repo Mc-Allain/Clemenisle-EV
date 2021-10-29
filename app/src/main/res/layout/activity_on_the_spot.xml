@@ -504,13 +504,25 @@
                 app:tint="@color/green" />
 
             <ImageView
-                android:id="@+id/passImage"
+                android:id="@+id/stopImage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="4dp"
                 android:padding="4dp"
                 android:visibility="gone"
                 app:layout_constraintBottom_toTopOf="@+id/checkImage"
+                app:layout_constraintStart_toStartOf="@+id/locateImage"
+                app:srcCompat="@drawable/ic_baseline_stop_24"
+                app:tint="@color/red" />
+
+            <ImageView
+                android:id="@+id/passImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                android:padding="4dp"
+                android:visibility="gone"
+                app:layout_constraintBottom_toTopOf="@+id/stopImage"
                 app:layout_constraintStart_toStartOf="@+id/locateImage"
                 app:srcCompat="@drawable/ic_baseline_electric_rickshaw_24"
                 app:tint="@color/blue" />
@@ -589,6 +601,21 @@
                 app:layout_constraintEnd_toEndOf="@+id/tvLocateDestination"
                 app:layout_constraintStart_toEndOf="@+id/checkImage"
                 app:layout_constraintTop_toTopOf="@+id/checkImage" />
+
+            <TextView
+                android:id="@+id/tvStop"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:fontFamily="@font/ubuntu"
+                android:gravity="center_vertical"
+                android:text="Stop Request"
+                android:textColor="@color/red"
+                android:textStyle="bold"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@+id/stopImage"
+                app:layout_constraintEnd_toEndOf="@+id/tvLocateDestination"
+                app:layout_constraintStart_toEndOf="@+id/stopImage"
+                app:layout_constraintTop_toTopOf="@+id/stopImage" />
 
             <TextView
                 android:id="@+id/tvPass"
