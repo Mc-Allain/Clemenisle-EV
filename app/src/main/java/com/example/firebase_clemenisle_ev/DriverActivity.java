@@ -299,10 +299,15 @@ public class DriverActivity extends AppCompatActivity {
                     if(user.getMiddleName().length() > 0) fullName += " " + user.getMiddleName();
 
                     List<Chat> chats = booking.getChats();
-                    String msg = chats.get(chats.size()-1).getMessage();
+                    String message = booking.getMessage();
+                    if(chats.size() > 0) message = chats.get(chats.size()-1).getMessage();
                     boolean notified = task.isNotified();
 
-                    if(!notified) showChatNotification(task, fullName, msg);
+                    if(!notified && message.length() > 0) showChatNotification(task, fullName, message);
+                    else {
+                        usersRef.child(userId).child("taskList").child(task.getId()).child("notified")
+                                .setValue(true);
+                    }
                     break;
                 }
             }
@@ -429,14 +434,14 @@ public class DriverActivity extends AppCompatActivity {
         notificationManager.notify(1, builder.build());
     }
 
-    private void showChatNotification(Booking task, String fullName, String msg) {
+    private void showChatNotification(Booking task, String fullName, String message) {
         NotificationManager notificationManager = getNotificationManager(task.getId());
 
         NotificationCompat.Builder builder =
                 new NotificationCompat.Builder(myContext, task.getId())
                         .setSmallIcon(R.drawable.front_icon)
                         .setContentTitle("Clemenisle-EV Chat: " + task.getId())
-                        .setContentText(fullName + ": " + msg)
+                        .setContentText(fullName + ": " + message)
                         .setCategory(NotificationCompat.CATEGORY_MESSAGE)
                         .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                         .setDefaults(NotificationCompat.DEFAULT_ALL)

@@ -517,10 +517,15 @@ public class MainActivity extends AppCompatActivity {
                     if(user.getMiddleName().length() > 0) fullName += " " + user.getMiddleName();
 
                     List<Chat> chats = booking.getChats();
-                    String msg = chats.get(chats.size()-1).getMessage();
+                    String message = "こんにちは (Hello), I am " + fullName + ", your assigned driver.";
+                    if(chats.size() > 0) message = chats.get(chats.size()-1).getMessage();
                     boolean notified = booking.isNotified();
 
-                    if(!notified) showChatNotification(booking, fullName, msg);
+                    if(!notified && message.length() > 0) showChatNotification(booking, fullName, message);
+                    else {
+                        usersRef.child(userId).child("bookingList").child(booking.getId()).child("notified")
+                                .setValue(true);
+                    }
                     break;
                 }
             }
@@ -724,14 +729,14 @@ public class MainActivity extends AppCompatActivity {
         notificationManager.notify(1, builder.build());
     }
 
-    private void showChatNotification(Booking booking, String fullName, String msg) {
+    private void showChatNotification(Booking booking, String fullName, String message) {
         NotificationManager notificationManager = getNotificationManager(booking.getId());
 
         NotificationCompat.Builder builder =
                 new NotificationCompat.Builder(myContext, booking.getId())
                         .setSmallIcon(R.drawable.front_icon)
                         .setContentTitle("Clemenisle-EV Chat: " + booking.getId())
-                        .setContentText(fullName + ": " + msg)
+                        .setContentText(fullName + ": " + message)
                         .setCategory(NotificationCompat.CATEGORY_MESSAGE)
                         .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                         .setDefaults(NotificationCompat.DEFAULT_ALL)
