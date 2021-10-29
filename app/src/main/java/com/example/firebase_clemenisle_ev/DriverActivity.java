@@ -17,6 +17,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.example.firebase_clemenisle_ev.Classes.Booking;
+import com.example.firebase_clemenisle_ev.Classes.Chat;
 import com.example.firebase_clemenisle_ev.Classes.DateTimeToString;
 import com.example.firebase_clemenisle_ev.Classes.FirebaseURL;
 import com.example.firebase_clemenisle_ev.Classes.User;
@@ -95,9 +96,7 @@ public class DriverActivity extends AppCompatActivity {
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
         editor.putBoolean("isLoggedIn", false);
-        editor.putBoolean("remember", false);
-        editor.putString("emailAddress", null);
-        editor.putString("password", null);
+        editor.putBoolean("isRemembered", false);
         editor.apply();
     }
 
@@ -129,15 +128,7 @@ public class DriverActivity extends AppCompatActivity {
                         Toast.LENGTH_LONG
                 ).show();
             }
-            else {
-                userId = firebaseUser.getUid();
-
-                Toast.makeText(
-                        myContext,
-                        "You accessed the Driver Module using " + firebaseUser.getEmail(),
-                        Toast.LENGTH_LONG
-                ).show();
-            }
+            else userId = firebaseUser.getUid();
         }
 
         navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.fragmentContainerView);
@@ -150,48 +141,29 @@ public class DriverActivity extends AppCompatActivity {
             else headerLayout.setVisibility(View.VISIBLE);
         });
 
-        getPendingList();
         getUsers();
     }
 
     private void getPendingList() {
-        DatabaseReference usersRef = firebaseDatabase.getReference("users");
-        usersRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                taskList.clear();
-                pendingList.clear();
+        taskList.clear();
+        pendingList.clear();
 
-                if(snapshot.exists()) {
-                    for(DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                        User user = new User(dataSnapshot);
-                        List<Booking> bookingList = user.getBookingList();
+        for(User user : users) {
+            List<Booking> bookingList = user.getBookingList();
 
-                        for(Booking booking : bookingList) {
-                            if(booking.getStatus().equals("Processing"))
-                                pendingList.add(booking);
-                        }
-
-                        if(user.getId().equals(userId))
-                            taskList.addAll(user.getTaskList());
-                    }
-                }
-
-                Collections.sort(pendingList, (booking, t1) ->
-                        booking.getId().compareToIgnoreCase(t1.getId()));
-
-                startTimer();
+            for(Booking booking : bookingList) {
+                if(booking.getStatus().equals("Processing"))
+                    pendingList.add(booking);
             }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(
-                        myContext,
-                        error.toString(),
-                        Toast.LENGTH_LONG
-                ).show();
-            }
-        });
+            if(user.getId().equals(userId))
+                taskList.addAll(user.getTaskList());
+        }
+
+        Collections.sort(pendingList, (booking, t1) ->
+                booking.getId().compareToIgnoreCase(t1.getId()));
+
+        startTimer();
     }
 
     private void startTimer() {
@@ -312,13 +284,38 @@ public class DriverActivity extends AppCompatActivity {
 
             initNotificationInHours(booking, hourArray, hrDifference + 1, minArray, minDifference, sec);
         }
+
+        if(booking.getStatus().equals("Booked") || booking.getStatus().equals("Request"))
+            getEndPointInfo(booking);
+    }
+
+    private void getEndPointInfo(Booking task) {
+        for(User user : users) {
+            List<Booking> bookingList = user.getBookingList();
+
+            for(Booking booking : bookingList) {
+                if(booking.getId().equals(task.getId())) {
+                    String fullName = user.getLastName() + ", " + user.getFirstName();
+                    if(user.getMiddleName().length() > 0) fullName += " " + user.getMiddleName();
+
+                    List<Chat> chats = booking.getChats();
+                    String msg = chats.get(chats.size()-1).getMessage();
+                    boolean notified = task.isNotified();
+
+                    if(!notified) showChatNotification(task, fullName, msg);
+                    break;
+                }
+            }
+        }
     }
 
     private void setBookingStatusFromProcessingToFailed(Booking booking, int hrDifference, int minDifference) {
         if(booking.getStatus().equals("Processing") &&
                 !booking.getBookingType().getId().equals("BT99") &&
-                (hrDifference < 0 || (hrDifference == 0 && minDifference == 0)))
+                (hrDifference < 0 || (hrDifference == 0 && minDifference == 0))) {
             setBookingStatusToFailed(booking.getId());
+            setTaskStatusToFailed(booking.getId());
+        }
     }
 
     private void setOnTheSpotBookingStatusToFailed(Booking booking, int hrDifference, int minDifference) {
@@ -336,12 +333,12 @@ public class DriverActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if(snapshot.exists()) {
                     for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                        User thisUser = new User(dataSnapshot);
-                        List<Booking> taskList = thisUser.getTaskList();
+                        User user = new User(dataSnapshot);
+                        List<Booking> taskList = user.getTaskList();
 
                         for(Booking booking : taskList) {
                             if(booking.getId().equals(bookingId)) {
-                                usersRef.child(thisUser.getId()).child("taskList").
+                                usersRef.child(user.getId()).child("taskList").
                                         child(booking.getId()).child("status").setValue("Failed");
                                 return;
                             }
@@ -420,7 +417,7 @@ public class DriverActivity extends AppCompatActivity {
 
         Intent notificationIntent = new Intent(myContext, RouteActivity.class);
         notificationIntent.putExtra("bookingId", booking.getId());
-        notificationIntent.putExtra("inDriverMode", true);
+        notificationIntent.putExtra("inDriverModule", true);
         notificationIntent.putExtra("status", booking.getStatus());
         notificationIntent.putExtra("userId", getPassengerUserId(booking.getId()));
 
@@ -430,6 +427,37 @@ public class DriverActivity extends AppCompatActivity {
         builder.setContentIntent(pendingIntent);
         builder.setFullScreenIntent(pendingIntent, true);
         notificationManager.notify(1, builder.build());
+    }
+
+    private void showChatNotification(Booking task, String fullName, String msg) {
+        NotificationManager notificationManager = getNotificationManager(task.getId());
+
+        NotificationCompat.Builder builder =
+                new NotificationCompat.Builder(myContext, task.getId())
+                        .setSmallIcon(R.drawable.front_icon)
+                        .setContentTitle("Clemenisle-EV Chat: " + task.getId())
+                        .setContentText(fullName + ": " + msg)
+                        .setCategory(NotificationCompat.CATEGORY_MESSAGE)
+                        .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                        .setDefaults(NotificationCompat.DEFAULT_ALL)
+                        .setAutoCancel(true);
+
+        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
+            builder.setPriority(Notification.PRIORITY_HIGH);
+
+        Intent notificationIntent = new Intent(myContext, ChatActivity.class);
+        notificationIntent.putExtra("bookingId", task.getId());
+        notificationIntent.putExtra("inDriverModule", true);
+
+        PendingIntent pendingIntent = PendingIntent.getActivity(
+                myContext, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT
+        );
+        builder.setContentIntent(pendingIntent);
+        builder.setFullScreenIntent(pendingIntent, true);
+        notificationManager.notify(1, builder.build());
+
+        usersRef.child(userId).child("taskList").child(task.getId()).child("notified")
+                .setValue(true);
     }
 
     private String getPassengerUserId(String bookingId) {
@@ -455,6 +483,7 @@ public class DriverActivity extends AppCompatActivity {
                         users.add(user);
                     }
                 }
+                getPendingList();
             }
 
             @Override

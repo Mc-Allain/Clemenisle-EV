@@ -9,6 +9,7 @@ import android.widget.Toast;
 import com.example.firebase_clemenisle_ev.Classes.AppMetaData;
 import com.example.firebase_clemenisle_ev.Classes.FirebaseURL;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -25,13 +26,12 @@ public class SplashScreenActivity extends AppCompatActivity {
 
     private final static String firebaseURL = FirebaseURL.getFirebaseURL();
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance(firebaseURL);
-
     FirebaseAuth firebaseAuth;
+    FirebaseUser firebaseUser;
 
     Context myContext;
 
-    String emailAddress, password;
-    boolean remember, inDriverModule;
+    boolean isLoggedIn, isRemembered, inDriverModule;
 
     AppMetaData appMetaData;
 
@@ -40,19 +40,18 @@ public class SplashScreenActivity extends AppCompatActivity {
     private void initSharedPreferences() {
         SharedPreferences sharedPreferences = myContext
                 .getSharedPreferences("login", Context.MODE_PRIVATE);
-        remember = sharedPreferences.getBoolean("remember", false);
-        emailAddress = sharedPreferences.getString("emailAddress", null);
-        password = sharedPreferences.getString("password", null);
+        isLoggedIn = sharedPreferences.getBoolean("isLoggedIn", false);
+        isRemembered = sharedPreferences.getBoolean("isRemembered", false);
         inDriverModule = sharedPreferences.getBoolean("inDriverModule", false);
     }
 
-    private void sendSharedPreferences() {
+    private void sendLoginPreferences() {
         SharedPreferences sharedPreferences = myContext
                 .getSharedPreferences("login", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
         editor.putBoolean("isLoggedIn", false);
-        editor.putBoolean("remember", false);
+        editor.putBoolean("isRemembered", false);
         editor.apply();
     }
 
@@ -66,9 +65,25 @@ public class SplashScreenActivity extends AppCompatActivity {
         initSharedPreferences();
 
         firebaseAuth = FirebaseAuth.getInstance();
-        if (!remember) {
+        if (!isRemembered) {
             firebaseAuth.signOut();
-            sendSharedPreferences();
+            sendLoginPreferences();
+        }
+        else {
+            if(isLoggedIn) {
+                firebaseUser = firebaseAuth.getCurrentUser();
+                if(firebaseUser != null) firebaseUser.reload();
+                if(firebaseUser == null) {
+                    firebaseAuth.signOut();
+                    sendLoginPreferences();
+
+                    Toast.makeText(
+                            myContext,
+                            "Failed to get the current user",
+                            Toast.LENGTH_LONG
+                    ).show();
+                }
+            }
         }
 
         appMetaData = new AppMetaData();
@@ -107,6 +122,21 @@ public class SplashScreenActivity extends AppCompatActivity {
 
                 startActivity(intent);
                 finishAffinity();
+
+                if(inDriverModule) {
+                    Toast.makeText(
+                            myContext,
+                            "You accessed the Driver Module using " + firebaseUser.getEmail(),
+                            Toast.LENGTH_LONG
+                    ).show();
+                }
+                else {
+                    Toast.makeText(
+                            myContext,
+                            "You are logged in using " + firebaseUser.getEmail(),
+                            Toast.LENGTH_LONG
+                    ).show();
+                }
             }
 
             @Override

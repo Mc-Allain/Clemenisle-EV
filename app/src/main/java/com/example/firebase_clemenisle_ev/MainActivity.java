@@ -32,6 +32,7 @@ import android.widget.Toast;
 
 import com.example.firebase_clemenisle_ev.Classes.AppMetaData;
 import com.example.firebase_clemenisle_ev.Classes.Booking;
+import com.example.firebase_clemenisle_ev.Classes.Chat;
 import com.example.firebase_clemenisle_ev.Classes.DateTimeToString;
 import com.example.firebase_clemenisle_ev.Classes.FirebaseURL;
 import com.example.firebase_clemenisle_ev.Classes.User;
@@ -142,6 +143,8 @@ public class MainActivity extends AppCompatActivity {
 
     boolean isShowAppVersionInfoEnabled;
 
+    List<User> users = new ArrayList<>();
+
     private void initSharedPreferences() {
         SharedPreferences sharedPreferences = getSharedPreferences("login", Context.MODE_PRIVATE);
         isLoggedIn = sharedPreferences.getBoolean("isLoggedIn", false);
@@ -156,9 +159,7 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
         editor.putBoolean("isLoggedIn", false);
-        editor.putBoolean("remember", false);
-        editor.putString("emailAddress", null);
-        editor.putString("password", null);
+        editor.putBoolean("isRemembered", false);
         editor.apply();
     }
 
@@ -203,19 +204,12 @@ public class MainActivity extends AppCompatActivity {
                         Toast.LENGTH_LONG
                 ).show();
             }
-            else {
-                userId = firebaseUser.getUid();
-
-                Toast.makeText(
-                        myContext,
-                        "You are logged in using " + firebaseUser.getEmail(),
-                        Toast.LENGTH_LONG
-                ).show();
-            }
+            else userId = firebaseUser.getUid();
         }
 
         appMetaData = new AppMetaData();
         getAppMetaData();
+        getUsers();
 
         if(password != null) {
             if(!isCurrentPasswordValid()) {
@@ -239,6 +233,26 @@ public class MainActivity extends AppCompatActivity {
             if(isLoggedIn) newIntent = new Intent(myContext, BookingActivity.class);
             else newIntent = new Intent(myContext, LoginActivity.class);
             startActivity(newIntent);
+        });
+    }
+
+    private void getUsers() {
+        usersRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                users.clear();
+                if(snapshot.exists()) {
+                    for(DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        User user = new User(dataSnapshot);
+                        users.add(user);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
         });
     }
 
@@ -485,13 +499,37 @@ public class MainActivity extends AppCompatActivity {
 
             initNotificationInHours(booking, hourArray, hrDifference + 1, minArray, minDifference, sec);
         }
+
+        if(booking.getStatus().equals("Booked")) getEndPointInfo(booking);
+    }
+
+    private void getEndPointInfo(Booking booking) {
+        for(User user : users) {
+            List<Booking> taskList = user.getTaskList();
+
+            for(Booking task : taskList) {
+                if(task.getId().equals(booking.getId())) {
+                    String fullName = user.getLastName() + ", " + user.getFirstName();
+                    if(user.getMiddleName().length() > 0) fullName += " " + user.getMiddleName();
+
+                    List<Chat> chats = booking.getChats();
+                    String msg = chats.get(chats.size()-1).getMessage();
+                    boolean notified = booking.isNotified();
+
+                    if(!notified) showChatNotification(booking, fullName, msg);
+                    break;
+                }
+            }
+        }
     }
 
     private void setBookingStatusFromProcessingToFailed(Booking booking, int hrDifference, int minDifference) {
         if(booking.getStatus().equals("Processing") &&
                 !booking.getBookingType().getId().equals("BT99") &&
-                (hrDifference < 0 || (hrDifference == 0 && minDifference == 0)))
+                (hrDifference < 0 || (hrDifference == 0 && minDifference == 0))) {
             setBookingStatusToFailed(booking.getId());
+            setTaskStatusToFailed(booking.getId());
+        }
     }
 
     private void setOnTheSpotBookingStatusToFailed(Booking booking, int hrDifference, int minDifference) {
@@ -504,29 +542,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setTaskStatusToFailed(String bookingId) {
-        usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if(snapshot.exists()) {
-                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                        User thisUser = new User(dataSnapshot);
-                        List<Booking> taskList = thisUser.getTaskList();
+        for (User user : users) {
+            List<Booking> taskList = user.getTaskList();
 
-                        for(Booking booking : taskList) {
-                            if(booking.getId().equals(bookingId)) {
-                                usersRef.child(thisUser.getId()).child("taskList").
-                                        child(booking.getId()).child("status").setValue("Failed");
-                                return;
-                            }
-                        }
-                    }
+            for(Booking task : taskList) {
+                if(task.getId().equals(bookingId)) {
+                    usersRef.child(user.getId()).child("taskList").
+                            child(task.getId()).child("status").setValue("Failed");
+                    return;
                 }
             }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-            }
-        });
+        }
     }
 
     private void initNotificationInHours(Booking booking, List<String> hourArray, int hrDifference,
@@ -692,6 +718,37 @@ public class MainActivity extends AppCompatActivity {
         builder.setContentIntent(pendingIntent);
         builder.setFullScreenIntent(pendingIntent, true);
         notificationManager.notify(1, builder.build());
+    }
+
+    private void showChatNotification(Booking booking, String fullName, String msg) {
+        NotificationManager notificationManager = getNotificationManager(booking.getId());
+
+        NotificationCompat.Builder builder =
+                new NotificationCompat.Builder(myContext, booking.getId())
+                        .setSmallIcon(R.drawable.front_icon)
+                        .setContentTitle("Clemenisle-EV Chat: " + booking.getId())
+                        .setContentText(fullName + ": " + msg)
+                        .setCategory(NotificationCompat.CATEGORY_MESSAGE)
+                        .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                        .setDefaults(NotificationCompat.DEFAULT_ALL)
+                        .setAutoCancel(true);
+
+        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
+            builder.setPriority(Notification.PRIORITY_HIGH);
+
+        Intent notificationIntent = new Intent(myContext, ChatActivity.class);
+        notificationIntent.putExtra("bookingId", booking.getId());
+        notificationIntent.putExtra("inDriverModule", false);
+
+        PendingIntent pendingIntent = PendingIntent.getActivity(
+                myContext, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT
+        );
+        builder.setContentIntent(pendingIntent);
+        builder.setFullScreenIntent(pendingIntent, true);
+        notificationManager.notify(1, builder.build());
+
+        usersRef.child(userId).child("bookingList").child(booking.getId()).child("notified")
+                .setValue(true);
     }
 
     @Override

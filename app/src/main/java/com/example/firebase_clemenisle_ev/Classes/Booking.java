@@ -17,6 +17,9 @@ public class Booking {
     private SimpleTouristSpot destinationSpot;
     private double originLat, originLng;
 
+    boolean notified;
+    private final List<Chat> chats = new ArrayList<>();
+
     public Booking() {
     }
 
@@ -90,6 +93,20 @@ public class Booking {
             this.originLat = dataSnapshot.child("originLat").getValue(Double.class);
         if(dataSnapshot.child("originLng").exists())
             this.originLng = dataSnapshot.child("originLng").getValue(Double.class);
+
+        chats.clear();
+        DataSnapshot chatSnapshot = dataSnapshot.child("chats");
+        if(chatSnapshot.exists()) {
+            for(DataSnapshot dataSnapshot1 : chatSnapshot.getChildren()) {
+                if(dataSnapshot1.hasChildren()) {
+                    Chat chat = dataSnapshot1.getValue(Chat.class);
+                    chats.add(chat);
+                }
+            }
+        }
+
+        if(dataSnapshot.child("notified").exists())
+            this.notified = dataSnapshot.child("notified").getValue(Boolean.class);
     }
 
     public Booking(BookingType bookingType, Station endStation, String id, String message,
@@ -165,5 +182,13 @@ public class Booking {
 
     public double getOriginLng() {
         return originLng;
+    }
+
+    public List<Chat> getChats() {
+        return chats;
+    }
+
+    public boolean isNotified() {
+        return notified;
     }
 }

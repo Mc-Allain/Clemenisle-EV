@@ -95,8 +95,8 @@ public class PendingListFragment extends Fragment {
 
                 if(snapshot.exists()) {
                     for(DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                        User thisUser = new User(dataSnapshot);
-                        List<Booking> bookingList = thisUser.getBookingList();
+                        User user = new User(dataSnapshot);
+                        List<Booking> bookingList = user.getBookingList();
 
                         for(Booking booking : bookingList) {
                             if(booking.getStatus().equals("Processing"))

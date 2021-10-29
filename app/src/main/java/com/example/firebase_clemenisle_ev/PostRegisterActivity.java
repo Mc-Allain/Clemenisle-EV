@@ -51,7 +51,7 @@ public class PostRegisterActivity extends AppCompatActivity {
     String defaultUpdateText = "Update Email Address";
 
     String emailAddress, password;
-    boolean success, remember, fromRegister;
+    boolean success, isRemembered, fromRegister;
     String name, caption, resend, update;
 
     int colorRed, colorBlack, colorGreen, colorInitial, selectedColor;
@@ -90,9 +90,7 @@ public class PostRegisterActivity extends AppCompatActivity {
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
         editor.putBoolean("isLoggedIn", false);
-        editor.putBoolean("remember", false);
-        editor.putString("emailAddress", null);
-        editor.putString("password", null);
+        editor.putBoolean("isRemembered", false);
         editor.apply();
     }
 
@@ -131,7 +129,7 @@ public class PostRegisterActivity extends AppCompatActivity {
         Intent intent = getIntent();
         emailAddress = intent.getStringExtra("emailAddress");
         password = intent.getStringExtra("password");
-        remember = intent.getBooleanExtra("remember", false);
+        isRemembered = intent.getBooleanExtra("isRemembered", false);
         success = intent.getBooleanExtra("success", true);
         fromRegister = intent.getBooleanExtra("fromRegister", true);
 
@@ -440,6 +438,12 @@ public class PostRegisterActivity extends AppCompatActivity {
                         startActivity(newIntent);
                         finishAffinity();
                         progressBar.setVisibility(View.GONE);
+
+                        Toast.makeText(
+                                myContext,
+                                "You are logged in using " + firebaseUser.getEmail(),
+                                Toast.LENGTH_LONG
+                        ).show();
                     }, 2000);
                 }
                 else {
@@ -458,11 +462,7 @@ public class PostRegisterActivity extends AppCompatActivity {
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
         editor.putBoolean("isLoggedIn", true);
-        editor.putBoolean("remember", remember);
-        if(remember) {
-            editor.putString("emailAddress", emailAddress);
-            editor.putString("password", password);
-        }
+        editor.putBoolean("isRemembered", isRemembered);
         editor.apply();
     }
 

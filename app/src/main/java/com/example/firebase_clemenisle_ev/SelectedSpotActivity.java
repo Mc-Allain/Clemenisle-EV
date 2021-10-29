@@ -164,9 +164,7 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
         editor.putBoolean("isLoggedIn", false);
-        editor.putBoolean("remember", false);
-        editor.putString("emailAddress", null);
-        editor.putString("password", null);
+        editor.putBoolean("isRemembered", false);
         editor.apply();
     }
 

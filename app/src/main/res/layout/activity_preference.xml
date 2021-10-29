@@ -119,7 +119,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
             android:fontFamily="@font/fredoka_one"
-            android:text="Preference"
+            android:text="Preferences"
             android:textColor="@color/black"
             android:textSize="20sp"
             app:layout_constraintBottom_toBottomOf="@+id/appIconImage"

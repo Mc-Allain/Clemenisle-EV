@@ -31,7 +31,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
     List<Chat> chats;
     String startPointId, passengerUserId, driverUserId, passengerProfileImg, driverProfileImg,
             driverFullName, initialMessage, bookingTimestamp, taskTimestamp;
-    boolean inDriverMode;
+    boolean inDriverModule;
     LayoutInflater inflater;
 
     Context myContext;
@@ -41,10 +41,10 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
 
     DateTimeToString dateTimeToString;
 
-    public ChatAdapter(Context context, List<Chat> chats, String startPointId, boolean inDriverMode) {
+    public ChatAdapter(Context context, List<Chat> chats, String startPointId, boolean inDriverModule) {
         this.chats = chats;
         this.startPointId = startPointId;
-        this.inDriverMode = inDriverMode;
+        this.inDriverModule = inDriverModule;
         this.inflater = LayoutInflater.from(context);
     }
 
@@ -100,7 +100,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
         if(position == chats.size() + 1 && position < loadChatItemPosition && additionalItemCount == 2) {
             String profileImg = passengerProfileImg;
 
-            if(inDriverMode) {
+            if(inDriverModule) {
                 endPointLayout.setVisibility(View.VISIBLE);
 
                 try {
@@ -134,7 +134,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
         else if(position == chats.size() && position < loadChatItemPosition) {
             String profileImg = driverProfileImg;
 
-            if(inDriverMode) {
+            if(inDriverModule) {
                 startPointLayout.setVisibility(View.VISIBLE);
 
                 try {

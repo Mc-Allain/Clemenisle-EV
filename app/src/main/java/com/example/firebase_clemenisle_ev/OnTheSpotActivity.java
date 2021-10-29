@@ -101,7 +101,7 @@ public class OnTheSpotActivity extends AppCompatActivity {
 
     String userId, driverUserId, taskDriverUserId;
 
-    boolean isLoggedIn = false, inDriverMode = false;
+    boolean isLoggedIn = false, inDriverModule = false;
 
     DatabaseReference bookingListRef;
 
@@ -224,8 +224,8 @@ public class OnTheSpotActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         bookingId = intent.getStringExtra("bookingId");
-        inDriverMode = intent.getBooleanExtra("inDriverMode", false);
-        if(inDriverMode)  status = intent.getStringExtra("status");
+        inDriverModule = intent.getBooleanExtra("inDriverModule", false);
+        if(inDriverModule)  status = intent.getStringExtra("status");
 
         isOnScreen = true;
 
@@ -239,7 +239,7 @@ public class OnTheSpotActivity extends AppCompatActivity {
             firebaseUser = firebaseAuth.getCurrentUser();
             if(firebaseUser != null) {
                 firebaseUser.reload();
-                if(inDriverMode) {
+                if(inDriverModule) {
                     driverUserId = firebaseUser.getUid();
                     userId = intent.getStringExtra("userId");
                     isScanning = intent.getBooleanExtra("isScanning", false);
@@ -335,7 +335,7 @@ public class OnTheSpotActivity extends AppCompatActivity {
                     }
                 }
 
-                if(inDriverMode) {
+                if(inDriverModule) {
                     driverInfoLayout.setVisibility(View.GONE);
                     userInfoLayout.setVisibility(View.VISIBLE);
 
@@ -369,7 +369,7 @@ public class OnTheSpotActivity extends AppCompatActivity {
         Intent intent = new Intent(myContext, ChatActivity.class);
         intent.putExtra("bookingId", bookingId);
         intent.putExtra("schedule", schedule);
-        intent.putExtra("inDriverMode", inDriverMode);
+        intent.putExtra("inDriverModule", inDriverModule);
         myContext.startActivity(intent);
     }
 
@@ -719,9 +719,7 @@ public class OnTheSpotActivity extends AppCompatActivity {
                 child(booking.getId());
         taskListRef.setValue(driverTask).addOnCompleteListener(task -> {
             if(task.isSuccessful()) {
-                bookingListRef.child("notify").setValue(true);
-                bookingListRef.child("notificationTimestamp").
-                        setValue(new DateTimeToString().getDateAndTime());
+                bookingListRef.child("notified").setValue(false);
 
                 if(fromRequest) {
                     bookingListRef.child("chats").removeValue().
@@ -873,7 +871,7 @@ public class OnTheSpotActivity extends AppCompatActivity {
                 color = myResources.getColor(R.color.orange);
                 backgroundDrawable = myResources.getDrawable(R.color.orange);
 
-                if(!inDriverMode) {
+                if(!inDriverModule) {
                     buttonLayout.setVisibility(View.VISIBLE);
                     if (isShowBookingAlertEnabled) dialog.show();
                 }
@@ -884,7 +882,7 @@ public class OnTheSpotActivity extends AppCompatActivity {
                 color = myResources.getColor(R.color.green);
                 backgroundDrawable = myResources.getDrawable(R.color.green);
 
-                if(isShowBookingAlertEnabled && !inDriverMode) dialog.show();
+                if(isShowBookingAlertEnabled && !inDriverModule) dialog.show();
 
                 break;
             case "Completed":
@@ -1004,14 +1002,14 @@ public class OnTheSpotActivity extends AppCompatActivity {
                             new LatLng(booking.getOriginLat(), booking.getOriginLng());
 
                     schedule = booking.getSchedule();
-                    if(!inDriverMode) status = booking.getStatus();
+                    if(!inDriverModule) status = booking.getStatus();
                     message = booking.getMessage();
 
                     typeName = booking.getBookingType().getName();
                     price = String.valueOf(booking.getBookingType().getPrice());
                     if(price.split("\\.")[1].length() == 1) price += 0;
 
-                    if(!inDriverMode) startTimer(booking);
+                    if(!inDriverModule) startTimer(booking);
                     finishLoading();
                 }
                 else errorLoading(defaultLogText);

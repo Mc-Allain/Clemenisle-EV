@@ -368,6 +368,12 @@ public class LoginFragment extends Fragment {
                                 intent.putExtra("password", password);
                                 startActivity(intent);
                                 ((Activity) myContext).finishAffinity();
+
+                                Toast.makeText(
+                                        myContext,
+                                        "You are logged in using " + firebaseUser.getEmail(),
+                                        Toast.LENGTH_LONG
+                                ).show();
                             }
                             else {
                                 setScreenEnabled(true);
@@ -376,7 +382,7 @@ public class LoginFragment extends Fragment {
                                 Intent intent = new Intent(myContext, PostRegisterActivity.class);
                                 intent.putExtra("emailAddress", emailAddress);
                                 intent.putExtra("password", password);
-                                intent.putExtra("remember", cbRemember.isChecked());
+                                intent.putExtra("isRemembered", cbRemember.isChecked());
                                 intent.putExtra("success", false);
                                 intent.putExtra("fromRegister", false);
                                 startActivity(intent);
@@ -426,11 +432,7 @@ public class LoginFragment extends Fragment {
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
         editor.putBoolean("isLoggedIn", true);
-        editor.putBoolean("remember", cbRemember.isChecked());
-        if(cbRemember.isChecked()) {
-            editor.putString("emailAddress", emailAddress);
-            editor.putString("password", password);
-        }
+        editor.putBoolean("isRemembered", cbRemember.isChecked());
         editor.apply();
     }
 

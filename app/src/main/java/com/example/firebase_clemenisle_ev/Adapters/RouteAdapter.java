@@ -37,7 +37,7 @@ public class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.ViewHolder> 
     boolean isLatest;
     LayoutInflater inflater;
 
-    boolean isLoggedIn, inDriverMode;
+    boolean isLoggedIn, inDriverModule;
     String userId;
 
     Context myContext;
@@ -54,14 +54,14 @@ public class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.ViewHolder> 
     }
 
     public RouteAdapter(Context context, List<Route> routeList, int columnCount, String bookingId,
-                        String status, boolean isLatest, boolean isLoggedIn, boolean inDriverMode) {
+                        String status, boolean isLatest, boolean isLoggedIn, boolean inDriverModule) {
         this.routeList = routeList;
         this.columnCount = columnCount;
         this.bookingId = bookingId;
         this.status = status;
         this.isLatest = isLatest;
         this.isLoggedIn = isLoggedIn;
-        this.inDriverMode = inDriverMode;
+        this.inDriverModule = inDriverModule;
         this.inflater =  LayoutInflater.from(context);
     }
 
@@ -121,7 +121,7 @@ public class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.ViewHolder> 
 
         ConstraintLayout.LayoutParams layoutParams =
                 (ConstraintLayout.LayoutParams) routeThumbnail.getLayoutParams();
-        if(!status.equals("Completed") || inDriverMode) {
+        if(!status.equals("Completed") || inDriverModule) {
             visitButton.setVisibility(View.GONE);
             layoutParams.setMargins(layoutParams.leftMargin, layoutParams.topMargin,
                     layoutParams.rightMargin, dpToPx(8));

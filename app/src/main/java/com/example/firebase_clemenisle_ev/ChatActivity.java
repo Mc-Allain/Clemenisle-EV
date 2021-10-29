@@ -64,7 +64,7 @@ public class ChatActivity extends AppCompatActivity {
 
     String bookingId, userId, passengerUserId, driverUserId, passengerProfileImg,
             driverProfileImg, driverFullName, initialMessage;
-    boolean isLoggedIn = false, inDriverMode = false;
+    boolean isLoggedIn = false, inDriverModule = false;
 
     ChatAdapter chatAdapter;
     List<Chat> chats = new ArrayList<>();
@@ -85,14 +85,11 @@ public class ChatActivity extends AppCompatActivity {
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
         editor.putBoolean("isLoggedIn", false);
-        editor.putBoolean("remember", false);
-        editor.putString("emailAddress", null);
-        editor.putString("password", null);
+        editor.putBoolean("isRemembered", false);
         editor.apply();
     }
 
     @Override
-    @SuppressWarnings("deprecation")
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
@@ -119,7 +116,7 @@ public class ChatActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         bookingId = intent.getStringExtra("bookingId");
-        inDriverMode = intent.getBooleanExtra("inDriverMode", false);
+        inDriverModule = intent.getBooleanExtra("inDriverModule", false);
 
         sendImage.setEnabled(false);
         sendImage.getDrawable().setTint(colorInitial);
@@ -139,7 +136,7 @@ public class ChatActivity extends AppCompatActivity {
                 ).show();
             }
             else {
-                if(inDriverMode) driverUserId = firebaseUser.getUid();
+                if(inDriverModule) driverUserId = firebaseUser.getUid();
                 else passengerUserId = firebaseUser.getUid();
                 userId = firebaseUser.getUid();
             }
@@ -147,13 +144,10 @@ public class ChatActivity extends AppCompatActivity {
 
         getUsers();
 
-        if(inDriverMode) getUserInfo();
-        else getDriverInfo();
-
         LinearLayoutManager linearLayout =
                 new LinearLayoutManager(myContext, LinearLayoutManager.VERTICAL, true);
         chatView.setLayoutManager(linearLayout);
-        chatAdapter = new ChatAdapter(myContext, chats, userId, inDriverMode);
+        chatAdapter = new ChatAdapter(myContext, chats, userId, inDriverModule);
         chatView.setAdapter(chatAdapter);
 
         etMessage.addTextChangedListener(new TextWatcher() {
@@ -202,16 +196,8 @@ public class ChatActivity extends AppCompatActivity {
 
         bookingListRef.child("chats").child(chatId).setValue(chat);
 
-        if(inDriverMode) {
-            bookingListRef.child("notify").setValue(true);
-            bookingListRef.child("notificationTimestamp").
-                    setValue(new DateTimeToString().getDateAndTime());
-        }
-        else {
-            taskListRef.child("notify").setValue(true);
-            taskListRef.child("notificationTimestamp").
-                    setValue(new DateTimeToString().getDateAndTime());
-        }
+        if(inDriverModule) bookingListRef.child("notified").setValue(false);
+        else taskListRef.child("notified").setValue(false);
     }
 
     private void getUsers() {
@@ -310,42 +296,6 @@ public class ChatActivity extends AppCompatActivity {
                         error.toString(),
                         Toast.LENGTH_LONG
                 ).show();
-            }
-        });
-    }
-
-    private void getDriverInfo() {
-        usersRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if(snapshot.exists()) {
-                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                        User thisUser = new User(dataSnapshot);
-
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-            }
-        });
-    }
-
-    private void getUserInfo() {
-        usersRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if(snapshot.exists()) {
-                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                        User thisUser = new User(dataSnapshot);
-
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
             }
         });
     }

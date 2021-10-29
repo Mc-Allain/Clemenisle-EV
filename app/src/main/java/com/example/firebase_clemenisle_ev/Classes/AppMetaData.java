@@ -3,22 +3,24 @@ package com.example.firebase_clemenisle_ev.Classes;
 public class AppMetaData {
 
     String aboutApp,
-            newlyAddedFeatures = "• Notification Added\n" +
-                    "• Comment System Added\n" +
-                    "• Application Status Alert Added\n" +
-                    "• Application Update Alert Added\n" +
-                    "• Update Notes Added\n" +
-                    "• Profile Image Added\n" +
-                    "• Booking Alert Dialog Added\n" +
-                    "• Help Section Added\n" +
-                    "• Preference Section Added\n" +
-                    "• On The Spot(Single Spot) Service Added\n" +
-                    "• Driver's Module Added\n" +
-                    "• Booking Chat Added\n" +
-                    "• Pass Task Added";
+            newlyAddedFeatures = "● Notification Added\n" +
+                    "● Comment System Added\n" +
+                    "● Application Status Alert Added\n" +
+                    "● Application Update Alert Added\n" +
+                    "● Update Notes Added\n" +
+                    "● Profile Image Added\n" +
+                    "● Booking Alert Dialog Added\n" +
+                    "● Help Section Added\n" +
+                    "● Preference Section Added\n" +
+                    "● On The Spot(Single Spot) Service Added\n" +
+                    "● Driver's Module Added\n" +
+                    "\t○ Booking Chat Added\n" +
+                    "\t○ Pass Task Added\n" +
+                    "\t○ Stop Request Added\n" +
+                    "\t○ Chat Notification Added";
     double currentVersion = 0.3, latestVersion = 0;
     String status;
-    boolean isDeveloper = false;
+    boolean isDeveloper = true;
 
     public AppMetaData() {
     }

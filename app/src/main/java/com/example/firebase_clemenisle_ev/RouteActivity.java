@@ -94,7 +94,7 @@ public class RouteActivity extends AppCompatActivity implements
 
     String userId, driverUserId, taskDriverUserId;
 
-    boolean isLoggedIn = false, inDriverMode = false, isScanning;
+    boolean isLoggedIn = false, inDriverModule = false, isScanning;
 
     DatabaseReference bookingListRef;
 
@@ -201,9 +201,9 @@ public class RouteActivity extends AppCompatActivity implements
 
         Intent intent = getIntent();
         bookingId = intent.getStringExtra("bookingId");
-        inDriverMode = intent.getBooleanExtra("inDriverMode", false);
+        inDriverModule = intent.getBooleanExtra("inDriverModule", false);
         isLatest = intent.getBooleanExtra("isLatest", false);
-        if(!inDriverMode) prevStatus = intent.getStringExtra("status");
+        if(!inDriverModule) prevStatus = intent.getStringExtra("status");
         else status = intent.getStringExtra("status");
 
         isOnScreen = true;
@@ -218,7 +218,7 @@ public class RouteActivity extends AppCompatActivity implements
             firebaseUser = firebaseAuth.getCurrentUser();
             if(firebaseUser != null) {
                 firebaseUser.reload();
-                if(inDriverMode) {
+                if(inDriverModule) {
                     driverUserId = firebaseUser.getUid();
                     userId = intent.getStringExtra("userId");
                     isScanning = intent.getBooleanExtra("isScanning", false);
@@ -233,7 +233,7 @@ public class RouteActivity extends AppCompatActivity implements
                 new GridLayoutManager(myContext, columnCount, GridLayoutManager.VERTICAL, false);
         routeView.setLayoutManager(gridLayoutManager);
         routeAdapter = new RouteAdapter(myContext, routeList, columnCount, bookingId, status,
-                isLatest, isLoggedIn, inDriverMode);
+                isLatest, isLoggedIn, inDriverModule);
         routeView.setAdapter(routeAdapter);
         routeAdapter.setOnVisitClickListener(this);
 
@@ -323,7 +323,7 @@ public class RouteActivity extends AppCompatActivity implements
                     }
                 }
 
-                if(inDriverMode) {
+                if(inDriverModule) {
                     driverInfoLayout.setVisibility(View.GONE);
                     userInfoLayout.setVisibility(View.VISIBLE);
 
@@ -357,7 +357,7 @@ public class RouteActivity extends AppCompatActivity implements
         Intent intent = new Intent(myContext, ChatActivity.class);
         intent.putExtra("bookingId", bookingId);
         intent.putExtra("schedule", schedule);
-        intent.putExtra("inDriverMode", inDriverMode);
+        intent.putExtra("inDriverModule", inDriverModule);
         myContext.startActivity(intent);
     }
 
@@ -588,9 +588,7 @@ public class RouteActivity extends AppCompatActivity implements
                 child(booking.getId());
         taskListRef.setValue(driverTask).addOnCompleteListener(task -> {
             if(task.isSuccessful()) {
-                bookingListRef.child("notify").setValue(true);
-                bookingListRef.child("notificationTimestamp").
-                        setValue(new DateTimeToString().getDateAndTime());
+                bookingListRef.child("notified").setValue(false);
 
                 if(fromRequest) {
                     bookingListRef.child("chats").removeValue().
@@ -776,7 +774,7 @@ public class RouteActivity extends AppCompatActivity implements
                 color = myResources.getColor(R.color.orange);
                 backgroundDrawable = myResources.getDrawable(R.color.orange);
 
-                if(!inDriverMode) {
+                if(!inDriverModule) {
                     buttonLayout.setVisibility(View.VISIBLE);
                     cancelButton.setVisibility(View.VISIBLE);
                     if(isShowBookingAlertEnabled) dialog.show();
@@ -788,7 +786,7 @@ public class RouteActivity extends AppCompatActivity implements
                 color = myResources.getColor(R.color.green);
                 backgroundDrawable = myResources.getDrawable(R.color.green);
 
-                if(!inDriverMode) {
+                if(!inDriverModule) {
                     buttonLayout.setVisibility(View.VISIBLE);
                     cancelButton.setVisibility(View.GONE);
                     if(isShowBookingAlertEnabled) dialog.show();
@@ -798,7 +796,7 @@ public class RouteActivity extends AppCompatActivity implements
                 color = myResources.getColor(R.color.blue);
                 backgroundDrawable = myResources.getDrawable(R.color.blue);
 
-                if(!inDriverMode) {
+                if(!inDriverModule) {
                     if(!prevStatus.equals(status) &&
                             prevStatus.equals("Booked")) {
                         isLatest = true;
@@ -813,7 +811,7 @@ public class RouteActivity extends AppCompatActivity implements
                 break;
         }
 
-        if(!inDriverMode) {
+        if(!inDriverModule) {
             prevStatus = status;
 
             if(!status.equals("Completed")) {
@@ -921,7 +919,7 @@ public class RouteActivity extends AppCompatActivity implements
                     endStationName = endStation.getName();
 
                     schedule = booking.getSchedule();
-                    if(!inDriverMode) status = booking.getStatus();
+                    if(!inDriverModule) status = booking.getStatus();
                     message = booking.getMessage();
 
                     typeName = booking.getBookingType().getName();

@@ -86,7 +86,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
     String locateOriginLocationText = "Locate Origin Location",
             locateDestinationSpotText = "Locate Destination Spot";
 
-    boolean inDriverMode = false;
+    boolean inDriverModule = false;
 
     Dialog qrCodeDialog;
     ImageView qrCodeDialogCloseImage, qrCodeImage;
@@ -95,8 +95,8 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
 
     String taskDriverUserId;
 
-    public void setInDriverMode(boolean inDriverMode) {
-        this.inDriverMode = inDriverMode;
+    public void setInDriverMode(boolean inDriverModule) {
+        this.inDriverModule = inDriverModule;
         notifyDataSetChanged();
     }
 
@@ -112,9 +112,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
         editor.putBoolean("isLoggedIn", false);
-        editor.putBoolean("remember", false);
-        editor.putString("emailAddress", null);
-        editor.putString("password", null);
+        editor.putBoolean("isRemembered", false);
         editor.apply();
     }
 
@@ -364,7 +362,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                     }
                 }
 
-                if(inDriverMode) {
+                if(inDriverModule) {
                     driverInfoLayout.setVisibility(View.GONE);
                     userInfoLayout.setVisibility(View.VISIBLE);
 
@@ -407,10 +405,10 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
         });
     }
 
-    private void openChat(boolean inDriverMode, String bookingId) {
+    private void openChat(boolean inDriverModule, String bookingId) {
         Intent intent = new Intent(myContext, ChatActivity.class);
         intent.putExtra("bookingId", bookingId);
-        intent.putExtra("inDriverMode", inDriverMode);
+        intent.putExtra("inDriverModule", inDriverModule);
         myContext.startActivity(intent);
     }
 
@@ -529,8 +527,8 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
             intent = new Intent(myContext, RouteActivity.class);
 
         intent.putExtra("bookingId", booking.getId());
-        intent.putExtra("inDriverMode", inDriverMode);
-        if(inDriverMode) {
+        intent.putExtra("inDriverModule", inDriverModule);
+        if(inDriverModule) {
             intent.putExtra("isScanning", isScanning);
             intent.putExtra("status", booking.getStatus());
             getPassengerUserId(booking.getId(), intent);
@@ -735,9 +733,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                 child(booking.getId());
         taskListRef.setValue(driverTask).addOnCompleteListener(task -> {
             if(task.isSuccessful()) {
-                bookingListRef.child("notify").setValue(true);
-                bookingListRef.child("notificationTimestamp").
-                        setValue(new DateTimeToString().getDateAndTime());
+                bookingListRef.child("notified").setValue(false);
 
                 if(fromRequest) {
                     bookingListRef.child("chats").removeValue().

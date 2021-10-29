@@ -501,7 +501,7 @@ public class RegisterFragment extends Fragment {
         intent = new Intent(myContext, PostRegisterActivity.class);
         intent.putExtra("emailAddress", emailAddress);
         intent.putExtra("password", password);
-        intent.putExtra("remember", false);
+        intent.putExtra("isRemembered", false);
         intent.putExtra("success", success);
         intent.putExtra("fromRegister", true);
 

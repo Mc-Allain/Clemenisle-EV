@@ -19,6 +19,8 @@ import com.example.firebase_clemenisle_ev.HelpActivity;
 import com.example.firebase_clemenisle_ev.MainActivity;
 import com.example.firebase_clemenisle_ev.PreferenceActivity;
 import com.example.firebase_clemenisle_ev.R;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.List;
 
@@ -27,6 +29,8 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHolder> {
+    FirebaseAuth firebaseAuth;
+    FirebaseUser firebaseUser;
 
     List<Setting> settings;
     LayoutInflater inflater;
@@ -37,15 +41,20 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
     long logoutPressedTime;
     Toast logoutToast;
 
+    boolean isLoggedIn = false;
+
+    private void initSharedPreferences() {
+        SharedPreferences sharedPreferences = myContext.getSharedPreferences("login", Context.MODE_PRIVATE);
+        isLoggedIn = sharedPreferences.getBoolean("isLoggedIn", false);
+    }
+
     private void sendLoginPreferences() {
         SharedPreferences sharedPreferences = myContext.getSharedPreferences(
                 "login", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
         editor.putBoolean("isLoggedIn", false);
-        editor.putBoolean("remember", false);
-        editor.putString("emailAddress", null);
-        editor.putString("password", null);
+        editor.putBoolean("isRemembered", false);
         editor.putBoolean("inDriverModule", false);
 
         editor.apply();
@@ -57,7 +66,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
         editor.putBoolean("inDriverModule", value);
-        editor.putBoolean("remember", true);
+        editor.putBoolean("isRemembered", true);
         editor.apply();
     }
 
@@ -82,8 +91,26 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
         myContext = inflater.getContext();
         myResources = myContext.getResources();
 
+        initSharedPreferences();
+
         int colorRed = myResources.getColor(R.color.red);
         int colorBlack = myResources.getColor(R.color.black);
+
+        firebaseAuth = FirebaseAuth.getInstance();
+        if(isLoggedIn) {
+            firebaseUser = firebaseAuth.getCurrentUser();
+            if(firebaseUser != null) firebaseUser.reload();
+            if(firebaseUser == null) {
+                firebaseAuth.signOut();
+                sendLoginPreferences();
+
+                Toast.makeText(
+                        myContext,
+                        "Failed to get the current user",
+                        Toast.LENGTH_LONG
+                ).show();
+            }
+        }
 
         int settingIcon = settings.get(position).getSettingIcon();
         String settingName = settings.get(position).getSettingName();
@@ -149,6 +176,12 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
                 }
                 case "Driver Module": {
                     sendDriverModePreferences(true);
+
+                    Toast.makeText(
+                            myContext,
+                            "You accessed the Driver Module using " + firebaseUser.getEmail(),
+                            Toast.LENGTH_LONG
+                    ).show();
 
                     Intent intent = new Intent(myContext, DriverActivity.class);
                     myContext.startActivity(intent);
