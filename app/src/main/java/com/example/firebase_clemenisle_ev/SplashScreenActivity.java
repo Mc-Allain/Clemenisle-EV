@@ -117,26 +117,29 @@ public class SplashScreenActivity extends AppCompatActivity {
                     intent = new Intent(myContext, AppStatusActivity.class);
                     intent.putExtra("isErrorStatus", false);
                 }
-                else if(inDriverModule) intent = new Intent(myContext, DriverActivity.class);
-                else intent = new Intent(myContext, MainActivity.class);
+                else {
+                    if(inDriverModule) {
+                        Toast.makeText(
+                                myContext,
+                                "You accessed the Driver Module using " + firebaseUser.getEmail(),
+                                Toast.LENGTH_LONG
+                        ).show();
+
+                        intent = new Intent(myContext, DriverActivity.class);
+                    }
+                    else {
+                        Toast.makeText(
+                                myContext,
+                                "You are logged in using " + firebaseUser.getEmail(),
+                                Toast.LENGTH_LONG
+                        ).show();
+
+                        intent = new Intent(myContext, MainActivity.class);
+                    }
+                }
 
                 startActivity(intent);
                 finishAffinity();
-
-                if(inDriverModule) {
-                    Toast.makeText(
-                            myContext,
-                            "You accessed the Driver Module using " + firebaseUser.getEmail(),
-                            Toast.LENGTH_LONG
-                    ).show();
-                }
-                else {
-                    Toast.makeText(
-                            myContext,
-                            "You are logged in using " + firebaseUser.getEmail(),
-                            Toast.LENGTH_LONG
-                    ).show();
-                }
             }
 
             @Override

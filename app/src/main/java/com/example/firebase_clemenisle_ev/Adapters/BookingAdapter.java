@@ -200,7 +200,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
         Drawable backgroundDrawable = resources.getDrawable(R.color.blue);
 
         switch (status) {
-            case "Processing":
+            case "Pending":
                 color = resources.getColor(R.color.orange);
                 backgroundDrawable = resources.getDrawable(R.color.orange);
                 break;
@@ -583,7 +583,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                     catch (Exception ignored) {}
 
                     switch (status) {
-                        case "Processing":
+                        case "Pending":
                             tvChat.setVisibility(View.GONE);
                             chatImage.setVisibility(View.GONE);
 

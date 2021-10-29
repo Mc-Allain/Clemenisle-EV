@@ -158,7 +158,7 @@ public class BookingTypeAdapter extends RecyclerView.Adapter<BookingTypeAdapter.
                                 String status = booking.getStatus();
 
                                 if(bookingType.getId().equals("BT99") &&
-                                        (status.equals("Processing") || status.equals("Booked"))) {
+                                        (status.equals("Pending") || status.equals("Booked"))) {
                                     backgroundLayout.setBackgroundColor(colorWhite);
                                     tvTypeName.setTextColor(colorInitial);
                                     tvPrice.setTextColor(colorInitial);

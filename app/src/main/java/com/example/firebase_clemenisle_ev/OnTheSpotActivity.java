@@ -510,7 +510,7 @@ public class OnTheSpotActivity extends AppCompatActivity {
                     catch (Exception ignored) {}
 
                     switch (status) {
-                        case "Processing":
+                        case "Pending":
                             tvChat.setVisibility(View.GONE);
                             chatImage.setVisibility(View.GONE);
 
@@ -867,7 +867,7 @@ public class OnTheSpotActivity extends AppCompatActivity {
         buttonLayout.setVisibility(View.GONE);
 
         switch (status) {
-            case "Processing":
+            case "Pending":
                 color = myResources.getColor(R.color.orange);
                 backgroundDrawable = myResources.getDrawable(R.color.orange);
 

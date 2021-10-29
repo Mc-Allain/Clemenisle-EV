@@ -45,11 +45,11 @@ public class PendingListFragment extends Fragment {
     Context myContext;
     Resources myResources;
 
-    String defaultLogText = "No Available Booking Record";
+    String defaultLogText = "No Pending Booking Record";
 
     BookingAdapter bookingAdapter;
 
-    List<Booking> processingBookingList = new ArrayList<>(),
+    List<Booking> pendingBookingList = new ArrayList<>(),
             isNotOnTheSpotBookingList = new ArrayList<>(),
             isNotPaidBookingList = new ArrayList<>();
 
@@ -74,22 +74,22 @@ public class PendingListFragment extends Fragment {
 
         LinearLayoutManager linearLayout1 = new LinearLayoutManager(myContext, LinearLayoutManager.VERTICAL, false);
         bookingView.setLayoutManager(linearLayout1);
-        bookingAdapter = new BookingAdapter(myContext, processingBookingList);
+        bookingAdapter = new BookingAdapter(myContext, pendingBookingList);
         bookingView.setAdapter(bookingAdapter);
 
-        getProcessingBooking();
+        getPendingBooking();
 
         return view;
     }
 
-    private void getProcessingBooking() {
+    private void getPendingBooking() {
         progressBar.setVisibility(View.VISIBLE);
 
         DatabaseReference usersRef = firebaseDatabase.getReference("users");
         usersRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                processingBookingList.clear();
+                pendingBookingList.clear();
                 isNotOnTheSpotBookingList.clear();
                 isNotPaidBookingList.clear();
 
@@ -99,9 +99,9 @@ public class PendingListFragment extends Fragment {
                         List<Booking> bookingList = user.getBookingList();
 
                         for(Booking booking : bookingList) {
-                            if(booking.getStatus().equals("Processing"))
+                            if(booking.getStatus().equals("Pending"))
                                 if(booking.getBookingType().getId().equals("BT99"))
-                                    processingBookingList.add(booking);
+                                    pendingBookingList.add(booking);
                                 else if(booking.isPaid()) isNotOnTheSpotBookingList.add(booking);
                                 else isNotPaidBookingList.add(booking);
                         }
@@ -114,13 +114,13 @@ public class PendingListFragment extends Fragment {
                 Collections.sort(isNotOnTheSpotBookingList, (booking, t1) ->
                         booking.getId().compareToIgnoreCase(t1.getId()));
 
-                Collections.sort(processingBookingList, (booking, t1) ->
+                Collections.sort(pendingBookingList, (booking, t1) ->
                         booking.getId().compareToIgnoreCase(t1.getId()));
 
-                processingBookingList.addAll(isNotOnTheSpotBookingList);
-                processingBookingList.addAll(isNotPaidBookingList);
+                pendingBookingList.addAll(isNotOnTheSpotBookingList);
+                pendingBookingList.addAll(isNotPaidBookingList);
 
-                if(processingBookingList.size() > 0) finishLoading();
+                if(pendingBookingList.size() > 0) finishLoading();
                 else errorLoading(defaultLogText);
             }
 
@@ -147,7 +147,7 @@ public class PendingListFragment extends Fragment {
     }
 
     private void errorLoading(String error) {
-        processingBookingList.clear();
+        pendingBookingList.clear();
         isNotOnTheSpotBookingList.clear();
         isNotPaidBookingList.clear();
         bookingAdapter.notifyDataSetChanged();

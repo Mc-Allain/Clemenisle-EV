@@ -51,9 +51,9 @@ public class LoggedInBookingListFragment extends Fragment {
     ConstraintLayout constraintLayout,
             constraintLayout1, constraintLayout2, constraintLayout3, constraintLayout4, constraintLayout5;
 
-    RecyclerView processingView, bookedView, completedView, cancelledView, failedView;
+    RecyclerView pendingView, bookedView, completedView, cancelledView, failedView;
     ConstraintLayout statusLayout1, statusLayout2, statusLayout3, statusLayout4, statusLayout5;
-    ImageView processingArrow, bookedArrow, completedArrow, cancelledArrow, failedArrow, reloadImage;
+    ImageView pendingArrow, bookedArrow, completedArrow, cancelledArrow, failedArrow, reloadImage;
     TextView badgeText1, badgeText2, badgeText3, badgeText4, badgeText5;
 
     ProgressBar progressBar;
@@ -107,9 +107,9 @@ public class LoggedInBookingListFragment extends Fragment {
         constraintLayout4 = view.findViewById(R.id.constraintLayout4);
         constraintLayout5 = view.findViewById(R.id.constraintLayout5);
 
-        processingView = view.findViewById(R.id.processingView);
+        pendingView = view.findViewById(R.id.pendingView);
         statusLayout1 = view.findViewById(R.id.statusLayout1);
-        processingArrow = view.findViewById(R.id.processingArrowImage);
+        pendingArrow = view.findViewById(R.id.pendingArrowImage);
         badgeText1 = view.findViewById(R.id.tvBadge1);
 
         bookedView = view.findViewById(R.id.bookedView);
@@ -166,9 +166,9 @@ public class LoggedInBookingListFragment extends Fragment {
         catch (Exception ignored) {}
 
         LinearLayoutManager linearLayout1 = new LinearLayoutManager(myContext, LinearLayoutManager.VERTICAL, false);
-        processingView.setLayoutManager(linearLayout1);
+        pendingView.setLayoutManager(linearLayout1);
         adapter1 = new BookingAdapter(myContext, bookingList1);
-        processingView.setAdapter(adapter1);
+        pendingView.setAdapter(adapter1);
 
         LinearLayoutManager linearLayout2 = new LinearLayoutManager(myContext, LinearLayoutManager.VERTICAL, false);
         bookedView.setLayoutManager(linearLayout2);
@@ -193,14 +193,14 @@ public class LoggedInBookingListFragment extends Fragment {
         getBookings();
 
         statusLayout1.setOnClickListener(view1 -> {
-            if(processingView.getVisibility() == View.VISIBLE) {
+            if(pendingView.getVisibility() == View.VISIBLE) {
                 setViewsToGone();
                 resetConstraint();
             }
             else {
                 setViewsToGone();
-                processingView.setVisibility(View.VISIBLE);
-                processingArrow.setImageResource(R.drawable.ic_baseline_expand_less_24);
+                pendingView.setVisibility(View.VISIBLE);
+                pendingArrow.setImageResource(R.drawable.ic_baseline_expand_less_24);
 
                 clickedIndex = 1;
                 resetConstraint();
@@ -388,13 +388,13 @@ public class LoggedInBookingListFragment extends Fragment {
     private void setViewsToGone() {
         clickedIndex = 0;
 
-        processingView.setVisibility(View.GONE);
+        pendingView.setVisibility(View.GONE);
         bookedView.setVisibility(View.GONE);
         completedView.setVisibility(View.GONE);
         cancelledView.setVisibility(View.GONE);
         failedView.setVisibility(View.GONE);
 
-        processingArrow.setImageResource(R.drawable.ic_baseline_expand_more_24);
+        pendingArrow.setImageResource(R.drawable.ic_baseline_expand_more_24);
         bookedArrow.setImageResource(R.drawable.ic_baseline_expand_more_24);
         completedArrow.setImageResource(R.drawable.ic_baseline_expand_more_24);
         cancelledArrow.setImageResource(R.drawable.ic_baseline_expand_more_24);
@@ -404,7 +404,7 @@ public class LoggedInBookingListFragment extends Fragment {
     private void setViewsToVisible() {
         switch (clickedIndex) {
             case 1:
-                processingView.setVisibility(View.VISIBLE);
+                pendingView.setVisibility(View.VISIBLE);
                 break;
             case 2:
                 bookedView.setVisibility(View.VISIBLE);
@@ -442,7 +442,7 @@ public class LoggedInBookingListFragment extends Fragment {
         setScreenEnabled(false);
 
         Query booking1Query = usersRef.child(userId).child("bookingList").
-                orderByChild("status").equalTo("Processing");
+                orderByChild("status").equalTo("Pending");
 
         success1 = false;
         booking1Query.addValueEventListener(new ValueEventListener() {

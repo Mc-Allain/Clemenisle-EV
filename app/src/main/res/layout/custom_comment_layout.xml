@@ -291,7 +291,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/tvUserFullName"
                 app:layout_constraintTop_toBottomOf="@id/tvCommentStatus"
-                app:maxCollapsedLines="1">
+                app:maxCollapsedLines="3">
 
                 <TextView
                     android:id="@id/expandable_text"

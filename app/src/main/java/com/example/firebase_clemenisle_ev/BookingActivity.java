@@ -1827,7 +1827,7 @@ public class BookingActivity extends AppCompatActivity implements
         Booking booking =
                 new Booking(bookingType, onTheSpot, currentLocation.latitude,
                         currentLocation.longitude, bookingId, message, bookingScheduleText,
-                        new DateTimeToString().getDateAndTime(), "Processing");
+                        new DateTimeToString().getDateAndTime(), "Pending");
 
         DatabaseReference bookingListRef = firebaseDatabase.getReference("users")
                 .child(userId).child("bookingList").child(bookingId);
@@ -1880,7 +1880,7 @@ public class BookingActivity extends AppCompatActivity implements
         Booking booking =
                 new Booking(bookingType, endStation, bookingId, message,
                         bookingScheduleText, new DateTimeToString().getDateAndTime(),
-                        false, station, "Processing");
+                        false, station, "Pending");
 
         DatabaseReference bookingListRef = firebaseDatabase.getReference("users")
                 .child(userId).child("bookingList").child(bookingId);

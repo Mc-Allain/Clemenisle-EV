@@ -481,7 +481,7 @@ public class MainActivity extends AppCompatActivity {
                 else minDifference = 0;
             }
 
-            setBookingStatusFromProcessingToFailed(booking, hrDifference, minDifference);
+            setBookingStatusFromPendingToFailed(booking, hrDifference, minDifference);
             setOnTheSpotBookingStatusToFailed(booking, hrDifference, minDifference);
 
             if(booking.getStatus().equals("Booked")) {
@@ -527,8 +527,8 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void setBookingStatusFromProcessingToFailed(Booking booking, int hrDifference, int minDifference) {
-        if(booking.getStatus().equals("Processing") &&
+    private void setBookingStatusFromPendingToFailed(Booking booking, int hrDifference, int minDifference) {
+        if(booking.getStatus().equals("Pending") &&
                 !booking.getBookingType().getId().equals("BT99") &&
                 (hrDifference < 0 || (hrDifference == 0 && minDifference == 0))) {
             setBookingStatusToFailed(booking.getId());
@@ -537,7 +537,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setOnTheSpotBookingStatusToFailed(Booking booking, int hrDifference, int minDifference) {
-        if(booking.getStatus().equals("Processing") &&
+        if(booking.getStatus().equals("Pending") &&
                 booking.getBookingType().getId().equals("BT99") &&
                 (hrDifference < -1 || (hrDifference == -1 && minDifference <= 50))) {
             setBookingStatusToFailed(booking.getId());
@@ -591,7 +591,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void getBooking() {
         Query booking1Query = usersRef.child(userId).child("bookingList")
-                .orderByChild("status").equalTo("Processing");
+                .orderByChild("status").equalTo("Pending");
 
         booking1Query.addValueEventListener(new ValueEventListener() {
             @Override
