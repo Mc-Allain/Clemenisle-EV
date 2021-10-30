@@ -367,8 +367,11 @@ public class DriverActivity extends AppCompatActivity {
                 showUpcomingBookingNotification(booking, hrDifference, "hours");
             }
             else if(hrDifference % 24 == 0) {
-                if((minArray.contains(String.valueOf(minDifference)) || minDifference == 0) && sec < 5)
-                    showUpcomingBookingNotification(booking, hrDifference/24, "day");
+                if((minArray.contains(String.valueOf(minDifference)) || minDifference == 0) && sec < 5) {
+                    int day = hrDifference/24;
+                    if(day == 1) showUpcomingBookingNotification(booking, day, "day");
+                    else showUpcomingBookingNotification(booking, day, "days");
+                }
             }
         }
     }

@@ -456,6 +456,8 @@ public class RouteActivity extends AppCompatActivity implements
 
                             tvPass.setVisibility(View.GONE);
                             passImage.setVisibility(View.GONE);
+                            tvStop.setVisibility(View.GONE);
+                            stopImage.setVisibility(View.GONE);
                             tvCheck.setVisibility(View.GONE);
                             checkImage.setVisibility(View.GONE);
                             break;
@@ -474,6 +476,8 @@ public class RouteActivity extends AppCompatActivity implements
                             tvPass.setOnClickListener(view -> passTask(booking));
                             passImage.setOnClickListener(view -> passTask(booking));
 
+                            tvStop.setVisibility(View.GONE);
+                            stopImage.setVisibility(View.GONE);
                             tvCheck.setVisibility(View.VISIBLE);
                             checkImage.setVisibility(View.VISIBLE);
 
@@ -500,6 +504,10 @@ public class RouteActivity extends AppCompatActivity implements
                                 passImage.setVisibility(View.GONE);
                                 tvStop.setVisibility(View.VISIBLE);
                                 stopImage.setVisibility(View.VISIBLE);
+
+                                tvStop.setOnClickListener(view -> stopRequest(booking));
+                                stopImage.setOnClickListener(view -> stopRequest(booking));
+
                                 tvCheck.setVisibility(View.VISIBLE);
                                 checkImage.setVisibility(View.VISIBLE);
 
@@ -537,6 +545,8 @@ public class RouteActivity extends AppCompatActivity implements
                             driverImage.setVisibility(View.GONE);
                             tvPass.setVisibility(View.GONE);
                             passImage.setVisibility(View.GONE);
+                            tvStop.setVisibility(View.GONE);
+                            stopImage.setVisibility(View.GONE);
                             tvCheck.setVisibility(View.GONE);
                             checkImage.setVisibility(View.GONE);
                             break;
@@ -546,6 +556,27 @@ public class RouteActivity extends AppCompatActivity implements
                 }
             }
         }
+    }
+
+    private void stopRequest(Booking booking) {
+        usersRef.child(userId).child("taskList").
+                child(booking.getId()).child("status").setValue("Booked")
+                .addOnCompleteListener(task -> {
+                    if(task.isSuccessful()) {
+                        Toast.makeText(
+                                myContext,
+                                "Your Task is now stopped the request",
+                                Toast.LENGTH_LONG
+                        ).show();
+                    }
+                    else {
+                        Toast.makeText(
+                                myContext,
+                                "Failed to stop the request",
+                                Toast.LENGTH_LONG
+                        ).show();
+                    }
+                });
     }
 
     private void passTask(Booking booking) {
@@ -919,7 +950,12 @@ public class RouteActivity extends AppCompatActivity implements
                     endStationName = endStation.getName();
 
                     schedule = booking.getSchedule();
-                    if(!inDriverModule) status = booking.getStatus();
+
+                    String currentStatus = booking.getStatus();
+                    if(!inDriverModule || (status != null && !status.equals("Request")) ||
+                            !currentStatus.equals("Booked"))
+                        status = currentStatus;
+                    
                     message = booking.getMessage();
 
                     typeName = booking.getBookingType().getName();

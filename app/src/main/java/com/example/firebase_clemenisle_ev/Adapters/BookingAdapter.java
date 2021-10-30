@@ -501,7 +501,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
         intent.putExtra("id", 0);
         intent.putExtra("lat", originLat);
         intent.putExtra("lng", originLng);
-        intent.putExtra("name", "Your Location");
+        intent.putExtra("name", "Origin Location");
         intent.putExtra("type", 2);
         myContext.startActivity(intent);
     }
@@ -601,6 +601,8 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
 
                             tvPass.setVisibility(View.GONE);
                             passImage.setVisibility(View.GONE);
+                            tvStop.setVisibility(View.GONE);
+                            stopImage.setVisibility(View.GONE);
                             tvCheck.setVisibility(View.GONE);
                             checkImage.setVisibility(View.GONE);
                             break;
@@ -619,6 +621,8 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                             tvPass.setOnClickListener(view -> passTask(booking));
                             passImage.setOnClickListener(view -> passTask(booking));
 
+                            tvStop.setVisibility(View.GONE);
+                            stopImage.setVisibility(View.GONE);
                             tvCheck.setVisibility(View.VISIBLE);
                             checkImage.setVisibility(View.VISIBLE);
 
@@ -645,6 +649,10 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                                 passImage.setVisibility(View.GONE);
                                 tvStop.setVisibility(View.VISIBLE);
                                 stopImage.setVisibility(View.VISIBLE);
+
+                                tvStop.setOnClickListener(view -> stopRequest(booking));
+                                stopImage.setOnClickListener(view -> stopRequest(booking));
+
                                 tvCheck.setVisibility(View.VISIBLE);
                                 checkImage.setVisibility(View.VISIBLE);
 
@@ -682,6 +690,8 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                             driverImage.setVisibility(View.GONE);
                             tvPass.setVisibility(View.GONE);
                             passImage.setVisibility(View.GONE);
+                            tvStop.setVisibility(View.GONE);
+                            stopImage.setVisibility(View.GONE);
                             tvCheck.setVisibility(View.GONE);
                             checkImage.setVisibility(View.GONE);
                             break;
@@ -691,6 +701,27 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                 }
             }
         }
+    }
+
+    private void stopRequest(Booking booking) {
+        usersRef.child(userId).child("taskList").
+                child(booking.getId()).child("status").setValue("Booked")
+                .addOnCompleteListener(task -> {
+                    if(task.isSuccessful()) {
+                        Toast.makeText(
+                                myContext,
+                                "Your Task is now stopped the request",
+                                Toast.LENGTH_LONG
+                        ).show();
+                    }
+                    else {
+                        Toast.makeText(
+                                myContext,
+                                "Failed to stop the request",
+                                Toast.LENGTH_LONG
+                        ).show();
+                    }
+                });
     }
 
     private void passTask(Booking booking) {
@@ -920,6 +951,8 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
             stopImage = itemView.findViewById(R.id.stopImage);
             tvCheck = itemView.findViewById(R.id.tvCheck);
             checkImage = itemView.findViewById(R.id.checkImage);
+
+            setIsRecyclable(false);
         }
     }
 }
