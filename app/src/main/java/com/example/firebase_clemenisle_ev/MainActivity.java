@@ -411,12 +411,11 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onFinish() {
                 if(userId != null) {
-                    for(Booking booking : bookingList1) {
+                    for(Booking booking : bookingList1)
                         checkBooking(booking);
-                    }
-                    for(Booking booking : bookingList2) {
+
+                    for(Booking booking : bookingList2)
                         checkBooking(booking);
-                    }
                 }
 
                 start();
@@ -424,15 +423,19 @@ public class MainActivity extends AppCompatActivity {
         }.start();
     }
 
-    private void setBookingStatusToFailed(String bookingId) {
+    private void setBookingStatusToFailed(Booking booking) {
         DatabaseReference bookingListRef = usersRef.child(userId).
-                child("bookingList").child(bookingId);
+                child("bookingList").child(booking.getId());
         bookingListRef.child("status").setValue("Failed");
         bookingListRef.child("chats").removeValue();
+        booking.setStatus("Failed");
+        showFailedBookingNotification(booking);
     }
 
     private void checkBooking(Booking booking) {
         dateTimeToString = new DateTimeToString();
+        int maximumDaysInMonthOfYear = dateTimeToString.getMaximumDaysInMonthOfYear();
+
         dateTimeToString.setFormattedSchedule(booking.getSchedule());
         int bookingYear = Integer.parseInt(dateTimeToString.getYear());
         int bookingMonth = Integer.parseInt(dateTimeToString.getMonthNo());
@@ -446,15 +449,16 @@ public class MainActivity extends AppCompatActivity {
                 (bookingMonth < calendarMonth && bookingYear == calendarYear) ||
                 (bookingDay < calendarDay && bookingMonth == calendarMonth && bookingYear == calendarYear)) {
 
-            setBookingStatusToFailed(booking.getId());
-            setTaskStatusToFailed(booking.getId());
+            setBookingStatusToFailed(booking);
+            setTaskStatusToFailed(booking);
         }
 
-        checkingForBookingNotification(booking, bookingDay, bookingMonth, bookingYear);
+        checkingForBookingNotification(booking, bookingDay, bookingMonth, bookingYear,
+                maximumDaysInMonthOfYear);
     }
 
-    private void checkingForBookingNotification(Booking booking, int bookingDay,
-                                                int bookingMonth, int bookingYear) {
+    private void checkingForBookingNotification(Booking booking, int bookingDay, int bookingMonth,
+                                                int bookingYear, int maximumDaysInMonthOfYear) {
 
         SimpleDateFormat sdf = new SimpleDateFormat("H:mm:ss", Locale.getDefault());
         String currentTime = sdf.format(new Date().getTime());
@@ -465,8 +469,8 @@ public class MainActivity extends AppCompatActivity {
         int bookingHour = Integer.parseInt(dateTimeToString.getRawHour());
         int bookingMin = Integer.parseInt(dateTimeToString.getMin());
 
-        List<String> hourArray = Arrays.asList("2", "4", "8", "12", "16", "20");
-        List<String> minArray = Arrays.asList("1", "5", "10", "15", "20", "30", "45");
+        List<Integer> hourArray = Arrays.asList(2, 4, 8, 12, 16, 20);
+        List<Integer> minArray = Arrays.asList(1, 5, 10, 15, 20, 30, 45);
 
         int minDifference;
         int hrDifference;
@@ -491,7 +495,7 @@ public class MainActivity extends AppCompatActivity {
         }
         else if(booking.getStatus().equals("Booked")) {
             int dayDifference = bookingDay > calendarDay ?
-                    bookingDay - calendarDay : (bookingDay + 30) - calendarDay;
+                    bookingDay - calendarDay : (bookingDay + maximumDaysInMonthOfYear) - calendarDay;
 
             hrDifference = (bookingHour + (24 * dayDifference)) - hour;
 
@@ -537,8 +541,8 @@ public class MainActivity extends AppCompatActivity {
         if(booking.getStatus().equals("Pending") &&
                 !booking.getBookingType().getId().equals("BT99") &&
                 (hrDifference < 0 || (hrDifference == 0 && minDifference == 0))) {
-            setBookingStatusToFailed(booking.getId());
-            setTaskStatusToFailed(booking.getId());
+            setBookingStatusToFailed(booking);
+            setTaskStatusToFailed(booking);
         }
     }
 
@@ -546,17 +550,17 @@ public class MainActivity extends AppCompatActivity {
         if(booking.getStatus().equals("Pending") &&
                 booking.getBookingType().getId().equals("BT99") &&
                 (hrDifference < -1 || (hrDifference == -1 && minDifference <= 50))) {
-            setBookingStatusToFailed(booking.getId());
-            setTaskStatusToFailed(booking.getId());
+            setBookingStatusToFailed(booking);
+            setTaskStatusToFailed(booking);
         }
     }
 
-    private void setTaskStatusToFailed(String bookingId) {
+    private void setTaskStatusToFailed(Booking booking) {
         for (User user : users) {
             List<Booking> taskList = user.getTaskList();
 
             for(Booking task : taskList) {
-                if(task.getId().equals(bookingId)) {
+                if(task.getId().equals(booking.getId())) {
                     usersRef.child(user.getId()).child("taskList").
                             child(task.getId()).child("status").setValue("Failed");
                     return;
@@ -565,15 +569,15 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void initNotificationInHours(Booking booking, List<String> hourArray, int hrDifference,
-                                         List<String> minArray, int minDifference, int sec) {
+    private void initNotificationInHours(Booking booking, List<Integer> hourArray, int hrDifference,
+                                         List<Integer> minArray, int minDifference, int sec) {
         if(!booking.getBookingType().getId().equals("BT99")) {
-            if(hourArray.contains(String.valueOf(hrDifference)) &&
-                    (minArray.contains(String.valueOf(minDifference)) || minDifference == 0) && sec < 5) {
+            if(hourArray.contains(hrDifference) &&
+                    (minArray.contains(minDifference) || minDifference == 0) && sec < 5) {
                 showUpcomingBookingNotification(booking, hrDifference, "hours");
             }
             else if(hrDifference % 24 == 0) {
-                if((minArray.contains(String.valueOf(minDifference)) || minDifference == 0) && sec < 5) {
+                if((minArray.contains(minDifference) || minDifference == 0) && sec < 5) {
                     int day = hrDifference/24;
                     if(day == 1) showUpcomingBookingNotification(booking, day, "day");
                     else showUpcomingBookingNotification(booking, day, "days");
@@ -583,9 +587,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initNotificationInMinutes(Booking booking, int hrDifference,
-                                           List<String> minArray, int minDifference, int sec) {
+                                           List<Integer> minArray, int minDifference, int sec) {
         if(!booking.getBookingType().getId().equals("BT99")) {
-            if(hrDifference == 0 && minArray.contains(String.valueOf(minDifference)) && sec < 5) {
+            if(hrDifference == 0 && minArray.contains(minDifference) && sec < 5) {
                 if(minDifference == 1) showUpcomingBookingNotification(booking, minDifference, "minute");
                 else showUpcomingBookingNotification(booking, minDifference, "minutes");
             }
@@ -762,6 +766,43 @@ public class MainActivity extends AppCompatActivity {
 
         usersRef.child(userId).child("bookingList").child(booking.getId()).child("notified")
                 .setValue(true);
+    }
+
+    private void showFailedBookingNotification(Booking booking) {
+        NotificationManager notificationManager = getNotificationManager(booking.getId());
+        Bitmap icon = BitmapFactory.decodeResource(myResources, R.drawable.front_icon);
+
+        NotificationCompat.Builder builder =
+                new NotificationCompat.Builder(myContext, booking.getId())
+                        .setSmallIcon(R.drawable.front_icon).setLargeIcon(icon)
+                        .setContentTitle("Clemenisle-EV Booking Reminder")
+                        .setContentText("You have failed to go to your Booking (ID: " + booking.getId() +").")
+                        .setCategory(NotificationCompat.CATEGORY_STATUS)
+                        .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                        .setDefaults(NotificationCompat.DEFAULT_ALL)
+                        .setAutoCancel(false);
+
+        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
+            builder.setPriority(Notification.PRIORITY_HIGH);
+
+        Intent notificationIntent;
+
+        if(booking.getBookingType().getId().equals("BT99"))
+            notificationIntent = new Intent(myContext, OnTheSpotActivity.class);
+        else {
+            notificationIntent = new Intent(myContext, RouteActivity.class);
+            notificationIntent.putExtra("isLatest", false);
+        }
+
+        notificationIntent.putExtra("bookingId", booking.getId());
+        notificationIntent.putExtra("inDriverModule", false);
+
+        PendingIntent pendingIntent = PendingIntent.getActivity(
+                myContext, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT
+        );
+        builder.setContentIntent(pendingIntent);
+        builder.setFullScreenIntent(pendingIntent, true);
+        notificationManager.notify(1, builder.build());
     }
 
     @Override

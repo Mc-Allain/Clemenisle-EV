@@ -32,7 +32,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class PendingListFragment extends Fragment {
+public class PendingListFragment extends Fragment implements BookingAdapter.OnActionClickListener {
 
     private final static String firebaseURL = FirebaseURL.getFirebaseURL();
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance(firebaseURL);
@@ -76,6 +76,7 @@ public class PendingListFragment extends Fragment {
         bookingView.setLayoutManager(linearLayout1);
         bookingAdapter = new BookingAdapter(myContext, pendingBookingList);
         bookingView.setAdapter(bookingAdapter);
+        bookingAdapter.setOnLikeClickListener(this);
 
         getPendingBooking();
 
@@ -157,5 +158,11 @@ public class PendingListFragment extends Fragment {
         reloadImage.setVisibility(View.VISIBLE);
         progressBar.setVisibility(View.GONE);
         bookingView.setVisibility(View.INVISIBLE);
+    }
+
+    @Override
+    public void setProgressBarToVisible(boolean value) {
+        if(value) progressBar.setVisibility(View.VISIBLE);
+        else progressBar.setVisibility(View.GONE);
     }
 }

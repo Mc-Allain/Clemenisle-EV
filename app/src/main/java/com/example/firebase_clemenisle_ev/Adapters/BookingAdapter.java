@@ -95,6 +95,16 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
 
     String taskDriverUserId;
 
+    OnActionClickListener onActionClickListener;
+
+    public void setOnLikeClickListener(OnActionClickListener onActionClickListener) {
+        this.onActionClickListener = onActionClickListener;
+    }
+
+    public interface OnActionClickListener{
+        void setProgressBarToVisible(boolean value);
+    }
+
     public void setInDriverMode(boolean inDriverModule) {
         this.inDriverModule = inDriverModule;
         notifyDataSetChanged();
@@ -701,6 +711,8 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
     }
 
     private void stopRequest(Booking booking) {
+        if(onActionClickListener != null)
+            onActionClickListener.setProgressBarToVisible(true);
         usersRef.child(userId).child("taskList").
                 child(booking.getId()).child("status").setValue("Booked")
                 .addOnCompleteListener(task -> {
@@ -718,10 +730,14 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                                 Toast.LENGTH_LONG
                         ).show();
                     }
+                    if(onActionClickListener != null)
+                        onActionClickListener.setProgressBarToVisible(false);
                 });
     }
 
     private void passTask(Booking booking) {
+        if(onActionClickListener != null)
+            onActionClickListener.setProgressBarToVisible(true);
         usersRef.child(userId).child("taskList").
                 child(booking.getId()).child("status").setValue("Request")
                 .addOnCompleteListener(task -> {
@@ -739,10 +755,14 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                                 Toast.LENGTH_LONG
                         ).show();
                     }
+                    if(onActionClickListener != null)
+                        onActionClickListener.setProgressBarToVisible(false);
                 });
     }
 
     private void takeTask(Booking booking, String passengerUserId, boolean fromRequest) {
+        if(onActionClickListener != null)
+            onActionClickListener.setProgressBarToVisible(true);
         String status = "Booked";
         List<Route> bookingRouteList = booking.getRouteList();
         booking.setTimestamp(new DateTimeToString().getDateAndTime());
@@ -790,6 +810,9 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                 "Failed to take the task. Please try again.",
                 Toast.LENGTH_LONG
         ).show();
+
+        if(onActionClickListener != null)
+            onActionClickListener.setProgressBarToVisible(false);
     }
 
     private void addBookingRoute(List<Route> bookingRouteList,
@@ -809,6 +832,9 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                                 "Successfully taken the task",
                                 Toast.LENGTH_SHORT
                         ).show();
+
+                        if(onActionClickListener != null)
+                            onActionClickListener.setProgressBarToVisible(false);
                     }
                 }
             });

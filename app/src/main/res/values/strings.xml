@@ -17,15 +17,15 @@
     <string name="bookingProcess1">
         When the schedule of your Booking comes,
         please do the following:
-        \n• Prepare your payment.
-        \n• Go to your designated Starting Station.
-        \n• Always check on the chat between you and the driver regarding on possible concerns.
-        \n• Find the plate number of your assigned driver\'s E-Vehicle.
-        \n• Show and let your assigned driver scan the QR Code of your booking record.
-        \n• Please check carefully the status of your booking record. It should become \"Completed\".
-        \n• Settle the payment.
-        \n• Ride into the E-Vehicle with your assigned driver.
-        \n• Have fun.
+        \n● Prepare your payment.
+        \n● Go to your designated Starting Station.
+        \n● Always check on the chat between you and the driver regarding on possible concerns.
+        \n● Find the plate number of your assigned driver\'s E-Vehicle.
+        \n● Show and let your assigned driver scan the QR Code of your booking record.
+        \n● Please check carefully the status of your booking record. It should become \"Completed\".
+        \n● Settle the payment.
+        \n● Ride into the E-Vehicle with your assigned driver.
+        \n● Have fun.
     </string>
     <string name="bookingProcess2">
         You can only cancel your booking while it is \"Processing\".
@@ -34,18 +34,18 @@
     </string>
     <string name="bookingProcess3">
         Things to do while waiting for your assigned driver:
-        \n• Prepare your payment.
-        \n• Do not leave your current position.
-        \n• Always check on the chat between you and the driver regarding on possible concerns.
+        \n● Prepare your payment.
+        \n● Do not leave your current position.
+        \n● Always check on the chat between you and the driver regarding on possible concerns.
     </string>
     <string name="bookingProcess4">
         Things to do when your assigned driver arrived:
-        \n• Validate the plate number of your assigned driver\'s E-Vehicle.
-        \n• Show and let your assigned driver scan the QR Code of your booking record.
-        \n• Please check carefully the status of your booking record. It should become \"Completed\".
-        \n• Settle the payment.
-        \n• Ride into the E-Vehicle with your assigned driver.
-        \n• Have fun.
+        \n● Validate the plate number of your assigned driver\'s E-Vehicle.
+        \n● Show and let your assigned driver scan the QR Code of your booking record.
+        \n● Please check carefully the status of your booking record. It should become \"Completed\".
+        \n● Settle the payment.
+        \n● Ride into the E-Vehicle with your assigned driver.
+        \n● Have fun.
     </string>
     <string name="bookingProcess5">
         If your booking record is still \"Processing\" for 10 minutes,
@@ -63,12 +63,12 @@
     <string name="onlinePayment2">
         The online payment is through G-Cash Application.
         \nHere are the steps to process your online payment.
-        \n• Go to the booking record of your desire with a status of \"Processing\" or \"Booked\" in order to access the online payment.
-        \n• Tap on the online payment button to go to the online payment screen.
-        \n• Send your payment depending on the amount cost of your booked tour to the numbers showed on the online payment screen.
-        \n• Retrieve the transaction\'s reference number and put it in the input box.
-        \n• Tap on the confirm button and wait for the admin to process your online payment.
-        \n• You can request for a refund if you cancelled your booking or failed to go to the tour.
+        \n● Go to the booking record of your desire with a status of \"Processing\" or \"Booked\" in order to access the online payment.
+        \n● Tap on the online payment button to go to the online payment screen.
+        \n● Send your payment depending on the amount cost of your booked tour to the numbers showed on the online payment screen.
+        \n● Retrieve the transaction\'s reference number and put it in the input box.
+        \n● Tap on the confirm button and wait for the admin to process your online payment.
+        \n● You can request for a refund if you cancelled your booking or failed to go to the tour.
     </string>
     <string name="onlinePayment3">
         Avoid paying online if you are being indecisive about

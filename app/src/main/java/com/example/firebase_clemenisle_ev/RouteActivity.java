@@ -563,6 +563,7 @@ public class RouteActivity extends AppCompatActivity implements
     }
 
     private void stopRequest(Booking booking) {
+        progressBar.setVisibility(View.VISIBLE);
         usersRef.child(userId).child("taskList").
                 child(booking.getId()).child("status").setValue("Booked")
                 .addOnCompleteListener(task -> {
@@ -580,10 +581,12 @@ public class RouteActivity extends AppCompatActivity implements
                                 Toast.LENGTH_LONG
                         ).show();
                     }
+                    progressBar.setVisibility(View.GONE);
                 });
     }
 
     private void passTask(Booking booking) {
+        progressBar.setVisibility(View.VISIBLE);
         usersRef.child(driverUserId).child("taskList").
                 child(booking.getId()).child("status").setValue("Request")
                 .addOnCompleteListener(task -> {
@@ -601,10 +604,12 @@ public class RouteActivity extends AppCompatActivity implements
                                 Toast.LENGTH_LONG
                         ).show();
                     }
+                    progressBar.setVisibility(View.GONE);
                 });
     }
 
     private void takeTask(Booking booking, boolean fromRequest) {
+        progressBar.setVisibility(View.VISIBLE);
         String status = "Booked";
         List<Route> bookingRouteList = booking.getRouteList();
         booking.setTimestamp(new DateTimeToString().getDateAndTime());
@@ -649,6 +654,8 @@ public class RouteActivity extends AppCompatActivity implements
                 "Failed to take the task. Please try again.",
                 Toast.LENGTH_LONG
         ).show();
+
+        progressBar.setVisibility(View.GONE);
     }
 
     private void addBookingRoute(List<Route> bookingRouteList,
@@ -668,6 +675,8 @@ public class RouteActivity extends AppCompatActivity implements
                                 "Successfully taken the task",
                                 Toast.LENGTH_SHORT
                         ).show();
+
+                        progressBar.setVisibility(View.GONE);
                     }
                 }
             });
@@ -930,7 +939,7 @@ public class RouteActivity extends AppCompatActivity implements
         Query bookingQuery = usersRef.child(userId).child("bookingList").
                 orderByChild("status").equalTo("Completed");
 
-        bookingQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+        bookingQuery.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 bookingList.clear();
@@ -987,9 +996,8 @@ public class RouteActivity extends AppCompatActivity implements
                     price = String.valueOf(booking.getBookingType().getPrice());
                     if(price.split("\\.")[1].length() == 1) price += 0;
 
-                    for(Route route : booking.getRouteList()) {
+                    for(Route route : booking.getRouteList())
                         if(!route.isDeactivated()) routeList.add(route);
-                    }
 
                     isPaid = booking.isPaid();
                 }

@@ -631,6 +631,7 @@ public class OnTheSpotActivity extends AppCompatActivity {
     }
 
     private void stopRequest(Booking booking) {
+        progressBar.setVisibility(View.VISIBLE);
         usersRef.child(userId).child("taskList").
                 child(booking.getId()).child("status").setValue("Booked")
                 .addOnCompleteListener(task -> {
@@ -648,10 +649,12 @@ public class OnTheSpotActivity extends AppCompatActivity {
                                 Toast.LENGTH_LONG
                         ).show();
                     }
+                    progressBar.setVisibility(View.GONE);
                 });
     }
 
     private void passTask(Booking booking) {
+        progressBar.setVisibility(View.VISIBLE);
         usersRef.child(driverUserId).child("taskList").
                 child(booking.getId()).child("status").setValue("Request")
                 .addOnCompleteListener(task -> {
@@ -669,6 +672,7 @@ public class OnTheSpotActivity extends AppCompatActivity {
                                 Toast.LENGTH_LONG
                         ).show();
                     }
+                    progressBar.setVisibility(View.GONE);
                 });
     }
 
@@ -738,6 +742,7 @@ public class OnTheSpotActivity extends AppCompatActivity {
     }
 
     private void takeTask(Booking booking, boolean fromRequest) {
+        progressBar.setVisibility(View.VISIBLE);
         String status = "Booked";
         List<Route> bookingRouteList = booking.getRouteList();
         booking.setTimestamp(new DateTimeToString().getDateAndTime());
@@ -774,6 +779,7 @@ public class OnTheSpotActivity extends AppCompatActivity {
                                 else errorTask();
                             });
                 }
+                progressBar.setVisibility(View.GONE);
             }
             else errorTask();
         });
@@ -785,6 +791,8 @@ public class OnTheSpotActivity extends AppCompatActivity {
                 "Failed to take the task. Please try again.",
                 Toast.LENGTH_LONG
         ).show();
+
+        progressBar.setVisibility(View.GONE);
     }
 
     private void addBookingRoute(List<Route> bookingRouteList,

@@ -40,7 +40,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class DriverTaskListFragment extends Fragment {
+public class DriverTaskListFragment extends Fragment implements BookingAdapter.OnActionClickListener {
 
     private final static String firebaseURL = FirebaseURL.getFirebaseURL();
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance(firebaseURL);
@@ -160,21 +160,25 @@ public class DriverTaskListFragment extends Fragment {
         upcomingView.setLayoutManager(linearLayout1);
         adapter1 = new BookingAdapter(myContext, taskList1);
         upcomingView.setAdapter(adapter1);
+        adapter1.setOnLikeClickListener(this);
 
         LinearLayoutManager linearLayout2 = new LinearLayoutManager(myContext, LinearLayoutManager.VERTICAL, false);
         requestView.setLayoutManager(linearLayout2);
         adapter2 = new BookingAdapter(myContext, taskList2);
         requestView.setAdapter(adapter2);
+        adapter2.setOnLikeClickListener(this);
 
         LinearLayoutManager linearLayout3 = new LinearLayoutManager(myContext, LinearLayoutManager.VERTICAL, false);
         completedView.setLayoutManager(linearLayout3);
         adapter3 = new BookingAdapter(myContext, taskList3);
         completedView.setAdapter(adapter3);
+        adapter3.setOnLikeClickListener(this);
 
         LinearLayoutManager linearLayout4 = new LinearLayoutManager(myContext, LinearLayoutManager.VERTICAL, false);
         failedView.setLayoutManager(linearLayout4);
         adapter4 = new BookingAdapter(myContext, taskList4);
         failedView.setAdapter(adapter4);
+        adapter4.setOnLikeClickListener(this);
 
         getBookings();
 
@@ -591,5 +595,11 @@ public class DriverTaskListFragment extends Fragment {
         adapter2.setInDriverMode(true);
         adapter3.setInDriverMode(true);
         adapter4.setInDriverMode(true);
+    }
+
+    @Override
+    public void setProgressBarToVisible(boolean value) {
+        if(value) progressBar.setVisibility(View.VISIBLE);
+        else progressBar.setVisibility(View.GONE);
     }
 }

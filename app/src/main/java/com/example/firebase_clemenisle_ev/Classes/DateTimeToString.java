@@ -1,7 +1,9 @@
 package com.example.firebase_clemenisle_ev.Classes;
 
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 public class DateTimeToString {
@@ -19,7 +21,8 @@ public class DateTimeToString {
     private String timeMode = null;
 
     public DateTimeToString() {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd H:mm:00", Locale.getDefault());
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd H:mm:00",
+                Locale.getDefault());
         String currentDateAndTime = simpleDateFormat.format(new Date());
         String[] scheduleSplit = currentDateAndTime.split(" ");
         this.dateSplit = scheduleSplit[0].split("-");
@@ -108,6 +111,27 @@ public class DateTimeToString {
     public String getDay() {
         if(dateSplit.length == 3) return dateSplit[2];
         return "Invalid Date";
+    }
+
+    public int getMaximumDaysInMonthOfYear() {
+        if(dateSplit.length == 3) {
+
+            int rawMonth = Integer.parseInt(dateSplit[1]);
+            if(isDefaultDate) rawMonth -= 1;
+
+            List<Integer> _31DaysMonth = Arrays.asList(0, 2, 4, 6, 7, 9, 11);
+            List<Integer> _30DaysMonth = Arrays.asList(3, 5, 8, 10);
+            int _28DaysMonth = 1;
+
+            if(_31DaysMonth.contains(rawMonth))
+                return 31;
+            if(_30DaysMonth.contains(rawMonth))
+                return 30;
+            if(_28DaysMonth == rawMonth)
+                return Integer.parseInt(getYear()) % 4 == 0 ? 29 : 28;
+
+        }
+        return 28;
     }
 
     public String getDate() {
