@@ -48,16 +48,13 @@ public class LoginActivity extends AppCompatActivity implements LoginFragment.Ta
     @Override
     public void onBackPressed() {
         if(tabPos == 1) {
-            if(registerFragment.currentStep > 1) {
+            if(registerFragment.currentStep > 1)
                 registerFragment.backPressed();
-            }
             else {
                 tabPos = 0;
                 viewPager.setCurrentItem(tabPos);
             }
         }
-        else {
-            super.onBackPressed();
-        }
+        else super.onBackPressed();
     }
 }

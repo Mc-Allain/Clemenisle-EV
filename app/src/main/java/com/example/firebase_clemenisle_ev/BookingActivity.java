@@ -486,11 +486,11 @@ public class BookingActivity extends AppCompatActivity implements
                         Toast.LENGTH_LONG
                 ).show();
 
-                onBackPressed();
+                Intent intent = new Intent(myContext, MainActivity.class);
+                startActivity(intent);
+                finishAffinity();
             }
-            else {
-                userId = firebaseUser.getUid();
-            }
+            else userId = firebaseUser.getUid();
         }
 
         cslInitial = ColorStateList.valueOf(myResources.getColor(R.color.initial));
@@ -1309,12 +1309,8 @@ public class BookingActivity extends AppCompatActivity implements
 
     @Override
     public void onBackPressed() {
-        if(currentStep > 1) {
-            backButton.performClick();
-        }
-        else {
-            super.onBackPressed();
-        }
+        if(currentStep > 1) backButton.performClick();
+        else super.onBackPressed();
     }
 
     private void showNearSpots() {

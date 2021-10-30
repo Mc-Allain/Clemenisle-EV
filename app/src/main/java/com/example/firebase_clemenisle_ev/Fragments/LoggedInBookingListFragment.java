@@ -155,9 +155,7 @@ public class LoggedInBookingListFragment extends Fragment {
                         Toast.LENGTH_LONG
                 ).show();
             }
-            else {
-                userId = firebaseUser.getUid();
-            }
+            else userId = firebaseUser.getUid();
         }
 
         try {

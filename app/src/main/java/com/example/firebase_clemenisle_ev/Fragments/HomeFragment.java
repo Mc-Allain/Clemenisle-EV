@@ -184,9 +184,7 @@ public class HomeFragment extends Fragment implements
                         Toast.LENGTH_LONG
                 ).show();
             }
-            else {
-                userId = firebaseUser.getUid();
-            }
+            else userId = firebaseUser.getUid();
         }
 
         try {

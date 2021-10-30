@@ -270,9 +270,7 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
                         Toast.LENGTH_LONG
                 ).show();
             }
-            else {
-                userId = firebaseUser.getUid();
-            }
+            else userId = firebaseUser.getUid();
         }
 
         try {
@@ -309,7 +307,6 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
 
         if(userId != null) {
             getLikedSpots();
-            checkCurrentUserComment();
             loginCommentLayout.setVisibility(View.GONE);
         }
         else {
@@ -1583,6 +1580,7 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
         tvComments.setText(String.valueOf(comments));
 
         isLiked = isInLikedSpots(selectedSpot);
+        checkCurrentUserComment();
 
         int color;
         if(!isLiked) color = myResources.getColor(R.color.black);

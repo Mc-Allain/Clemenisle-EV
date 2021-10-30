@@ -1101,7 +1101,13 @@ public class OnTheSpotActivity extends AppCompatActivity {
                         if(prevStatus.equals("Booked")) {
                             usersRef.child(driverUserId).child("taskList").child(bookingId).
                                     child("status").setValue("Failed").addOnCompleteListener(task1 -> {
-                                        if(task1.isSuccessful()) onBackPressed();
+                                        if(task1.isSuccessful()) {
+                                            Toast.makeText(
+                                                    myContext,
+                                                    "Successfully cancelled the booking",
+                                                    Toast.LENGTH_SHORT
+                                            ).show();
+                                        }
                                         else {
                                             usersRef.child(userId).child("bookingList").child(bookingId).
                                                     child("status").setValue(prevStatus);
@@ -1116,7 +1122,13 @@ public class OnTheSpotActivity extends AppCompatActivity {
                                         }
                                     });
                         }
-                        else onBackPressed();
+                        else {
+                            Toast.makeText(
+                                    myContext,
+                                    "Successfully cancelled the booking",
+                                    Toast.LENGTH_SHORT
+                            ).show();
+                        }
                     }
                     else {
                         errorToast = Toast.makeText(myContext,

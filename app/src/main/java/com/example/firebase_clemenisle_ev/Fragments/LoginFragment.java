@@ -388,7 +388,10 @@ public class LoginFragment extends Fragment {
                                 startActivity(intent);
                             }
                         }
-                        else loginFailed("Failed to get the current user");
+                        else {
+                            firebaseAuth.signOut();
+                            loginFailed("Failed to get the current user");
+                        }
                     }
                     else {
                         if(task.getException() != null)

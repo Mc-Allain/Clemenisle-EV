@@ -104,9 +104,7 @@ public class HelpActivity extends AppCompatActivity {
                         Toast.LENGTH_LONG
                 ).show();
             }
-            else {
-                userId = firebaseUser.getUid();
-            }
+            else userId = firebaseUser.getUid();
         }
 
         if(userId != null) {

@@ -168,9 +168,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                         Toast.LENGTH_LONG
                 ).show();
             }
-            else {
-                userId = firebaseUser.getUid();
-            }
+            else userId = firebaseUser.getUid();
         }
 
         Handler optionHandler = new Handler();

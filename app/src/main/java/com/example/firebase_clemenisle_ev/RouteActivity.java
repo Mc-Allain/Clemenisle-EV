@@ -241,7 +241,6 @@ public class RouteActivity extends AppCompatActivity implements
         routeView.setAdapter(routeAdapter);
         routeAdapter.setOnVisitClickListener(this);
 
-        getCompletedBookingList();
         getRoute();
 
         cancelButton.setOnClickListener(view -> {
@@ -424,35 +423,6 @@ public class RouteActivity extends AppCompatActivity implements
                     Toast.LENGTH_LONG
             ).show();
         }
-    }
-
-    private void getCompletedBookingList() {
-        Query bookingQuery = usersRef.child(userId).child("bookingList").
-                orderByChild("status").equalTo("Completed");
-
-        bookingQuery.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                bookingList.clear();
-
-                if(snapshot.exists()) {
-                    for(DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                        Booking booking = new Booking(dataSnapshot);
-                        bookingList.add(booking);
-                    }
-                }
-                Collections.reverse(bookingList);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(
-                        myContext,
-                        error.toString(),
-                        Toast.LENGTH_LONG
-                ).show();
-            }
-        });
     }
 
     private void getUserInfo() {
@@ -956,6 +926,37 @@ public class RouteActivity extends AppCompatActivity implements
         routeAdapter.setLatest(isLatest);
     }
 
+    private void getCompletedBookingList() {
+        Query bookingQuery = usersRef.child(userId).child("bookingList").
+                orderByChild("status").equalTo("Completed");
+
+        bookingQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                bookingList.clear();
+
+                if(snapshot.exists()) {
+                    for(DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        Booking booking = new Booking(dataSnapshot);
+                        bookingList.add(booking);
+                    }
+                }
+                Collections.reverse(bookingList);
+
+                if(bookingList.size() > 0) setLatest();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(
+                        myContext,
+                        error.toString(),
+                        Toast.LENGTH_LONG
+                ).show();
+            }
+        });
+    }
+
     private void getRoute() {
         tvLog.setVisibility(View.GONE);
         reloadImage.setVisibility(View.GONE);
@@ -991,8 +992,6 @@ public class RouteActivity extends AppCompatActivity implements
                     }
 
                     isPaid = booking.isPaid();
-
-                    setLatest();
                 }
                 if(routeList.size() > 0) finishLoading();
                 else errorLoading(defaultLogText);
@@ -1018,6 +1017,7 @@ public class RouteActivity extends AppCompatActivity implements
     }
 
     private void finishLoading() {
+        getCompletedBookingList();
         routeAdapter.setStatus(status);
 
         if(isOnScreen) updateInfo();
@@ -1044,7 +1044,11 @@ public class RouteActivity extends AppCompatActivity implements
                     progressBar.setVisibility(View.GONE);
 
                     if(task.isSuccessful()) {
-                        onBackPressed();
+                        Toast.makeText(
+                                myContext,
+                                "Successfully cancelled the booking",
+                                Toast.LENGTH_SHORT
+                        ).show();
                     }
                     else {
                         errorToast = Toast.makeText(myContext,
