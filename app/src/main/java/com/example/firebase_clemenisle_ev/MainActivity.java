@@ -490,7 +490,8 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         else if(booking.getStatus().equals("Booked")) {
-            int dayDifference = bookingDay - calendarDay;
+            int dayDifference = bookingDay > calendarDay ?
+                    bookingDay - calendarDay : (bookingDay + 30) - calendarDay;
 
             hrDifference = (bookingHour + (24 * dayDifference)) - hour;
 

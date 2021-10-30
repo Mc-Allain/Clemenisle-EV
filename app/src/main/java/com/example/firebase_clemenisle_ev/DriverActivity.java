@@ -271,7 +271,8 @@ public class DriverActivity extends AppCompatActivity {
             }
         }
         else if(booking.getStatus().equals("Booked") || booking.getStatus().equals("Request")) {
-            int dayDifference = bookingDay - calendarDay;
+            int dayDifference = bookingDay > calendarDay ?
+                    bookingDay - calendarDay : (bookingDay + 30) - calendarDay;
 
             hrDifference = (bookingHour + (24 * dayDifference)) - hour;
 
