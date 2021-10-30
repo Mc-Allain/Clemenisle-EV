@@ -723,7 +723,7 @@ public class MainActivity extends AppCompatActivity {
 
         Intent notificationIntent = new Intent(myContext, RouteActivity.class);
         notificationIntent.putExtra("bookingId", booking.getId());
-        notificationIntent.putExtra("status", booking.getStatus());
+        notificationIntent.putExtra("inDriverModule", false);
 
         PendingIntent pendingIntent = PendingIntent.getActivity(
                 myContext, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT

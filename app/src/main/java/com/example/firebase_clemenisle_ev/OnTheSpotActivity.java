@@ -705,6 +705,12 @@ public class OnTheSpotActivity extends AppCompatActivity {
                             child(bookingId).child("status").setValue("Completed");
                     usersRef.child(driverUserId).child("taskList").
                             child(bookingId).child("status").setValue("Completed");
+
+                    Toast.makeText(
+                            myContext,
+                            "QR Code successfully scanned. The Booking Record is now on Completed.",
+                            Toast.LENGTH_LONG
+                    ).show();
                 }
                 else {
                     Toast.makeText(

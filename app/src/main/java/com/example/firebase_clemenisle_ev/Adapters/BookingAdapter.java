@@ -540,7 +540,6 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                         !booking.getBookingType().getId().equals("BT99");
 
                 intent.putExtra("isLatest", isLatest);
-                intent.putExtra("status", booking.getStatus());
             }
             myContext.startActivity(intent);
         }

@@ -44,6 +44,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
@@ -55,6 +56,7 @@ import com.journeyapps.barcodescanner.BarcodeEncoder;
 import com.ms.square.android.expandabletextview.ExpandableTextView;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -89,18 +91,19 @@ public class RouteActivity extends AppCompatActivity implements
     List<Route> routeList = new ArrayList<>();
     RouteAdapter routeAdapter;
 
+    List<Booking> bookingList = new ArrayList<>();
+
     Context myContext;
     Resources myResources;
 
     String userId, driverUserId, taskDriverUserId;
 
-    boolean isLoggedIn = false, inDriverModule = false, isScanning;
+    boolean isLoggedIn = false, inDriverModule = false, isScanning = false;
 
     DatabaseReference bookingListRef;
 
     String bookingId, schedule, typeName, price, startStationName, endStationName, status, message;
     boolean isLatest, isPaid;
-    String prevStatus;
 
     Station startStation, endStation;
 
@@ -203,8 +206,7 @@ public class RouteActivity extends AppCompatActivity implements
         bookingId = intent.getStringExtra("bookingId");
         inDriverModule = intent.getBooleanExtra("inDriverModule", false);
         isLatest = intent.getBooleanExtra("isLatest", false);
-        if(!inDriverModule) prevStatus = intent.getStringExtra("status");
-        else status = intent.getStringExtra("status");
+        if(inDriverModule) status = intent.getStringExtra("status");
 
         isOnScreen = true;
 
@@ -229,6 +231,8 @@ public class RouteActivity extends AppCompatActivity implements
             }
         }
 
+        bookingListRef = usersRef.child(userId).child("bookingList").child(bookingId);
+
         GridLayoutManager gridLayoutManager =
                 new GridLayoutManager(myContext, columnCount, GridLayoutManager.VERTICAL, false);
         routeView.setLayoutManager(gridLayoutManager);
@@ -237,6 +241,7 @@ public class RouteActivity extends AppCompatActivity implements
         routeView.setAdapter(routeAdapter);
         routeAdapter.setOnVisitClickListener(this);
 
+        getCompletedBookingList();
         getRoute();
 
         cancelButton.setOnClickListener(view -> {
@@ -419,6 +424,35 @@ public class RouteActivity extends AppCompatActivity implements
                     Toast.LENGTH_LONG
             ).show();
         }
+    }
+
+    private void getCompletedBookingList() {
+        Query bookingQuery = usersRef.child(userId).child("bookingList").
+                orderByChild("status").equalTo("Completed");
+
+        bookingQuery.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                bookingList.clear();
+
+                if(snapshot.exists()) {
+                    for(DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        Booking booking = new Booking(dataSnapshot);
+                        bookingList.add(booking);
+                    }
+                }
+                Collections.reverse(bookingList);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(
+                        myContext,
+                        error.toString(),
+                        Toast.LENGTH_LONG
+                ).show();
+            }
+        });
     }
 
     private void getUserInfo() {
@@ -612,9 +646,6 @@ public class RouteActivity extends AppCompatActivity implements
                     child(driverTask.getId()).removeValue();
         }
 
-        DatabaseReference bookingListRef = usersRef.child(userId).
-                child("bookingList").child(driverTask.getId());
-
         DatabaseReference taskListRef = usersRef.child(driverUserId).child("taskList").
                 child(booking.getId());
         taskListRef.setValue(driverTask).addOnCompleteListener(task -> {
@@ -747,6 +778,12 @@ public class RouteActivity extends AppCompatActivity implements
                         child(bookingId).child("status").setValue("Completed");
                 usersRef.child(driverUserId).child("taskList").
                         child(bookingId).child("status").setValue("Completed");
+
+                Toast.makeText(
+                        myContext,
+                        "QR Code successfully scanned. The Booking Record is now on Completed.",
+                        Toast.LENGTH_LONG
+                ).show();
             }
             else {
                 Toast.makeText(
@@ -826,29 +863,12 @@ public class RouteActivity extends AppCompatActivity implements
             case "Completed":
                 color = myResources.getColor(R.color.blue);
                 backgroundDrawable = myResources.getDrawable(R.color.blue);
-
-                if(!inDriverModule) {
-                    if(!prevStatus.equals(status) &&
-                            prevStatus.equals("Booked")) {
-                        isLatest = true;
-                        routeAdapter.setLatest(true);
-                    }
-                }
                 break;
             case "Cancelled":
             case "Failed":
                 color = myResources.getColor(R.color.red);
                 backgroundDrawable = myResources.getDrawable(R.color.red);
                 break;
-        }
-
-        if(!inDriverModule) {
-            prevStatus = status;
-
-            if(!status.equals("Completed")) {
-                isLatest = false;
-                routeAdapter.setLatest(false);
-            }
         }
 
         tvBookingId.setBackground(backgroundDrawable);
@@ -930,13 +950,17 @@ public class RouteActivity extends AppCompatActivity implements
         TransitionManager.beginDelayedTransition(constraintLayout, transition);
     }
 
+    private void setLatest() {
+        isLatest = bookingList.get(0).getId().equals(bookingId) &&
+                status.equals("Completed");
+        routeAdapter.setLatest(isLatest);
+    }
+
     private void getRoute() {
         tvLog.setVisibility(View.GONE);
         reloadImage.setVisibility(View.GONE);
         progressBar.setVisibility(View.VISIBLE);
 
-        bookingListRef = firebaseDatabase.getReference("users").child(userId)
-                .child("bookingList").child(bookingId);
         bookingListRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -963,12 +987,12 @@ public class RouteActivity extends AppCompatActivity implements
                     if(price.split("\\.")[1].length() == 1) price += 0;
 
                     for(Route route : booking.getRouteList()) {
-                        if(!route.isDeactivated()) {
-                            routeList.add(route);
-                        }
+                        if(!route.isDeactivated()) routeList.add(route);
                     }
 
                     isPaid = booking.isPaid();
+
+                    setLatest();
                 }
                 if(routeList.size() > 0) finishLoading();
                 else errorLoading(defaultLogText);
