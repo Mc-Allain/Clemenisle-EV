@@ -747,14 +747,14 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                     if(task.isSuccessful()) {
                         Toast.makeText(
                                 myContext,
-                                "Your Task is now stopped the request",
+                                "You stopped your task's request",
                                 Toast.LENGTH_LONG
                         ).show();
                     }
                     else {
                         Toast.makeText(
                                 myContext,
-                                "Failed to stop the request",
+                                "Failed to stop the task's request",
                                 Toast.LENGTH_LONG
                         ).show();
                     }
@@ -772,7 +772,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                     if(task.isSuccessful()) {
                         Toast.makeText(
                                 myContext,
-                                "Your Task is now on request",
+                                "Your task is now on request",
                                 Toast.LENGTH_LONG
                         ).show();
                     }
