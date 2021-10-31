@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.Target;
 import com.example.firebase_clemenisle_ev.Classes.Chat;
+import com.example.firebase_clemenisle_ev.Classes.User;
 import com.example.firebase_clemenisle_ev.R;
 
 import java.util.List;
@@ -26,18 +27,17 @@ import androidx.recyclerview.widget.RecyclerView;
 public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHolder> {
 
     List<Chat> chatList;
-    String userId, endPointFullName, endPointProfileImg;
+    List<User> users;
+    String userId;
     LayoutInflater inflater;
 
     Context myContext;
     Resources myResources;
 
-    public ChatListAdapter(Context context, List<Chat> chatList, String userId,
-                           String endPointFullName, String endPointProfileImg) {
+    public ChatListAdapter(Context context, List<Chat> chatList, List<User> users, String userId) {
         this.chatList = chatList;
+        this.users = users;
         this.userId = userId;
-        this.endPointFullName = endPointFullName;
-        this.endPointProfileImg = endPointProfileImg;
         this.inflater = LayoutInflater.from(context);
     }
 
@@ -66,14 +66,8 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
 
         if(senderId.equals(userId)) message = "<b>You</b>: " + message;
 
-        try {
-            Glide.with(myContext).load(profileImage).
-                    placeholder(R.drawable.image_loading_placeholder).
-                    override(Target.SIZE_ORIGINAL).into(profileImage);
-        }
-        catch (Exception ignored) {}
+        getEndPointInfo(senderId, profileImage, tvEndPointFullName);
 
-        tvEndPointFullName.setText(endPointFullName);
         tvMessage.setText(fromHtml(message));
         tvTimestamp.setText(timestamp);
 
@@ -92,6 +86,25 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
                 (ConstraintLayout.LayoutParams) backgroundLayout.getLayoutParams();
         layoutParams.setMargins(layoutParams.leftMargin, top, layoutParams.rightMargin, bottom);
         backgroundLayout.setLayoutParams(layoutParams);
+    }
+
+    private void getEndPointInfo(String senderId, ImageView profileImage, TextView tvFullName) {
+        for(User user : users) {
+            if(user.getId().equals(senderId)) {
+                try {
+                    Glide.with(myContext).load(user.getProfileImage()).
+                            placeholder(R.drawable.image_loading_placeholder).
+                            override(Target.SIZE_ORIGINAL).into(profileImage);
+                }
+                catch (Exception ignored) {}
+
+                String fullName = "<b>" + user.getLastName() + "</b>, " + user.getFirstName();
+                if(user.getMiddleName().length() > 0) fullName += " " + user.getMiddleName();
+                tvFullName.setText(fromHtml(fullName));
+
+                return;
+            }
+        }
     }
 
     private int dpToPx(int dp) {
@@ -130,6 +143,8 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
             tvEndPointFullName = itemView.findViewById(R.id.tvEndPointFullName);
             tvMessage = itemView.findViewById(R.id.tvMessage);
             tvTimestamp = itemView.findViewById(R.id.tvTimestamp);
+
+            setIsRecyclable(false);
         }
     }
 }

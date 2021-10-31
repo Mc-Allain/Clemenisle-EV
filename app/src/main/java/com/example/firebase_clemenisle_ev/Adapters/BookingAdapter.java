@@ -477,7 +477,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
             List<Booking> taskList = user.getTaskList();
 
             for(Booking task : taskList) {
-                if(task.getId().equals(bookingId)) {
+                if(task.getId().equals(bookingId) && !task.getStatus().equals("Passed")) {
                     taskDriverUserId = user.getId();
                     return;
                 }

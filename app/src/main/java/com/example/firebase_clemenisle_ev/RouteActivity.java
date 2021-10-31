@@ -412,7 +412,7 @@ public class RouteActivity extends AppCompatActivity implements
         for(User user : users) {
             List<Booking> taskList = user.getTaskList();
             for(Booking task : taskList) {
-                if(task.getId().equals(bookingId)) {
+                if(task.getId().equals(bookingId) && !task.getStatus().equals("Passed")) {
                     taskDriverUserId = user.getId();
                     return;
                 }
