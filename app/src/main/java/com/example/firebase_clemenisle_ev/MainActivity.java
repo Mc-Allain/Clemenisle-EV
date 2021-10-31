@@ -143,8 +143,8 @@ public class MainActivity extends AppCompatActivity {
 
     List<User> users = new ArrayList<>();
 
-    Dialog passwordChangeReLoginDialog;
-    ImageView passwordChangeReLoginDialogCloseImage;
+    Dialog reLoginDialog;
+    ImageView reLoginDialogCloseImage;
 
     private void initSharedPreferences() {
         SharedPreferences sharedPreferences = getSharedPreferences("login", Context.MODE_PRIVATE);
@@ -1094,8 +1094,6 @@ public class MainActivity extends AppCompatActivity {
                             error = task.getException().toString();
 
                         if(error.contains("RecentLogin")) {
-                            proceedToMainActivity();
-
                             Toast.makeText(
                                     myContext,
                                     "This operation is sensitive and requires recent authentication." +
@@ -1103,7 +1101,7 @@ public class MainActivity extends AppCompatActivity {
                                     Toast.LENGTH_LONG
                             ).show();
 
-                            passwordChangeReLoginDialog.show();
+                            reLoginDialog.show();
                         }
                         else errorPasswordUpdate();
                     }
@@ -1111,22 +1109,24 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initPasswordChangeLoginDialog() {
-        passwordChangeReLoginDialog = new Dialog(myContext);
-        passwordChangeReLoginDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        passwordChangeReLoginDialog.setContentView(R.layout.dialog_password_change_relogin_layout);
+        reLoginDialog = new Dialog(myContext);
+        reLoginDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        reLoginDialog.setContentView(R.layout.dialog_re_login_layout);
 
-        passwordChangeReLoginDialogCloseImage =
-                passwordChangeReLoginDialog.findViewById(R.id.dialogCloseImage);
+        reLoginDialogCloseImage =
+                reLoginDialog.findViewById(R.id.dialogCloseImage);
 
-        passwordChangeReLoginDialog.setCanceledOnTouchOutside(false);
+        reLoginDialog.setCanceledOnTouchOutside(false);
 
-        passwordChangeReLoginDialogCloseImage.setOnClickListener(view -> passwordChangeReLoginDialog.dismiss());
+        reLoginDialogCloseImage.setOnClickListener(view -> reLoginDialog.dismiss());
 
-        passwordChangeReLoginDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
+        reLoginDialog.setOnDismissListener(dialogInterface -> proceedToMainActivity());
+
+        reLoginDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
-        passwordChangeReLoginDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
-        passwordChangeReLoginDialog.getWindow().getAttributes().windowAnimations = R.style.animBottomSlide;
-        passwordChangeReLoginDialog.getWindow().setGravity(Gravity.BOTTOM);
+        reLoginDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+        reLoginDialog.getWindow().getAttributes().windowAnimations = R.style.animBottomSlide;
+        reLoginDialog.getWindow().setGravity(Gravity.BOTTOM);
     }
 
     private void setPasswordDialogScreenEnabled(boolean value) {

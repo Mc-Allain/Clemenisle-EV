@@ -45,7 +45,6 @@ import com.example.firebase_clemenisle_ev.Classes.SimpleTouristSpot;
 import com.example.firebase_clemenisle_ev.Classes.User;
 import com.example.firebase_clemenisle_ev.MainActivity;
 import com.example.firebase_clemenisle_ev.R;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -168,8 +167,8 @@ public class LoggedInUserProfileFragment extends Fragment {
 
     boolean isOnScreen = false;
 
-    Dialog passwordChangeReLoginDialog;
-    ImageView passwordChangeReLoginDialogCloseImage;
+    Dialog reLoginDialog;
+    ImageView reLoginDialogCloseImage;
 
     private void initSharedPreferences() {
         SharedPreferences sharedPreferences = myContext
@@ -532,35 +531,59 @@ public class LoggedInUserProfileFragment extends Fragment {
 
                                                 profileImageDialog.dismiss();
                                             }
-                                            else uploadError(task);
+                                            else {
+                                                if(task.getException() != null) {
+                                                    profileImageDialogProgressBar.setProgress(0);
+                                                    roundProgressBar.setVisibility(View.GONE);
+
+                                                    String error = task.getException().toString();
+                                                    Toast.makeText(
+                                                            myContext,
+                                                            error,
+                                                            Toast.LENGTH_LONG
+                                                    ).show();
+                                                }
+                                                setProfileImageDialogScreenEnabled(true);
+                                            }
                                         });
                             }
-                            else uploadError(task);
+                            else {
+                                if(task.getException() != null) {
+                                    profileImageDialogProgressBar.setProgress(0);
+                                    roundProgressBar.setVisibility(View.GONE);
+
+                                    String error = task.getException().toString();
+                                    Toast.makeText(
+                                            myContext,
+                                            error,
+                                            Toast.LENGTH_LONG
+                                    ).show();
+                                }
+                                setProfileImageDialogScreenEnabled(true);
+                            }
                         }
                     });
                 }
             }
-            else uploadError(task);
+            else {
+                if(task.getException() != null) {
+                    profileImageDialogProgressBar.setProgress(0);
+                    roundProgressBar.setVisibility(View.GONE);
+
+                    String error = task.getException().toString();
+                    Toast.makeText(
+                            myContext,
+                            error,
+                            Toast.LENGTH_LONG
+                    ).show();
+                }
+                setProfileImageDialogScreenEnabled(true);
+            }
         }).addOnProgressListener(snapshot -> {
             double progress =
                     (100.0 * snapshot.getBytesTransferred() / snapshot.getTotalByteCount());
             profileImageDialogProgressBar.setProgress((int) progress);
         });
-    }
-
-    private void uploadError(Task task) {
-        if(task.getException() != null) {
-            profileImageDialogProgressBar.setProgress(0);
-            roundProgressBar.setVisibility(View.GONE);
-
-            String error = task.getException().toString();
-            Toast.makeText(
-                    myContext,
-                    error,
-                    Toast.LENGTH_LONG
-            ).show();
-        }
-        setProfileImageDialogScreenEnabled(true);
     }
 
     private void setProfileImageDialogScreenEnabled(boolean value) {
@@ -887,7 +910,7 @@ public class LoggedInUserProfileFragment extends Fragment {
             }
         });
 
-        emailAddressUpdateButton.setOnClickListener(view -> updateAccount());
+        emailAddressUpdateButton.setOnClickListener(view -> updateEmailAddress());
 
         emailAddressDialogCloseImage.setOnClickListener(view -> emailAddressDialog.dismiss());
 
@@ -908,7 +931,7 @@ public class LoggedInUserProfileFragment extends Fragment {
         else emailAddressDialogCloseImage.getDrawable().setTint(colorInitial);
     }
 
-    private void updateAccount() {
+    private void updateEmailAddress() {
         setEmailAddressDialogScreenEnabled(false);
         emailAddressDialogProgressBar.setVisibility(View.VISIBLE);
         tlEmailAddress.setStartIconTintList(cslInitial);
@@ -925,8 +948,6 @@ public class LoggedInUserProfileFragment extends Fragment {
                             error = task.getException().toString();
 
                         if(error.contains("RecentLogin")) {
-                            proceedToMainActivity();
-
                             Toast.makeText(
                                     myContext,
                                     "This operation is sensitive and requires recent authentication." +
@@ -934,7 +955,7 @@ public class LoggedInUserProfileFragment extends Fragment {
                                     Toast.LENGTH_LONG
                             ).show();
 
-                            passwordChangeReLoginDialog.show();
+                            reLoginDialog.show();
                         }
                         else if(error.contains("UserCollision")) {
                             error = "This Email Address is already registered";
@@ -1256,8 +1277,6 @@ public class LoggedInUserProfileFragment extends Fragment {
                             error = task.getException().toString();
 
                         if(error.contains("RecentLogin")) {
-                            proceedToMainActivity();
-
                             Toast.makeText(
                                     myContext,
                                     "This operation is sensitive and requires recent authentication." +
@@ -1265,7 +1284,7 @@ public class LoggedInUserProfileFragment extends Fragment {
                                     Toast.LENGTH_LONG
                             ).show();
 
-                            passwordChangeReLoginDialog.show();
+                            reLoginDialog.show();
                         }
                         else errorPasswordUpdate();
                     }
@@ -1273,22 +1292,24 @@ public class LoggedInUserProfileFragment extends Fragment {
     }
 
     private void initPasswordChangeLoginDialog() {
-        passwordChangeReLoginDialog = new Dialog(myContext);
-        passwordChangeReLoginDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        passwordChangeReLoginDialog.setContentView(R.layout.dialog_password_change_relogin_layout);
+        reLoginDialog = new Dialog(myContext);
+        reLoginDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        reLoginDialog.setContentView(R.layout.dialog_re_login_layout);
 
-        passwordChangeReLoginDialogCloseImage =
-                passwordChangeReLoginDialog.findViewById(R.id.dialogCloseImage);
+        reLoginDialogCloseImage =
+                reLoginDialog.findViewById(R.id.dialogCloseImage);
 
-        passwordChangeReLoginDialog.setCanceledOnTouchOutside(false);
+        reLoginDialog.setCanceledOnTouchOutside(false);
 
-        passwordChangeReLoginDialogCloseImage.setOnClickListener(view -> passwordChangeReLoginDialog.dismiss());
+        reLoginDialogCloseImage.setOnClickListener(view -> reLoginDialog.dismiss());
 
-        passwordChangeReLoginDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
+        reLoginDialog.setOnDismissListener(dialogInterface -> proceedToMainActivity());
+
+        reLoginDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
-        passwordChangeReLoginDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
-        passwordChangeReLoginDialog.getWindow().getAttributes().windowAnimations = R.style.animBottomSlide;
-        passwordChangeReLoginDialog.getWindow().setGravity(Gravity.BOTTOM);
+        reLoginDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+        reLoginDialog.getWindow().getAttributes().windowAnimations = R.style.animBottomSlide;
+        reLoginDialog.getWindow().setGravity(Gravity.BOTTOM);
     }
 
     private void setPasswordDialogScreenEnabled(boolean value) {

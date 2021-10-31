@@ -23,7 +23,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="24dp"
         android:fontFamily="@font/ubuntu"
-        android:text="Password Change Failed"
+        android:text="Re-Log in Required"
         android:textColor="@color/red"
         android:textSize="18sp"
         android:textStyle="bold"
