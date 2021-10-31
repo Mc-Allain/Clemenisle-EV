@@ -38,7 +38,7 @@ public class AppStatusActivity extends AppCompatActivity {
 
     boolean isErrorStatus = false;
 
-    String defaultCaption = "Sorry, the application is currently in ",
+    String defaultCaption = "Sorry, the application is currently ",
             comebackCaption = ". Please come back again later.";
 
     AppMetaData appMetaData;

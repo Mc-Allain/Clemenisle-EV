@@ -51,7 +51,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:fontFamily="@font/ubuntu"
-        android:text="Sorry, the application is currently in under development.\nPlease come back again later."
+        android:text="Sorry, the application is currently under development.\nPlease come back again later."
         android:textAlignment="center"
         android:textColor="@color/black"
         app:layout_constraintBottom_toTopOf="@+id/exitAppButton"
