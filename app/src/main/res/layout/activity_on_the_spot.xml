@@ -296,21 +296,6 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <TextView
-                android:id="@+id/tvPassTaskNote"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="8dp"
-                android:fontFamily="@font/ubuntu"
-                android:text="Your Task on Request"
-                android:textColor="@color/green"
-                android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="@+id/profileImage"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/profileImage"
-                app:layout_constraintTop_toBottomOf="@+id/tvUserFullName" />
-
-            <TextView
                 android:id="@+id/tvUserFullName"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -319,10 +304,25 @@
                 android:fontFamily="@font/ubuntu"
                 android:text="User's Full Name"
                 android:textColor="@color/black"
-                app:layout_constraintBottom_toTopOf="@+id/tvPassTaskNote"
+                app:layout_constraintBottom_toTopOf="@+id/tvPassenger"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/profileImage"
                 app:layout_constraintTop_toTopOf="@+id/profileImage" />
+
+            <TextView
+                android:id="@+id/tvPassenger"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:fontFamily="@font/ubuntu"
+                android:text="Passenger"
+                android:textColor="@color/initial"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@+id/profileImage"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/profileImage"
+                app:layout_constraintTop_toBottomOf="@+id/tvUserFullName" />
 
             <View
                 style="@style/line_color"
@@ -348,7 +348,7 @@
 
         <ImageView
             android:id="@+id/thumbnail"
-            android:layout_width="110dp"
+            android:layout_width="128dp"
             android:layout_height="0dp"
             android:layout_marginStart="8dp"
             android:scaleType="centerCrop"
@@ -397,7 +397,7 @@
             android:id="@+id/tvOriginLocation"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="16dp"
             android:fontFamily="@font/ubuntu"
             android:text="Origin Location"
             android:textColor="@color/black"
@@ -463,7 +463,7 @@
             android:id="@+id/tvPrice"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="16dp"
             android:layout_marginBottom="8dp"
             android:fontFamily="@font/ubuntu"
             android:gravity="bottom"

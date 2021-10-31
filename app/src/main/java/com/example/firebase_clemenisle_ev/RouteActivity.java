@@ -78,7 +78,7 @@ public class RouteActivity extends AppCompatActivity implements
 
     ImageView profileImage, driverProfileImage, thumbnail, moreImage, locateImage, locateEndImage, viewQRImage,
             chatImage, driverImage, passImage, stopImage, checkImage, reloadImage, paidImage;
-    TextView tvUserFullName, tvPassTaskNote, tvDriverFullName, tvDriverPlateNo, tvBookingId, tvSchedule, tvTypeName,
+    TextView tvUserFullName, tvPassenger, tvDriverFullName, tvDriverPlateNo, tvBookingId, tvSchedule, tvTypeName,
             tvPrice, tvStartStation2, tvEndStation2, tvLocate, tvLocateEnd, tvViewQR, tvChat, tvDriver,
             tvPass, tvStop, tvCheck, tvLog;
     ExpandableTextView extvMessage;
@@ -95,6 +95,8 @@ public class RouteActivity extends AppCompatActivity implements
 
     Context myContext;
     Resources myResources;
+
+    int colorGreen, colorInitial;
 
     String userId, driverUserId, taskDriverUserId;
 
@@ -131,6 +133,8 @@ public class RouteActivity extends AppCompatActivity implements
 
     List<User> users = new ArrayList<>();
 
+    String defaultPassengerText = "Passenger", requestText = "Your Task on Request";
+
     private void initSharedPreferences() {
         SharedPreferences sharedPreferences = myContext
                 .getSharedPreferences("login", Context.MODE_PRIVATE);
@@ -147,7 +151,7 @@ public class RouteActivity extends AppCompatActivity implements
 
         userInfoLayout = findViewById(R.id.userInfoLayout);
         tvUserFullName = findViewById(R.id.tvUserFullName);
-        tvPassTaskNote = findViewById(R.id.tvPassTaskNote);
+        tvPassenger = findViewById(R.id.tvPassenger);
         profileImage = findViewById(R.id.profileImage);
 
         driverInfoLayout = findViewById(R.id.driverInfoLayout);
@@ -196,6 +200,9 @@ public class RouteActivity extends AppCompatActivity implements
 
         myContext = RouteActivity.this;
         myResources = getResources();
+
+        colorGreen = myResources.getColor(R.color.green);
+        colorInitial = myResources.getColor(R.color.initial);
 
         optionRunnable = () -> closeOption();
 
@@ -332,7 +339,11 @@ public class RouteActivity extends AppCompatActivity implements
                     driverInfoLayout.setVisibility(View.GONE);
                     userInfoLayout.setVisibility(View.VISIBLE);
 
+                    getDriverUserId();
+
                     getUserInfo();
+                    if(inDriverModule && status.equals("Request") &&
+                            !taskDriverUserId.equals(userId)) getDriverInfo();
                 }
                 else {
                     userInfoLayout.setVisibility(View.GONE);
@@ -348,6 +359,7 @@ public class RouteActivity extends AppCompatActivity implements
                     viewQRImage.setOnClickListener(view -> viewQRCode());
 
                     getDriverInfo();
+                    if(inDriverModule && status.equals("Request")) getUserInfo();
                 }
             }
 
@@ -445,6 +457,8 @@ public class RouteActivity extends AppCompatActivity implements
                     }
                     catch (Exception ignored) {}
 
+                    tvPassenger.setVisibility(View.GONE);
+
                     switch (status) {
                         case "Pending":
                             tvChat.setVisibility(View.GONE);
@@ -493,12 +507,11 @@ public class RouteActivity extends AppCompatActivity implements
                             checkImage.setOnClickListener(view -> scanQRCode());
                             break;
                         case "Request":
-                            getDriverUserId();
-
-                            tvPassTaskNote.setVisibility(View.GONE);
+                            tvPassenger.setVisibility(View.VISIBLE);
 
                             if(driverUserId.equals(taskDriverUserId)) {
-                                tvPassTaskNote.setVisibility(View.VISIBLE);
+                                tvPassenger.setText(requestText);
+                                tvPassenger.setTextColor(colorGreen);
 
                                 tvChat.setVisibility(View.VISIBLE);
                                 chatImage.setVisibility(View.VISIBLE);
@@ -523,6 +536,9 @@ public class RouteActivity extends AppCompatActivity implements
                                 checkImage.setOnClickListener(view -> scanQRCode());
                             }
                             else {
+                                tvPassenger.setText(defaultPassengerText);
+                                tvPassenger.setTextColor(colorInitial);
+
                                 tvChat.setVisibility(View.GONE);
                                 chatImage.setVisibility(View.GONE);
 

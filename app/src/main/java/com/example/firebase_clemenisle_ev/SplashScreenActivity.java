@@ -95,22 +95,12 @@ public class SplashScreenActivity extends AppCompatActivity {
         metaDataRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                String aboutApp = "Failed to get data";
-                double latestVersion = 0;
                 String status = "Failed to get data";
 
                 if(snapshot.exists()) {
-                    if(snapshot.child("about").exists())
-                        aboutApp = snapshot.child("about").getValue(String.class);
-                    if(snapshot.child("version").exists())
-                        latestVersion = snapshot.child("version").getValue(Double.class);
                     if(snapshot.child("status").exists())
                         status = snapshot.child("status").getValue(String.class);
                 }
-
-                appMetaData.setAboutApp(aboutApp);
-                appMetaData.setLatestVersion(latestVersion);
-                appMetaData.setStatus(status);
 
                 Intent intent;
                 if(statusPromptArray.contains(status) && !appMetaData.isDeveloper()) {

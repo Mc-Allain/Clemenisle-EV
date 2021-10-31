@@ -74,6 +74,9 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
     LayoutInflater inflater;
 
     Context myContext;
+    Resources myResources;
+
+    int colorGreen, colorInitial;
 
     String userId;
     boolean isLoggedIn = false;
@@ -96,6 +99,8 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
     String taskDriverUserId;
 
     OnActionClickListener onActionClickListener;
+
+    String defaultPassengerText = "Passenger", requestText = "Your Task on Request";
 
     public void setOnLikeClickListener(OnActionClickListener onActionClickListener) {
         this.onActionClickListener = onActionClickListener;
@@ -146,7 +151,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                 locateEndImage = holder.locateEndImage, viewQRImage = holder.viewQRImage,
                 chatImage = holder.chatImage, driverImage = holder.driverImage, passImage = holder.passImage,
                 stopImage = holder.stopImage, checkImage = holder.checkImage, paidImage = holder.paidImage;
-        TextView tvUserFullName = holder.tvUserFullName, tvPassTaskNote = holder.tvPassTaskNote,
+        TextView tvUserFullName = holder.tvUserFullName, tvPassenger = holder.tvPassenger,
                 tvDriverFullName = holder.tvDriverFullName, tvDriverPlateNo = holder.tvDriverPlateNo,
                 tvBookingId = holder.tvBookingId,
                 tvSchedule = holder.tvSchedule, tvTypeName = holder.tvTypeName, tvPrice = holder.tvPrice,
@@ -161,6 +166,10 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                 userInfoLayout = holder.userInfoLayout, driverInfoLayout = holder.driverInfoLayout;
 
         myContext = inflater.getContext();
+        myResources = myContext.getResources();
+
+        colorGreen = myResources.getColor(R.color.green);
+        colorInitial = myResources.getColor(R.color.initial);
 
         initSharedPreferences();
         initQRCodeDialog();
@@ -327,7 +336,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
         getUsers(driverInfoLayout, userInfoLayout, extvMessage, message, bookingId, status, tvUserFullName,
                 profileImage, tvViewQR, viewQRImage, tvChat, chatImage, tvDriver, driverImage,
                 tvPass, passImage, tvStop, stopImage, tvCheck, checkImage, tvDriverFullName, driverProfileImage,
-                tvPassTaskNote, tvDriverPlateNo);
+                tvPassenger, tvDriverPlateNo);
 
         int top = dpToPx(4), bottom = dpToPx(4);
 
@@ -358,7 +367,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
             TextView tvChat, ImageView chatImage, TextView tvDriver, ImageView driverImage,
             TextView tvPass, ImageView passImage, TextView tvStop, ImageView stopImage,
             TextView tvCheck, ImageView checkImage, TextView tvDriverFullName, ImageView driverProfileImage,
-            TextView tvPassTaskNote, TextView tvDriverPlateNo
+            TextView tvPassenger, TextView tvDriverPlateNo
     ) {
         usersRef.addValueEventListener(new ValueEventListener() {
             @Override
@@ -375,10 +384,14 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                     driverInfoLayout.setVisibility(View.GONE);
                     userInfoLayout.setVisibility(View.VISIBLE);
 
+                    getDriverUserId(bookingId);
+
                     extvMessage.setText(message);
                     getUserInfo(bookingId, status, tvUserFullName, profileImage, tvChat, chatImage,
                             tvDriver, driverImage, tvPass, passImage, tvStop, stopImage,
-                            tvCheck, checkImage, tvPassTaskNote);
+                            tvCheck, checkImage, tvPassenger);
+                    if(inDriverModule && status.equals("Request") && !taskDriverUserId.equals(userId))
+                        getDriverInfo(bookingId, tvDriverFullName, tvDriverPlateNo, driverProfileImage, driverInfoLayout);
                 }
                 else {
                     userInfoLayout.setVisibility(View.GONE);
@@ -404,12 +417,20 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
 
                     extvMessage.setText(null);
                     getDriverInfo(bookingId, tvDriverFullName, tvDriverPlateNo, driverProfileImage, driverInfoLayout);
+                    if(inDriverModule && status.equals("Request"))
+                        getUserInfo(bookingId, status, tvUserFullName, profileImage, tvChat, chatImage,
+                                tvDriver, driverImage, tvPass, passImage, tvStop, stopImage,
+                                tvCheck, checkImage, tvPassenger);
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
+                Toast.makeText(
+                        myContext,
+                        error.toString(),
+                        Toast.LENGTH_LONG
+                ).show();
             }
         });
     }
@@ -577,7 +598,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                              TextView tvPass, ImageView passImage,
                              TextView tvStop, ImageView stopImage,
                              TextView tvCheck, ImageView checkImage,
-                             TextView tvPassTaskNote) {
+                             TextView tvPassenger) {
         for(User user : users) {
             List<Booking> bookingList = user.getBookingList();
             for(Booking booking : bookingList) {
@@ -592,6 +613,8 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                                 .into(profileImage);
                     }
                     catch (Exception ignored) {}
+
+                    tvPassenger.setVisibility(View.GONE);
 
                     switch (status) {
                         case "Pending":
@@ -641,12 +664,11 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                             checkImage.setOnClickListener(view -> openItem(booking, true));
                             break;
                         case "Request":
-                            getDriverUserId(bookingId);
-
-                            tvPassTaskNote.setVisibility(View.GONE);
+                            tvPassenger.setVisibility(View.VISIBLE);
 
                             if(userId.equals(taskDriverUserId)) {
-                                tvPassTaskNote.setVisibility(View.VISIBLE);
+                                tvPassenger.setText(requestText);
+                                tvPassenger.setTextColor(colorGreen);
 
                                 tvChat.setVisibility(View.VISIBLE);
                                 chatImage.setVisibility(View.VISIBLE);
@@ -671,6 +693,9 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                                 checkImage.setOnClickListener(view -> openItem(booking, true));
                             }
                             else {
+                                tvPassenger.setText(defaultPassengerText);
+                                tvPassenger.setTextColor(colorInitial);
+
                                 tvChat.setVisibility(View.GONE);
                                 chatImage.setVisibility(View.GONE);
 
@@ -924,7 +949,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
         ImageView profileImage, driverProfileImage, thumbnail, moreImage,
                 openImage, locateImage, locateEndImage, viewQRImage, chatImage,
                 driverImage, passImage, stopImage, checkImage, paidImage;
-        TextView tvUserFullName, tvPassTaskNote, tvDriverFullName, tvDriverPlateNo, tvBookingId,
+        TextView tvUserFullName, tvPassenger, tvDriverFullName, tvDriverPlateNo, tvBookingId,
                 tvSchedule, tvTypeName, tvPrice, tvStartStation, tvStartStation2, tvEndStation,
                 tvEndStation2, tvOption, tvOpen, tvLocate, tvLocateEnd, tvViewQR, tvChat, tvDriver,
                 tvPass, tvStop, tvCheck;
@@ -936,7 +961,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
 
             userInfoLayout = itemView.findViewById(R.id.userInfoLayout);
             tvUserFullName = itemView.findViewById(R.id.tvUserFullName);
-            tvPassTaskNote = itemView.findViewById(R.id.tvPassTaskNote);
+            tvPassenger = itemView.findViewById(R.id.tvPassenger);
             profileImage = itemView.findViewById(R.id.profileImage);
 
             driverInfoLayout = itemView.findViewById(R.id.driverInfoLayout);

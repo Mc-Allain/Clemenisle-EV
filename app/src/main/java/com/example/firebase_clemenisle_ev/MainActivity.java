@@ -130,15 +130,13 @@ public class MainActivity extends AppCompatActivity {
 
     boolean isAppStatusActivityShown = false, isAlertDialogShown = false;
 
-    CountDownTimer updateAppTimer;
     Dialog dialog;
     ImageView dialogCloseImage, preferencesImage;
-    TextView tvAppVersion, tvPreferences;
     Button updateAppButton;
 
     Dialog appVersionInfoDialog;
     ImageView appVersionInfoDialogCloseImage;
-    TextView tvAppVersionInfoDialogTitle;
+    TextView tvAppVersionInfoDialogTitle, tvAppVersion, tvPreferences;
     ExpandableTextView extvNewlyAddedFeatures;
 
     boolean isShowAppVersionInfoEnabled;
@@ -265,14 +263,11 @@ public class MainActivity extends AppCompatActivity {
         metaDataRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                String aboutApp = "Failed to get data";
                 double latestVersion = 0;
                 String status = "Failed to get data";
                 boolean showUpdates = false;
 
                 if(snapshot.exists()) {
-                    if(snapshot.child("about").exists())
-                        aboutApp = snapshot.child("about").getValue(String.class);
                     if(snapshot.child("version").exists())
                         latestVersion = snapshot.child("version").getValue(Double.class);
                     if(snapshot.child("status").exists())
@@ -280,10 +275,6 @@ public class MainActivity extends AppCompatActivity {
                     if(snapshot.child("showUpdates").exists())
                         showUpdates = snapshot.child("showUpdates").getValue(Boolean.class);
                 }
-
-                appMetaData.setAboutApp(aboutApp);
-                appMetaData.setLatestVersion(latestVersion);
-                appMetaData.setStatus(status);
 
                 if(statusPromptArray.contains(status) &&
                         !appMetaData.isDeveloper() && !isAppStatusActivityShown) {
@@ -300,7 +291,6 @@ public class MainActivity extends AppCompatActivity {
                                 "\tLatest Version: v" + latestVersion;
                         tvAppVersion.setText(appVersion);
                         dialog.show();
-                        startUpdateAppTimer();
                     }
                     else if(showUpdates && isShowAppVersionInfoEnabled) {
                         String dialogTitle = "What's new in v" + latestVersion;
@@ -330,21 +320,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-    }
-
-    private void startUpdateAppTimer() {
-        if(updateAppTimer != null) updateAppTimer.cancel();
-        updateAppTimer = new CountDownTimer(300000, 1000) {
-            @Override
-            public void onTick(long l) {}
-
-            @Override
-            public void onFinish() {
-                if(dialog != null && appMetaData.getCurrentVersion() <
-                        appMetaData.getLatestVersion()) dialog.show();
-                start();
-            }
-        }.start();
     }
 
     private void initUpdateApplicationDialog() {

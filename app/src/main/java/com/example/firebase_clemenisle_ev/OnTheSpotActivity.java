@@ -84,7 +84,7 @@ public class OnTheSpotActivity extends AppCompatActivity {
 
     ImageView profileImage, driverProfileImage, thumbnail, moreImage, locateImage, locateDestinationImage, viewQRImage,
             chatImage, driverImage, passImage, stopImage, checkImage, reloadImage;
-    TextView tvUserFullName, tvPassTaskNote, tvDriverFullName, tvDriverPlateNo, tvBookingId, tvSchedule, tvTypeName,
+    TextView tvUserFullName, tvPassenger, tvDriverFullName, tvDriverPlateNo, tvBookingId, tvSchedule, tvTypeName,
             tvPrice, tvOriginLocation2, tvDestinationSpot2, tvLocate, tvLocateDestination, tvViewQR,
             tvChat, tvDriver, tvPass, tvStop, tvCheck, tvLog;
     ExpandableTextView extvMessage;
@@ -98,6 +98,8 @@ public class OnTheSpotActivity extends AppCompatActivity {
 
     Context myContext;
     Resources myResources;
+
+    int colorGreen, colorInitial;
 
     String userId, driverUserId, taskDriverUserId;
 
@@ -146,6 +148,8 @@ public class OnTheSpotActivity extends AppCompatActivity {
 
     List<User> users = new ArrayList<>();
 
+    String defaultPassengerText = "Passenger", requestText = "Your Task on Request";
+
     private void initSharedPreferences() {
         SharedPreferences sharedPreferences = myContext
                 .getSharedPreferences("login", Context.MODE_PRIVATE);
@@ -162,7 +166,7 @@ public class OnTheSpotActivity extends AppCompatActivity {
 
         userInfoLayout = findViewById(R.id.userInfoLayout);
         tvUserFullName = findViewById(R.id.tvUserFullName);
-        tvPassTaskNote = findViewById(R.id.tvPassTaskNote);
+        tvPassenger = findViewById(R.id.tvPassenger);
         profileImage = findViewById(R.id.profileImage);
 
         driverInfoLayout = findViewById(R.id.driverInfoLayout);
@@ -217,6 +221,9 @@ public class OnTheSpotActivity extends AppCompatActivity {
         myContext = OnTheSpotActivity.this;
         myResources = getResources();
 
+        colorGreen = myResources.getColor(R.color.green);
+        colorInitial = myResources.getColor(R.color.initial);
+
         optionRunnable = () -> closeOption();
 
         initSharedPreferences();
@@ -226,7 +233,7 @@ public class OnTheSpotActivity extends AppCompatActivity {
         Intent intent = getIntent();
         bookingId = intent.getStringExtra("bookingId");
         inDriverModule = intent.getBooleanExtra("inDriverModule", false);
-        if(inDriverModule)  status = intent.getStringExtra("status");
+        if(inDriverModule) status = intent.getStringExtra("status");
 
         isOnScreen = true;
 
@@ -340,7 +347,11 @@ public class OnTheSpotActivity extends AppCompatActivity {
                     driverInfoLayout.setVisibility(View.GONE);
                     userInfoLayout.setVisibility(View.VISIBLE);
 
+                    getDriverUserId();
+
                     getUserInfo();
+                    if(inDriverModule && status.equals("Request") &&
+                            !taskDriverUserId.equals(userId)) getDriverInfo();
                 }
                 else {
                     userInfoLayout.setVisibility(View.GONE);
@@ -356,6 +367,7 @@ public class OnTheSpotActivity extends AppCompatActivity {
                     viewQRImage.setOnClickListener(view -> viewQRCode());
 
                     getDriverInfo();
+                    if(inDriverModule && status.equals("Request")) getUserInfo();
                 }
             }
 
@@ -513,6 +525,8 @@ public class OnTheSpotActivity extends AppCompatActivity {
                     }
                     catch (Exception ignored) {}
 
+                    tvPassenger.setVisibility(View.GONE);
+
                     switch (status) {
                         case "Pending":
                             tvChat.setVisibility(View.GONE);
@@ -561,12 +575,11 @@ public class OnTheSpotActivity extends AppCompatActivity {
                             checkImage.setOnClickListener(view -> scanQRCode());
                             break;
                         case "Request":
-                            getDriverUserId();
-
-                            tvPassTaskNote.setVisibility(View.GONE);
+                            tvPassenger.setVisibility(View.VISIBLE);
 
                             if(driverUserId.equals(taskDriverUserId)) {
-                                tvPassTaskNote.setVisibility(View.VISIBLE);
+                                tvPassenger.setText(requestText);
+                                tvPassenger.setTextColor(colorGreen);
 
                                 tvChat.setVisibility(View.VISIBLE);
                                 chatImage.setVisibility(View.VISIBLE);
@@ -591,6 +604,9 @@ public class OnTheSpotActivity extends AppCompatActivity {
                                 checkImage.setOnClickListener(view -> scanQRCode());
                             }
                             else {
+                                tvPassenger.setText(defaultPassengerText);
+                                tvPassenger.setTextColor(colorInitial);
+
                                 tvChat.setVisibility(View.GONE);
                                 chatImage.setVisibility(View.GONE);
 
