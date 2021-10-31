@@ -411,8 +411,8 @@ public class RouteActivity extends AppCompatActivity implements
     private void getDriverUserId() {
         for(User user : users) {
             List<Booking> taskList = user.getTaskList();
-            for(Booking booking : taskList) {
-                if(booking.getId().equals(bookingId)) {
+            for(Booking task : taskList) {
+                if(task.getId().equals(bookingId)) {
                     taskDriverUserId = user.getId();
                     return;
                 }

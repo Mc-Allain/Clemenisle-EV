@@ -79,7 +79,7 @@ public class DriverActivity extends AppCompatActivity {
     Resources myResources;
 
     List<Booking> pendingList = new ArrayList<>();
-    List<Booking> taskList = new ArrayList<>();
+    List<Booking> driverTaskList = new ArrayList<>(), taskList = new ArrayList<>();
 
     DateTimeToString dateTimeToString;
 
@@ -347,8 +347,9 @@ public class DriverActivity extends AppCompatActivity {
     }
 
     private void getPendingList() {
-        taskList.clear();
         pendingList.clear();
+        driverTaskList.clear();
+        taskList.clear();
 
         for(User user : users) {
             List<Booking> bookingList = user.getBookingList();
@@ -359,7 +360,8 @@ public class DriverActivity extends AppCompatActivity {
             }
 
             if(user.getId().equals(userId))
-                taskList.addAll(user.getTaskList());
+                driverTaskList.addAll(user.getTaskList());
+            else taskList.addAll(user.getTaskList());
         }
 
         Collections.sort(pendingList, (booking, t1) ->
@@ -378,11 +380,16 @@ public class DriverActivity extends AppCompatActivity {
             public void onFinish() {
                 if(userId != null) {
                     for(Booking booking : pendingList)
-                        checkBooking(booking);
+                        checkBooking(booking, false);
+
+                    for(Booking task : driverTaskList) {
+                        if(task.getStatus().equals("Booked") || task.getStatus().equals("Request"))
+                            checkBooking(task, true);
+                    }
 
                     for(Booking task : taskList) {
                         if(task.getStatus().equals("Booked") || task.getStatus().equals("Request"))
-                            checkBooking(task);
+                            checkBooking(task, false);
                     }
                 }
 
@@ -407,7 +414,7 @@ public class DriverActivity extends AppCompatActivity {
         }
     }
 
-    private void checkBooking(Booking booking) {
+    private void checkBooking(Booking booking, boolean notifiable) {
         dateTimeToString = new DateTimeToString();
         int maximumDaysInMonthOfYear = dateTimeToString.getMaximumDaysInMonthOfYear();
 
@@ -428,8 +435,8 @@ public class DriverActivity extends AppCompatActivity {
             setTaskStatusToFailed(booking);
         }
 
-        checkingForTaskNotification(booking, bookingDay, bookingMonth, bookingYear,
-                maximumDaysInMonthOfYear);
+        if(notifiable) checkingForTaskNotification(booking, bookingDay, bookingMonth, bookingYear,
+                    maximumDaysInMonthOfYear);
     }
 
     private void checkingForTaskNotification(Booking booking, int bookingDay, int bookingMonth,
@@ -532,10 +539,22 @@ public class DriverActivity extends AppCompatActivity {
     }
 
     private void setTaskStatusToFailed(Booking booking) {
-        usersRef.child(userId).child("taskList").child(booking.getId()).
-                child("status").setValue("Failed");
-        booking.setStatus("Failed");
-        showFailedTaskNotification(booking);
+        for (User user : users) {
+            List<Booking> taskList = user.getTaskList();
+
+            for(Booking task : taskList) {
+                if(task.getId().equals(booking.getId())) {
+                    usersRef.child(user.getId()).child("taskList").
+                            child(task.getId()).child("status").setValue("Failed");
+
+                    if(user.getId().equals(userId)) {
+                        booking.setStatus("Failed");
+                        showFailedTaskNotification(booking);
+                    }
+                    return;
+                }
+            }
+        }
     }
 
     private void initNotificationInHours(Booking booking, List<Integer> hourArray, int hrDifference,
