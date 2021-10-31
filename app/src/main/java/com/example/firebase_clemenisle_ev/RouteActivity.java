@@ -637,7 +637,7 @@ public class RouteActivity extends AppCompatActivity implements
 
         if(fromRequest) {
             usersRef.child(taskDriverUserId).child("taskList").
-                    child(driverTask.getId()).removeValue();
+                    child(driverTask.getId()).child("status").setValue("Passed");
         }
 
         DatabaseReference taskListRef = usersRef.child(driverUserId).child("taskList").

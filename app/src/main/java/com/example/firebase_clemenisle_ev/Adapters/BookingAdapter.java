@@ -798,7 +798,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
 
         if(fromRequest) {
             usersRef.child(taskDriverUserId).child("taskList").
-                    child(driverTask.getId()).removeValue();
+                    child(driverTask.getId()).child("status").setValue("Passed");
         }
 
         DatabaseReference bookingListRef = usersRef.child(passengerUserId).
