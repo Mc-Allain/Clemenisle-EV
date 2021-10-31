@@ -55,7 +55,12 @@ public class DateTimeToString {
     }
 
     public String getMonthNo() {
-        if(dateSplit.length == 3) return dateSplit[1];
+        if(dateSplit.length == 3) {
+            int rawMonth = Integer.parseInt(dateSplit[1]);
+            if(isDefaultDate) rawMonth--;
+
+            return String.valueOf(rawMonth);
+        }
         return "Invalid Date";
     }
 
@@ -64,7 +69,7 @@ public class DateTimeToString {
             String month;
 
             int rawMonth = Integer.parseInt(dateSplit[1]);
-            if(isDefaultDate) rawMonth -= 1;
+            if(isDefaultDate) rawMonth--;
 
             switch (rawMonth) {
                 case 1:
@@ -117,7 +122,7 @@ public class DateTimeToString {
         if(dateSplit.length == 3) {
 
             int rawMonth = Integer.parseInt(dateSplit[1]);
-            if(isDefaultDate) rawMonth -= 1;
+            if(isDefaultDate) rawMonth--;
 
             List<Integer> _31DaysMonth = Arrays.asList(0, 2, 4, 6, 7, 9, 11);
             List<Integer> _30DaysMonth = Arrays.asList(3, 5, 8, 10);

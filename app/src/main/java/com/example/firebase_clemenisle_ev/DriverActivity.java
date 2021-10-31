@@ -70,6 +70,7 @@ public class DriverActivity extends AppCompatActivity {
     FirebaseUser firebaseUser;
 
     ConstraintLayout headerLayout;
+    ImageView chatImage;
 
     BottomNavigationView driverNav;
     NavController driverNavCtrlr;
@@ -149,6 +150,7 @@ public class DriverActivity extends AppCompatActivity {
         setContentView(R.layout.activity_driver);
 
         headerLayout = findViewById(R.id.headerLayout);
+        chatImage = findViewById(R.id.chatImage);
         driverNav = findViewById(R.id.bottomNavigationView);
         driverNav.setBackground(null);
 
@@ -191,6 +193,11 @@ public class DriverActivity extends AppCompatActivity {
             if(driverNav.getSelectedItemId() == R.id.settingsFragment2)
                 headerLayout.setVisibility(View.GONE);
             else headerLayout.setVisibility(View.VISIBLE);
+        });
+
+        chatImage.setOnClickListener(view -> {
+            Intent intent = new Intent(myContext, ChatListActivity.class);
+            startActivity(intent);
         });
     }
 
