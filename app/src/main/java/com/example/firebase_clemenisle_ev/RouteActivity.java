@@ -457,8 +457,6 @@ public class RouteActivity extends AppCompatActivity implements
                     }
                     catch (Exception ignored) {}
 
-                    tvPassenger.setVisibility(View.GONE);
-
                     switch (status) {
                         case "Pending":
                             tvChat.setVisibility(View.GONE);

@@ -525,8 +525,6 @@ public class OnTheSpotActivity extends AppCompatActivity {
                     }
                     catch (Exception ignored) {}
 
-                    tvPassenger.setVisibility(View.GONE);
-
                     switch (status) {
                         case "Pending":
                             tvChat.setVisibility(View.GONE);

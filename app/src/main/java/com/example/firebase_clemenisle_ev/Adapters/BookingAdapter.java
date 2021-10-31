@@ -614,8 +614,6 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                     }
                     catch (Exception ignored) {}
 
-                    tvPassenger.setVisibility(View.GONE);
-
                     switch (status) {
                         case "Pending":
                             tvChat.setVisibility(View.GONE);
@@ -664,8 +662,6 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                             checkImage.setOnClickListener(view -> openItem(booking, true));
                             break;
                         case "Request":
-                            tvPassenger.setVisibility(View.VISIBLE);
-
                             if(userId.equals(taskDriverUserId)) {
                                 tvPassenger.setText(requestText);
                                 tvPassenger.setTextColor(colorGreen);

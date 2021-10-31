@@ -318,7 +318,6 @@
                 android:fontFamily="@font/ubuntu"
                 android:text="Passenger"
                 android:textColor="@color/initial"
-                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="@+id/profileImage"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/profileImage"
