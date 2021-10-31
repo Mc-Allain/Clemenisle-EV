@@ -147,7 +147,8 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                 chatImage = holder.chatImage, driverImage = holder.driverImage, passImage = holder.passImage,
                 stopImage = holder.stopImage, checkImage = holder.checkImage, paidImage = holder.paidImage;
         TextView tvUserFullName = holder.tvUserFullName, tvPassTaskNote = holder.tvPassTaskNote,
-                tvDriverFullName = holder.tvDriverFullName, tvBookingId = holder.tvBookingId,
+                tvDriverFullName = holder.tvDriverFullName, tvDriverPlateNo = holder.tvDriverPlateNo,
+                tvBookingId = holder.tvBookingId,
                 tvSchedule = holder.tvSchedule, tvTypeName = holder.tvTypeName, tvPrice = holder.tvPrice,
                 tvStartStation = holder.tvStartStation, tvEndStation = holder.tvEndStation,
                 tvStartStation2 = holder.tvStartStation2, tvEndStation2 = holder.tvEndStation2,
@@ -326,7 +327,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
         getUsers(driverInfoLayout, userInfoLayout, extvMessage, message, bookingId, status, tvUserFullName,
                 profileImage, tvViewQR, viewQRImage, tvChat, chatImage, tvDriver, driverImage,
                 tvPass, passImage, tvStop, stopImage, tvCheck, checkImage, tvDriverFullName, driverProfileImage,
-                tvPassTaskNote);
+                tvPassTaskNote, tvDriverPlateNo);
 
         int top = dpToPx(4), bottom = dpToPx(4);
 
@@ -357,7 +358,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
             TextView tvChat, ImageView chatImage, TextView tvDriver, ImageView driverImage,
             TextView tvPass, ImageView passImage, TextView tvStop, ImageView stopImage,
             TextView tvCheck, ImageView checkImage, TextView tvDriverFullName, ImageView driverProfileImage,
-            TextView tvPassTaskNote
+            TextView tvPassTaskNote, TextView tvDriverPlateNo
     ) {
         usersRef.addValueEventListener(new ValueEventListener() {
             @Override
@@ -402,7 +403,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                     }
 
                     extvMessage.setText(null);
-                    getDriverInfo(bookingId, tvDriverFullName, driverProfileImage, driverInfoLayout);
+                    getDriverInfo(bookingId, tvDriverFullName, tvDriverPlateNo, driverProfileImage, driverInfoLayout);
                 }
             }
 
@@ -420,7 +421,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
         myContext.startActivity(intent);
     }
 
-    private void getDriverInfo(String bookingId, TextView tvDriverFullName,
+    private void getDriverInfo(String bookingId, TextView tvDriverFullName, TextView tvDriverPlateNo,
                                ImageView driverProfileImage, ConstraintLayout driverInfoLayout) {
         for(User user : users) {
             List<Booking> taskList = user.getTaskList();
@@ -429,6 +430,9 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                     String fullName = "<b>" + user.getLastName() + "</b>, " + user.getFirstName();
                     if(user.getMiddleName().length() > 0) fullName += " " + user.getMiddleName();
                     tvDriverFullName.setText(fromHtml(fullName));
+
+                    String plateNo = "<b>Plate Number</b>: " + user.getPlateNumber();
+                    tvDriverPlateNo.setText(fromHtml(plateNo));
 
                     try {
                         Glide.with(myContext).load(user.getProfileImage())
@@ -920,9 +924,10 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
         ImageView profileImage, driverProfileImage, thumbnail, moreImage,
                 openImage, locateImage, locateEndImage, viewQRImage, chatImage,
                 driverImage, passImage, stopImage, checkImage, paidImage;
-        TextView tvUserFullName, tvPassTaskNote, tvDriverFullName, tvBookingId, tvSchedule, tvTypeName, tvPrice,
-                tvStartStation, tvStartStation2, tvEndStation, tvEndStation2, tvOption, tvOpen, tvLocate,
-                tvLocateEnd, tvViewQR, tvChat, tvDriver, tvPass, tvStop, tvCheck;
+        TextView tvUserFullName, tvPassTaskNote, tvDriverFullName, tvDriverPlateNo, tvBookingId,
+                tvSchedule, tvTypeName, tvPrice, tvStartStation, tvStartStation2, tvEndStation,
+                tvEndStation2, tvOption, tvOpen, tvLocate, tvLocateEnd, tvViewQR, tvChat, tvDriver,
+                tvPass, tvStop, tvCheck;
         ExpandableTextView extvMessage;
         ConstraintLayout backgroundLayout, buttonLayout, userInfoLayout, driverInfoLayout;
 
@@ -936,6 +941,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
 
             driverInfoLayout = itemView.findViewById(R.id.driverInfoLayout);
             tvDriverFullName = itemView.findViewById(R.id.tvDriverFullName);
+            tvDriverPlateNo = itemView.findViewById(R.id.tvDriverPlateNo);
             driverProfileImage = itemView.findViewById(R.id.driverProfileImage);
 
             thumbnail = itemView.findViewById(R.id.thumbnail);

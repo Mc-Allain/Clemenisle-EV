@@ -78,7 +78,7 @@ public class RouteActivity extends AppCompatActivity implements
 
     ImageView profileImage, driverProfileImage, thumbnail, moreImage, locateImage, locateEndImage, viewQRImage,
             chatImage, driverImage, passImage, stopImage, checkImage, reloadImage, paidImage;
-    TextView tvUserFullName, tvPassTaskNote, tvDriverFullName, tvBookingId, tvSchedule, tvTypeName,
+    TextView tvUserFullName, tvPassTaskNote, tvDriverFullName, tvDriverPlateNo, tvBookingId, tvSchedule, tvTypeName,
             tvPrice, tvStartStation2, tvEndStation2, tvLocate, tvLocateEnd, tvViewQR, tvChat, tvDriver,
             tvPass, tvStop, tvCheck, tvLog;
     ExpandableTextView extvMessage;
@@ -152,6 +152,7 @@ public class RouteActivity extends AppCompatActivity implements
 
         driverInfoLayout = findViewById(R.id.driverInfoLayout);
         tvDriverFullName = findViewById(R.id.tvDriverFullName);
+        tvDriverPlateNo = findViewById(R.id.tvDriverPlateNo);
         driverProfileImage = findViewById(R.id.driverProfileImage);
 
         thumbnail = findViewById(R.id.thumbnail);
@@ -374,6 +375,9 @@ public class RouteActivity extends AppCompatActivity implements
                     String fullName = "<b>" + user.getLastName() + "</b>, " + user.getFirstName();
                     if(user.getMiddleName().length() > 0) fullName += " " + user.getMiddleName();
                     tvDriverFullName.setText(fromHtml(fullName));
+
+                    String plateNo = "<b>Plate Number</b>: " + user.getPlateNumber();
+                    tvDriverPlateNo.setText(fromHtml(plateNo));
 
                     try {
                         Glide.with(myContext).load(user.getProfileImage())

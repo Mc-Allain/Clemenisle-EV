@@ -52,7 +52,7 @@ public class ChatActivity extends AppCompatActivity {
 
     ConstraintLayout userInfoLayout, driverInfoLayout;
     ImageView profileImage, driverProfileImage, sendImage;
-    TextView tvUserFullName, tvDriverFullName, tvDriverFullName2;
+    TextView tvUserFullName, tvDriverFullName, tvDriverPlateNo;
     RecyclerView chatView;
 
     EditText etMessage;
@@ -100,7 +100,7 @@ public class ChatActivity extends AppCompatActivity {
         driverProfileImage = findViewById(R.id.driverProfileImage);
         tvUserFullName = findViewById(R.id.tvUserFullName);
         tvDriverFullName = findViewById(R.id.tvDriverFullName);
-        tvDriverFullName2 = findViewById(R.id.tvDriverFullName2);
+        tvDriverPlateNo = findViewById(R.id.tvDriverPlateNo);
         chatView = findViewById(R.id.chatView);
 
         etMessage = findViewById(R.id.etMessage);
@@ -208,56 +208,63 @@ public class ChatActivity extends AppCompatActivity {
                     for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                         User user = new User(dataSnapshot);
 
-                        List<Booking> taskList = user.getTaskList();
-                        for(Booking booking : taskList) {
-                            if(booking.getId().equals(bookingId)) {
-                                String fullName = "<b>" + user.getLastName() + "</b>, " + user.getFirstName();
-                                if(user.getMiddleName().length() > 0) fullName += " " + user.getMiddleName();
-                                tvDriverFullName.setText(fromHtml(fullName));
+                        if(!inDriverModule) {
+                            List<Booking> taskList = user.getTaskList();
+                            for(Booking booking : taskList) {
+                                if(booking.getId().equals(bookingId)) {
+                                    String fullName = "<b>" + user.getLastName() + "</b>, " + user.getFirstName();
+                                    if(user.getMiddleName().length() > 0) fullName += " " + user.getMiddleName();
+                                    tvDriverFullName.setText(fromHtml(fullName));
 
-                                try {
-                                    Glide.with(myContext).load(user.getProfileImage())
-                                            .placeholder(R.drawable.image_loading_placeholder)
-                                            .into(driverProfileImage);
+                                    String plateNo = "<b>Plate Number</b>: " + user.getPlateNumber();
+                                    tvDriverPlateNo.setText(fromHtml(plateNo));
+
+                                    try {
+                                        Glide.with(myContext).load(user.getProfileImage())
+                                                .placeholder(R.drawable.image_loading_placeholder)
+                                                .into(driverProfileImage);
+                                    }
+                                    catch (Exception ignored) {}
+
+                                    driverInfoLayout.setVisibility(View.VISIBLE);
+                                    userInfoLayout.setVisibility(View.GONE);
+
+                                    driverUserId = user.getId();
+                                    driverProfileImg = user.getProfileImage();
+                                    driverFullName = fullName;
+                                    initialMessage = booking.getMessage();
+                                    taskTimestamp = booking.getTimestamp();
+
+                                    break;
                                 }
-                                catch (Exception ignored) {}
-
-                                driverInfoLayout.setVisibility(View.VISIBLE);
-                                userInfoLayout.setVisibility(View.GONE);
-
-                                driverUserId = user.getId();
-                                driverProfileImg = user.getProfileImage();
-                                driverFullName = fullName;
-                                initialMessage = booking.getMessage();
-                                taskTimestamp = booking.getTimestamp();
-
-                                break;
                             }
                         }
 
-                        List<Booking> bookingList = user.getBookingList();
-                        for(Booking booking : bookingList) {
-                            if(booking.getId().equals(bookingId)) {
-                                String fullName = "<b>" + user.getLastName() + "</b>, " + user.getFirstName();
-                                if(user.getMiddleName().length() > 0) fullName += " " + user.getMiddleName();
-                                tvUserFullName.setText(fromHtml(fullName));
+                        if(inDriverModule) {
+                            List<Booking> bookingList = user.getBookingList();
+                            for(Booking booking : bookingList) {
+                                if(booking.getId().equals(bookingId)) {
+                                    String fullName = "<b>" + user.getLastName() + "</b>, " + user.getFirstName();
+                                    if(user.getMiddleName().length() > 0) fullName += " " + user.getMiddleName();
+                                    tvUserFullName.setText(fromHtml(fullName));
 
-                                try {
-                                    Glide.with(myContext).load(user.getProfileImage())
-                                            .placeholder(R.drawable.image_loading_placeholder)
-                                            .into(profileImage);
+                                    try {
+                                        Glide.with(myContext).load(user.getProfileImage())
+                                                .placeholder(R.drawable.image_loading_placeholder)
+                                                .into(profileImage);
+                                    }
+                                    catch (Exception ignored) {}
+
+                                    userInfoLayout.setVisibility(View.VISIBLE);
+                                    driverInfoLayout.setVisibility(View.GONE);
+
+                                    passengerUserId = user.getId();
+                                    passengerProfileImg = user.getProfileImage();
+                                    initialMessage = booking.getMessage();
+                                    bookingTimestamp = booking.getTimestamp();
+
+                                    break;
                                 }
-                                catch (Exception ignored) {}
-
-                                userInfoLayout.setVisibility(View.VISIBLE);
-                                driverInfoLayout.setVisibility(View.GONE);
-
-                                passengerUserId = user.getId();
-                                passengerProfileImg = user.getProfileImage();
-                                initialMessage = booking.getMessage();
-                                bookingTimestamp = booking.getTimestamp();
-
-                                break;
                             }
                         }
                     }

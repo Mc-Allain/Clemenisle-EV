@@ -84,7 +84,7 @@ public class OnTheSpotActivity extends AppCompatActivity {
 
     ImageView profileImage, driverProfileImage, thumbnail, moreImage, locateImage, locateDestinationImage, viewQRImage,
             chatImage, driverImage, passImage, stopImage, checkImage, reloadImage;
-    TextView tvUserFullName, tvPassTaskNote, tvDriverFullName, tvBookingId, tvSchedule, tvTypeName,
+    TextView tvUserFullName, tvPassTaskNote, tvDriverFullName, tvDriverPlateNo, tvBookingId, tvSchedule, tvTypeName,
             tvPrice, tvOriginLocation2, tvDestinationSpot2, tvLocate, tvLocateDestination, tvViewQR,
             tvChat, tvDriver, tvPass, tvStop, tvCheck, tvLog;
     ExpandableTextView extvMessage;
@@ -167,6 +167,7 @@ public class OnTheSpotActivity extends AppCompatActivity {
 
         driverInfoLayout = findViewById(R.id.driverInfoLayout);
         tvDriverFullName = findViewById(R.id.tvDriverFullName);
+        tvDriverPlateNo = findViewById(R.id.tvDriverPlateNo);
         driverProfileImage = findViewById(R.id.driverProfileImage);
 
         thumbnail = findViewById(R.id.thumbnail);
@@ -382,6 +383,9 @@ public class OnTheSpotActivity extends AppCompatActivity {
                     String fullName = "<b>" + user.getLastName() + "</b>, " + user.getFirstName();
                     if(user.getMiddleName().length() > 0) fullName += " " + user.getMiddleName();
                     tvDriverFullName.setText(fromHtml(fullName));
+
+                    String plateNo = "<b>Plate Number</b>: " + user.getPlateNumber();
+                    tvDriverPlateNo.setText(fromHtml(plateNo));
 
                     try {
                         Glide.with(myContext).load(user.getProfileImage())

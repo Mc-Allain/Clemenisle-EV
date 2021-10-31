@@ -145,7 +145,7 @@ public class SettingsFragment extends Fragment {
                 addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        if(snapshot.exists()) isDriver = true;
+                        if(snapshot.exists()) isDriver = snapshot.getValue(Boolean.class);
                         initSettings();
                     }
 

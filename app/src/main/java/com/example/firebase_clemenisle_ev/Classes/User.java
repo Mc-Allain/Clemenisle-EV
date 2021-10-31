@@ -16,6 +16,7 @@ public class User {
     private final List<Comment> reportedComments = new ArrayList<>();
     private final List<Booking> taskList = new ArrayList<>();
     private boolean developer, admin, driver;
+    private String plateNumber;
 
     public User() {
     }
@@ -124,6 +125,8 @@ public class User {
             admin = dataSnapshot.child("admin").getValue(Boolean.class);
         if(dataSnapshot.child("driver").exists())
             driver = dataSnapshot.child("driver").getValue(Boolean.class);
+
+        plateNumber = dataSnapshot.child("plateNumber").getValue(String.class);
     }
 
     public User(String firstName, String id, String lastName, String middleName) {
@@ -191,5 +194,9 @@ public class User {
 
     public boolean isDriver() {
         return driver;
+    }
+
+    public String getPlateNumber() {
+        return plateNumber;
     }
 }
