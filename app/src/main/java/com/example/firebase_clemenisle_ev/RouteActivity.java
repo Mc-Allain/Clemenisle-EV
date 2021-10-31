@@ -342,8 +342,9 @@ public class RouteActivity extends AppCompatActivity implements
                     getDriverUserId();
 
                     getUserInfo();
-                    if(inDriverModule && status.equals("Request") &&
-                            !taskDriverUserId.equals(userId)) getDriverInfo();
+                    if(inDriverModule && (status.equals("Passed") ||
+                            status.equals("Request") && !taskDriverUserId.equals(userId)))
+                        getDriverInfo();
                 }
                 else {
                     userInfoLayout.setVisibility(View.GONE);
@@ -383,7 +384,7 @@ public class RouteActivity extends AppCompatActivity implements
             List<Booking> taskList = user.getTaskList();
 
             for(Booking booking : taskList) {
-                if(booking.getId().equals(bookingId)) {
+                if(booking.getId().equals(bookingId) && !booking.getStatus().equals("Passed")) {
                     String fullName = "<b>" + user.getLastName() + "</b>, " + user.getFirstName();
                     if(user.getMiddleName().length() > 0) fullName += " " + user.getMiddleName();
                     tvDriverFullName.setText(fromHtml(fullName));
@@ -861,6 +862,7 @@ public class RouteActivity extends AppCompatActivity implements
                 color = myResources.getColor(R.color.blue);
                 backgroundDrawable = myResources.getDrawable(R.color.blue);
                 break;
+            case "Passed":
             case "Cancelled":
             case "Failed":
                 color = myResources.getColor(R.color.red);

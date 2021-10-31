@@ -231,6 +231,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                 color = resources.getColor(R.color.blue);
                 backgroundDrawable = resources.getDrawable(R.color.blue);
                 break;
+            case "Passed":
             case "Cancelled":
             case "Failed":
                 color = resources.getColor(R.color.red);
@@ -390,7 +391,8 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                     getUserInfo(bookingId, status, tvUserFullName, profileImage, tvChat, chatImage,
                             tvDriver, driverImage, tvPass, passImage, tvStop, stopImage,
                             tvCheck, checkImage, tvPassenger);
-                    if(inDriverModule && status.equals("Request") && !taskDriverUserId.equals(userId))
+                    if(inDriverModule && (status.equals("Passed") ||
+                            status.equals("Request") && !taskDriverUserId.equals(userId)))
                         getDriverInfo(bookingId, tvDriverFullName, tvDriverPlateNo, driverProfileImage, driverInfoLayout);
                 }
                 else {
@@ -447,7 +449,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
         for(User user : users) {
             List<Booking> taskList = user.getTaskList();
             for(Booking booking : taskList) {
-                if(booking.getId().equals(bookingId)) {
+                if(booking.getId().equals(bookingId) && !booking.getStatus().equals("Passed")) {
                     String fullName = "<b>" + user.getLastName() + "</b>, " + user.getFirstName();
                     if(user.getMiddleName().length() > 0) fullName += " " + user.getMiddleName();
                     tvDriverFullName.setText(fromHtml(fullName));
