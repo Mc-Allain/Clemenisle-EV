@@ -208,12 +208,13 @@ public class ChatActivity extends AppCompatActivity {
                     for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                         User user = new User(dataSnapshot);
 
-                        if(!inDriverModule) {
-                            List<Booking> taskList = user.getTaskList();
-                            for(Booking booking : taskList) {
-                                if(booking.getId().equals(bookingId)) {
-                                    String fullName = "<b>" + user.getLastName() + "</b>, " + user.getFirstName();
-                                    if(user.getMiddleName().length() > 0) fullName += " " + user.getMiddleName();
+                        List<Booking> taskList = user.getTaskList();
+                        for(Booking task : taskList) {
+                            if(task.getId().equals(bookingId)) {
+                                String fullName = "<b>" + user.getLastName() + "</b>, " + user.getFirstName();
+                                if(user.getMiddleName().length() > 0) fullName += " " + user.getMiddleName();
+
+                                if(!inDriverModule) {
                                     tvDriverFullName.setText(fromHtml(fullName));
 
                                     String plateNo = "<b>Plate Number</b>: " + user.getPlateNumber();
@@ -228,24 +229,25 @@ public class ChatActivity extends AppCompatActivity {
 
                                     driverInfoLayout.setVisibility(View.VISIBLE);
                                     userInfoLayout.setVisibility(View.GONE);
-
-                                    driverUserId = user.getId();
-                                    driverProfileImg = user.getProfileImage();
-                                    driverFullName = fullName;
-                                    initialMessage = booking.getMessage();
-                                    taskTimestamp = booking.getTimestamp();
-
-                                    break;
                                 }
+
+                                driverUserId = user.getId();
+                                driverProfileImg = user.getProfileImage();
+                                driverFullName = fullName;
+                                initialMessage = task.getMessage();
+                                taskTimestamp = task.getTimestamp();
+
+                                break;
                             }
                         }
 
-                        if(inDriverModule) {
-                            List<Booking> bookingList = user.getBookingList();
-                            for(Booking booking : bookingList) {
-                                if(booking.getId().equals(bookingId)) {
-                                    String fullName = "<b>" + user.getLastName() + "</b>, " + user.getFirstName();
-                                    if(user.getMiddleName().length() > 0) fullName += " " + user.getMiddleName();
+                        List<Booking> bookingList = user.getBookingList();
+                        for(Booking booking : bookingList) {
+                            if(booking.getId().equals(bookingId)) {
+                                String fullName = "<b>" + user.getLastName() + "</b>, " + user.getFirstName();
+                                if(user.getMiddleName().length() > 0) fullName += " " + user.getMiddleName();
+
+                                if(inDriverModule) {
                                     tvUserFullName.setText(fromHtml(fullName));
 
                                     try {
@@ -257,14 +259,14 @@ public class ChatActivity extends AppCompatActivity {
 
                                     userInfoLayout.setVisibility(View.VISIBLE);
                                     driverInfoLayout.setVisibility(View.GONE);
-
-                                    passengerUserId = user.getId();
-                                    passengerProfileImg = user.getProfileImage();
-                                    initialMessage = booking.getMessage();
-                                    bookingTimestamp = booking.getTimestamp();
-
-                                    break;
                                 }
+
+                                passengerUserId = user.getId();
+                                passengerProfileImg = user.getProfileImage();
+                                initialMessage = booking.getMessage();
+                                bookingTimestamp = booking.getTimestamp();
+
+                                break;
                             }
                         }
                     }
@@ -279,7 +281,7 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private void getChats() {
-        usersRef.child(passengerUserId).child("bookingList").child(bookingId).child("chats")
+        usersRef.child(driverUserId).child("taskList").child(bookingId).child("chats")
                 .addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {

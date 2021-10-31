@@ -407,7 +407,6 @@ public class DriverActivity extends AppCompatActivity {
                     DatabaseReference bookingListRef = usersRef.child(user.getId()).
                             child("bookingList").child(booking.getId());
                     bookingListRef.child("status").setValue("Failed");
-                    bookingListRef.child("chats").removeValue();
                     return;
                 }
             }

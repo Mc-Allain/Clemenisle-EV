@@ -402,7 +402,6 @@ public class MainActivity extends AppCompatActivity {
         DatabaseReference bookingListRef = usersRef.child(userId).
                 child("bookingList").child(booking.getId());
         bookingListRef.child("status").setValue("Failed");
-        bookingListRef.child("chats").removeValue();
         booking.setStatus("Failed");
         showFailedBookingNotification(booking);
     }
