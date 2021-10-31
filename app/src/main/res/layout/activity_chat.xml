@@ -96,13 +96,13 @@
             android:fontFamily="@font/ubuntu"
             android:text="Driver's Full Name"
             android:textColor="@color/black"
-            app:layout_constraintBottom_toTopOf="@+id/tvDriverPlateNo"
+            app:layout_constraintBottom_toTopOf="@+id/tvPlateNumber"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/driverProfileImage"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/tvDriverPlateNo"
+            android:id="@+id/tvPlateNumber"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"

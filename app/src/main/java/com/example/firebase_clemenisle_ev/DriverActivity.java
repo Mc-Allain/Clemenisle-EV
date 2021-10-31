@@ -404,9 +404,8 @@ public class DriverActivity extends AppCompatActivity {
 
             for(Booking booking : bookingList) {
                 if(booking.getId().equals(targetBooking.getId())) {
-                    DatabaseReference bookingListRef = usersRef.child(user.getId()).
-                            child("bookingList").child(booking.getId());
-                    bookingListRef.child("status").setValue("Failed");
+                    usersRef.child(user.getId()).child("bookingList").
+                            child(booking.getId()).child("status").setValue("Failed");
                     return;
                 }
             }
@@ -561,13 +560,13 @@ public class DriverActivity extends AppCompatActivity {
         if(!booking.getBookingType().getId().equals("BT99")) {
             if(hourArray.contains(hrDifference) &&
                     (minArray.contains(minDifference) || minDifference == 0) && sec < 5) {
-                showUpcomingBookingNotification(booking, hrDifference, "hours");
+                showUpcomingTaskNotification(booking, hrDifference, "hours");
             }
             else if(hrDifference % 24 == 0) {
                 if((minArray.contains(minDifference) || minDifference == 0) && sec < 5) {
                     int day = hrDifference/24;
-                    if(day == 1) showUpcomingBookingNotification(booking, day, "day");
-                    else showUpcomingBookingNotification(booking, day, "days");
+                    if(day == 1) showUpcomingTaskNotification(booking, day, "day");
+                    else showUpcomingTaskNotification(booking, day, "days");
                 }
             }
         }
@@ -577,11 +576,11 @@ public class DriverActivity extends AppCompatActivity {
                                            List<Integer> minArray, int minDifference, int sec) {
         if(!booking.getBookingType().getId().equals("BT99")) {
             if(hrDifference == 0 && minArray.contains(minDifference) && sec < 5) {
-                if(minDifference == 1) showUpcomingBookingNotification(booking, minDifference, "minute");
-                else showUpcomingBookingNotification(booking, minDifference, "minutes");
+                if(minDifference == 1) showUpcomingTaskNotification(booking, minDifference, "minute");
+                else showUpcomingTaskNotification(booking, minDifference, "minutes");
             }
             else if(hrDifference == 1 && minDifference == 0 && sec < 5)
-                showUpcomingBookingNotification(booking, hrDifference, "hour");
+                showUpcomingTaskNotification(booking, hrDifference, "hour");
         }
     }
 
@@ -603,16 +602,16 @@ public class DriverActivity extends AppCompatActivity {
         return notificationManager;
     }
 
-    private void showUpcomingBookingNotification(Booking booking, int value, String unit) {
-        NotificationManager notificationManager = getNotificationManager(booking.getId());
+    private void showUpcomingTaskNotification(Booking task, int value, String unit) {
+        NotificationManager notificationManager = getNotificationManager(task.getId());
         Bitmap icon = BitmapFactory.decodeResource(myResources, R.drawable.front_icon);
 
         NotificationCompat.Builder builder =
-                new NotificationCompat.Builder(myContext, booking.getId())
+                new NotificationCompat.Builder(myContext, task.getId())
                         .setSmallIcon(R.drawable.front_icon).setLargeIcon(icon)
                         .setContentTitle("Clemenisle-EV Task Reminder")
                         .setContentText("You only have less than " + value + " " + unit +
-                                " before the schedule of your Task (ID: " + booking.getId() +").")
+                                " before the schedule of your Task (ID: " + task.getId() +").")
                         .setCategory(NotificationCompat.CATEGORY_REMINDER)
                         .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                         .setDefaults(NotificationCompat.DEFAULT_ALL)
@@ -622,10 +621,11 @@ public class DriverActivity extends AppCompatActivity {
             builder.setPriority(Notification.PRIORITY_HIGH);
 
         Intent notificationIntent = new Intent(myContext, RouteActivity.class);
-        notificationIntent.putExtra("bookingId", booking.getId());
+        notificationIntent.putExtra("bookingId", task.getId());
         notificationIntent.putExtra("inDriverModule", true);
-        notificationIntent.putExtra("status", booking.getStatus());
-        notificationIntent.putExtra("userId", getPassengerUserId(booking.getId()));
+        notificationIntent.putExtra("status", task.getStatus());
+        notificationIntent.putExtra("previousDriverUserId", task.getPreviousDriverUserId());
+        notificationIntent.putExtra("userId", getPassengerUserId(task.getId()));
 
         PendingIntent pendingIntent = PendingIntent.getActivity(
                 myContext, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT
@@ -692,6 +692,7 @@ public class DriverActivity extends AppCompatActivity {
         notificationIntent.putExtra("inDriverModule", true);
         notificationIntent.putExtra("isScanning", false);
         notificationIntent.putExtra("status", task.getStatus());
+        notificationIntent.putExtra("previousDriverUserId", task.getPreviousDriverUserId());
         notificationIntent.putExtra("userId", getPassengerUserId(task.getId()));
 
         PendingIntent pendingIntent = PendingIntent.getActivity(

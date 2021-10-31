@@ -399,9 +399,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setBookingStatusToFailed(Booking booking) {
-        DatabaseReference bookingListRef = usersRef.child(userId).
-                child("bookingList").child(booking.getId());
-        bookingListRef.child("status").setValue("Failed");
+        usersRef.child(userId).child("bookingList").
+                child(booking.getId()).child("status").setValue("Failed");
         booking.setStatus("Failed");
         showFailedBookingNotification(booking);
     }

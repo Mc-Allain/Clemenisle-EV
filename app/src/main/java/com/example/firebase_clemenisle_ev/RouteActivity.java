@@ -78,7 +78,7 @@ public class RouteActivity extends AppCompatActivity implements
 
     ImageView profileImage, driverProfileImage, thumbnail, moreImage, locateImage, locateEndImage, viewQRImage,
             chatImage, driverImage, passImage, stopImage, checkImage, reloadImage, paidImage;
-    TextView tvUserFullName, tvPassenger, tvDriverFullName, tvDriverPlateNo, tvBookingId, tvSchedule, tvTypeName,
+    TextView tvUserFullName, tvPassenger, tvDriverFullName, tvPlateNumber, tvBookingId, tvSchedule, tvTypeName,
             tvPrice, tvStartStation2, tvEndStation2, tvLocate, tvLocateEnd, tvViewQR, tvChat, tvDriver,
             tvPass, tvStop, tvCheck, tvLog;
     ExpandableTextView extvMessage;
@@ -104,7 +104,8 @@ public class RouteActivity extends AppCompatActivity implements
 
     DatabaseReference bookingListRef;
 
-    String bookingId, schedule, typeName, price, startStationName, endStationName, status, message;
+    String bookingId, schedule, typeName, price, startStationName, endStationName, status,
+            message, previousDriverUserId;
     boolean isLatest, isPaid;
 
     Station startStation, endStation;
@@ -156,7 +157,7 @@ public class RouteActivity extends AppCompatActivity implements
 
         driverInfoLayout = findViewById(R.id.driverInfoLayout);
         tvDriverFullName = findViewById(R.id.tvDriverFullName);
-        tvDriverPlateNo = findViewById(R.id.tvDriverPlateNo);
+        tvPlateNumber = findViewById(R.id.tvPlateNumber);
         driverProfileImage = findViewById(R.id.driverProfileImage);
 
         thumbnail = findViewById(R.id.thumbnail);
@@ -214,7 +215,10 @@ public class RouteActivity extends AppCompatActivity implements
         bookingId = intent.getStringExtra("bookingId");
         inDriverModule = intent.getBooleanExtra("inDriverModule", false);
         isLatest = intent.getBooleanExtra("isLatest", false);
-        if(inDriverModule) status = intent.getStringExtra("status");
+        if(inDriverModule) {
+            status = intent.getStringExtra("status");
+            previousDriverUserId = intent.getStringExtra("previousDriverUserId");
+        }
 
         isOnScreen = true;
 
@@ -343,6 +347,7 @@ public class RouteActivity extends AppCompatActivity implements
 
                     getUserInfo();
                     if(inDriverModule && (status.equals("Passed") ||
+                            previousDriverUserId != null && previousDriverUserId.length() > 0 ||
                             status.equals("Request") && !taskDriverUserId.equals(userId)))
                         getDriverInfo();
                 }
@@ -360,7 +365,6 @@ public class RouteActivity extends AppCompatActivity implements
                     viewQRImage.setOnClickListener(view -> viewQRCode());
 
                     getDriverInfo();
-                    if(inDriverModule && status.equals("Request")) getUserInfo();
                 }
             }
 
@@ -381,28 +385,52 @@ public class RouteActivity extends AppCompatActivity implements
 
     private void getDriverInfo() {
         for(User user : users) {
-            List<Booking> taskList = user.getTaskList();
+            if(previousDriverUserId != null && previousDriverUserId.length() > 0 &&
+                    user.getId().equals(previousDriverUserId) &&
+                    !status.equals("Request") && !status.equals("Passed")) {
+                String fullName = "<b>" + user.getLastName() + "</b>, " + user.getFirstName();
+                if(user.getMiddleName().length() > 0) fullName += " " + user.getMiddleName();
+                tvDriverFullName.setText(fromHtml(fullName));
 
-            for(Booking booking : taskList) {
-                if(booking.getId().equals(bookingId) && !booking.getStatus().equals("Passed")) {
-                    String fullName = "<b>" + user.getLastName() + "</b>, " + user.getFirstName();
-                    if(user.getMiddleName().length() > 0) fullName += " " + user.getMiddleName();
-                    tvDriverFullName.setText(fromHtml(fullName));
+                String plateNumber = "Previous Driver";
+                tvPlateNumber.setText(plateNumber);
 
-                    String plateNo = "<b>Plate Number</b>: " + user.getPlateNumber();
-                    tvDriverPlateNo.setText(fromHtml(plateNo));
+                try {
+                    Glide.with(myContext).load(user.getProfileImage())
+                            .placeholder(R.drawable.image_loading_placeholder)
+                            .into(driverProfileImage);
+                }
+                catch (Exception ignored) {}
 
-                    try {
-                        Glide.with(myContext).load(user.getProfileImage())
-                                .placeholder(R.drawable.image_loading_placeholder)
-                                .into(driverProfileImage);
+                driverInfoLayout.setVisibility(View.VISIBLE);
+
+                return;
+            }
+            else if(!status.equals("Booked") || previousDriverUserId == null || previousDriverUserId.length() == 0) {
+                List<Booking> taskList = user.getTaskList();
+                for(Booking task : taskList) {
+                    if(task.getId().equals(bookingId) && !task.getStatus().equals("Passed")) {
+                        String fullName = "<b>" + user.getLastName() + "</b>, " + user.getFirstName();
+                        if(user.getMiddleName().length() > 0) fullName += " " + user.getMiddleName();
+                        tvDriverFullName.setText(fromHtml(fullName));
+
+                        String plateNumber = "<b>Plate Number</b>: " + user.getPlateNumber();
+                        if(status.equals("Request")) plateNumber = "Driver on Request";
+                        if(status.equals("Passed")) plateNumber = "Current Driver";
+                        tvPlateNumber.setText(fromHtml(plateNumber));
+
+                        try {
+                            Glide.with(myContext).load(user.getProfileImage())
+                                    .placeholder(R.drawable.image_loading_placeholder)
+                                    .into(driverProfileImage);
+                        }
+                        catch (Exception ignored) {}
+
+                        driverUserId = user.getId();
+                        driverInfoLayout.setVisibility(View.VISIBLE);
+
+                        return;
                     }
-                    catch (Exception ignored) {}
-
-                    driverUserId = user.getId();
-                    driverInfoLayout.setVisibility(View.VISIBLE);
-
-                    return;
                 }
             }
         }
@@ -632,10 +660,11 @@ public class RouteActivity extends AppCompatActivity implements
         String status = "Booked";
         List<Route> bookingRouteList = booking.getRouteList();
         booking.setTimestamp(new DateTimeToString().getDateAndTime());
-        booking.setStatus(status);
         Booking driverTask = new Booking(booking);
+        driverTask.setStatus(status);
 
         if(fromRequest) {
+            driverTask.setPreviousDriverUserId(taskDriverUserId);
             usersRef.child(taskDriverUserId).child("taskList").
                     child(driverTask.getId()).child("status").setValue("Passed");
         }
@@ -1009,8 +1038,6 @@ public class RouteActivity extends AppCompatActivity implements
                     if(!inDriverModule || (status != null && !status.equals("Request")) ||
                             !currentStatus.equals("Booked"))
                         status = currentStatus;
-                    
-                    message = booking.getMessage();
 
                     typeName = booking.getBookingType().getName();
                     price = String.valueOf(booking.getBookingType().getPrice());
@@ -1019,6 +1046,7 @@ public class RouteActivity extends AppCompatActivity implements
                     for(Route route : booking.getRouteList())
                         if(!route.isDeactivated()) routeList.add(route);
 
+                    message = booking.getMessage();
                     isPaid = booking.isPaid();
                 }
                 if(routeList.size() > 0) finishLoading();

@@ -52,7 +52,7 @@ public class ChatActivity extends AppCompatActivity {
 
     ConstraintLayout userInfoLayout, driverInfoLayout;
     ImageView profileImage, driverProfileImage, sendImage;
-    TextView tvUserFullName, tvDriverFullName, tvDriverPlateNo;
+    TextView tvUserFullName, tvDriverFullName, tvPlateNumber;
     RecyclerView chatView;
 
     EditText etMessage;
@@ -100,7 +100,7 @@ public class ChatActivity extends AppCompatActivity {
         driverProfileImage = findViewById(R.id.driverProfileImage);
         tvUserFullName = findViewById(R.id.tvUserFullName);
         tvDriverFullName = findViewById(R.id.tvDriverFullName);
-        tvDriverPlateNo = findViewById(R.id.tvDriverPlateNo);
+        tvPlateNumber = findViewById(R.id.tvPlateNumber);
         chatView = findViewById(R.id.chatView);
 
         etMessage = findViewById(R.id.etMessage);
@@ -194,7 +194,7 @@ public class ChatActivity extends AppCompatActivity {
         DatabaseReference bookingListRef = usersRef.child(passengerUserId).child("bookingList").child(bookingId),
         taskListRef = usersRef.child(driverUserId).child("taskList").child(bookingId);
 
-        bookingListRef.child("chats").child(chatId).setValue(chat);
+        taskListRef.child("chats").child(chatId).setValue(chat);
 
         if(inDriverModule) bookingListRef.child("notified").setValue(false);
         else taskListRef.child("notified").setValue(false);
@@ -217,8 +217,8 @@ public class ChatActivity extends AppCompatActivity {
                                 if(!inDriverModule) {
                                     tvDriverFullName.setText(fromHtml(fullName));
 
-                                    String plateNo = "<b>Plate Number</b>: " + user.getPlateNumber();
-                                    tvDriverPlateNo.setText(fromHtml(plateNo));
+                                    String plateNumber = "<b>Plate Number</b>: " + user.getPlateNumber();
+                                    tvPlateNumber.setText(fromHtml(plateNumber));
 
                                     try {
                                         Glide.with(myContext).load(user.getProfileImage())

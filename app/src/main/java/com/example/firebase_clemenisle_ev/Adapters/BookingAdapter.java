@@ -152,7 +152,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                 chatImage = holder.chatImage, driverImage = holder.driverImage, passImage = holder.passImage,
                 stopImage = holder.stopImage, checkImage = holder.checkImage, paidImage = holder.paidImage;
         TextView tvUserFullName = holder.tvUserFullName, tvPassenger = holder.tvPassenger,
-                tvDriverFullName = holder.tvDriverFullName, tvDriverPlateNo = holder.tvDriverPlateNo,
+                tvDriverFullName = holder.tvDriverFullName, tvPlateNumber = holder.tvPlateNumber,
                 tvBookingId = holder.tvBookingId,
                 tvSchedule = holder.tvSchedule, tvTypeName = holder.tvTypeName, tvPrice = holder.tvPrice,
                 tvStartStation = holder.tvStartStation, tvEndStation = holder.tvEndStation,
@@ -207,6 +207,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
         if(price.split("\\.")[1].length() == 1) price += 0;
 
         String message = booking.getMessage();
+        String previousDriverUserId = booking.getPreviousDriverUserId();
 
         tvBookingId.setText(bookingId);
         tvSchedule.setText(schedule);
@@ -337,7 +338,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
         getUsers(driverInfoLayout, userInfoLayout, extvMessage, message, bookingId, status, tvUserFullName,
                 profileImage, tvViewQR, viewQRImage, tvChat, chatImage, tvDriver, driverImage,
                 tvPass, passImage, tvStop, stopImage, tvCheck, checkImage, tvDriverFullName, driverProfileImage,
-                tvPassenger, tvDriverPlateNo);
+                tvPassenger, tvPlateNumber, previousDriverUserId);
 
         int top = dpToPx(4), bottom = dpToPx(4);
 
@@ -348,7 +349,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
         }
         if(isLastItem) {
             if(status.equals("Failed")) {
-                bottom = dpToPx(88);
+                bottom = inDriverModule ? dpToPx(8) : dpToPx(88);
             }
             else {
                 bottom = dpToPx(8);
@@ -368,7 +369,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
             TextView tvChat, ImageView chatImage, TextView tvDriver, ImageView driverImage,
             TextView tvPass, ImageView passImage, TextView tvStop, ImageView stopImage,
             TextView tvCheck, ImageView checkImage, TextView tvDriverFullName, ImageView driverProfileImage,
-            TextView tvPassenger, TextView tvDriverPlateNo
+            TextView tvPassenger, TextView tvPlateNumber, String previousDriverUserId
     ) {
         usersRef.addValueEventListener(new ValueEventListener() {
             @Override
@@ -392,8 +393,10 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                             tvDriver, driverImage, tvPass, passImage, tvStop, stopImage,
                             tvCheck, checkImage, tvPassenger);
                     if(inDriverModule && (status.equals("Passed") ||
+                            previousDriverUserId != null && previousDriverUserId.length() > 0 ||
                             status.equals("Request") && !taskDriverUserId.equals(userId)))
-                        getDriverInfo(bookingId, tvDriverFullName, tvDriverPlateNo, driverProfileImage, driverInfoLayout);
+                        getDriverInfo(bookingId, tvDriverFullName, tvPlateNumber,
+                                driverProfileImage, driverInfoLayout, status, previousDriverUserId);
                 }
                 else {
                     userInfoLayout.setVisibility(View.GONE);
@@ -418,11 +421,8 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                     }
 
                     extvMessage.setText(null);
-                    getDriverInfo(bookingId, tvDriverFullName, tvDriverPlateNo, driverProfileImage, driverInfoLayout);
-                    if(inDriverModule && status.equals("Request"))
-                        getUserInfo(bookingId, status, tvUserFullName, profileImage, tvChat, chatImage,
-                                tvDriver, driverImage, tvPass, passImage, tvStop, stopImage,
-                                tvCheck, checkImage, tvPassenger);
+                    getDriverInfo(bookingId, tvDriverFullName, tvPlateNumber,
+                            driverProfileImage, driverInfoLayout, status, previousDriverUserId);
                 }
             }
 
@@ -444,29 +444,55 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
         myContext.startActivity(intent);
     }
 
-    private void getDriverInfo(String bookingId, TextView tvDriverFullName, TextView tvDriverPlateNo,
-                               ImageView driverProfileImage, ConstraintLayout driverInfoLayout) {
+    private void getDriverInfo(String bookingId, TextView tvDriverFullName, TextView tvPlateNumber,
+                               ImageView driverProfileImage, ConstraintLayout driverInfoLayout, String status,
+                               String previousDriverUserId) {
         for(User user : users) {
-            List<Booking> taskList = user.getTaskList();
-            for(Booking booking : taskList) {
-                if(booking.getId().equals(bookingId) && !booking.getStatus().equals("Passed")) {
-                    String fullName = "<b>" + user.getLastName() + "</b>, " + user.getFirstName();
-                    if(user.getMiddleName().length() > 0) fullName += " " + user.getMiddleName();
-                    tvDriverFullName.setText(fromHtml(fullName));
+            if(previousDriverUserId != null && previousDriverUserId.length() > 0 &&
+                    user.getId().equals(previousDriverUserId) &&
+                    !status.equals("Request") && !status.equals("Passed")) {
+                String fullName = "<b>" + user.getLastName() + "</b>, " + user.getFirstName();
+                if(user.getMiddleName().length() > 0) fullName += " " + user.getMiddleName();
+                tvDriverFullName.setText(fromHtml(fullName));
 
-                    String plateNo = "<b>Plate Number</b>: " + user.getPlateNumber();
-                    tvDriverPlateNo.setText(fromHtml(plateNo));
+                String plateNumber = "Previous Driver";
+                tvPlateNumber.setText(plateNumber);
 
-                    try {
-                        Glide.with(myContext).load(user.getProfileImage())
-                                .placeholder(R.drawable.image_loading_placeholder)
-                                .into(driverProfileImage);
+                try {
+                    Glide.with(myContext).load(user.getProfileImage())
+                            .placeholder(R.drawable.image_loading_placeholder)
+                            .into(driverProfileImage);
+                }
+                catch (Exception ignored) {}
+
+                driverInfoLayout.setVisibility(View.VISIBLE);
+
+                return;
+            }
+            else if(!status.equals("Booked") || previousDriverUserId == null || previousDriverUserId.length() == 0) {
+                List<Booking> taskList = user.getTaskList();
+                for(Booking task : taskList) {
+                    if(task.getId().equals(bookingId) && !task.getStatus().equals("Passed")) {
+                        String fullName = "<b>" + user.getLastName() + "</b>, " + user.getFirstName();
+                        if(user.getMiddleName().length() > 0) fullName += " " + user.getMiddleName();
+                        tvDriverFullName.setText(fromHtml(fullName));
+
+                        String plateNumber = "<b>Plate Number</b>: " + user.getPlateNumber();
+                        if(status.equals("Request")) plateNumber = "Driver on Request";
+                        if(status.equals("Passed")) plateNumber = "Current Driver";
+                        tvPlateNumber.setText(fromHtml(plateNumber));
+
+                        try {
+                            Glide.with(myContext).load(user.getProfileImage())
+                                    .placeholder(R.drawable.image_loading_placeholder)
+                                    .into(driverProfileImage);
+                        }
+                        catch (Exception ignored) {}
+
+                        driverInfoLayout.setVisibility(View.VISIBLE);
+
+                        return;
                     }
-                    catch (Exception ignored) {}
-
-                    driverInfoLayout.setVisibility(View.VISIBLE);
-
-                    return;
                 }
             }
         }
@@ -567,6 +593,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
         if(inDriverModule) {
             intent.putExtra("isScanning", isScanning);
             intent.putExtra("status", booking.getStatus());
+            intent.putExtra("previousDriverUserId", booking.getPreviousDriverUserId());
             getPassengerUserId(booking.getId(), intent);
         }
         else {
@@ -794,10 +821,11 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
         String status = "Booked";
         List<Route> bookingRouteList = booking.getRouteList();
         booking.setTimestamp(new DateTimeToString().getDateAndTime());
-        booking.setStatus(status);
         Booking driverTask = new Booking(booking);
+        driverTask.setStatus(status);
 
         if(fromRequest) {
+            driverTask.setPreviousDriverUserId(taskDriverUserId);
             usersRef.child(taskDriverUserId).child("taskList").
                     child(driverTask.getId()).child("status").setValue("Passed");
         }
@@ -948,7 +976,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
         ImageView profileImage, driverProfileImage, thumbnail, moreImage,
                 openImage, locateImage, locateEndImage, viewQRImage, chatImage,
                 driverImage, passImage, stopImage, checkImage, paidImage;
-        TextView tvUserFullName, tvPassenger, tvDriverFullName, tvDriverPlateNo, tvBookingId,
+        TextView tvUserFullName, tvPassenger, tvDriverFullName, tvPlateNumber, tvBookingId,
                 tvSchedule, tvTypeName, tvPrice, tvStartStation, tvStartStation2, tvEndStation,
                 tvEndStation2, tvOption, tvOpen, tvLocate, tvLocateEnd, tvViewQR, tvChat, tvDriver,
                 tvPass, tvStop, tvCheck;
@@ -965,7 +993,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
 
             driverInfoLayout = itemView.findViewById(R.id.driverInfoLayout);
             tvDriverFullName = itemView.findViewById(R.id.tvDriverFullName);
-            tvDriverPlateNo = itemView.findViewById(R.id.tvDriverPlateNo);
+            tvPlateNumber = itemView.findViewById(R.id.tvPlateNumber);
             driverProfileImage = itemView.findViewById(R.id.driverProfileImage);
 
             thumbnail = itemView.findViewById(R.id.thumbnail);

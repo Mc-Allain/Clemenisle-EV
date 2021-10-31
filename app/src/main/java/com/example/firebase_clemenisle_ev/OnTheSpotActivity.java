@@ -84,7 +84,7 @@ public class OnTheSpotActivity extends AppCompatActivity {
 
     ImageView profileImage, driverProfileImage, thumbnail, moreImage, locateImage, locateDestinationImage, viewQRImage,
             chatImage, driverImage, passImage, stopImage, checkImage, reloadImage;
-    TextView tvUserFullName, tvPassenger, tvDriverFullName, tvDriverPlateNo, tvBookingId, tvSchedule, tvTypeName,
+    TextView tvUserFullName, tvPassenger, tvDriverFullName, tvPlateNumber, tvBookingId, tvSchedule, tvTypeName,
             tvPrice, tvOriginLocation2, tvDestinationSpot2, tvLocate, tvLocateDestination, tvViewQR,
             tvChat, tvDriver, tvPass, tvStop, tvCheck, tvLog;
     ExpandableTextView extvMessage;
@@ -107,7 +107,7 @@ public class OnTheSpotActivity extends AppCompatActivity {
 
     DatabaseReference bookingListRef;
 
-    String bookingId, schedule, typeName, price, status, message;
+    String bookingId, schedule, typeName, price, status, message, previousDriverUserId;
     LatLng originLocation, destinationSpotLocation;
 
     SimpleTouristSpot destinationSpot;
@@ -171,7 +171,7 @@ public class OnTheSpotActivity extends AppCompatActivity {
 
         driverInfoLayout = findViewById(R.id.driverInfoLayout);
         tvDriverFullName = findViewById(R.id.tvDriverFullName);
-        tvDriverPlateNo = findViewById(R.id.tvDriverPlateNo);
+        tvPlateNumber = findViewById(R.id.tvPlateNumber);
         driverProfileImage = findViewById(R.id.driverProfileImage);
 
         thumbnail = findViewById(R.id.thumbnail);
@@ -233,7 +233,10 @@ public class OnTheSpotActivity extends AppCompatActivity {
         Intent intent = getIntent();
         bookingId = intent.getStringExtra("bookingId");
         inDriverModule = intent.getBooleanExtra("inDriverModule", false);
-        if(inDriverModule) status = intent.getStringExtra("status");
+        if(inDriverModule) {
+            status = intent.getStringExtra("status");
+            previousDriverUserId = intent.getStringExtra("previousDriverUserId");
+        }
 
         isOnScreen = true;
 
@@ -351,6 +354,7 @@ public class OnTheSpotActivity extends AppCompatActivity {
 
                     getUserInfo();
                     if(inDriverModule && (status.equals("Passed") ||
+                            previousDriverUserId != null && previousDriverUserId.length() > 0 ||
                             status.equals("Request") && !taskDriverUserId.equals(userId)))
                         getDriverInfo();
                 }
@@ -368,7 +372,6 @@ public class OnTheSpotActivity extends AppCompatActivity {
                     viewQRImage.setOnClickListener(view -> viewQRCode());
 
                     getDriverInfo();
-                    if(inDriverModule && status.equals("Request")) getUserInfo();
                 }
             }
 
@@ -389,28 +392,52 @@ public class OnTheSpotActivity extends AppCompatActivity {
 
     private void getDriverInfo() {
         for(User user : users) {
-            List<Booking> taskList = user.getTaskList();
+            if(previousDriverUserId != null && previousDriverUserId.length() > 0 &&
+                    user.getId().equals(previousDriverUserId) &&
+                    !status.equals("Request") && !status.equals("Passed")) {
+                String fullName = "<b>" + user.getLastName() + "</b>, " + user.getFirstName();
+                if(user.getMiddleName().length() > 0) fullName += " " + user.getMiddleName();
+                tvDriverFullName.setText(fromHtml(fullName));
 
-            for(Booking booking : taskList) {
-                if(booking.getId().equals(bookingId) && !booking.getStatus().equals("Passed")) {
-                    String fullName = "<b>" + user.getLastName() + "</b>, " + user.getFirstName();
-                    if(user.getMiddleName().length() > 0) fullName += " " + user.getMiddleName();
-                    tvDriverFullName.setText(fromHtml(fullName));
+                String plateNumber = "Previous Driver";
+                tvPlateNumber.setText(plateNumber);
 
-                    String plateNo = "<b>Plate Number</b>: " + user.getPlateNumber();
-                    tvDriverPlateNo.setText(fromHtml(plateNo));
+                try {
+                    Glide.with(myContext).load(user.getProfileImage())
+                            .placeholder(R.drawable.image_loading_placeholder)
+                            .into(driverProfileImage);
+                }
+                catch (Exception ignored) {}
 
-                    try {
-                        Glide.with(myContext).load(user.getProfileImage())
-                                .placeholder(R.drawable.image_loading_placeholder)
-                                .into(driverProfileImage);
+                driverInfoLayout.setVisibility(View.VISIBLE);
+
+                return;
+            }
+            else if(!status.equals("Booked") || previousDriverUserId == null || previousDriverUserId.length() == 0) {
+                List<Booking> taskList = user.getTaskList();
+                for(Booking task : taskList) {
+                    if(task.getId().equals(bookingId) && !task.getStatus().equals("Passed")) {
+                        String fullName = "<b>" + user.getLastName() + "</b>, " + user.getFirstName();
+                        if(user.getMiddleName().length() > 0) fullName += " " + user.getMiddleName();
+                        tvDriverFullName.setText(fromHtml(fullName));
+
+                        String plateNumber = "<b>Plate Number</b>: " + user.getPlateNumber();
+                        if(status.equals("Request")) plateNumber = "Driver on Request";
+                        if(status.equals("Passed")) plateNumber = "Current Driver";
+                        tvPlateNumber.setText(fromHtml(plateNumber));
+
+                        try {
+                            Glide.with(myContext).load(user.getProfileImage())
+                                    .placeholder(R.drawable.image_loading_placeholder)
+                                    .into(driverProfileImage);
+                        }
+                        catch (Exception ignored) {}
+
+                        driverUserId = user.getId();
+                        driverInfoLayout.setVisibility(View.VISIBLE);
+
+                        return;
                     }
-                    catch (Exception ignored) {}
-
-                    driverUserId = user.getId();
-                    driverInfoLayout.setVisibility(View.VISIBLE);
-
-                    return;
                 }
             }
         }
@@ -765,10 +792,11 @@ public class OnTheSpotActivity extends AppCompatActivity {
         String status = "Booked";
         List<Route> bookingRouteList = booking.getRouteList();
         booking.setTimestamp(new DateTimeToString().getDateAndTime());
-        booking.setStatus(status);
         Booking driverTask = new Booking(booking);
+        driverTask.setStatus(status);
 
         if(fromRequest) {
+            driverTask.setPreviousDriverUserId(taskDriverUserId);
             usersRef.child(taskDriverUserId).child("taskList").
                     child(driverTask.getId()).child("status").setValue("Passed");
         }
@@ -1073,11 +1101,11 @@ public class OnTheSpotActivity extends AppCompatActivity {
                             !currentStatus.equals("Booked"))
                         status = currentStatus;
 
-                    message = booking.getMessage();
-
                     typeName = booking.getBookingType().getName();
                     price = String.valueOf(booking.getBookingType().getPrice());
                     if(price.split("\\.")[1].length() == 1) price += 0;
+
+                    message = booking.getMessage();
 
                     if(!inDriverModule) startTimer(booking);
                     finishLoading();
@@ -1140,13 +1168,7 @@ public class OnTheSpotActivity extends AppCompatActivity {
                                             usersRef.child(userId).child("bookingList").child(bookingId).
                                                     child("status").setValue(prevStatus);
 
-                                            errorToast = Toast.makeText(myContext,
-                                                    "Failed to cancel the booking. Please try again.",
-                                                    Toast.LENGTH_LONG);
-                                            errorToast.show();
-
-                                            cancelButton.setEnabled(true);
-                                            cancelButton.setText(cancelButtonText);
+                                            cancelFailed();
                                         }
                                     });
                         }
@@ -1158,15 +1180,18 @@ public class OnTheSpotActivity extends AppCompatActivity {
                             ).show();
                         }
                     }
-                    else {
-                        errorToast = Toast.makeText(myContext,
-                                "Failed to cancel the booking. Please try again.",
-                                Toast.LENGTH_LONG);
-                        errorToast.show();
-
-                        cancelButton.setEnabled(true);
-                        cancelButton.setText(cancelButtonText);
-                    }
+                    else cancelFailed();
                 });
+    }
+
+    private void cancelFailed() {
+        errorToast = Toast.makeText(myContext,
+                "Failed to cancel the booking. Please try again.",
+                Toast.LENGTH_LONG);
+        errorToast.show();
+
+        cancelButton.setEnabled(true);
+        cancelButton.setText(cancelButtonText);
+
     }
 }
