@@ -216,7 +216,6 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
             String profileImg;
 
             DateTimeDifference dateTimeDifference = new DateTimeDifference(timestamp);
-            timestamp = dateTimeDifference.getResult();
 
             if(senderId.equals(passengerUserId)) profileImg = passengerProfileImg;
             else profileImg = driverProfileImg;
@@ -228,13 +227,14 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
             else state = !(senderId.equals(driverUserId) && position + 1 < loadChatItemPosition);
 
             if(senderId.equals(startPointId)) {
-                startPointLayout.setVisibility(View.VISIBLE);
-                tvStartPointMessage.setText(message);
-                tvStartPointTimestamp.setText(timestamp);
-
                 if(position != 0)
                     checkTimestamp(timestamp, chats.get(position - 1).getTimestamp(),
                             tvStartPointTimestamp);
+                timestamp = dateTimeDifference.getResult();
+
+                startPointLayout.setVisibility(View.VISIBLE);
+                tvStartPointMessage.setText(message);
+                tvStartPointTimestamp.setText(timestamp);
 
                 tvStartPointMessage.setOnClickListener(view -> copyTextToClipboard(message));
 
@@ -250,13 +250,14 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
                 else startPointProfileImage.setVisibility(View.INVISIBLE);
             }
             else {
-                endPointLayout.setVisibility(View.VISIBLE);
-                tvEndPointMessage.setText(message);
-                tvEndPointTimestamp.setText(timestamp);
-
                 if(position != 0)
                     checkTimestamp(timestamp, chats.get(position - 1).getTimestamp(),
                             tvEndPointTimestamp);
+                timestamp = dateTimeDifference.getResult();
+
+                endPointLayout.setVisibility(View.VISIBLE);
+                tvEndPointMessage.setText(message);
+                tvEndPointTimestamp.setText(timestamp);
 
                 tvEndPointMessage.setOnClickListener(view -> copyTextToClipboard(message));
 
