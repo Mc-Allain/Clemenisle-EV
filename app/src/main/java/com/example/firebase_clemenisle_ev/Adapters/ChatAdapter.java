@@ -140,8 +140,8 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
                 tvEndPointMessage.setText(initialMessage);
 
                 DateTimeDifference dateTimeDifference = new DateTimeDifference(bookingTimestamp);
-                bookingTimestamp = dateTimeDifference.getResult();
-                tvEndPointTimestamp.setText(bookingTimestamp);
+                String newBookingTimestamp = dateTimeDifference.getResult();
+                tvEndPointTimestamp.setText(newBookingTimestamp);
 
                 tvEndPointMessage.setOnClickListener(view -> copyTextToClipboard(initialMessage));
             }
@@ -158,8 +158,8 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
                 tvStartPointMessage.setText(initialMessage);
 
                 DateTimeDifference dateTimeDifference = new DateTimeDifference(bookingTimestamp);
-                bookingTimestamp = dateTimeDifference.getResult();
-                tvStartPointTimestamp.setText(bookingTimestamp);
+                String newBookingTimestamp = dateTimeDifference.getResult();
+                tvStartPointTimestamp.setText(newBookingTimestamp);
 
                 tvStartPointMessage.setOnClickListener(view -> copyTextToClipboard(initialMessage));
             }
@@ -183,8 +183,8 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
                 tvStartPointMessage.setText(fromHtml(message));
 
                 DateTimeDifference dateTimeDifference = new DateTimeDifference(taskTimestamp);
-                taskTimestamp = dateTimeDifference.getResult();
-                tvStartPointTimestamp.setText(taskTimestamp);
+                String newTaskTimestamp = dateTimeDifference.getResult();
+                tvStartPointTimestamp.setText(newTaskTimestamp);
 
                 tvStartPointMessage.setOnClickListener(view -> copyTextToClipboard(message));
             }
@@ -202,8 +202,8 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
                 tvEndPointMessage.setText(fromHtml(message));
 
                 DateTimeDifference dateTimeDifference = new DateTimeDifference(taskTimestamp);
-                taskTimestamp = dateTimeDifference.getResult();
-                tvEndPointTimestamp.setText(taskTimestamp);
+                String newTaskTimestamp = dateTimeDifference.getResult();
+                tvEndPointTimestamp.setText(newTaskTimestamp);
 
                 tvEndPointMessage.setOnClickListener(view -> copyTextToClipboard(message));
             }
