@@ -3,6 +3,7 @@ package com.example.firebase_clemenisle_ev.Adapters;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.os.Build;
 import android.text.Html;
@@ -31,7 +32,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
 
     List<Chat> chats;
     String startPointId, passengerUserId, driverUserId, passengerProfileImg, driverProfileImg,
-            driverFullName, initialMessage, bookingTimestamp, taskTimestamp;
+            driverFullName, initialMessage, bookingTimestamp, taskTimestamp, status;
     boolean inDriverModule;
     LayoutInflater inflater;
 
@@ -84,6 +85,30 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
         startPointLayout.setVisibility(View.GONE);
         endPointLayout.setVisibility(View.GONE);
         loadChatLayout.setVisibility(View.GONE);
+
+        if(status != null) {
+            int color = 0;
+
+            switch (status) {
+                case "Pending":
+                    color = myResources.getColor(R.color.orange);
+                    break;
+                case "Request":
+                case "Booked":
+                    color = myResources.getColor(R.color.green);
+                    break;
+                case "Completed":
+                    color = myResources.getColor(R.color.blue);
+                    break;
+                case "Passed":
+                case "Cancelled":
+                case "Failed":
+                    color = myResources.getColor(R.color.red);
+                    break;
+            }
+
+            tvStartPointMessage.setBackgroundTintList(ColorStateList.valueOf(color));
+        }
 
         ConstraintLayout.LayoutParams layoutParams =
                 (ConstraintLayout.LayoutParams) backgroundLayout.getLayoutParams();
@@ -366,8 +391,9 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
         }
     }
 
-    public void setValues(String passengerUserId, String driverUserId, String passengerProfileImg, String driverProfileImg,
-                          String driverFullName, String initialMessage, String bookingTimestamp, String taskTimestamp) {
+    public void setValues(String passengerUserId, String driverUserId, String passengerProfileImg,
+                          String driverProfileImg, String driverFullName, String initialMessage,
+                          String bookingTimestamp, String taskTimestamp, String status) {
         this.passengerUserId = passengerUserId;
         this.driverUserId = driverUserId;
         this.passengerProfileImg = passengerProfileImg;
@@ -376,6 +402,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
         this.initialMessage = initialMessage;
         this.bookingTimestamp = bookingTimestamp;
         this.taskTimestamp = taskTimestamp;
+        this.status = status;
         notifyDataSetChanged();
     }
 }

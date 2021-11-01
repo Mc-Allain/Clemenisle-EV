@@ -6,8 +6,12 @@
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/drawable/border_corner_layout.xml" value="0.2111111111111111" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/drawable/border_layout.xml" value="0.2638888888888889" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/drawable/corner_layout.xml" value="0.25833333333333336" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/drawable/custom_blue_ripple_effect.xml" value="0.23425925925925925" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/drawable/custom_fade_background.xml" value="0.24444444444444444" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/drawable/custom_green_ripple_effect.xml" value="0.23425925925925925" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/drawable/custom_name_background.xml" value="0.1984375" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/drawable/custom_orange_ripple_effect.xml" value="0.23425925925925925" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/drawable/custom_red_ripple_effect.xml" value="0.23425925925925925" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/drawable/custom_ripple_effect.xml" value="0.23703703703703705" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/drawable/ic_arrow_bar_down.xml" value="0.2601851851851852" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/drawable/ic_arrow_bar_up.xml" value="0.2601851851851852" />
@@ -35,7 +39,7 @@
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/activity_booking.xml" value="0.5" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/activity_chat.xml" value="0.33" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/activity_chat_list.xml" value="0.2722222222222222" />
-        <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/activity_driver.xml" value="0.33" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/activity_driver.xml" value="0.5" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/activity_help.xml" value="0.3375" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/activity_login.xml" value="0.3323076923076923" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/activity_main.xml" value="0.2074074074074074" />
@@ -98,7 +102,7 @@
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/dialog_update_full_name_layout.xml" value="0.33" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/dialog_update_password_layout.xml" value="0.2916666666666667" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/dialog_what_is_new_layout.xml" value="0.23425925925925925" />
-        <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/fragment_booking_list.xml" value="0.25" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/fragment_booking_list.xml" value="0.5" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/fragment_completed_task.xml" value="0.1925925925925926" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/fragment_driver_task_list.xml" value="0.3375" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/fragment_failed_task.xml" value="0.1925925925925926" />

@@ -672,23 +672,13 @@ public class RouteActivity extends AppCompatActivity implements
         taskListRef.setValue(driverTask).addOnCompleteListener(task -> {
             if(task.isSuccessful()) {
                 bookingListRef.child("notified").setValue(false);
-
-                if(fromRequest) {
-                    bookingListRef.child("chats").removeValue().
-                            addOnCompleteListener(task2 -> {
-                                if(task2.isSuccessful())
-                                    addBookingRoute(bookingRouteList, taskListRef);
-                                else errorTask();
-                            });
-                }
-                else {
-                    bookingListRef.child("status").setValue(status).
-                            addOnCompleteListener(task1 -> {
-                                if(task1.isSuccessful())
-                                    addBookingRoute(bookingRouteList, taskListRef);
-                                else errorTask();
-                            });
-                }
+                bookingListRef.child("read").setValue(false);
+                bookingListRef.child("status").setValue(status).
+                        addOnCompleteListener(task1 -> {
+                            if(task1.isSuccessful())
+                                addBookingRoute(bookingRouteList, taskListRef);
+                            else errorTask();
+                        });
             }
             else errorTask();
         });

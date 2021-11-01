@@ -3,6 +3,7 @@ package com.example.firebase_clemenisle_ev.Adapters;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.text.Html;
 import android.text.SpannableString;
@@ -28,6 +29,7 @@ import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHolder> {
@@ -40,6 +42,8 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
 
     Context myContext;
     Resources myResources;
+
+    int colorBlack, colorInitial;
 
     public ChatListAdapter(Context context, List<Chat> chatList, List<User> users,
                            List<Booking> bookingList, String userId) {
@@ -67,6 +71,9 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
         myContext = inflater.getContext();
         myResources = myContext.getResources();
 
+        colorBlack = myResources.getColor(R.color.black);
+        colorInitial = myResources.getColor(R.color.initial);
+
         Chat chat = chatList.get(position);
 
         String senderId = chat.getSenderId();
@@ -76,20 +83,58 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
 
         String endPointUserId = chat.getEndPointUserId();
         String driverUserId = chat.getDriverUserId();
+
         Booking booking = chat.getBooking();
+        String status = booking.getStatus();
+        boolean read = booking.isRead();
 
         boolean inDriverModule = !endPointUserId.equals(driverUserId);
-
-        if(senderId.equals(userId)) message = "<b>You</b>: " + message;
-
         getEndPointInfo(endPointUserId, driverUserId, profileImage, tvEndPointFullName);
 
+        if(!read) {
+            message = "<b>" + message + "</b>";
+            tvMessage.setTextColor(colorBlack);
+        }
+        else tvMessage.setTextColor(colorInitial);
+        if(senderId.equals(userId)) message = "<b>You</b>: " + message;
         tvMessage.setText(fromHtml(message));
+
         tvBookingId.setText(taskId);
 
         DateTimeDifference dateTimeDifference = new DateTimeDifference(timestamp);
         timestamp = dateTimeDifference.getResult();
-        tvTimestamp.setText(timestamp);
+        if(!read) {
+            timestamp = "<b>" + timestamp + "</b>";
+            tvTimestamp.setTextColor(colorBlack);
+        }
+        else tvTimestamp.setTextColor(colorInitial);
+        tvTimestamp.setText(fromHtml(timestamp));
+
+        Drawable rippleDrawable = null;
+
+        switch (status) {
+            case "Pending":
+                rippleDrawable = ResourcesCompat.getDrawable(myResources,
+                        R.drawable.custom_orange_ripple_effect, null);
+                break;
+            case "Request":
+            case "Booked":
+                rippleDrawable = ResourcesCompat.getDrawable(myResources,
+                        R.drawable.custom_green_ripple_effect, null);
+                break;
+            case "Completed":
+                rippleDrawable = ResourcesCompat.getDrawable(myResources,
+                        R.drawable.custom_blue_ripple_effect, null);
+                break;
+            case "Passed":
+            case "Cancelled":
+            case "Failed":
+                rippleDrawable = ResourcesCompat.getDrawable(myResources,
+                        R.drawable.custom_red_ripple_effect, null);
+                break;
+        }
+
+        backgroundLayout.setBackground(rippleDrawable);
 
         int top = dpToPx(1), bottom = dpToPx(1);
 

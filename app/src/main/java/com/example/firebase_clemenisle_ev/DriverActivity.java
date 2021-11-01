@@ -71,6 +71,7 @@ public class DriverActivity extends AppCompatActivity {
 
     ConstraintLayout headerLayout;
     ImageView chatImage;
+    TextView tvBadge;
 
     BottomNavigationView driverNav;
     NavController driverNavCtrlr;
@@ -116,6 +117,8 @@ public class DriverActivity extends AppCompatActivity {
 
     boolean isShowAppVersionInfoEnabled;
 
+    int newChats = 0;
+
     private void initSharedPreferences() {
         SharedPreferences sharedPreferences = getSharedPreferences("login", Context.MODE_PRIVATE);
         isLoggedIn = sharedPreferences.getBoolean("isLoggedIn", false);
@@ -151,6 +154,7 @@ public class DriverActivity extends AppCompatActivity {
 
         headerLayout = findViewById(R.id.headerLayout);
         chatImage = findViewById(R.id.chatImage);
+        tvBadge = findViewById(R.id.tvBadge);
         driverNav = findViewById(R.id.bottomNavigationView);
         driverNav.setBackground(null);
 
@@ -199,6 +203,50 @@ public class DriverActivity extends AppCompatActivity {
             Intent intent = new Intent(myContext, ChatListActivity.class);
             startActivity(intent);
         });
+    }
+
+    private void getBookingList() {
+        List<Booking> bookingList = new ArrayList<>(), taskList = new ArrayList<>();
+
+        for(User user : users) {
+            if(user.getId().equals(userId)) {
+                bookingList.addAll(user.getBookingList());
+                taskList.addAll(user.getTaskList());
+            }
+        }
+        getChatList(bookingList, taskList);
+    }
+
+    private void getChatList(List<Booking> bookingList, List<Booking> taskList) {
+        for(Booking booking : bookingList) {
+            for(User user : users) {
+                List<Booking> taskList1 = user.getTaskList();
+                for(Booking task : taskList1) {
+                    if(booking.getId().equals(task.getId())) {
+                        if(!booking.isRead()) newChats++;
+                        break;
+                    }
+                }
+            }
+        }
+
+        for(Booking task : taskList) {
+            for(User user : users) {
+                List<Booking> bookingList1 = user.getBookingList();
+                for(Booking booking : bookingList1) {
+                    if(task.getId().equals(booking.getId())) {
+                        if(!task.isRead()) newChats++;
+                        break;
+                    }
+                }
+            }
+        }
+
+        if(newChats > 0) {
+            tvBadge.setText(String.valueOf(newChats));
+            tvBadge.setVisibility(View.VISIBLE);
+        }
+        else tvBadge.setVisibility(View.GONE);
     }
 
     private void getAppMetaData() {
@@ -727,6 +775,8 @@ public class DriverActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 users.clear();
+                newChats = 0;
+
                 if(snapshot.exists()) {
                     for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                         User user = new User(dataSnapshot);
@@ -734,6 +784,7 @@ public class DriverActivity extends AppCompatActivity {
                     }
                 }
                 getPendingList();
+                getBookingList();
             }
 
             @Override

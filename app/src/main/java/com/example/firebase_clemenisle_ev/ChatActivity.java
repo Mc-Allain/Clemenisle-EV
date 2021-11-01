@@ -47,8 +47,11 @@ public class ChatActivity extends AppCompatActivity {
     private final static String firebaseURL = FirebaseURL.getFirebaseURL();
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance(firebaseURL);
     DatabaseReference usersRef = firebaseDatabase.getReference("users");
+    DatabaseReference bookingListRef, taskListRef;
     FirebaseAuth firebaseAuth;
     FirebaseUser firebaseUser;
+
+    ValueEventListener usersValueEventListener, taskValueEventListener;
 
     ConstraintLayout userInfoLayout, driverInfoLayout, messageInputLayout, chatStatusLayout;
     ImageView profileImage, driverProfileImage, sendImage;
@@ -196,17 +199,20 @@ public class ChatActivity extends AppCompatActivity {
         String schedule = new DateTimeToString().getDateAndTime();
         Chat chat = new Chat(chatId, userId, value, schedule);
 
-        DatabaseReference bookingListRef = usersRef.child(passengerUserId).child("bookingList").child(taskId),
-        taskListRef = usersRef.child(driverUserId).child("taskList").child(taskId);
-
         taskListRef.child("chats").child(chatId).setValue(chat);
 
-        if(inDriverModule) bookingListRef.child("notified").setValue(false);
-        else taskListRef.child("notified").setValue(false);
+        if(inDriverModule) {
+            bookingListRef.child("notified").setValue(false);
+            bookingListRef.child("read").setValue(false);
+        }
+        else {
+            taskListRef.child("notified").setValue(false);
+            taskListRef.child("read").setValue(false);
+        }
     }
 
     private void getUsers() {
-        usersRef.addValueEventListener(new ValueEventListener() {
+        usersValueEventListener = usersRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if(snapshot.exists()) {
@@ -289,8 +295,13 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private void getChats() {
-        usersRef.child(driverUserId).child("taskList").child(taskId)
-                .addValueEventListener(new ValueEventListener() {
+        bookingListRef = usersRef.child(passengerUserId).child("bookingList").child(taskId);
+        taskListRef = usersRef.child(driverUserId).child("taskList").child(taskId);
+
+        if(inDriverModule) taskListRef.child("read").setValue(true);
+        else bookingListRef.child("read").setValue(true);
+
+        taskValueEventListener = taskListRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 chats.clear();
@@ -331,11 +342,11 @@ public class ChatActivity extends AppCompatActivity {
 
                         chatStatusLayout.setBackgroundColor(color);
                     }
-                }
 
-                Collections.reverse(chats);
-                chatAdapter.setValues(passengerUserId, driverUserId, passengerProfileImg, driverProfileImg,
-                        driverFullName, initialMessage, bookingTimestamp, taskTimestamp);
+                    Collections.reverse(chats);
+                    chatAdapter.setValues(passengerUserId, driverUserId, passengerProfileImg, driverProfileImg,
+                            driverFullName, initialMessage, bookingTimestamp, taskTimestamp, status);
+                }
             }
 
             @Override
@@ -360,5 +371,13 @@ public class ChatActivity extends AppCompatActivity {
         else {
             return Html.fromHtml(html);
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        usersRef.removeEventListener(usersValueEventListener);
+        taskListRef.removeEventListener(taskValueEventListener);
     }
 }

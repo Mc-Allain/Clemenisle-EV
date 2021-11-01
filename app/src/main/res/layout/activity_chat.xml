@@ -111,10 +111,36 @@
         android:id="@+id/driverInfoLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:visibility="visible"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/userInfoLayout">
+
+        <ImageView
+            android:id="@+id/openImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
+            android:padding="4dp"
+            app:layout_constraintBottom_toBottomOf="@+id/tvPlateNumber"
+            app:layout_constraintEnd_toStartOf="@+id/tvOpen"
+            app:layout_constraintTop_toTopOf="@+id/tvDriverFullName"
+            app:srcCompat="@drawable/ic_baseline_library_books_24"
+            app:tint="@color/blue" />
+
+        <TextView
+            android:id="@+id/tvOpen"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_marginEnd="8dp"
+            android:fontFamily="@font/ubuntu"
+            android:gravity="center_vertical"
+            android:text="Open"
+            android:textColor="@color/blue"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@+id/openImage"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/openImage" />
 
         <TextView
             android:id="@+id/tvDriverFullName"
@@ -128,6 +154,7 @@
             android:textColor="@color/black"
             app:layout_constraintBottom_toTopOf="@+id/tvPlateNumber"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/openImage"
             app:layout_constraintStart_toEndOf="@+id/driverProfileImage"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -142,10 +169,12 @@
             android:textColor="@color/initial"
             app:layout_constraintBottom_toBottomOf="@+id/driverProfileImage"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/openImage"
             app:layout_constraintStart_toEndOf="@+id/driverProfileImage"
             app:layout_constraintTop_toBottomOf="@+id/tvDriverFullName" />
 
         <View
+            android:id="@+id/view2"
             style="@style/line_color"
             android:layout_width="0dp"
             android:layout_height="1dp"
@@ -172,10 +201,35 @@
         android:id="@+id/userInfoLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:visibility="visible"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/openImage2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="4dp"
+            app:layout_constraintBottom_toBottomOf="@+id/tvPassenger"
+            app:layout_constraintEnd_toStartOf="@+id/tvOpen2"
+            app:layout_constraintTop_toTopOf="@+id/tvUserFullName"
+            app:srcCompat="@drawable/ic_baseline_library_books_24"
+            app:tint="@color/blue" />
+
+        <TextView
+            android:id="@+id/tvOpen2"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_marginEnd="8dp"
+            android:fontFamily="@font/ubuntu"
+            android:gravity="center_vertical"
+            android:text="Open"
+            android:textColor="@color/blue"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@+id/openImage2"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/openImage2" />
 
         <TextView
             android:id="@+id/tvUserFullName"
@@ -187,7 +241,7 @@
             android:text="User's Full Name"
             android:textColor="@color/black"
             app:layout_constraintBottom_toTopOf="@+id/tvPassenger"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/openImage2"
             app:layout_constraintStart_toEndOf="@+id/profileImage"
             app:layout_constraintTop_toTopOf="@+id/profileImage" />
 
@@ -201,7 +255,7 @@
             android:text="Passenger"
             android:textColor="@color/initial"
             app:layout_constraintBottom_toBottomOf="@+id/profileImage"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/openImage2"
             app:layout_constraintStart_toEndOf="@+id/profileImage"
             app:layout_constraintTop_toBottomOf="@+id/tvUserFullName" />
 

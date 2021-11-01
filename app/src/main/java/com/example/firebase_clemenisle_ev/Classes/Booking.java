@@ -17,7 +17,7 @@ public class Booking {
     private SimpleTouristSpot destinationSpot;
     private double originLat, originLng;
 
-    boolean notified;
+    boolean notified = true, read = false;
     private final List<Chat> chats = new ArrayList<>();
     private String previousDriverUserId;
 
@@ -108,6 +108,8 @@ public class Booking {
 
         if(dataSnapshot.child("notified").exists())
             this.notified = dataSnapshot.child("notified").getValue(Boolean.class);
+        if(dataSnapshot.child("read").exists())
+            this.read = dataSnapshot.child("read").getValue(Boolean.class);
         this.previousDriverUserId = dataSnapshot.child("previousDriverUserId").getValue(String.class);
     }
 
@@ -192,6 +194,10 @@ public class Booking {
 
     public boolean isNotified() {
         return notified;
+    }
+
+    public boolean isRead() {
+        return read;
     }
 
     public String getPreviousDriverUserId() {
