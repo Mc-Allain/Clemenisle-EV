@@ -99,7 +99,13 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
         if(senderId.equals(userId)) message = "<b>You</b>: " + message;
         tvMessage.setText(fromHtml(message));
 
-        tvBookingId.setText(taskId);
+        String taskIdText = taskId;
+        if(!read) {
+            taskIdText = "<b>" + taskId + "</b>";
+            tvBookingId.setTextColor(colorBlack);
+        }
+        else tvBookingId.setTextColor(colorInitial);
+        tvBookingId.setText(fromHtml(taskIdText));
 
         DateTimeDifference dateTimeDifference = new DateTimeDifference(timestamp);
         timestamp = dateTimeDifference.getResult();
