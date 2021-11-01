@@ -437,9 +437,9 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
         });
     }
 
-    private void openChat(boolean inDriverModule, String bookingId) {
+    private void openChat(boolean inDriverModule, String taskId) {
         Intent intent = new Intent(myContext, ChatActivity.class);
-        intent.putExtra("bookingId", bookingId);
+        intent.putExtra("taskId", taskId);
         intent.putExtra("inDriverModule", inDriverModule);
         myContext.startActivity(intent);
     }

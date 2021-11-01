@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.firebase_clemenisle_ev.Classes.Chat;
+import com.example.firebase_clemenisle_ev.Classes.DateTimeDifference;
 import com.example.firebase_clemenisle_ev.Classes.DateTimeToString;
 import com.example.firebase_clemenisle_ev.R;
 
@@ -79,7 +80,6 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
         if(chats.size() + additionalItemCount < loadChatItemPosition && chats.size() != 0)
             loadChatItemPosition = chats.size() + additionalItemCount;
 
-
         backgroundLayout.setVisibility(View.VISIBLE);
         startPointLayout.setVisibility(View.GONE);
         endPointLayout.setVisibility(View.GONE);
@@ -100,6 +100,8 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
         if(position == chats.size() + 1 && position < loadChatItemPosition && additionalItemCount == 2) {
             String profileImg = passengerProfileImg;
 
+            if(bookingTimestamp == null) return;
+
             if(inDriverModule) {
                 endPointLayout.setVisibility(View.VISIBLE);
 
@@ -111,6 +113,9 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
                 catch (Exception ignored) {}
 
                 tvEndPointMessage.setText(initialMessage);
+
+                DateTimeDifference dateTimeDifference = new DateTimeDifference(bookingTimestamp);
+                bookingTimestamp = dateTimeDifference.getResult();
                 tvEndPointTimestamp.setText(bookingTimestamp);
 
                 tvEndPointMessage.setOnClickListener(view -> copyTextToClipboard(initialMessage));
@@ -126,6 +131,9 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
                 catch (Exception ignored) {}
 
                 tvStartPointMessage.setText(initialMessage);
+
+                DateTimeDifference dateTimeDifference = new DateTimeDifference(bookingTimestamp);
+                bookingTimestamp = dateTimeDifference.getResult();
                 tvStartPointTimestamp.setText(bookingTimestamp);
 
                 tvStartPointMessage.setOnClickListener(view -> copyTextToClipboard(initialMessage));
@@ -133,6 +141,8 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
         }
         else if(position == chats.size() && position < loadChatItemPosition) {
             String profileImg = driverProfileImg;
+
+            if(taskTimestamp == null) return;
 
             if(inDriverModule) {
                 startPointLayout.setVisibility(View.VISIBLE);
@@ -146,6 +156,9 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
 
                 String message = "こんにちは (Hello), I am " + driverFullName + ", your assigned driver.";
                 tvStartPointMessage.setText(fromHtml(message));
+
+                DateTimeDifference dateTimeDifference = new DateTimeDifference(taskTimestamp);
+                taskTimestamp = dateTimeDifference.getResult();
                 tvStartPointTimestamp.setText(taskTimestamp);
 
                 tvStartPointMessage.setOnClickListener(view -> copyTextToClipboard(message));
@@ -162,6 +175,9 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
 
                 String message = "こんにちは (Hello), I am " + driverFullName + ", your assigned driver.";
                 tvEndPointMessage.setText(fromHtml(message));
+
+                DateTimeDifference dateTimeDifference = new DateTimeDifference(taskTimestamp);
+                taskTimestamp = dateTimeDifference.getResult();
                 tvEndPointTimestamp.setText(taskTimestamp);
 
                 tvEndPointMessage.setOnClickListener(view -> copyTextToClipboard(message));
@@ -173,6 +189,9 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
             String message = chat.getMessage();
             String timestamp = chat.getTimestamp();
             String profileImg;
+
+            DateTimeDifference dateTimeDifference = new DateTimeDifference(timestamp);
+            timestamp = dateTimeDifference.getResult();
 
             if(senderId.equals(passengerUserId)) profileImg = passengerProfileImg;
             else profileImg = driverProfileImg;

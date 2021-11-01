@@ -59,7 +59,10 @@ public class DateTimeToString {
             int rawMonth = Integer.parseInt(dateSplit[1]);
             if(isDefaultDate) rawMonth--;
 
-            return String.valueOf(rawMonth);
+            String month = String.valueOf(rawMonth);
+            if(month.length() == 1) month = "0" + month;
+
+            return month;
         }
         return "Invalid Date";
     }
@@ -144,8 +147,11 @@ public class DateTimeToString {
         return "Invalid Date";
     }
 
-    public String getDateNo() {
-        if(dateSplit.length == 3) return getDay() + " " + getMonthNo() + " " + getYear();
+    public String getDateNo(boolean reverse) {
+        if(dateSplit.length == 3) {
+            if(reverse) return getYear() + " " + getMonthNo() + " " + getDay();
+            return getDay() + " " + getMonthNo() + " " + getYear();
+        };
         return "Invalid Date";
     }
 
@@ -240,46 +246,46 @@ public class DateTimeToString {
 
     private String getMonthNoFromFormattedMonth() {
         if(formattedMonth != null) {
-            int month;
+            String month;
 
             switch (formattedMonth) {
                 case "February":
-                    month = 1;
+                    month = "01";
                     break;
                 case "March":
-                    month = 2;
+                    month = "02";
                     break;
                 case "April":
-                    month = 3;
+                    month = "03";
                     break;
                 case "May":
-                    month = 4;
+                    month = "04";
                     break;
                 case "June":
-                    month = 5;
+                    month = "05";
                     break;
                 case "July":
-                    month = 6;
+                    month = "06";
                     break;
                 case "August":
-                    month = 7;
+                    month = "07";
                     break;
                 case "September":
-                    month = 8;
+                    month = "08";
                     break;
                 case "October":
-                    month = 9;
+                    month = "09";
                     break;
                 case "November":
-                    month = 10;
+                    month = "10";
                     break;
                 case "December":
-                    month = 11;
+                    month = "11";
                     break;
                 default:
-                    month = 0;
+                    month = "00";
             }
-            return String.valueOf(month);
+            return month;
         }
         return "Invalid Date";
     }

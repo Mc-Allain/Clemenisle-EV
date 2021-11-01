@@ -659,7 +659,7 @@ public class DriverActivity extends AppCompatActivity {
             builder.setPriority(Notification.PRIORITY_HIGH);
 
         Intent notificationIntent = new Intent(myContext, ChatActivity.class);
-        notificationIntent.putExtra("bookingId", task.getId());
+        notificationIntent.putExtra("taskId", task.getId());
         notificationIntent.putExtra("inDriverModule", true);
 
         PendingIntent pendingIntent = PendingIntent.getActivity(

@@ -62,7 +62,7 @@ public class ChatActivity extends AppCompatActivity {
 
     int colorBlue, colorInitial;
 
-    String bookingId, userId, passengerUserId, driverUserId, passengerProfileImg,
+    String taskId, userId, passengerUserId, driverUserId, passengerProfileImg,
             driverProfileImg, driverFullName, initialMessage;
     boolean isLoggedIn = false, inDriverModule = false;
 
@@ -115,7 +115,7 @@ public class ChatActivity extends AppCompatActivity {
         initSharedPreferences();
 
         Intent intent = getIntent();
-        bookingId = intent.getStringExtra("bookingId");
+        taskId = intent.getStringExtra("taskId");
         inDriverModule = intent.getBooleanExtra("inDriverModule", false);
 
         sendImage.setEnabled(false);
@@ -191,8 +191,8 @@ public class ChatActivity extends AppCompatActivity {
         String schedule = new DateTimeToString().getDateAndTime();
         Chat chat = new Chat(chatId, userId, value, schedule);
 
-        DatabaseReference bookingListRef = usersRef.child(passengerUserId).child("bookingList").child(bookingId),
-        taskListRef = usersRef.child(driverUserId).child("taskList").child(bookingId);
+        DatabaseReference bookingListRef = usersRef.child(passengerUserId).child("bookingList").child(taskId),
+        taskListRef = usersRef.child(driverUserId).child("taskList").child(taskId);
 
         taskListRef.child("chats").child(chatId).setValue(chat);
 
@@ -210,7 +210,7 @@ public class ChatActivity extends AppCompatActivity {
 
                         List<Booking> taskList = user.getTaskList();
                         for(Booking task : taskList) {
-                            if(task.getId().equals(bookingId)) {
+                            if(task.getId().equals(taskId)) {
                                 String fullName = "<b>" + user.getLastName() + "</b>, " + user.getFirstName();
                                 if(user.getMiddleName().length() > 0) fullName += " " + user.getMiddleName();
 
@@ -243,7 +243,7 @@ public class ChatActivity extends AppCompatActivity {
 
                         List<Booking> bookingList = user.getBookingList();
                         for(Booking booking : bookingList) {
-                            if(booking.getId().equals(bookingId)) {
+                            if(booking.getId().equals(taskId)) {
                                 String fullName = "<b>" + user.getLastName() + "</b>, " + user.getFirstName();
                                 if(user.getMiddleName().length() > 0) fullName += " " + user.getMiddleName();
 
@@ -281,7 +281,7 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private void getChats() {
-        usersRef.child(driverUserId).child("taskList").child(bookingId).child("chats")
+        usersRef.child(driverUserId).child("taskList").child(taskId).child("chats")
                 .addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {

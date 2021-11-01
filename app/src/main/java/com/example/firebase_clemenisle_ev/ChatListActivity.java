@@ -14,6 +14,7 @@ import com.bumptech.glide.Glide;
 import com.example.firebase_clemenisle_ev.Adapters.ChatListAdapter;
 import com.example.firebase_clemenisle_ev.Classes.Booking;
 import com.example.firebase_clemenisle_ev.Classes.Chat;
+import com.example.firebase_clemenisle_ev.Classes.DateTimeToString;
 import com.example.firebase_clemenisle_ev.Classes.FirebaseURL;
 import com.example.firebase_clemenisle_ev.Classes.User;
 import com.google.firebase.auth.FirebaseAuth;
@@ -25,6 +26,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -49,12 +51,11 @@ public class ChatListActivity extends AppCompatActivity {
     Resources myResources;
 
     List<User> users = new ArrayList<>();
-    List<Booking> taskList = new ArrayList<>();
     List<Booking> bookingList = new ArrayList<>();
     List<Chat> chatList = new ArrayList<>();
     ChatListAdapter chatListAdapter;
 
-    String userId;
+    String userId, userFullName;
 
     boolean isLoggedIn = false, isDriver = false;
 
@@ -131,7 +132,7 @@ public class ChatListActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if(snapshot.exists()) isDriver = snapshot.getValue(Boolean.class);
-                getTasks();
+                getUsers();
             }
 
             @Override
@@ -147,21 +148,15 @@ public class ChatListActivity extends AppCompatActivity {
         });
     }
 
-    private void getTasks() {
+    private void getUsers() {
         usersRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 users.clear();
-                taskList.clear();
 
                 if(snapshot.exists()) {
                     for(DataSnapshot dataSnapshot : snapshot.getChildren()) {
                         User user = new User(dataSnapshot);
-                        List<Booking> tasks = user.getTaskList();
-
-                        if(!user.getId().equals(userId) && tasks.size() > 0)
-                            taskList.addAll(tasks);
-
                         users.add(user);
                     }
                 }
@@ -210,15 +205,34 @@ public class ChatListActivity extends AppCompatActivity {
     }
 
     private void getChatList() {
+        for(User user : users) {
+            if(user.getId().equals(userId)) {
+                userFullName = user.getLastName() + ", " + user.getFirstName();
+                if(user.getMiddleName().length() > 0) userFullName += " " + user.getMiddleName();
+                break;
+            }
+        }
+
         List<Chat> bookingChatList = new ArrayList<>();
         for(Booking booking : bookingList) {
-            for(Booking task : taskList) {
-                if(booking.getId().equals(task.getId())) {
-                    List<Chat> chats = task.getChats();
+            for(User user : users) {
+                List<Booking> taskList = user.getTaskList();
+                for(Booking task : taskList) {
+                    if(booking.getId().equals(task.getId())) {
+                        List<Chat> chats = task.getChats();
+                        Chat chat;
 
-                    if(chats.size() > 0) {
-                        Chat chat = chats.get(chats.size() - 1);
+                        if(chats.size() > 0) chat = chats.get(chats.size() - 1);
+                        else {
+                            String fullName = user.getLastName() + ", " + user.getFirstName();
+                            if(user.getMiddleName().length() > 0) fullName += " " + user.getMiddleName();
+                            String message = "こんにちは (Hello), I am " + fullName + ", your assigned driver.";
+
+                            chat = new Chat("C01", user.getId(), message, task.getTimestamp());
+                        }
+                        chat.setTaskId(task.getId());
                         bookingChatList.add(chat);
+                        break;
                     }
                 }
             }
@@ -235,13 +249,27 @@ public class ChatListActivity extends AppCompatActivity {
                     for(DataSnapshot dataSnapshot : snapshot.getChildren()) {
                         Booking task = new Booking(dataSnapshot);
                         List<Chat> chats = task.getChats();
+                        Chat chat;
 
-                        if(chats.size() > 0) {
-                            Chat chat = chats.get(chats.size() - 1);
-                            chatList.add(chat);
+                        if(chats.size() > 0)chat = chats.get(chats.size() - 1);
+                        else {
+                            String message = "こんにちは (Hello), I am " + userFullName + ", your assigned driver.";
+                            chat = new Chat("C01", userId, message, task.getTimestamp());
                         }
+                        chat.setTaskId(task.getId());
+                        chatList.add(chat);
                     }
                 }
+
+                Collections.sort(chatList, (chat, t1) -> {
+                    DateTimeToString dateTimeToString = new DateTimeToString();
+                    dateTimeToString.setFormattedSchedule(chat.getTimestamp());
+                    String chatTS = dateTimeToString.getDateNo(true);
+                    dateTimeToString.setFormattedSchedule(t1.getTimestamp());
+                    String chatTS1 = dateTimeToString.getDateNo(true);
+
+                    return chatTS1.compareToIgnoreCase(chatTS);
+                });
 
                 if(chatList.size() > 0) finishLoading();
                 else errorLoading(defaultLogText);

@@ -30,6 +30,7 @@ import com.example.firebase_clemenisle_ev.Adapters.CommentAdapter;
 import com.example.firebase_clemenisle_ev.Adapters.NearSpotAdapter;
 import com.example.firebase_clemenisle_ev.Classes.Booking;
 import com.example.firebase_clemenisle_ev.Classes.Comment;
+import com.example.firebase_clemenisle_ev.Classes.DateTimeDifference;
 import com.example.firebase_clemenisle_ev.Classes.DateTimeToString;
 import com.example.firebase_clemenisle_ev.Classes.DetailedTouristSpot;
 import com.example.firebase_clemenisle_ev.Classes.FirebaseURL;
@@ -1134,6 +1135,8 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
             extvComment.setText(commentValue);
 
             String timestamp = comment.getTimestamp();
+            DateTimeDifference dateTimeDifference = new DateTimeDifference(timestamp);
+            timestamp = dateTimeDifference.getResult();
             tvTimestamp.setText(timestamp);
 
             if(comment.isFouled()) {

@@ -3,6 +3,7 @@ package com.example.firebase_clemenisle_ev.Classes;
 public class Chat {
 
     String id, senderId, message, timestamp;
+    String taskId;
 
     public Chat() {
     }
@@ -28,5 +29,13 @@ public class Chat {
 
     public String getTimestamp() {
         return timestamp;
+    }
+
+    public String getTaskId() {
+        return taskId;
+    }
+
+    public void setTaskId(String taskId) {
+        this.taskId = taskId;
     }
 }

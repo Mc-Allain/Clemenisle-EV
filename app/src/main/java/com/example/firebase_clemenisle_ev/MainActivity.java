@@ -710,13 +710,13 @@ public class MainActivity extends AppCompatActivity {
         notificationManager.notify(1, builder.build());
     }
 
-    private void showChatNotification(Booking booking, String fullName, String message) {
-        NotificationManager notificationManager = getNotificationManager(booking.getId());
+    private void showChatNotification(Booking task, String fullName, String message) {
+        NotificationManager notificationManager = getNotificationManager(task.getId());
 
         NotificationCompat.Builder builder =
-                new NotificationCompat.Builder(myContext, booking.getId())
+                new NotificationCompat.Builder(myContext, task.getId())
                         .setSmallIcon(R.drawable.front_icon)
-                        .setContentTitle("Clemenisle-EV Chat: " + booking.getId())
+                        .setContentTitle("Clemenisle-EV Chat: " + task.getId())
                         .setContentText(fullName + ": " + message)
                         .setCategory(NotificationCompat.CATEGORY_MESSAGE)
                         .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
@@ -727,7 +727,7 @@ public class MainActivity extends AppCompatActivity {
             builder.setPriority(Notification.PRIORITY_HIGH);
 
         Intent notificationIntent = new Intent(myContext, ChatActivity.class);
-        notificationIntent.putExtra("bookingId", booking.getId());
+        notificationIntent.putExtra("taskId", task.getId());
         notificationIntent.putExtra("inDriverModule", false);
 
         PendingIntent pendingIntent = PendingIntent.getActivity(
@@ -737,7 +737,7 @@ public class MainActivity extends AppCompatActivity {
         builder.setFullScreenIntent(pendingIntent, true);
         notificationManager.notify(1, builder.build());
 
-        usersRef.child(userId).child("bookingList").child(booking.getId()).child("notified")
+        usersRef.child(userId).child("bookingList").child(task.getId()).child("notified")
                 .setValue(true);
     }
 

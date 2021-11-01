@@ -377,7 +377,7 @@ public class RouteActivity extends AppCompatActivity implements
 
     private void openChat() {
         Intent intent = new Intent(myContext, ChatActivity.class);
-        intent.putExtra("bookingId", bookingId);
+        intent.putExtra("taskId", bookingId);
         intent.putExtra("schedule", schedule);
         intent.putExtra("inDriverModule", inDriverModule);
         myContext.startActivity(intent);

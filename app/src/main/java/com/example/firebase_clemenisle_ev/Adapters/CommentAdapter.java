@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.firebase_clemenisle_ev.Classes.Comment;
+import com.example.firebase_clemenisle_ev.Classes.DateTimeDifference;
 import com.example.firebase_clemenisle_ev.Classes.SimpleTouristSpot;
 import com.example.firebase_clemenisle_ev.Classes.User;
 import com.example.firebase_clemenisle_ev.LoginActivity;
@@ -137,6 +138,8 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
                 backgroundLayout.setVisibility(View.VISIBLE);
 
                 String timestamp = commentRecord.getTimestamp();
+                DateTimeDifference dateTimeDifference = new DateTimeDifference(timestamp);
+                timestamp = dateTimeDifference.getResult();
                 tvTimestamp.setText(timestamp);
 
                 if(fouled) {
