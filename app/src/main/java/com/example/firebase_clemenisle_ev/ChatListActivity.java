@@ -60,7 +60,7 @@ public class ChatListActivity extends AppCompatActivity {
 
     boolean isLoggedIn = false;
 
-    String defaultLogText = "No Record";
+    String defaultLogText = "No Chat Record";
 
     private void initSharedPreferences() {
         SharedPreferences sharedPreferences = myContext
@@ -125,6 +125,11 @@ public class ChatListActivity extends AppCompatActivity {
     }
 
     private void getUsers() {
+        tvLog.setVisibility(View.GONE);
+        reloadImage.setVisibility(View.GONE);
+        progressBar.setVisibility(View.VISIBLE);
+        chatListView.setVisibility(View.INVISIBLE);
+
         usersRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {

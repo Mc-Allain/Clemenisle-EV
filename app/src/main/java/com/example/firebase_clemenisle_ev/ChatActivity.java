@@ -50,9 +50,9 @@ public class ChatActivity extends AppCompatActivity {
     FirebaseAuth firebaseAuth;
     FirebaseUser firebaseUser;
 
-    ConstraintLayout userInfoLayout, driverInfoLayout, messageInputLayout;
+    ConstraintLayout userInfoLayout, driverInfoLayout, messageInputLayout, chatStatusLayout;
     ImageView profileImage, driverProfileImage, sendImage;
-    TextView tvUserFullName, tvDriverFullName, tvPlateNumber;
+    TextView tvUserFullName, tvDriverFullName, tvPlateNumber, tvChatStatus;
     RecyclerView chatView;
 
     EditText etMessage;
@@ -72,6 +72,7 @@ public class ChatActivity extends AppCompatActivity {
 
     String message;
 
+    String defaultChatStatusText = "This chat is now disabled. <b>Status</b>: ";
 
     private void initSharedPreferences() {
         SharedPreferences sharedPreferences = myContext
@@ -106,6 +107,9 @@ public class ChatActivity extends AppCompatActivity {
         messageInputLayout = findViewById(R.id.messageInputLayout);
         etMessage = findViewById(R.id.etMessage);
         sendImage = findViewById(R.id.sendImage);
+
+        chatStatusLayout = findViewById(R.id.chatStatusLayout);
+        tvChatStatus = findViewById(R.id.tvChatStatus);
 
         myContext = ChatActivity.this;
         myResources = getResources();
@@ -299,9 +303,34 @@ public class ChatActivity extends AppCompatActivity {
                         chats.add(chat);
                     }
 
+                    messageInputLayout.setVisibility(View.GONE);
+                    chatStatusLayout.setVisibility(View.GONE);
+
                     if(status != null && (status.equals("Booked") || status.equals("Request")))
                         messageInputLayout.setVisibility(View.VISIBLE);
-                    else messageInputLayout.setVisibility(View.GONE);
+                    else if(status != null) {
+                        chatStatusLayout.setVisibility(View.VISIBLE);
+                        String chatStatus = defaultChatStatusText + status;
+                        tvChatStatus.setText(fromHtml(chatStatus));
+
+                        int color = 0;
+
+                        switch (status) {
+                            case "Pending":
+                                color = myResources.getColor(R.color.orange);
+                                break;
+                            case "Completed":
+                                color = myResources.getColor(R.color.blue);
+                                break;
+                            case "Passed":
+                            case "Cancelled":
+                            case "Failed":
+                                color = myResources.getColor(R.color.red);
+                                break;
+                        }
+
+                        chatStatusLayout.setBackgroundColor(color);
+                    }
                 }
 
                 Collections.reverse(chats);

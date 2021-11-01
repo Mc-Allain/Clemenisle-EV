@@ -9,7 +9,6 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -859,14 +858,12 @@ public class RouteActivity extends AppCompatActivity implements
         extvMessage.setText(message);
 
         int color = 0;
-        Drawable backgroundDrawable = myResources.getDrawable(R.color.blue);
 
         buttonLayout.setVisibility(View.GONE);
 
         switch (status) {
             case "Pending":
                 color = myResources.getColor(R.color.orange);
-                backgroundDrawable = myResources.getDrawable(R.color.orange);
 
                 if(!inDriverModule) {
                     buttonLayout.setVisibility(View.VISIBLE);
@@ -878,7 +875,6 @@ public class RouteActivity extends AppCompatActivity implements
             case "Request":
             case "Booked":
                 color = myResources.getColor(R.color.green);
-                backgroundDrawable = myResources.getDrawable(R.color.green);
 
                 if(!inDriverModule) {
                     buttonLayout.setVisibility(View.VISIBLE);
@@ -888,17 +884,15 @@ public class RouteActivity extends AppCompatActivity implements
                 break;
             case "Completed":
                 color = myResources.getColor(R.color.blue);
-                backgroundDrawable = myResources.getDrawable(R.color.blue);
                 break;
             case "Passed":
             case "Cancelled":
             case "Failed":
                 color = myResources.getColor(R.color.red);
-                backgroundDrawable = myResources.getDrawable(R.color.red);
                 break;
         }
 
-        tvBookingId.setBackground(backgroundDrawable);
+        tvBookingId.setBackgroundColor(color);
         tvPrice.setTextColor(color);
 
         if(isPaid) paidImage.setVisibility(View.VISIBLE);

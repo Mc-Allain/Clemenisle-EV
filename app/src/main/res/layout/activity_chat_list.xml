@@ -6,6 +6,16 @@
     android:layout_height="match_parent"
     tools:context=".ChatListActivity">
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/chatListView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@color/gainsboro"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/headerLayout" />
+
     <TextView
         android:id="@+id/tvLog"
         android:layout_width="0dp"
@@ -20,7 +30,7 @@
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/touristSpotView" />
+        app:layout_constraintTop_toTopOf="@+id/chatListView" />
 
     <ImageView
         android:id="@+id/reloadImage"
@@ -88,13 +98,4 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/chatListView"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:background="@color/gainsboro"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/headerLayout" />
 </androidx.constraintlayout.widget.ConstraintLayout>

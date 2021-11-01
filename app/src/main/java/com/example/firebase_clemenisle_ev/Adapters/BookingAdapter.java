@@ -8,7 +8,6 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Handler;
 import android.text.Html;
@@ -214,33 +213,27 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
         tvPrice.setText(price);
         tvTypeName.setText(typeName);
 
-        Resources resources = myContext.getResources();
         int color = 0;
-        Drawable backgroundDrawable = resources.getDrawable(R.color.blue);
 
         switch (status) {
             case "Pending":
-                color = resources.getColor(R.color.orange);
-                backgroundDrawable = resources.getDrawable(R.color.orange);
+                color = myResources.getColor(R.color.orange);
                 break;
             case "Request":
             case "Booked":
-                color = resources.getColor(R.color.green);
-                backgroundDrawable = resources.getDrawable(R.color.green);
+                color = myResources.getColor(R.color.green);
                 break;
             case "Completed":
-                color = resources.getColor(R.color.blue);
-                backgroundDrawable = resources.getDrawable(R.color.blue);
+                color = myResources.getColor(R.color.blue);
                 break;
             case "Passed":
             case "Cancelled":
             case "Failed":
-                color = resources.getColor(R.color.red);
-                backgroundDrawable = resources.getDrawable(R.color.red);
+                color = myResources.getColor(R.color.red);
                 break;
         }
 
-        tvBookingId.setBackground(backgroundDrawable);
+        tvBookingId.setBackgroundColor(color);
         tvPrice.setTextColor(color);
 
         if(!bookingType.getId().equals("BT99")) {
