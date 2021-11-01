@@ -50,7 +50,7 @@ public class ChatActivity extends AppCompatActivity {
     FirebaseAuth firebaseAuth;
     FirebaseUser firebaseUser;
 
-    ConstraintLayout userInfoLayout, driverInfoLayout;
+    ConstraintLayout userInfoLayout, driverInfoLayout, messageInputLayout;
     ImageView profileImage, driverProfileImage, sendImage;
     TextView tvUserFullName, tvDriverFullName, tvPlateNumber;
     RecyclerView chatView;
@@ -103,6 +103,7 @@ public class ChatActivity extends AppCompatActivity {
         tvPlateNumber = findViewById(R.id.tvPlateNumber);
         chatView = findViewById(R.id.chatView);
 
+        messageInputLayout = findViewById(R.id.messageInputLayout);
         etMessage = findViewById(R.id.etMessage);
         sendImage = findViewById(R.id.sendImage);
 
@@ -205,6 +206,9 @@ public class ChatActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if(snapshot.exists()) {
+                    userInfoLayout.setVisibility(View.GONE);
+                    driverInfoLayout.setVisibility(View.GONE);
+
                     for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                         User user = new User(dataSnapshot);
 
@@ -229,7 +233,6 @@ public class ChatActivity extends AppCompatActivity {
                                         catch (Exception ignored) {}
 
                                         driverInfoLayout.setVisibility(View.VISIBLE);
-                                        userInfoLayout.setVisibility(View.GONE);
                                     }
 
                                     driverUserId = user.getId();
@@ -260,7 +263,6 @@ public class ChatActivity extends AppCompatActivity {
                                     catch (Exception ignored) {}
 
                                     userInfoLayout.setVisibility(View.VISIBLE);
-                                    driverInfoLayout.setVisibility(View.GONE);
                                 }
 
                                 passengerUserId = user.getId();
@@ -283,16 +285,23 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private void getChats() {
-        usersRef.child(driverUserId).child("taskList").child(taskId).child("chats")
+        usersRef.child(driverUserId).child("taskList").child(taskId)
                 .addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 chats.clear();
                 if(snapshot.exists()) {
-                    for(DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    String status = snapshot.child("status").getValue(String.class);
+
+                    DataSnapshot chatSnapshot = snapshot.child("chats");
+                    for(DataSnapshot dataSnapshot : chatSnapshot.getChildren()) {
                         Chat chat = dataSnapshot.getValue(Chat.class);
                         chats.add(chat);
                     }
+
+                    if(status != null && (status.equals("Booked") || status.equals("Request")))
+                        messageInputLayout.setVisibility(View.VISIBLE);
+                    else messageInputLayout.setVisibility(View.GONE);
                 }
 
                 Collections.reverse(chats);

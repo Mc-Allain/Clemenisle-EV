@@ -118,7 +118,7 @@ public class ChatListActivity extends AppCompatActivity {
         LinearLayoutManager linearLayout =
                 new LinearLayoutManager(myContext, LinearLayoutManager.VERTICAL, false);
         chatListView.setLayoutManager(linearLayout);
-        chatListAdapter = new ChatListAdapter(myContext, chatList, users, userId);
+        chatListAdapter = new ChatListAdapter(myContext, chatList, users, bookingList, userId);
         chatListView.setAdapter(chatListAdapter);
 
         getUsers();
@@ -190,6 +190,8 @@ public class ChatListActivity extends AppCompatActivity {
                         chat.setTaskId(task.getId());
                         chat.setEndPointUserId(user.getId());
                         chat.setDriverUserId(user.getId());
+                        chat.setBooking(booking);
+
                         bookingChatList.add(chat);
                         break;
                     }
@@ -216,6 +218,8 @@ public class ChatListActivity extends AppCompatActivity {
                         chat.setTaskId(task.getId());
                         chat.setEndPointUserId(user.getId());
                         chat.setDriverUserId(userId);
+                        chat.setBooking(task);
+
                         chatList.add(chat);
                         break;
                     }

@@ -1,12 +1,15 @@
 package com.example.firebase_clemenisle_ev.Fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
+import com.example.firebase_clemenisle_ev.ChatListActivity;
 import com.example.firebase_clemenisle_ev.R;
 
 import androidx.fragment.app.Fragment;
@@ -14,6 +17,8 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 public class BookingListFragment extends Fragment {
+
+    ImageView chatImage;
 
     Context myContext;
 
@@ -39,6 +44,7 @@ public class BookingListFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_booking_list, container, false);
+        chatImage = view.findViewById(R.id.chatImage);
 
         myContext = inflater.getContext();
 
@@ -51,12 +57,19 @@ public class BookingListFragment extends Fragment {
         if(isLoggedIn) {
             fragmentTransaction = fragmentManager.beginTransaction().
                     replace(R.id.bookingListFragmentContainer, new LoggedInBookingListFragment(), null);
+            chatImage.setVisibility(View.VISIBLE);
         }
         else {
             fragmentTransaction = fragmentManager.beginTransaction().
                     replace(R.id.bookingListFragmentContainer, new LoginPromptFragment(), null);
+            chatImage.setVisibility(View.GONE);
         }
         fragmentTransaction.commit();
+
+        chatImage.setOnClickListener(view1 -> {
+            Intent intent = new Intent(myContext, ChatListActivity.class);
+            startActivity(intent);
+        });
 
         return view;
     }

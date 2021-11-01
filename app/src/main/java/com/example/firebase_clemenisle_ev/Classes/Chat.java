@@ -4,6 +4,7 @@ public class Chat {
 
     String id, senderId, message, timestamp;
     String taskId, endPointUserId, driverUserId;
+    Booking booking;
 
     public Chat() {
     }
@@ -57,5 +58,13 @@ public class Chat {
 
     public void setDriverUserId(String driverUserId) {
         this.driverUserId = driverUserId;
+    }
+
+    public Booking getBooking() {
+        return booking;
+    }
+
+    public void setBooking(Booking booking) {
+        this.booking = booking;
     }
 }
