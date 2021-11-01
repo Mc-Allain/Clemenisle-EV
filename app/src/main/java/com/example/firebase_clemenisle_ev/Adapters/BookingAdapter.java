@@ -587,7 +587,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
             intent.putExtra("isScanning", isScanning);
             intent.putExtra("status", booking.getStatus());
             intent.putExtra("previousDriverUserId", booking.getPreviousDriverUserId());
-            getPassengerUserId(booking.getId(), intent);
+            intent.putExtra("userId", getPassengerUserId(booking.getId()));
         }
         else {
             if(!isOnTheSpot) {
@@ -597,21 +597,20 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
 
                 intent.putExtra("isLatest", isLatest);
             }
-            myContext.startActivity(intent);
         }
+        myContext.startActivity(intent);
     }
 
-    private void getPassengerUserId(String bookingId, Intent intent) {
+    private String getPassengerUserId(String bookingId) {
         for(User user : users) {
             List<Booking> bookingList = user.getBookingList();
             for(Booking booking : bookingList) {
                 if(booking.getId().equals(bookingId)) {
-                    intent.putExtra("userId", user.getId());
-                    myContext.startActivity(intent);
-                    return;
+                    return user.getId();
                 }
             }
         }
+        return null;
     }
 
     private void getUserInfo(String bookingId, String status,

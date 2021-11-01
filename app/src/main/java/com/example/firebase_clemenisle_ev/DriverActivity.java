@@ -81,6 +81,8 @@ public class DriverActivity extends AppCompatActivity {
     Resources myResources;
 
     List<Booking> pendingList = new ArrayList<>();
+    List<Booking> bookingList1 = new ArrayList<>();
+    List<Booking> bookingList2 = new ArrayList<>();
     List<Booking> driverTaskList = new ArrayList<>(), taskList = new ArrayList<>();
 
     DateTimeToString dateTimeToString;
@@ -409,14 +411,22 @@ public class DriverActivity extends AppCompatActivity {
         for(User user : users) {
             List<Booking> bookingList = user.getBookingList();
 
-            for(Booking booking : bookingList) {
-                if(booking.getStatus().equals("Pending"))
-                    pendingList.add(booking);
-            }
-
-            if(user.getId().equals(userId))
+            if(user.getId().equals(userId)) {
+                for(Booking booking : bookingList) {
+                    if(booking.getStatus().equals("Pending"))
+                        bookingList1.add(booking);
+                    if(booking.getStatus().equals("Booked"))
+                        bookingList2.add(booking);
+                }
                 driverTaskList.addAll(user.getTaskList());
-            else taskList.addAll(user.getTaskList());
+            }
+            else {
+                for(Booking booking : bookingList) {
+                    if(booking.getStatus().equals("Pending"))
+                        pendingList.add(booking);
+                }
+                taskList.addAll(user.getTaskList());
+            }
         }
 
         Collections.sort(pendingList, (booking, t1) ->
@@ -435,16 +445,22 @@ public class DriverActivity extends AppCompatActivity {
             public void onFinish() {
                 if(userId != null) {
                     for(Booking booking : pendingList)
-                        checkBooking(booking, false);
+                        checkBooking(booking, false, true);
+
+                    for(Booking booking : bookingList1)
+                        checkBooking(booking, false, false);
+
+                    for(Booking booking : bookingList2)
+                        checkBooking(booking, false, false);
 
                     for(Booking task : driverTaskList) {
                         if(task.getStatus().equals("Booked") || task.getStatus().equals("Request"))
-                            checkBooking(task, true);
+                            checkBooking(task, true, true);
                     }
 
                     for(Booking task : taskList) {
                         if(task.getStatus().equals("Booked") || task.getStatus().equals("Request"))
-                            checkBooking(task, false);
+                            checkBooking(task, false, true);
                     }
                 }
 
@@ -467,7 +483,7 @@ public class DriverActivity extends AppCompatActivity {
         }
     }
 
-    private void checkBooking(Booking booking, boolean notifiable) {
+    private void checkBooking(Booking booking, boolean isNotifiable, boolean inDriverModule) {
         dateTimeToString = new DateTimeToString();
         int maximumDaysInMonthOfYear = dateTimeToString.getMaximumDaysInMonthOfYear();
 
@@ -488,12 +504,13 @@ public class DriverActivity extends AppCompatActivity {
             setTaskStatusToFailed(booking);
         }
 
-        if(notifiable) checkingForTaskNotification(booking, bookingDay, bookingMonth, bookingYear,
-                    maximumDaysInMonthOfYear);
+        if(isNotifiable) checkingForTaskNotification(booking, bookingDay, bookingMonth, bookingYear,
+                    maximumDaysInMonthOfYear, inDriverModule);
     }
 
     private void checkingForTaskNotification(Booking booking, int bookingDay, int bookingMonth,
-                                                int bookingYear, int maximumDaysInMonthOfYear) {
+                                                int bookingYear, int maximumDaysInMonthOfYear,
+                                             boolean inDriverModule) {
 
         SimpleDateFormat sdf = new SimpleDateFormat("H:mm:ss", Locale.getDefault());
         String currentTime = sdf.format(new Date().getTime());
@@ -545,29 +562,53 @@ public class DriverActivity extends AppCompatActivity {
         }
 
         if(booking.getStatus().equals("Booked") || booking.getStatus().equals("Request"))
-            getEndPointInfo(booking);
+            getEndPointInfo(booking, inDriverModule);
     }
 
-    private void getEndPointInfo(Booking task) {
+    private void getEndPointInfo(Booking task, boolean inDriverModule) {
         for(User user : users) {
-            List<Booking> bookingList = user.getBookingList();
+            if(inDriverModule) {
+                List<Booking> bookingList = user.getBookingList();
+                for(Booking booking : bookingList) {
+                    if(booking.getId().equals(task.getId())) {
+                        String fullName = user.getLastName() + ", " + user.getFirstName();
+                        if(user.getMiddleName().length() > 0) fullName += " " + user.getMiddleName();
 
-            for(Booking booking : bookingList) {
-                if(booking.getId().equals(task.getId())) {
-                    String fullName = user.getLastName() + ", " + user.getFirstName();
-                    if(user.getMiddleName().length() > 0) fullName += " " + user.getMiddleName();
+                        List<Chat> chats = task.getChats();
+                        String message = booking.getMessage();
+                        if(chats.size() > 0) message = chats.get(chats.size()-1).getMessage();
+                        boolean notified = task.isNotified();
 
-                    List<Chat> chats = booking.getChats();
-                    String message = booking.getMessage();
-                    if(chats.size() > 0) message = chats.get(chats.size()-1).getMessage();
-                    boolean notified = task.isNotified();
-
-                    if(!notified && message.length() > 0) showChatNotification(task, fullName, message);
-                    else {
-                        usersRef.child(userId).child("taskList").child(task.getId()).child("notified")
-                                .setValue(true);
+                        if(!notified && message.length() > 0)
+                            showChatNotification(task, fullName, message, true);
+                        else {
+                            usersRef.child(userId).child("taskList").child(task.getId()).child("notified")
+                                    .setValue(true);
+                        }
+                        break;
                     }
-                    break;
+                }
+            }
+            else {
+                List<Booking> taskList = user.getTaskList();
+                for(Booking task1 : taskList) {
+                    if(task1.getId().equals(task.getId())) {
+                        String fullName = user.getLastName() + ", " + user.getFirstName();
+                        if(user.getMiddleName().length() > 0) fullName += " " + user.getMiddleName();
+
+                        List<Chat> chats = task1.getChats();
+                        String message = "こんにちは (Hello), I am " + fullName + ", your assigned driver.";
+                        if(chats.size() > 0) message = chats.get(chats.size()-1).getMessage();
+                        boolean notified = task.isNotified();
+
+                        if(!notified && message.length() > 0)
+                            showChatNotification(task, fullName, message, false);
+                        else {
+                            usersRef.child(userId).child("bookingList").child(task.getId()).child("notified")
+                                    .setValue(true);
+                        }
+                        break;
+                    }
                 }
             }
         }
@@ -690,7 +731,8 @@ public class DriverActivity extends AppCompatActivity {
         notificationManager.notify(1, builder.build());
     }
 
-    private void showChatNotification(Booking task, String fullName, String message) {
+    private void showChatNotification(Booking task, String fullName, String message,
+                                      boolean inDriverModule) {
         NotificationManager notificationManager = getNotificationManager(task.getId());
 
         NotificationCompat.Builder builder =
@@ -709,6 +751,14 @@ public class DriverActivity extends AppCompatActivity {
         Intent notificationIntent = new Intent(myContext, ChatActivity.class);
         notificationIntent.putExtra("taskId", task.getId());
         notificationIntent.putExtra("inDriverModule", true);
+
+        if(inDriverModule) {
+            notificationIntent.putExtra("isScanning", false);
+            notificationIntent.putExtra("status", task.getStatus());
+            notificationIntent.putExtra("previousDriverUserId", task.getPreviousDriverUserId());
+            notificationIntent.putExtra("userId", getPassengerUserId(task.getId()));
+        }
+        else notificationIntent.putExtra("isLatest", false);
 
         PendingIntent pendingIntent = PendingIntent.getActivity(
                 myContext, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT

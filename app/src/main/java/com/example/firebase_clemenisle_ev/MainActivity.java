@@ -45,7 +45,6 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.ms.square.android.expandabletextview.ExpandableTextView;
 
@@ -53,7 +52,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -115,8 +113,7 @@ public class MainActivity extends AppCompatActivity {
 
     List<Booking> bookingList1 = new ArrayList<>();
     List<Booking> bookingList2 = new ArrayList<>();
-
-    boolean success1, success2;
+    List<Booking> taskList = new ArrayList<>();
 
     DateTimeToString dateTimeToString;
 
@@ -224,9 +221,6 @@ public class MainActivity extends AppCompatActivity {
         if(navHostFragment != null) mainNavCtrlr = navHostFragment.getNavController();
         NavigationUI.setupWithNavController(mainNav, mainNavCtrlr);
 
-        if(userId != null) getBooking();
-        else startTimer();
-
         fab = findViewById(R.id.floatingActionButton);
         fab.getDrawable().setTint(getResources().getColor(R.color.white));
 
@@ -249,6 +243,8 @@ public class MainActivity extends AppCompatActivity {
                         users.add(user);
                     }
                 }
+
+                getBooking();
             }
 
             @Override
@@ -387,10 +383,15 @@ public class MainActivity extends AppCompatActivity {
             public void onFinish() {
                 if(userId != null) {
                     for(Booking booking : bookingList1)
-                        checkBooking(booking);
+                        checkBooking(booking, false);
 
                     for(Booking booking : bookingList2)
-                        checkBooking(booking);
+                        checkBooking(booking, false);
+
+                    for(Booking task : taskList) {
+                        if(task.getStatus().equals("Booked") || task.getStatus().equals("Request"))
+                            checkBooking(task, true);
+                    }
                 }
 
                 start();
@@ -405,7 +406,7 @@ public class MainActivity extends AppCompatActivity {
         showFailedBookingNotification(booking);
     }
 
-    private void checkBooking(Booking booking) {
+    private void checkBooking(Booking booking, boolean inDriverModule) {
         dateTimeToString = new DateTimeToString();
         int maximumDaysInMonthOfYear = dateTimeToString.getMaximumDaysInMonthOfYear();
 
@@ -427,11 +428,12 @@ public class MainActivity extends AppCompatActivity {
         }
 
         checkingForBookingNotification(booking, bookingDay, bookingMonth, bookingYear,
-                maximumDaysInMonthOfYear);
+                maximumDaysInMonthOfYear, inDriverModule);
     }
 
     private void checkingForBookingNotification(Booking booking, int bookingDay, int bookingMonth,
-                                                int bookingYear, int maximumDaysInMonthOfYear) {
+                                                int bookingYear, int maximumDaysInMonthOfYear,
+                                                boolean inDriverModule) {
 
         SimpleDateFormat sdf = new SimpleDateFormat("H:mm:ss", Locale.getDefault());
         String currentTime = sdf.format(new Date().getTime());
@@ -461,12 +463,12 @@ public class MainActivity extends AppCompatActivity {
             setBookingStatusFromPendingToFailed(booking, hrDifference, minDifference);
             setOnTheSpotBookingStatusToFailed(booking, hrDifference, minDifference);
 
-            if(booking.getStatus().equals("Booked")) {
+            if(booking.getStatus().equals("Booked") || booking.getStatus().equals("Request")) {
                 initNotificationInHours(booking, hourArray, hrDifference + 1, minArray, minDifference, sec);
                 initNotificationInMinutes(booking, hrDifference, minArray, minDifference, sec);
             }
         }
-        else if(booking.getStatus().equals("Booked")) {
+        else if(booking.getStatus().equals("Booked") || booking.getStatus().equals("Request")) {
             int dayDifference = bookingDay > calendarDay ?
                     bookingDay - calendarDay : (bookingDay + maximumDaysInMonthOfYear) - calendarDay;
 
@@ -482,29 +484,54 @@ public class MainActivity extends AppCompatActivity {
             initNotificationInHours(booking, hourArray, hrDifference + 1, minArray, minDifference, sec);
         }
 
-        if(booking.getStatus().equals("Booked")) getEndPointInfo(booking);
+        if(booking.getStatus().equals("Booked") || booking.getStatus().equals("Request"))
+            getEndPointInfo(booking, inDriverModule);
     }
 
-    private void getEndPointInfo(Booking booking) {
+    private void getEndPointInfo(Booking booking, boolean inDriverModule) {
         for(User user : users) {
-            List<Booking> taskList = user.getTaskList();
+            if(inDriverModule) {
+                List<Booking> bookingList = user.getBookingList();
+                for(Booking booking1 : bookingList) {
+                    if(booking1.getId().equals(booking.getId())) {
+                        String fullName = user.getLastName() + ", " + user.getFirstName();
+                        if(user.getMiddleName().length() > 0) fullName += " " + user.getMiddleName();
 
-            for(Booking task : taskList) {
-                if(task.getId().equals(booking.getId())) {
-                    String fullName = user.getLastName() + ", " + user.getFirstName();
-                    if(user.getMiddleName().length() > 0) fullName += " " + user.getMiddleName();
+                        List<Chat> chats = booking.getChats();
+                        String message = booking1.getMessage();
+                        if(chats.size() > 0) message = chats.get(chats.size()-1).getMessage();
+                        boolean notified = booking.isNotified();
 
-                    List<Chat> chats = booking.getChats();
-                    String message = "こんにちは (Hello), I am " + fullName + ", your assigned driver.";
-                    if(chats.size() > 0) message = chats.get(chats.size()-1).getMessage();
-                    boolean notified = booking.isNotified();
-
-                    if(!notified && message.length() > 0) showChatNotification(booking, fullName, message);
-                    else {
-                        usersRef.child(userId).child("bookingList").child(booking.getId()).child("notified")
-                                .setValue(true);
+                        if(!notified && message.length() > 0)
+                            showChatNotification(booking, fullName, message, true);
+                        else {
+                            usersRef.child(userId).child("taskList").child(booking.getId()).child("notified")
+                                    .setValue(true);
+                        }
+                        break;
                     }
-                    break;
+                }
+            }
+            else {
+                List<Booking> taskList = user.getTaskList();
+                for(Booking task : taskList) {
+                    if(task.getId().equals(booking.getId())) {
+                        String fullName = user.getLastName() + ", " + user.getFirstName();
+                        if(user.getMiddleName().length() > 0) fullName += " " + user.getMiddleName();
+
+                        List<Chat> chats = task.getChats();
+                        String message = "こんにちは (Hello), I am " + fullName + ", your assigned driver.";
+                        if(chats.size() > 0) message = chats.get(chats.size()-1).getMessage();
+                        boolean notified = booking.isNotified();
+
+                        if(!notified && message.length() > 0)
+                            showChatNotification(booking, fullName, message, false);
+                        else {
+                            usersRef.child(userId).child("bookingList").child(booking.getId()).child("notified")
+                                    .setValue(true);
+                        }
+                        break;
+                    }
                 }
             }
         }
@@ -576,90 +603,25 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getBooking() {
-        Query booking1Query = usersRef.child(userId).child("bookingList")
-                .orderByChild("status").equalTo("Pending");
+        bookingList1.clear();
+        bookingList2.clear();
+        taskList.clear();
 
-        booking1Query.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                bookingList1.clear();
-
-                if(snapshot.exists()) {
-                    for(DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                        Booking booking = new Booking(dataSnapshot);
+        for(User user : users) {
+            if(user.getId().equals(userId)) {
+                List<Booking> bookingList = user.getBookingList();
+                for(Booking booking : bookingList) {
+                    if(booking.getStatus().equals("Pending"))
                         bookingList1.add(booking);
-                    }
-                }
-                success1 = true;
-                finishLoading();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(
-                        myContext,
-                        error.toString(),
-                        Toast.LENGTH_LONG
-                ).show();
-
-                success1 = false;
-                errorLoading(error.toString());
-            }
-        });
-
-        Query booking2Query = usersRef.child(userId).child("bookingList").
-                orderByChild("status").equalTo("Booked");
-
-        success2 = false;
-        booking2Query.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                bookingList2.clear();
-
-                if(snapshot.exists()) {
-                    for(DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                        Booking booking = new Booking(dataSnapshot);
+                    if(booking.getStatus().equals("Booked"))
                         bookingList2.add(booking);
-                    }
                 }
-                success2 = true;
-                finishLoading();
+                taskList.addAll(user.getTaskList());
+                break;
             }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(
-                        myContext,
-                        error.toString(),
-                        Toast.LENGTH_LONG
-                ).show();
-
-                success2 = false;
-                errorLoading(error.toString());
-            }
-        });
-    }
-
-    private void finishLoading() {
-        if(success1 && success2) {
-            Collections.reverse(bookingList1);
-            Collections.reverse(bookingList2);
-            startTimer();
         }
-    }
 
-    private void errorLoading(String error) {
-        if(!(success1 && success2)) {
-            bookingList1.clear();
-            bookingList2.clear();
-            startTimer();
-
-            Toast.makeText(
-                    myContext,
-                    error,
-                    Toast.LENGTH_LONG
-            ).show();
-        }
+        startTimer();
     }
 
     private NotificationManager getNotificationManager(String channelId) {
@@ -710,7 +672,8 @@ public class MainActivity extends AppCompatActivity {
         notificationManager.notify(1, builder.build());
     }
 
-    private void showChatNotification(Booking task, String fullName, String message) {
+    private void showChatNotification(Booking task, String fullName, String message,
+                                      boolean inDriverModule) {
         NotificationManager notificationManager = getNotificationManager(task.getId());
 
         NotificationCompat.Builder builder =
@@ -729,6 +692,14 @@ public class MainActivity extends AppCompatActivity {
         Intent notificationIntent = new Intent(myContext, ChatActivity.class);
         notificationIntent.putExtra("taskId", task.getId());
         notificationIntent.putExtra("inDriverModule", false);
+        
+        if(inDriverModule) {
+            notificationIntent.putExtra("isScanning", false);
+            notificationIntent.putExtra("status", task.getStatus());
+            notificationIntent.putExtra("previousDriverUserId", task.getPreviousDriverUserId());
+            notificationIntent.putExtra("userId", getPassengerUserId(task.getId()));
+        }
+        else notificationIntent.putExtra("isLatest", false);
 
         PendingIntent pendingIntent = PendingIntent.getActivity(
                 myContext, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT
@@ -737,8 +708,26 @@ public class MainActivity extends AppCompatActivity {
         builder.setFullScreenIntent(pendingIntent, true);
         notificationManager.notify(1, builder.build());
 
-        usersRef.child(userId).child("bookingList").child(task.getId()).child("notified")
-                .setValue(true);
+        if(inDriverModule) {
+            usersRef.child(userId).child("taskList").child(task.getId()).child("notified")
+                    .setValue(true);
+        }
+        else {
+            usersRef.child(userId).child("bookingList").child(task.getId()).child("notified")
+                    .setValue(true);
+        }
+    }
+
+    private String getPassengerUserId(String bookingId) {
+        for(User user : users) {
+            List<Booking> bookingList = user.getBookingList();
+            for(Booking booking : bookingList) {
+                if(booking.getId().equals(bookingId)) {
+                    return user.getId();
+                }
+            }
+        }
+        return null;
     }
 
     private void showFailedBookingNotification(Booking booking) {

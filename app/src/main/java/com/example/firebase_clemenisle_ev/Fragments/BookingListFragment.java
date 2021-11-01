@@ -112,12 +112,14 @@ public class BookingListFragment extends Fragment {
             fragmentTransaction = fragmentManager.beginTransaction().
                     replace(R.id.bookingListFragmentContainer, new LoggedInBookingListFragment(), null);
             chatImage.setVisibility(View.VISIBLE);
+            tvBadge.setVisibility(View.VISIBLE);
             if(userId != null)  getUsers();
         }
         else {
             fragmentTransaction = fragmentManager.beginTransaction().
                     replace(R.id.bookingListFragmentContainer, new LoginPromptFragment(), null);
             chatImage.setVisibility(View.GONE);
+            tvBadge.setVisibility(View.GONE);
         }
         fragmentTransaction.commit();
 
