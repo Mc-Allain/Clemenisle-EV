@@ -385,7 +385,6 @@ public class OnTheSpotActivity extends AppCompatActivity {
     private void openChat() {
         Intent intent = new Intent(myContext, ChatActivity.class);
         intent.putExtra("taskId", bookingId);
-        intent.putExtra("schedule", schedule);
         intent.putExtra("inDriverModule", inDriverModule);
         myContext.startActivity(intent);
     }

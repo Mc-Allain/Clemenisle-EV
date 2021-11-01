@@ -52,12 +52,13 @@ public class ChatListActivity extends AppCompatActivity {
 
     List<User> users = new ArrayList<>();
     List<Booking> bookingList = new ArrayList<>();
+    List<Booking> taskList = new ArrayList<>();
     List<Chat> chatList = new ArrayList<>();
     ChatListAdapter chatListAdapter;
 
     String userId, userFullName;
 
-    boolean isLoggedIn = false, isDriver = false;
+    boolean isLoggedIn = false;
 
     String defaultLogText = "No Record";
 
@@ -120,32 +121,7 @@ public class ChatListActivity extends AppCompatActivity {
         chatListAdapter = new ChatListAdapter(myContext, chatList, users, userId);
         chatListView.setAdapter(chatListAdapter);
 
-        checkIfDriver();
-    }
-
-    private void checkIfDriver() {
-        tvLog.setVisibility(View.GONE);
-        reloadImage.setVisibility(View.GONE);
-        progressBar.setVisibility(View.VISIBLE);
-
-        usersRef.child(userId).child("driver").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if(snapshot.exists()) isDriver = snapshot.getValue(Boolean.class);
-                getUsers();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(
-                        myContext,
-                        error.toString(),
-                        Toast.LENGTH_LONG
-                ).show();
-
-                errorLoading(error.toString());
-            }
-        });
+        getUsers();
     }
 
     private void getUsers() {
@@ -177,42 +153,22 @@ public class ChatListActivity extends AppCompatActivity {
     }
 
     private void getBookingList() {
-        DatabaseReference bookingListRef = usersRef.child(userId).child("bookingList");
-        bookingListRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                bookingList.clear();
-                if(snapshot.exists()) {
-                    for(DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                        Booking booking = new Booking(dataSnapshot);
-                        bookingList.add(booking);
-                    }
-                }
-                getChatList();
-            }
+        bookingList.clear();
+        taskList.clear();
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(
-                        myContext,
-                        error.toString(),
-                        Toast.LENGTH_LONG
-                ).show();
+        for(User user : users) {
+            if(user.getId().equals(userId)) {
+                bookingList.addAll(user.getBookingList());
+                taskList.addAll(user.getTaskList());
 
-                errorLoading(error.toString());
+                userFullName = user.getLastName() + ", " + user.getFirstName();
+                if(user.getMiddleName().length() > 0) userFullName += " " + user.getMiddleName();
             }
-        });
+        }
+        getChatList();
     }
 
     private void getChatList() {
-        for(User user : users) {
-            if(user.getId().equals(userId)) {
-                userFullName = user.getLastName() + ", " + user.getFirstName();
-                if(user.getMiddleName().length() > 0) userFullName += " " + user.getMiddleName();
-                break;
-            }
-        }
-
         List<Chat> bookingChatList = new ArrayList<>();
         for(Booking booking : bookingList) {
             for(User user : users) {
@@ -230,7 +186,10 @@ public class ChatListActivity extends AppCompatActivity {
 
                             chat = new Chat("C01", user.getId(), message, task.getTimestamp());
                         }
+
                         chat.setTaskId(task.getId());
+                        chat.setEndPointUserId(user.getId());
+                        chat.setDriverUserId(user.getId());
                         bookingChatList.add(chat);
                         break;
                     }
@@ -238,54 +197,44 @@ public class ChatListActivity extends AppCompatActivity {
             }
         }
 
-        DatabaseReference taskListRef = usersRef.child(userId).child("taskList");
-        taskListRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                chatList.clear();
-                chatList.addAll(bookingChatList);
-
-                if(snapshot.exists()) {
-                    for(DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                        Booking task = new Booking(dataSnapshot);
+        chatList.clear();
+        chatList.addAll(bookingChatList);
+        for(Booking task : taskList) {
+            for(User user : users) {
+                List<Booking> bookingList = user.getBookingList();
+                for(Booking booking : bookingList) {
+                    if(task.getId().equals(booking.getId())) {
                         List<Chat> chats = task.getChats();
                         Chat chat;
 
-                        if(chats.size() > 0)chat = chats.get(chats.size() - 1);
+                        if(chats.size() > 0) chat = chats.get(chats.size() - 1);
                         else {
                             String message = "こんにちは (Hello), I am " + userFullName + ", your assigned driver.";
                             chat = new Chat("C01", userId, message, task.getTimestamp());
                         }
+
                         chat.setTaskId(task.getId());
+                        chat.setEndPointUserId(user.getId());
+                        chat.setDriverUserId(userId);
                         chatList.add(chat);
+                        break;
                     }
                 }
-
-                Collections.sort(chatList, (chat, t1) -> {
-                    DateTimeToString dateTimeToString = new DateTimeToString();
-                    dateTimeToString.setFormattedSchedule(chat.getTimestamp());
-                    String chatTS = dateTimeToString.getDateNo(true);
-                    dateTimeToString.setFormattedSchedule(t1.getTimestamp());
-                    String chatTS1 = dateTimeToString.getDateNo(true);
-
-                    return chatTS1.compareToIgnoreCase(chatTS);
-                });
-
-                if(chatList.size() > 0) finishLoading();
-                else errorLoading(defaultLogText);
             }
+        }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(
-                        myContext,
-                        error.toString(),
-                        Toast.LENGTH_LONG
-                ).show();
+        Collections.sort(chatList, (chat, t1) -> {
+            DateTimeToString dateTimeToString = new DateTimeToString();
+            dateTimeToString.setFormattedSchedule(chat.getTimestamp());
+            String chatTS = dateTimeToString.getDateNo(true);
+            dateTimeToString.setFormattedSchedule(t1.getTimestamp());
+            String chatTS1 = dateTimeToString.getDateNo(true);
 
-                errorLoading(error.toString());
-            }
+            return chatTS1.compareToIgnoreCase(chatTS);
         });
+
+        if(chatList.size() > 0) finishLoading();
+        else errorLoading(defaultLogText);
     }
 
     private void finishLoading() {

@@ -3,7 +3,7 @@ package com.example.firebase_clemenisle_ev.Classes;
 public class Chat {
 
     String id, senderId, message, timestamp;
-    String taskId;
+    String taskId, endPointUserId, driverUserId;
 
     public Chat() {
     }
@@ -23,6 +23,10 @@ public class Chat {
         return senderId;
     }
 
+    public void setSenderId(String senderId) {
+        this.senderId = senderId;
+    }
+
     public String getMessage() {
         return message;
     }
@@ -37,5 +41,21 @@ public class Chat {
 
     public void setTaskId(String taskId) {
         this.taskId = taskId;
+    }
+
+    public String getEndPointUserId() {
+        return endPointUserId;
+    }
+
+    public void setEndPointUserId(String endPointUserId) {
+        this.endPointUserId = endPointUserId;
+    }
+
+    public String getDriverUserId() {
+        return driverUserId;
+    }
+
+    public void setDriverUserId(String driverUserId) {
+        this.driverUserId = driverUserId;
     }
 }

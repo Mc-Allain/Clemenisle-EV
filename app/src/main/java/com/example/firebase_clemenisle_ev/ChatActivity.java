@@ -208,36 +208,38 @@ public class ChatActivity extends AppCompatActivity {
                     for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                         User user = new User(dataSnapshot);
 
-                        List<Booking> taskList = user.getTaskList();
-                        for(Booking task : taskList) {
-                            if(task.getId().equals(taskId)) {
-                                String fullName = "<b>" + user.getLastName() + "</b>, " + user.getFirstName();
-                                if(user.getMiddleName().length() > 0) fullName += " " + user.getMiddleName();
+                        if(user.getId().equals(driverUserId) || !inDriverModule) {
+                            List<Booking> taskList = user.getTaskList();
+                            for(Booking task : taskList) {
+                                if(task.getId().equals(taskId)) {
+                                    String fullName = "<b>" + user.getLastName() + "</b>, " + user.getFirstName();
+                                    if(user.getMiddleName().length() > 0) fullName += " " + user.getMiddleName();
 
-                                if(!inDriverModule) {
-                                    tvDriverFullName.setText(fromHtml(fullName));
+                                    if(!inDriverModule) {
+                                        tvDriverFullName.setText(fromHtml(fullName));
 
-                                    String plateNumber = "<b>Plate Number</b>: " + user.getPlateNumber();
-                                    tvPlateNumber.setText(fromHtml(plateNumber));
+                                        String plateNumber = "<b>Plate Number</b>: " + user.getPlateNumber();
+                                        tvPlateNumber.setText(fromHtml(plateNumber));
 
-                                    try {
-                                        Glide.with(myContext).load(user.getProfileImage())
-                                                .placeholder(R.drawable.image_loading_placeholder)
-                                                .into(driverProfileImage);
+                                        try {
+                                            Glide.with(myContext).load(user.getProfileImage())
+                                                    .placeholder(R.drawable.image_loading_placeholder)
+                                                    .into(driverProfileImage);
+                                        }
+                                        catch (Exception ignored) {}
+
+                                        driverInfoLayout.setVisibility(View.VISIBLE);
+                                        userInfoLayout.setVisibility(View.GONE);
                                     }
-                                    catch (Exception ignored) {}
 
-                                    driverInfoLayout.setVisibility(View.VISIBLE);
-                                    userInfoLayout.setVisibility(View.GONE);
+                                    driverUserId = user.getId();
+                                    driverProfileImg = user.getProfileImage();
+                                    driverFullName = fullName;
+                                    initialMessage = task.getMessage();
+                                    taskTimestamp = task.getTimestamp();
+
+                                    break;
                                 }
-
-                                driverUserId = user.getId();
-                                driverProfileImg = user.getProfileImage();
-                                driverFullName = fullName;
-                                initialMessage = task.getMessage();
-                                taskTimestamp = task.getTimestamp();
-
-                                break;
                             }
                         }
 

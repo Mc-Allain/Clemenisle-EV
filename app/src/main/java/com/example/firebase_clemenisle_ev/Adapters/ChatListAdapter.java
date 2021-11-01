@@ -1,6 +1,7 @@
 package com.example.firebase_clemenisle_ev.Adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Build;
 import android.text.Html;
@@ -14,6 +15,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.Target;
+import com.example.firebase_clemenisle_ev.ChatActivity;
 import com.example.firebase_clemenisle_ev.Classes.Chat;
 import com.example.firebase_clemenisle_ev.Classes.DateTimeDifference;
 import com.example.firebase_clemenisle_ev.Classes.User;
@@ -35,7 +37,8 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
     Context myContext;
     Resources myResources;
 
-    public ChatListAdapter(Context context, List<Chat> chatList, List<User> users, String userId) {
+    public ChatListAdapter(Context context, List<Chat> chatList, List<User> users,
+                           String userId) {
         this.chatList = chatList;
         this.users = users;
         this.userId = userId;
@@ -64,11 +67,13 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
         String senderId = chat.getSenderId();
         String message = chat.getMessage();
         String taskId = chat.getTaskId();
+        String endPointUserId = chat.getEndPointUserId();
+        String driverUserId = chat.getDriverUserId();
         String timestamp = chat.getTimestamp();
 
         if(senderId.equals(userId)) message = "<b>You</b>: " + message;
 
-        getEndPointInfo(senderId, profileImage, tvEndPointFullName);
+        getEndPointInfo(endPointUserId, profileImage, tvEndPointFullName);
 
         tvMessage.setText(fromHtml(message));
         tvBookingId.setText(taskId);
@@ -92,11 +97,18 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
                 (ConstraintLayout.LayoutParams) backgroundLayout.getLayoutParams();
         layoutParams.setMargins(layoutParams.leftMargin, top, layoutParams.rightMargin, bottom);
         backgroundLayout.setLayoutParams(layoutParams);
+
+        backgroundLayout.setOnClickListener(view -> {
+            Intent intent = new Intent(myContext, ChatActivity.class);
+            intent.putExtra("taskId", taskId);
+            intent.putExtra("inDriverModule", !endPointUserId.equals(driverUserId));
+            myContext.startActivity(intent);
+        });
     }
 
-    private void getEndPointInfo(String senderId, ImageView profileImage, TextView tvFullName) {
+    private void getEndPointInfo(String endPointUserId, ImageView profileImage, TextView tvFullName) {
         for(User user : users) {
-            if(user.getId().equals(senderId)) {
+            if(user.getId().equals(endPointUserId)) {
                 try {
                     Glide.with(myContext).load(user.getProfileImage()).
                             placeholder(R.drawable.image_loading_placeholder).
