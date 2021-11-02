@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -28,6 +29,7 @@ import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -39,8 +41,11 @@ public class OnlinePaymentActivity extends AppCompatActivity {
     FirebaseAuth firebaseAuth;
     FirebaseUser firebaseUser;
 
-    TextView tvLog;
-    ImageView reloadImage;
+    ConstraintLayout buttonLayout;
+    Button refundButton;
+    TextView tvActivityCaption, tvHelp,
+            tvPrice2, tvCreditedAmount2, tvBalance2, tvLog;
+    ImageView helpImage, reloadImage;
     RecyclerView referenceNumberView;
     ProgressBar progressBar;
 
@@ -56,7 +61,8 @@ public class OnlinePaymentActivity extends AppCompatActivity {
 
     boolean isLoggedIn = false;
 
-    String defaultLogText = "No Record";
+    String defaultCaptionText = "Please send your payment to this/these GCash number/s: ",
+            defaultLogText = "No Record";
 
     private void initSharedPreferences() {
         SharedPreferences sharedPreferences = myContext
@@ -78,6 +84,18 @@ public class OnlinePaymentActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_online_payment);
+
+        tvActivityCaption = findViewById(R.id.tvActivityCaption);
+
+        helpImage = findViewById(R.id.helpImage);
+        tvHelp = findViewById(R.id.tvHelp);
+
+        tvPrice2 = findViewById(R.id.tvPrice2);
+        tvCreditedAmount2 = findViewById(R.id.tvCreditedAmount2);
+        tvBalance2 = findViewById(R.id.tvBalance2);
+
+        buttonLayout = findViewById(R.id.buttonLayout);
+        refundButton = findViewById(R.id.refundButton);
 
         tvLog = findViewById(R.id.tvLog);
         reloadImage = findViewById(R.id.reloadImage);
@@ -120,7 +138,15 @@ public class OnlinePaymentActivity extends AppCompatActivity {
         referenceNumberAdapter = new ReferenceNumberAdapter(myContext, referenceNumberList);
         referenceNumberView.setAdapter(referenceNumberAdapter);
 
+        helpImage.setOnClickListener(view -> openHelp());
+        tvHelp.setOnClickListener(view -> openHelp());
+
         getReferenceNumber();
+    }
+
+    private void openHelp() {
+        Intent intent = new Intent(myContext, HelpActivity.class);
+        myContext.startActivity(intent);
     }
 
     private void getReferenceNumber() {
@@ -128,15 +154,90 @@ public class OnlinePaymentActivity extends AppCompatActivity {
         reloadImage.setVisibility(View.GONE);
         progressBar.setVisibility(View.VISIBLE);
 
-        usersRef.child(userId).child("bookingList").child(bookingId).
-                child("referenceNumber").addValueEventListener(new ValueEventListener() {
+        firebaseDatabase.getReference("gCashNumberList").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                referenceNumberList.clear();
+                StringBuilder captionText = new StringBuilder(defaultCaptionText);
+
                 if(snapshot.exists()) {
                     for(DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                        ReferenceNumber referenceNumber = dataSnapshot.getValue(ReferenceNumber.class);
-                        referenceNumberList.add(referenceNumber);
+                        String gCashNumber = dataSnapshot.getValue(String.class);
+                        captionText.append("\n\t● ").append(gCashNumber);
+                    }
+                }
+
+                tvActivityCaption.setText(captionText.toString());
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+        usersRef.child(userId).child("bookingList").child(bookingId).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                double price, creditedAmount = 0, balance;
+                referenceNumberList.clear();
+
+                if(snapshot.exists()) {
+                    DataSnapshot referenceNumberListRef = snapshot.child("referenceNumberList");
+                    if(referenceNumberListRef.exists()) {
+                        for(DataSnapshot dataSnapshot : referenceNumberListRef.getChildren()) {
+                            ReferenceNumber referenceNumber = dataSnapshot.getValue(ReferenceNumber.class);
+                            if(referenceNumber != null) creditedAmount += referenceNumber.getValue();
+                            referenceNumberList.add(referenceNumber);
+                        }
+                    }
+
+                    DataSnapshot priceRef = snapshot.child("bookingType").child("price");
+                    if(priceRef.exists()) {
+                        price = priceRef.getValue(Double.class);
+                        balance = price - creditedAmount;
+
+                        String priceText = "₱" + price;
+                        String creditedAmountText = "₱" + creditedAmount;
+                        String balanceText = "₱" + balance;
+
+                        if(priceText.split("\\.")[1].length() == 1) priceText += 0;
+                        if(creditedAmountText.split("\\.")[1].length() == 1) creditedAmountText += 0;
+                        if(balanceText.split("\\.")[1].length() == 1) balanceText += 0;
+
+                        tvPrice2.setText(priceText);
+                        tvCreditedAmount2.setText(creditedAmountText);
+                        tvBalance2.setText(balanceText);
+                    }
+
+                    DataSnapshot statusRef = snapshot.child("status");
+                    if(statusRef.exists()) {
+                        String status = statusRef.getValue(String.class);
+                        referenceNumberAdapter.setStatus(status);
+
+                        ConstraintLayout.LayoutParams layoutParams =
+                                (ConstraintLayout.LayoutParams) tvLog.getLayoutParams();
+
+                        buttonLayout.setVisibility(View.GONE);
+
+                        if(status != null && (status.equals("Pending") || status.equals("Booked"))) {
+                            layoutParams.setMargins(layoutParams.leftMargin, dpToPx(64),
+                                    layoutParams.rightMargin, layoutParams.bottomMargin);
+                        }
+                        else {
+                            if(status != null && !status.equals("Completed"))
+                                buttonLayout.setVisibility(View.VISIBLE);
+                            layoutParams.setMargins(layoutParams.leftMargin, dpToPx(24),
+                                    layoutParams.rightMargin, layoutParams.bottomMargin);
+
+                            refundButton.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+
+                                }
+                            });
+                        }
+
+                        tvLog.setLayoutParams(layoutParams);
                     }
                 }
 
@@ -155,6 +256,11 @@ public class OnlinePaymentActivity extends AppCompatActivity {
                 errorLoading(error.toString());
             }
         });
+    }
+
+    private int dpToPx(int dp) {
+        float px = dp * myResources.getDisplayMetrics().density;
+        return (int) px;
     }
 
     private void finishLoading() {

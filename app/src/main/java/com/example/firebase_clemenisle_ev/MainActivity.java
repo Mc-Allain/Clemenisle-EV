@@ -128,11 +128,11 @@ public class MainActivity extends AppCompatActivity {
     boolean isAppStatusActivityShown = false, isAlertDialogShown = false;
 
     Dialog dialog;
-    ImageView dialogCloseImage, preferencesImage;
+    ImageView dialogCloseImage;
     Button updateAppButton;
 
     Dialog appVersionInfoDialog;
-    ImageView appVersionInfoDialogCloseImage;
+    ImageView appVersionInfoDialogCloseImage, preferencesImage;
     TextView tvAppVersionInfoDialogTitle, tvAppVersion, tvPreferences;
     ExpandableTextView extvNewlyAddedFeatures;
 

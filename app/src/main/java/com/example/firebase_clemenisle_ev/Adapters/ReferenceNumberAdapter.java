@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.firebase_clemenisle_ev.Classes.DateTimeDifference;
 import com.example.firebase_clemenisle_ev.Classes.ReferenceNumber;
 import com.example.firebase_clemenisle_ev.R;
 
@@ -20,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView;
 public class ReferenceNumberAdapter extends RecyclerView.Adapter<ReferenceNumberAdapter.ViewHolder> {
 
     List<ReferenceNumber> referenceNumberList;
+    String status;
     LayoutInflater inflater;
 
     Context myContext;
@@ -52,25 +54,35 @@ public class ReferenceNumberAdapter extends RecyclerView.Adapter<ReferenceNumber
         referenceNumberLayout.setVisibility(View.GONE);
         addRNLayout.setVisibility(View.GONE);
 
-        if(position == 0) {
+        if(status != null && (status.equals("Pending") || status.equals("Booked")) && position == 0) {
             addRNLayout.setVisibility(View.VISIBLE);
             addRNLayout.setOnClickListener(view -> addRN());
         }
-        else {
+        else if(position != 0) {
             referenceNumberLayout.setVisibility(View.VISIBLE);
 
-            ReferenceNumber referenceNumber = referenceNumberList.get(position);
+            ReferenceNumber referenceNumber = referenceNumberList.get(position-1);
             String referenceNumberValue = referenceNumber.getReferenceNumber();
             String timestamp = referenceNumber.getTimestamp();
             double value = referenceNumber.getValue();
 
             tvReferenceNumber.setText(referenceNumberValue);
+
+            DateTimeDifference dateTimeDifference = new DateTimeDifference(timestamp);
+            timestamp = dateTimeDifference.getResult();
             tvTimestamp.setText(timestamp);
 
-            if(value == 0) tvValue.setVisibility(View.GONE);
+            if(value == 0) {
+                tvValue.setVisibility(View.GONE);
+                removeImage.setVisibility(View.VISIBLE);
+            }
             else {
-                tvValue.setText(String.valueOf(value));
+                String valueText = "₱" + value;
+                if(valueText.split("\\.")[1].length() == 1) valueText += 0;
+
+                tvValue.setText(valueText);
                 tvValue.setVisibility(View.VISIBLE);
+                removeImage.setVisibility(View.GONE);
             }
         }
 
@@ -124,5 +136,9 @@ public class ReferenceNumberAdapter extends RecyclerView.Adapter<ReferenceNumber
 
             setIsRecyclable(false);
         }
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

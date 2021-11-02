@@ -5,6 +5,9 @@ public class ReferenceNumber {
     String referenceNumber, timestamp;
     double value;
 
+    public ReferenceNumber() {
+    }
+
     public ReferenceNumber(String referenceNumber, String timestamp, double value) {
         this.referenceNumber = referenceNumber;
         this.timestamp = timestamp;

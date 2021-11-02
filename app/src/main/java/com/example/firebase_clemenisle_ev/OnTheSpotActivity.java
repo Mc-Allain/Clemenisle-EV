@@ -954,14 +954,12 @@ public class OnTheSpotActivity extends AppCompatActivity {
                     buttonLayout.setVisibility(View.VISIBLE);
                     if (isShowBookingAlertEnabled) dialog.show();
                 }
-
                 break;
             case "Request":
             case "Booked":
                 color = myResources.getColor(R.color.green);
 
                 if(isShowBookingAlertEnabled && !inDriverModule) dialog.show();
-
                 break;
             case "Completed":
                 color = myResources.getColor(R.color.blue);

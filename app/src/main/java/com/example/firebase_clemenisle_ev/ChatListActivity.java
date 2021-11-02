@@ -56,7 +56,8 @@ public class ChatListActivity extends AppCompatActivity {
     List<Chat> chatList = new ArrayList<>();
     ChatListAdapter chatListAdapter;
 
-    String userId, userFullName;
+    String userId;
+    StringBuilder userFullName;
 
     boolean isLoggedIn = false;
 
@@ -166,8 +167,9 @@ public class ChatListActivity extends AppCompatActivity {
                 bookingList.addAll(user.getBookingList());
                 taskList.addAll(user.getTaskList());
 
-                userFullName = user.getLastName() + ", " + user.getFirstName();
-                if(user.getMiddleName().length() > 0) userFullName += " " + user.getMiddleName();
+                userFullName = new StringBuilder(user.getLastName() + ", " + user.getFirstName());
+                if(user.getMiddleName().length() > 0)
+                    userFullName.append(" ").append(user.getMiddleName());
             }
         }
         getChatList();
@@ -216,7 +218,8 @@ public class ChatListActivity extends AppCompatActivity {
 
                         if(chats.size() > 0) chat = chats.get(chats.size() - 1);
                         else {
-                            String message = "こんにちは (Hello), I am " + userFullName + ", your assigned driver.";
+                            String message = "こんにちは (Hello), I am " + userFullName.toString() +
+                                    ", your assigned driver.";
                             chat = new Chat("C01", userId, message, task.getTimestamp());
                         }
 

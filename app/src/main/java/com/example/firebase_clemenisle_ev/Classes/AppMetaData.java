@@ -19,7 +19,7 @@ public class AppMetaData {
                     "\t○ Chat Notification Added\n" +
                     "● Booking Record's QR Code Added";
     double currentVersion = 0.3;
-    boolean isDeveloper = true;
+    boolean isDeveloper = false;
 
     public AppMetaData() {
     }

@@ -850,28 +850,22 @@ public class RouteActivity extends AppCompatActivity implements
 
         int color = 0;
 
-        buttonLayout.setVisibility(View.GONE);
+        cancelButton.setVisibility(View.GONE);
 
         switch (status) {
             case "Pending":
                 color = myResources.getColor(R.color.orange);
 
                 if(!inDriverModule) {
-                    buttonLayout.setVisibility(View.VISIBLE);
                     cancelButton.setVisibility(View.VISIBLE);
                     if(isShowBookingAlertEnabled) dialog.show();
                 }
-
                 break;
             case "Request":
             case "Booked":
                 color = myResources.getColor(R.color.green);
 
-                if(!inDriverModule) {
-                    buttonLayout.setVisibility(View.VISIBLE);
-                    cancelButton.setVisibility(View.GONE);
-                    if(isShowBookingAlertEnabled) dialog.show();
-                }
+                if(!inDriverModule) if(isShowBookingAlertEnabled) dialog.show();
                 break;
             case "Completed":
                 color = myResources.getColor(R.color.blue);
