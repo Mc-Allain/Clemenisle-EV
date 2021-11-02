@@ -308,11 +308,11 @@ public class RouteActivity extends AppCompatActivity implements
         tvLocateEnd.setOnClickListener(view -> openMap(endStation));
         locateEndImage.setOnClickListener(view -> openMap(endStation));
 
-        onlinePaymentButton.setOnClickListener(view -> Toast.makeText(
-                myContext,
-                "Not yet implemented",
-                Toast.LENGTH_SHORT
-        ).show());
+        onlinePaymentButton.setOnClickListener(view -> {
+            Intent intent1 = new Intent(myContext, OnlinePaymentActivity.class);
+            intent1.putExtra("bookingId", bookingId);
+            startActivity(intent1);
+        });
 
         paidImage.setOnLongClickListener(view -> {
             Toast.makeText(

@@ -16,6 +16,7 @@ import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.provider.Settings;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.transition.ChangeBounds;
@@ -104,7 +105,7 @@ public class BookingActivity extends AppCompatActivity implements
     FirebaseAuth firebaseAuth;
     FirebaseUser firebaseUser;
 
-    private final static int MAP_SETTINGS_REQUEST = 1;
+    private final static int MAP_SETTINGS_REQUEST = 1, GPS_REQUEST = 2;
 
     ConstraintLayout buttonLayout;
     TextView tvActivityName, tvCaption, tvSteps, tvBookingInfo;
@@ -257,7 +258,8 @@ public class BookingActivity extends AppCompatActivity implements
     LocationRequest locationRequest;
     LocationCallback locationCallback;
 
-    ConstraintLayout notAccurateLocationLayout;
+    ConstraintLayout notAccurateLocationLayout, gpsStatusLayout;
+    TextView tvGPSStatus, tvOpenGPS;
 
     int currentStep = 1, endStep = 6, onTheSpotEndStep = 4;
 
@@ -466,6 +468,9 @@ public class BookingActivity extends AppCompatActivity implements
         progressBar7 = findViewById(R.id.progressBar7);
 
         notAccurateLocationLayout = findViewById(R.id.notAccurateLocationLayout);
+        gpsStatusLayout = findViewById(R.id.gpsStatusLayout);
+        tvGPSStatus = findViewById(R.id.tvGPSStatus);
+        tvOpenGPS = findViewById(R.id.tvOpenGPS);
 
         myContext = BookingActivity.this;
         myResources = myContext.getResources();
@@ -1069,6 +1074,9 @@ public class BookingActivity extends AppCompatActivity implements
         if(resultCode == RESULT_OK && requestCode == MAP_SETTINGS_REQUEST) {
             mapFragment.mapSettingsRequestResult("Your Location");
         }
+        if(requestCode == GPS_REQUEST) {
+            currentLocationOnClick();
+        }
     }
 
     private String getStepText() {
@@ -1145,32 +1153,53 @@ public class BookingActivity extends AppCompatActivity implements
         }
     }
 
+    @SuppressWarnings("deprecation")
+    private void openGPS() {
+        Intent gpsOptionsIntent = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+        startActivityForResult(gpsOptionsIntent, GPS_REQUEST);
+    }
+
     @Override
     public void currentLocationOnClick() {
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient((Activity) myContext);
+        int provider = 0;
+        try {
+            provider = Settings.Secure.getInt(getContentResolver(), Settings.Secure.LOCATION_MODE);
+        } catch (Settings.SettingNotFoundException e) {
+            e.printStackTrace();
+        }
 
-        if(ActivityCompat.checkSelfPermission(myContext,
-                Manifest.permission.ACCESS_FINE_LOCATION) ==
-                PackageManager.PERMISSION_GRANTED &&
-            ActivityCompat.checkSelfPermission(myContext,
-                    Manifest.permission.ACCESS_COARSE_LOCATION) ==
-                    PackageManager.PERMISSION_GRANTED
-        ) {
-            progressBar7.setVisibility(View.VISIBLE);
-            Task<Location> locationTask = fusedLocationProviderClient.getLastLocation();
-
-            locationTask.addOnSuccessListener(location -> getUserCurrentLocation(location)).
-                    addOnFailureListener(e ->
-                            Toast.makeText(
-                                    myContext,
-                                    e.toString(),
-                                    Toast.LENGTH_LONG
-                            ).show()
-                    );
+        if(provider == 0) {
+            gpsStatusLayout.setVisibility(View.VISIBLE);
+            tvOpenGPS.setOnClickListener(view -> openGPS());
         }
         else {
-            ActivityCompat.requestPermissions((Activity) myContext,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 44);
+            gpsStatusLayout.setVisibility(View.GONE);
+
+            fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient((Activity) myContext);
+
+            if(ActivityCompat.checkSelfPermission(myContext,
+                    Manifest.permission.ACCESS_FINE_LOCATION) ==
+                    PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(myContext,
+                        Manifest.permission.ACCESS_COARSE_LOCATION) ==
+                        PackageManager.PERMISSION_GRANTED
+            ) {
+                progressBar7.setVisibility(View.VISIBLE);
+                Task<Location> locationTask = fusedLocationProviderClient.getLastLocation();
+
+                locationTask.addOnSuccessListener(location -> getUserCurrentLocation(location)).
+                        addOnFailureListener(e ->
+                                Toast.makeText(
+                                        myContext,
+                                        e.toString(),
+                                        Toast.LENGTH_LONG
+                                ).show()
+                        );
+            }
+            else {
+                ActivityCompat.requestPermissions((Activity) myContext,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 44);
+            }
         }
     }
 

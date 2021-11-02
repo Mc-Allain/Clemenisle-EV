@@ -58,10 +58,15 @@ public class ChatActivity extends AppCompatActivity {
     TextView tvUserFullName, tvDriverFullName, tvPlateNumber, tvChatStatus;
     RecyclerView chatView;
 
+    ImageView openImage, openImage2;
+    TextView tvOpen, tvOpen2;
+
     EditText etMessage;
 
     Context myContext;
     Resources myResources;
+
+    List<Booking> bookingList = new ArrayList<>();
 
     int colorBlue, colorInitial;
 
@@ -113,6 +118,11 @@ public class ChatActivity extends AppCompatActivity {
 
         chatStatusLayout = findViewById(R.id.chatStatusLayout);
         tvChatStatus = findViewById(R.id.tvChatStatus);
+
+        tvOpen = findViewById(R.id.tvOpen);
+        openImage = findViewById(R.id.openImage);
+        tvOpen2 = findViewById(R.id.tvOpen2);
+        openImage2 = findViewById(R.id.openImage2);
 
         myContext = ChatActivity.this;
         myResources = getResources();
@@ -190,6 +200,34 @@ public class ChatActivity extends AppCompatActivity {
         sendImage.setOnClickListener(view -> sendMessage());
     }
 
+    private void openItem(Booking booking) {
+        boolean isOnTheSpot = booking.getBookingType().getId().equals("BT99");
+
+        Intent intent;
+
+        if(isOnTheSpot) intent = new Intent(myContext, OnTheSpotActivity.class);
+        else intent = new Intent(myContext, RouteActivity.class);
+
+        intent.putExtra("bookingId", booking.getId());
+        intent.putExtra("inDriverModule", inDriverModule);
+        if(inDriverModule) {
+            intent.putExtra("isScanning", false);
+            intent.putExtra("status", booking.getStatus());
+            intent.putExtra("previousDriverUserId", booking.getPreviousDriverUserId());
+            intent.putExtra("userId", passengerUserId);
+        }
+        else {
+            if(!isOnTheSpot) {
+                boolean isLatest = bookingList.get(0).getId().equals(booking.getId()) &&
+                        booking.getStatus().equals("Completed") &&
+                        !booking.getBookingType().getId().equals("BT99");
+
+                intent.putExtra("isLatest", isLatest);
+            }
+        }
+        myContext.startActivity(intent);
+    }
+
     private void sendMessage() {
         String value = message;
         message = "";
@@ -218,12 +256,41 @@ public class ChatActivity extends AppCompatActivity {
         usersValueEventListener = usersRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                bookingList.clear();
                 if(snapshot.exists()) {
                     userInfoLayout.setVisibility(View.GONE);
                     driverInfoLayout.setVisibility(View.GONE);
 
                     for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                         User user = new User(dataSnapshot);
+
+                        if(user.getId().equals(userId)) {
+                            bookingList.addAll(user.getBookingList());
+                            List<Booking> taskList = user.getTaskList();
+
+                            if(inDriverModule) {
+                                for(Booking task : taskList) {
+                                    if(task.getId().equals(taskId)) {
+                                        tvOpen.setOnClickListener(view -> openItem(task));
+                                        tvOpen2.setOnClickListener(view -> openItem(task));
+                                        openImage.setOnClickListener(view -> openItem(task));
+                                        openImage2.setOnClickListener(view -> openItem(task));
+                                        break;
+                                    }
+                                }
+                            }
+                            else {
+                                for(Booking booking : bookingList) {
+                                    if(booking.getId().equals(taskId)) {
+                                        tvOpen.setOnClickListener(view -> openItem(booking));
+                                        tvOpen2.setOnClickListener(view -> openItem(booking));
+                                        openImage.setOnClickListener(view -> openItem(booking));
+                                        openImage2.setOnClickListener(view -> openItem(booking));
+                                        break;
+                                    }
+                                }
+                            }
+                        }
 
                         if(user.getId().equals(driverUserId)) {
                             List<Booking> taskList = user.getTaskList();

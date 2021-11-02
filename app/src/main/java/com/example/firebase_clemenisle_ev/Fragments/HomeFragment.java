@@ -59,6 +59,7 @@ public class HomeFragment extends Fragment implements
 
     private final static String firebaseURL = FirebaseURL.getFirebaseURL();
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance(firebaseURL);
+    DatabaseReference usersRef = firebaseDatabase.getReference("users");
     FirebaseAuth firebaseAuth;
     FirebaseUser firebaseUser;
 
@@ -478,8 +479,6 @@ public class HomeFragment extends Fragment implements
         progressBar.setVisibility(View.VISIBLE);
         touristSpotView.setVisibility(View.INVISIBLE);
 
-        DatabaseReference usersRef = firebaseDatabase.getReference("users");
-
         Query touristSpotsQuery =
                 firebaseDatabase.getReference("touristSpots")
                 .orderByChild("deactivated").equalTo(false);
@@ -494,7 +493,7 @@ public class HomeFragment extends Fragment implements
 
                     for(DataSnapshot dataSnapshot : snapshot.getChildren()) {
                         DetailedTouristSpot touristSpot = new DetailedTouristSpot(dataSnapshot);
-                        getStats(touristSpot, index, usersRef);
+                        getStats(touristSpot, index);
                         index++;
                     }
                 }
@@ -514,7 +513,7 @@ public class HomeFragment extends Fragment implements
         });
     }
 
-    private void getStats(DetailedTouristSpot touristSpot, int index, DatabaseReference usersRef) {
+    private void getStats(DetailedTouristSpot touristSpot, int index) {
         usersRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -664,8 +663,7 @@ public class HomeFragment extends Fragment implements
     }
 
     private void getCurrentUserLikedSpots() {
-        DatabaseReference usersRef = firebaseDatabase.getReference("users").child(userId);
-        usersRef.addValueEventListener(new ValueEventListener() {
+        usersRef.child(userId).addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         user = null;

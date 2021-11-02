@@ -174,10 +174,8 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
 
         Intent intent;
 
-        if(isOnTheSpot)
-            intent = new Intent(myContext, OnTheSpotActivity.class);
-        else
-            intent = new Intent(myContext, RouteActivity.class);
+        if(isOnTheSpot) intent = new Intent(myContext, OnTheSpotActivity.class);
+        else intent = new Intent(myContext, RouteActivity.class);
 
         intent.putExtra("bookingId", booking.getId());
         intent.putExtra("inDriverModule", inDriverModule);
