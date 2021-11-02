@@ -27,6 +27,8 @@ public class ReferenceNumberAdapter extends RecyclerView.Adapter<ReferenceNumber
     Context myContext;
     Resources myResources;
 
+    OnAddRNListener onAddRNListener;
+
     public ReferenceNumberAdapter(Context context, List<ReferenceNumber> referenceNumberList) {
         this.referenceNumberList = referenceNumberList;
         this.inflater = LayoutInflater.from(context);
@@ -45,7 +47,7 @@ public class ReferenceNumberAdapter extends RecyclerView.Adapter<ReferenceNumber
                 referenceNumberLayout = holder.referenceNumberLayout,
                 addRNLayout = holder.addRNLayout;
         TextView tvReferenceNumber = holder.tvReferenceNumber, tvTimestamp = holder.tvTimestamp,
-                tvValue = holder.tvValue, tvAddRN = holder.tvValue;
+                tvValue = holder.tvValue;
         ImageView removeImage = holder.removeImage;
 
         myContext = inflater.getContext();
@@ -56,7 +58,7 @@ public class ReferenceNumberAdapter extends RecyclerView.Adapter<ReferenceNumber
 
         if(status != null && (status.equals("Pending") || status.equals("Booked")) && position == 0) {
             addRNLayout.setVisibility(View.VISIBLE);
-            addRNLayout.setOnClickListener(view -> addRN());
+            addRNLayout.setOnClickListener(view -> onAddRNListener.addReferenceNumber());
         }
         else if(position != 0) {
             referenceNumberLayout.setVisibility(View.VISIBLE);
@@ -103,8 +105,12 @@ public class ReferenceNumberAdapter extends RecyclerView.Adapter<ReferenceNumber
         backgroundLayout.setLayoutParams(layoutParams);
     }
 
-    private void addRN() {
+    public void setOnAddRNListener(OnAddRNListener onAddRNListener) {
+        this.onAddRNListener = onAddRNListener;
+    }
 
+    public interface OnAddRNListener {
+        void addReferenceNumber();
     }
 
     private int dpToPx(int dp) {

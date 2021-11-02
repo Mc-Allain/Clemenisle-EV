@@ -1,12 +1,22 @@
 package com.example.firebase_clemenisle_ev;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
 import android.content.res.Resources;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -14,8 +24,10 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.firebase_clemenisle_ev.Adapters.ReferenceNumberAdapter;
+import com.example.firebase_clemenisle_ev.Classes.DateTimeToString;
 import com.example.firebase_clemenisle_ev.Classes.FirebaseURL;
 import com.example.firebase_clemenisle_ev.Classes.ReferenceNumber;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -25,6 +37,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -33,7 +46,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class OnlinePaymentActivity extends AppCompatActivity {
+public class OnlinePaymentActivity extends AppCompatActivity implements ReferenceNumberAdapter.OnAddRNListener {
 
     private final static String firebaseURL = FirebaseURL.getFirebaseURL();
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance(firebaseURL);
@@ -63,6 +76,19 @@ public class OnlinePaymentActivity extends AppCompatActivity {
 
     String defaultCaptionText = "Please send your payment to this/these GCash number/s: ",
             defaultLogText = "No Record";
+
+    String referenceNumberValue;
+
+    int colorBlue, colorInitial;
+    ColorStateList cslInitial, cslBlue;
+
+    Dialog dialog;
+    TextView tvDialogTitle, tvDialogCaption;
+    EditText etReferenceNumber;
+    TextInputLayout tlReferenceNumber;
+    Button submitButton;
+    ImageView dialogCloseImage;
+    ProgressBar dialogProgressBar;
 
     private void initSharedPreferences() {
         SharedPreferences sharedPreferences = myContext
@@ -105,10 +131,17 @@ public class OnlinePaymentActivity extends AppCompatActivity {
         myContext = OnlinePaymentActivity.this;
         myResources = myContext.getResources();
 
+        colorBlue = myResources.getColor(R.color.blue);
+        colorInitial = myResources.getColor(R.color.initial);
+
+        cslInitial = ColorStateList.valueOf(myResources.getColor(R.color.initial));
+        cslBlue = ColorStateList.valueOf(myResources.getColor(R.color.blue));
+
         Intent intent = getIntent();
         bookingId = intent.getStringExtra("bookingId");
 
         initSharedPreferences();
+        initAddReferenceNumberDialog();
 
         firebaseAuth = FirebaseAuth.getInstance();
         if(isLoggedIn) {
@@ -137,11 +170,102 @@ public class OnlinePaymentActivity extends AppCompatActivity {
         referenceNumberView.setLayoutManager(linearLayout);
         referenceNumberAdapter = new ReferenceNumberAdapter(myContext, referenceNumberList);
         referenceNumberView.setAdapter(referenceNumberAdapter);
+        referenceNumberAdapter.setOnAddRNListener(this);
 
         helpImage.setOnClickListener(view -> openHelp());
         tvHelp.setOnClickListener(view -> openHelp());
 
         getReferenceNumber();
+    }
+
+    private void initAddReferenceNumberDialog() {
+        dialog = new Dialog(myContext);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.dialog_input_reference_number_layout);
+
+        tvDialogTitle = dialog.findViewById(R.id.tvDialogTitle);
+        tvDialogCaption = dialog.findViewById(R.id.tvDialogCaption);
+        etReferenceNumber = dialog.findViewById(R.id.etReferenceNumber);
+        tlReferenceNumber = dialog.findViewById(R.id.tlReferenceNumber);
+        submitButton = dialog.findViewById(R.id.submitButton);
+        dialogCloseImage = dialog.findViewById(R.id.dialogCloseImage);
+        dialogProgressBar = dialog.findViewById(R.id.dialogProgressBar);
+
+        etReferenceNumber.setOnFocusChangeListener((view1, b) -> {
+            if(!tlReferenceNumber.isErrorEnabled()) {
+                if(b) {
+                    tlReferenceNumber.setStartIconTintList(cslBlue);
+                }
+                else {
+                    tlReferenceNumber.setStartIconTintList(cslInitial);
+                }
+            }
+        });
+
+        etReferenceNumber.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                referenceNumberValue = etReferenceNumber.getText().toString();
+                submitButton.setEnabled(referenceNumberValue.length() != 0);
+            }
+        });
+
+        submitButton.setOnClickListener(view -> submitReferenceNumber());
+
+        dialogCloseImage.setOnClickListener(view -> dialog.dismiss());
+
+        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+        dialog.getWindow().getAttributes().windowAnimations = R.style.animBottomSlide;
+        dialog.getWindow().setGravity(Gravity.BOTTOM);
+    }
+
+    private void submitReferenceNumber() {
+        dialogProgressBar.setVisibility(View.VISIBLE);
+
+        String rnIdSuffix = String.valueOf(referenceNumberList.size() + 1);
+        if(rnIdSuffix.length() == 1) rnIdSuffix = "0" + rnIdSuffix;
+        String rnId = "RN" + rnIdSuffix;
+
+        ReferenceNumber referenceNumber = new ReferenceNumber(rnId, referenceNumberValue,
+                new DateTimeToString().getDateAndTime(), 0);
+
+        usersRef.child(userId).child("bookingList").child(bookingId).
+                child("referenceNumberList").child(rnId).setValue(referenceNumber)
+                .addOnCompleteListener(task -> {
+                    if(task.isSuccessful()) {
+                        dialog.dismiss();
+
+                        Toast.makeText(
+                                myContext,
+                                "Successfully submitted a reference number",
+                                Toast.LENGTH_SHORT
+                        ).show();
+                    }
+                    else {
+                        if(task.getException() != null) {
+                            String error = task.getException().toString();
+
+                            Toast.makeText(
+                                    myContext,
+                                    error,
+                                    Toast.LENGTH_LONG
+                            ).show();
+                        }
+                    }
+                    dialogProgressBar.setVisibility(View.GONE);
+                });
     }
 
     private void openHelp() {
@@ -241,6 +365,18 @@ public class OnlinePaymentActivity extends AppCompatActivity {
                     }
                 }
 
+                Collections.sort(referenceNumberList, (referenceNumberList, t1) -> {
+                    DateTimeToString dateTimeToString = new DateTimeToString();
+                    dateTimeToString.setFormattedSchedule(referenceNumberList.getTimestamp());
+                    String rnTS = dateTimeToString.getDateNo(true) + " " +
+                            dateTimeToString.getTime(true);
+                    dateTimeToString.setFormattedSchedule(t1.getTimestamp());
+                    String rnTS1 = dateTimeToString.getDateNo(true) + " " +
+                            dateTimeToString.getTime(true);
+
+                    return rnTS1.compareToIgnoreCase(rnTS);
+                });
+
                 if(referenceNumberList.size() > 0) finishLoading();
                 else errorLoading(defaultLogText);
             }
@@ -277,5 +413,10 @@ public class OnlinePaymentActivity extends AppCompatActivity {
         tvLog.setVisibility(View.VISIBLE);
         reloadImage.setVisibility(View.VISIBLE);
         progressBar.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void addReferenceNumber() {
+        dialog.show();
     }
 }
