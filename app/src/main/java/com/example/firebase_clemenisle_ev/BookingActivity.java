@@ -789,7 +789,7 @@ public class BookingActivity extends AppCompatActivity implements
 
                     dateTimeToString.setDateToSplit(rawScheduleDate);
                     bookingScheduleText =
-                            dateTimeToString.getDate() + " | " + dateTimeToString.getTime();
+                            dateTimeToString.getDate() + " | " + dateTimeToString.getTime(false);
 
                     bookingScheduleLayout2.setVisibility(View.VISIBLE);
                     tvBookingSchedule4.setText(bookingScheduleText);

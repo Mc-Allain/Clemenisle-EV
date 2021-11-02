@@ -6,7 +6,7 @@ public class DateTimeDifference {
     public DateTimeDifference(String timestamp) {
         DateTimeToString dateTimeToString = new DateTimeToString();
         String dateNow = dateTimeToString.getDate();
-        String timeNow = dateTimeToString.getTime();
+        String timeNow = dateTimeToString.getTime(false);
         int minNow = Integer.parseInt(dateTimeToString.getMin());
         int hourNow = Integer.parseInt(dateTimeToString.getRawHour());
         int dayNow = Integer.parseInt(dateTimeToString.getDay());
@@ -15,7 +15,7 @@ public class DateTimeDifference {
 
         dateTimeToString.setFormattedSchedule(timestamp);
         String chatDate = dateTimeToString.getDate();
-        String chatTime = dateTimeToString.getTime();
+        String chatTime = dateTimeToString.getTime(false);
         int chatMin = Integer.parseInt(dateTimeToString.getMin());
         int chatHour = Integer.parseInt(dateTimeToString.getRawHour());
         int chatDay = Integer.parseInt(dateTimeToString.getDay());
@@ -28,6 +28,8 @@ public class DateTimeDifference {
             if(timeNow.equals(chatTime)) timestamp = "Just now";
             else {
                 int hrDifference = hourNow - chatHour;
+                if(chatHour > hourNow) hrDifference = hourNow + 24 - chatHour;
+
                 if(hrDifference == 0 || hrDifference == 1) {
                     int minDifference;
                     if(minNow > chatMin)
@@ -50,6 +52,7 @@ public class DateTimeDifference {
         else {
             int yearDifference = yearNow - chatYear;
             int monthDifference = monthNow - chatMonth;
+            if(chatMonth > monthNow) monthDifference = monthNow + 12 - chatMonth;
 
             if(monthDifference == 0 || monthDifference == 1 && yearDifference == 0) {
                 int dayDifference;

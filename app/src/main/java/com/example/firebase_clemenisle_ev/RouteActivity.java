@@ -378,6 +378,7 @@ public class RouteActivity extends AppCompatActivity implements
         Intent intent = new Intent(myContext, ChatActivity.class);
         intent.putExtra("taskId", bookingId);
         intent.putExtra("inDriverModule", inDriverModule);
+        if(!inDriverModule) intent.putExtra("driverUserId", taskDriverUserId);
         myContext.startActivity(intent);
     }
 

@@ -192,9 +192,9 @@ public class ChatListActivity extends AppCompatActivity {
                             chat = new Chat("C01", user.getId(), message, task.getTimestamp());
                         }
 
-                        chat.setTaskId(task.getId());
                         chat.setEndPointUserId(user.getId());
                         chat.setDriverUserId(user.getId());
+                        chat.setStatus(task.getStatus());
                         chat.setBooking(booking);
 
                         bookingChatList.add(chat);
@@ -220,9 +220,9 @@ public class ChatListActivity extends AppCompatActivity {
                             chat = new Chat("C01", userId, message, task.getTimestamp());
                         }
 
-                        chat.setTaskId(task.getId());
                         chat.setEndPointUserId(user.getId());
                         chat.setDriverUserId(userId);
+                        chat.setStatus(task.getStatus());
                         chat.setBooking(task);
 
                         chatList.add(chat);
@@ -235,9 +235,11 @@ public class ChatListActivity extends AppCompatActivity {
         Collections.sort(chatList, (chat, t1) -> {
             DateTimeToString dateTimeToString = new DateTimeToString();
             dateTimeToString.setFormattedSchedule(chat.getTimestamp());
-            String chatTS = dateTimeToString.getDateNo(true);
+            String chatTS = dateTimeToString.getDateNo(true) + " " +
+                    dateTimeToString.getTime(true);
             dateTimeToString.setFormattedSchedule(t1.getTimestamp());
-            String chatTS1 = dateTimeToString.getDateNo(true);
+            String chatTS1 = dateTimeToString.getDateNo(true) + " " +
+                    dateTimeToString.getTime(true);
 
             return chatTS1.compareToIgnoreCase(chatTS);
         });

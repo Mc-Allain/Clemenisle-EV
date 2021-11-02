@@ -46,7 +46,6 @@ public class BookingListFragment extends Fragment {
     Context myContext;
 
     boolean isLoggedIn = false;
-
     String userId;
     int newChats = 0;
 
@@ -113,7 +112,7 @@ public class BookingListFragment extends Fragment {
                     replace(R.id.bookingListFragmentContainer, new LoggedInBookingListFragment(), null);
             chatImage.setVisibility(View.VISIBLE);
             tvBadge.setVisibility(View.VISIBLE);
-            if(userId != null)  getUsers();
+            if(userId != null) getUsers();
         }
         else {
             fragmentTransaction = fragmentManager.beginTransaction().

@@ -78,14 +78,14 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
 
         String senderId = chat.getSenderId();
         String message = chat.getMessage();
-        String taskId = chat.getTaskId();
         String timestamp = chat.getTimestamp();
 
         String endPointUserId = chat.getEndPointUserId();
         String driverUserId = chat.getDriverUserId();
+        String status = chat.getStatus();
 
         Booking booking = chat.getBooking();
-        String status = booking.getStatus();
+        String taskId = booking.getId();
         boolean read = booking.isRead();
 
         boolean inDriverModule = !endPointUserId.equals(driverUserId);
@@ -164,6 +164,7 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
             Intent intent = new Intent(myContext, ChatActivity.class);
             intent.putExtra("taskId", taskId);
             intent.putExtra("inDriverModule", inDriverModule);
+            if(!inDriverModule) intent.putExtra("driverUserId", driverUserId);
             myContext.startActivity(intent);
         });
     }

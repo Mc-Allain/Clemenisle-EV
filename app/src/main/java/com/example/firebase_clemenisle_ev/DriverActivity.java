@@ -750,7 +750,7 @@ public class DriverActivity extends AppCompatActivity {
 
         Intent notificationIntent = new Intent(myContext, ChatActivity.class);
         notificationIntent.putExtra("taskId", task.getId());
-        notificationIntent.putExtra("inDriverModule", true);
+        notificationIntent.putExtra("inDriverModule", inDriverModule);
 
         if(inDriverModule) {
             notificationIntent.putExtra("isScanning", false);

@@ -243,7 +243,6 @@ public class MainActivity extends AppCompatActivity {
                         users.add(user);
                     }
                 }
-
                 getBooking();
             }
 
@@ -691,7 +690,7 @@ public class MainActivity extends AppCompatActivity {
 
         Intent notificationIntent = new Intent(myContext, ChatActivity.class);
         notificationIntent.putExtra("taskId", task.getId());
-        notificationIntent.putExtra("inDriverModule", false);
+        notificationIntent.putExtra("inDriverModule", inDriverModule);
         
         if(inDriverModule) {
             notificationIntent.putExtra("isScanning", false);

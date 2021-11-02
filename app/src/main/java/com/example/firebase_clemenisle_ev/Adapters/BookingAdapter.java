@@ -95,8 +95,6 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
 
     List<User> users = new ArrayList<>();
 
-    String taskDriverUserId;
-
     OnActionClickListener onActionClickListener;
 
     String defaultPassengerText = "Passenger", requestText = "Your Task on Request";
@@ -375,11 +373,11 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                     }
                 }
 
+                String taskDriverUserId = getDriverUserId(bookingId);
+
                 if(inDriverModule) {
                     driverInfoLayout.setVisibility(View.GONE);
                     userInfoLayout.setVisibility(View.VISIBLE);
-
-                    getDriverUserId(bookingId);
 
                     extvMessage.setText(message);
                     getUserInfo(bookingId, status, tvUserFullName, profileImage, tvChat, chatImage,
@@ -405,8 +403,10 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                         tvChat.setVisibility(View.VISIBLE);
                         chatImage.setVisibility(View.VISIBLE);
 
-                        tvChat.setOnClickListener(view -> openChat(false, bookingId));
-                        chatImage.setOnClickListener(view -> openChat(false, bookingId));
+                        tvChat.setOnClickListener(view ->
+                                openChat(false, bookingId, taskDriverUserId));
+                        chatImage.setOnClickListener(view ->
+                                openChat(false, bookingId, taskDriverUserId));
                     }
                     else {
                         tvChat.setVisibility(View.GONE);
@@ -430,10 +430,11 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
         });
     }
 
-    private void openChat(boolean inDriverModule, String taskId) {
+    private void openChat(boolean inDriverModule, String taskId, String taskDriverUserId) {
         Intent intent = new Intent(myContext, ChatActivity.class);
         intent.putExtra("taskId", taskId);
         intent.putExtra("inDriverModule", inDriverModule);
+        if(!inDriverModule) intent.putExtra("driverUserId", taskDriverUserId);
         myContext.startActivity(intent);
     }
 
@@ -491,17 +492,16 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
         }
     }
 
-    private void getDriverUserId(String bookingId) {
+    private String getDriverUserId(String bookingId) {
         for(User user : users) {
             List<Booking> taskList = user.getTaskList();
-
             for(Booking task : taskList) {
                 if(task.getId().equals(bookingId) && !task.getStatus().equals("Passed")) {
-                    taskDriverUserId = user.getId();
-                    return;
+                    return user.getId();
                 }
             }
         }
+        return null;
     }
 
     private void viewQRCode(String bookingId) {
@@ -636,6 +636,8 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                     }
                     catch (Exception ignored) {}
 
+                    String taskDriverUserId = getDriverUserId(booking.getId());
+
                     switch (status) {
                         case "Pending":
                             tvChat.setVisibility(View.GONE);
@@ -664,8 +666,10 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                             tvChat.setVisibility(View.VISIBLE);
                             chatImage.setVisibility(View.VISIBLE);
 
-                            tvChat.setOnClickListener(view -> openChat(true, bookingId));
-                            chatImage.setOnClickListener(view -> openChat(true, bookingId));
+                            tvChat.setOnClickListener(view ->
+                                    openChat(true, bookingId, taskDriverUserId));
+                            chatImage.setOnClickListener(view ->
+                                    openChat(true, bookingId, taskDriverUserId));
 
                             tvDriver.setVisibility(View.GONE);
                             driverImage.setVisibility(View.GONE);
@@ -691,8 +695,10 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                                 tvChat.setVisibility(View.VISIBLE);
                                 chatImage.setVisibility(View.VISIBLE);
 
-                                tvChat.setOnClickListener(view -> openChat(true, bookingId));
-                                chatImage.setOnClickListener(view -> openChat(true, bookingId));
+                                tvChat.setOnClickListener(view ->
+                                        openChat(true, bookingId, taskDriverUserId));
+                                chatImage.setOnClickListener(view ->
+                                        openChat(true, bookingId, taskDriverUserId));
 
                                 tvDriver.setVisibility(View.GONE);
                                 driverImage.setVisibility(View.GONE);
@@ -815,6 +821,8 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
         booking.setTimestamp(new DateTimeToString().getDateAndTime());
         Booking driverTask = new Booking(booking);
         driverTask.setStatus(status);
+
+        String taskDriverUserId = getDriverUserId(booking.getId());
 
         if(fromRequest) {
             driverTask.setPreviousDriverUserId(taskDriverUserId);

@@ -145,7 +145,10 @@ public class ChatActivity extends AppCompatActivity {
             }
             else {
                 if(inDriverModule) driverUserId = firebaseUser.getUid();
-                else passengerUserId = firebaseUser.getUid();
+                else {
+                    driverUserId = intent.getStringExtra("driverUserId");
+                    passengerUserId = firebaseUser.getUid();
+                }
                 userId = firebaseUser.getUid();
             }
         }
@@ -222,7 +225,7 @@ public class ChatActivity extends AppCompatActivity {
                     for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                         User user = new User(dataSnapshot);
 
-                        if(user.getId().equals(driverUserId) || !inDriverModule) {
+                        if(user.getId().equals(driverUserId)) {
                             List<Booking> taskList = user.getTaskList();
                             for(Booking task : taskList) {
                                 if(task.getId().equals(taskId)) {

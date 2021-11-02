@@ -200,13 +200,20 @@ public class DateTimeToString {
         return "Invalid Time";
     }
 
-    public String getTime() {
-        if(timeSplit.length == 3) return  getHour() + ":" + getMin() + " " + getTimeMode();
+    public String getTime(boolean _24HourFormat) {
+        if(timeSplit.length == 3) {
+            if(_24HourFormat) return  getRawHour() + ":" + getMin();
+            return  getHour() + ":" + getMin() + " " + getTimeMode();
+        }
         return "Invalid Time";
     }
 
     public String getDateAndTime() {
-        return getDate() + " | " + getTime();
+        return getDate() + " | " + getTime(false);
+    }
+
+    public String getNoDateAndTime() {
+        return getDateNo(false) + " | " + getTime(true);
     }
 
     public void setFormattedSchedule(String formattedSchedule) {
