@@ -2,7 +2,7 @@ package com.example.firebase_clemenisle_ev.Classes;
 
 public class AppMetaData {
 
-    String newlyAddedFeatures = "● Chat List Added \n" +
+    String newlyAddedFeatures = "● Chat List Added\n" +
             "● Online Payment Added";
     double currentVersion = 0.31;
     boolean isDeveloper = false;
