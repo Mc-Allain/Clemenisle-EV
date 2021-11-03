@@ -125,6 +125,8 @@ public class SelectedSpotAdapter extends RecyclerView.Adapter<SelectedSpotAdapte
             tvRouteSpotNoBadge = itemView.findViewById(R.id.tvRouteSpotNoBadge);
             removeButton = itemView.findViewById(R.id.removeButton);
             backgroundLayout = itemView.findViewById(R.id.backgroundLayout);
+
+            setIsRecyclable(false);
         }
     }
 

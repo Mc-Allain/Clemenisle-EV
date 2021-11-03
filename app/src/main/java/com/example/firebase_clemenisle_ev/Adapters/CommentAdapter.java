@@ -91,6 +91,8 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
         colorBlack = myResources.getColor(R.color.black);
         colorRed = myResources.getColor(R.color.red);
 
+        if(loadCommentItemPosition < incrementLoadedItems) loadCommentItemPosition = incrementLoadedItems;
+
         if(commentedUsers.size() < loadCommentItemPosition && commentedUsers.size() != 0)
             loadCommentItemPosition = commentedUsers.size();
 
@@ -571,6 +573,8 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
             commentLayout = itemView.findViewById(R.id.commentLayout);
             loadCommentLayout = itemView.findViewById(R.id.loadCommentLayout);
             tvLoadComment = itemView.findViewById(R.id.tvLoadComment);
+
+            setIsRecyclable(false);
         }
     }
 }

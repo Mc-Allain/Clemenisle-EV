@@ -15,7 +15,6 @@ import com.bumptech.glide.request.target.Target;
 import com.example.firebase_clemenisle_ev.Classes.FirebaseURL;
 import com.example.firebase_clemenisle_ev.Classes.SimpleTouristSpot;
 import com.example.firebase_clemenisle_ev.R;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.List;
@@ -38,7 +37,6 @@ public class LikedSpotAdapter extends RecyclerView.Adapter<LikedSpotAdapter.View
 
     long unlikePressedTime;
     Toast unlikeToast;
-    boolean isUnliked = true;
 
     public LikedSpotAdapter(Context context, List<SimpleTouristSpot> likedSpots, String userId) {
         this.likedSpots = likedSpots;
@@ -68,6 +66,8 @@ public class LikedSpotAdapter extends RecyclerView.Adapter<LikedSpotAdapter.View
         String id = likedSpot.getId();
         String name = likedSpot.getName();
         String img = likedSpot.getImg();
+
+        boolean isUnliked = likedSpot.isUnliked();
 
         try {
             Glide.with(myContext).load(img).
@@ -100,11 +100,10 @@ public class LikedSpotAdapter extends RecyclerView.Adapter<LikedSpotAdapter.View
             if(unlikePressedTime + 2500 > System.currentTimeMillis() && !isUnliked) {
                 unlikeToast.cancel();
 
-                DatabaseReference usersRef = firebaseDatabase.getReference("users")
-                        .child(userId).child("likedSpots");
-                usersRef.child(id).removeValue();
+                 firebaseDatabase.getReference("users").child(userId).
+                         child("likedSpots").child(id).removeValue();
 
-                isUnliked = true;
+                likedSpot.setUnliked(true);
             }
             else {
                 unlikeToast = Toast.makeText(myContext,
@@ -113,8 +112,10 @@ public class LikedSpotAdapter extends RecyclerView.Adapter<LikedSpotAdapter.View
 
                 unlikePressedTime = System.currentTimeMillis();
 
-                isUnliked = false;
+                likedSpot.setUnliked(false);
             }
+            likedSpots.set(position, likedSpot);
+            notifyDataSetChanged();
         });
     }
 
@@ -142,6 +143,8 @@ public class LikedSpotAdapter extends RecyclerView.Adapter<LikedSpotAdapter.View
             thumbnail = itemView.findViewById(R.id.thumbnail);
             tvName = itemView.findViewById(R.id.tvName);
             unlikeButton = itemView.findViewById(R.id.unlikeButton);
+
+            setIsRecyclable(false);
         }
     }
 }

@@ -154,6 +154,8 @@ public class ScheduleTimeAdapter extends RecyclerView.Adapter<ScheduleTimeAdapte
             tvScheduleTime = itemView.findViewById(R.id.tvScheduleTime);
             tvPrice = itemView.findViewById(R.id.tvPrice);
             tvRouteCount = itemView.findViewById(R.id.tvRouteCount);
+
+            setIsRecyclable(false);
         }
     }
 }

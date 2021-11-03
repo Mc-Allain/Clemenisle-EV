@@ -226,6 +226,8 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
             tvSettingName = itemView.findViewById(R.id.tvSettingName);
             settingIconImage = itemView.findViewById(R.id.settingIconImage);
             settingLayout = itemView.findViewById(R.id.settingLayout);
+
+            setIsRecyclable(false);
         }
     }
 }

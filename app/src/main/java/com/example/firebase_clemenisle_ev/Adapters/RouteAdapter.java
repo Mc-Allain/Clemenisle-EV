@@ -194,6 +194,8 @@ public class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.ViewHolder> 
             tvRouteSpotNoBadge = itemView.findViewById(R.id.tvRouteSpotNoBadge);
             visitButton = itemView.findViewById(R.id.visitButton);
             backgroundLayout = itemView.findViewById(R.id.backgroundLayout);
+
+            setIsRecyclable(false);
         }
     }
 

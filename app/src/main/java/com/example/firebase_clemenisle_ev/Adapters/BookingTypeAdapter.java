@@ -239,6 +239,8 @@ public class BookingTypeAdapter extends RecyclerView.Adapter<BookingTypeAdapter.
             tvTypeName = itemView.findViewById(R.id.tvTypeName);
             tvPrice = itemView.findViewById(R.id.tvPrice);
             tvRouteCount = itemView.findViewById(R.id.tvRouteCount);
+
+            setIsRecyclable(false);
         }
     }
 }

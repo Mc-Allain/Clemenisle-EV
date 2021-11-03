@@ -315,7 +315,11 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
                     if(referenceNumberListRef.exists()) {
                         for(DataSnapshot dataSnapshot : referenceNumberListRef.getChildren()) {
                             ReferenceNumber referenceNumber = dataSnapshot.getValue(ReferenceNumber.class);
-                            if(referenceNumber != null) creditedAmount += referenceNumber.getValue();
+                            if(referenceNumber != null) {
+                                creditedAmount += referenceNumber.getValue();
+                                referenceNumber.setUserId(userId);
+                                referenceNumber.setBookingId(bookingId);
+                            }
                             referenceNumberList.add(referenceNumber);
                         }
                     }

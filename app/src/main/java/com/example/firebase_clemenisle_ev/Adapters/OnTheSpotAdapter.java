@@ -165,6 +165,8 @@ public class OnTheSpotAdapter extends RecyclerView.Adapter<OnTheSpotAdapter.View
             locateImage = itemView.findViewById(R.id.locateImage);
             tvName = itemView.findViewById(R.id.tvName);
             tvLocate = itemView.findViewById(R.id.tvLocate);
+
+            setIsRecyclable(false);
         }
     }
 }

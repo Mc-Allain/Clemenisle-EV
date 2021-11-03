@@ -202,6 +202,8 @@ public class BookingStationAdapter extends RecyclerView.Adapter<BookingStationAd
             tvRouteCount = itemView.findViewById(R.id.tvRouteCount);
             tvLocate = itemView.findViewById(R.id.tvLocate);
             locateImage = itemView.findViewById(R.id.locateImage);
+
+            setIsRecyclable(false);
         }
     }
 }

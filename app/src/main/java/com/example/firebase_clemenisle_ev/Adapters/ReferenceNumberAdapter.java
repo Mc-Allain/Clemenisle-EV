@@ -7,10 +7,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.firebase_clemenisle_ev.Classes.DateTimeDifference;
+import com.example.firebase_clemenisle_ev.Classes.FirebaseURL;
 import com.example.firebase_clemenisle_ev.Classes.ReferenceNumber;
 import com.example.firebase_clemenisle_ev.R;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.List;
 
@@ -20,6 +23,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class ReferenceNumberAdapter extends RecyclerView.Adapter<ReferenceNumberAdapter.ViewHolder> {
 
+    private final static String firebaseURL = FirebaseURL.getFirebaseURL();
+    FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance(firebaseURL);
+
     List<ReferenceNumber> referenceNumberList;
     String status;
     LayoutInflater inflater;
@@ -28,6 +34,9 @@ public class ReferenceNumberAdapter extends RecyclerView.Adapter<ReferenceNumber
     Resources myResources;
 
     OnAddRNListener onAddRNListener;
+
+    long removePressedTime;
+    Toast removeToast;
 
     public ReferenceNumberAdapter(Context context, List<ReferenceNumber> referenceNumberList) {
         this.referenceNumberList = referenceNumberList;
@@ -47,7 +56,7 @@ public class ReferenceNumberAdapter extends RecyclerView.Adapter<ReferenceNumber
                 referenceNumberLayout = holder.referenceNumberLayout,
                 addRNLayout = holder.addRNLayout;
         TextView tvReferenceNumber = holder.tvReferenceNumber, tvTimestamp = holder.tvTimestamp,
-                tvValue = holder.tvValue;
+                tvValue = holder.tvValue, tvInvalidRN = holder.tvInvalidRN;
         ImageView removeImage = holder.removeImage;
 
         myContext = inflater.getContext();
@@ -64,9 +73,15 @@ public class ReferenceNumberAdapter extends RecyclerView.Adapter<ReferenceNumber
             referenceNumberLayout.setVisibility(View.VISIBLE);
 
             ReferenceNumber referenceNumber = referenceNumberList.get(position-1);
+            String id = referenceNumber.getId();
             String referenceNumberValue = referenceNumber.getReferenceNumber();
             String timestamp = referenceNumber.getTimestamp();
             double value = referenceNumber.getValue();
+            boolean isValid = referenceNumber.isValid();
+
+            String userId = referenceNumber.getUserId();
+            String bookingId = referenceNumber.getBookingId();
+            boolean isRemoved = referenceNumber.isRemoved();
 
             tvReferenceNumber.setText(referenceNumberValue);
 
@@ -74,9 +89,13 @@ public class ReferenceNumberAdapter extends RecyclerView.Adapter<ReferenceNumber
             timestamp = dateTimeDifference.getResult();
             tvTimestamp.setText(timestamp);
 
-            if(value == 0) {
-                tvValue.setVisibility(View.GONE);
+            tvValue.setVisibility(View.GONE);
+            removeImage.setVisibility(View.GONE);
+            tvInvalidRN.setVisibility(View.GONE);
+
+            if(value == 0 || !isValid) {
                 removeImage.setVisibility(View.VISIBLE);
+                if(!isValid) tvInvalidRN.setVisibility(View.VISIBLE);
             }
             else {
                 String valueText = "₱" + value;
@@ -84,8 +103,29 @@ public class ReferenceNumberAdapter extends RecyclerView.Adapter<ReferenceNumber
 
                 tvValue.setText(valueText);
                 tvValue.setVisibility(View.VISIBLE);
-                removeImage.setVisibility(View.GONE);
             }
+
+            removeImage.setOnClickListener(view -> {
+                if (removePressedTime + 2500 > System.currentTimeMillis() && !isRemoved) {
+                    removeToast.cancel();
+
+                    firebaseDatabase.getReference("users").child(userId).
+                            child("bookingList").child(bookingId).
+                            child("referenceNumberList").child(id).removeValue();
+
+                    referenceNumber.setRemoved(true);
+                } else {
+                    removeToast = Toast.makeText(myContext,
+                            "Press again to log out", Toast.LENGTH_SHORT);
+                    removeToast.show();
+
+                    removePressedTime = System.currentTimeMillis();
+
+                    referenceNumber.setRemoved(false);
+                }
+                referenceNumberList.set(position-1, referenceNumber);
+                notifyDataSetChanged();
+            });
         }
 
         int top = dpToPx(1), bottom = dpToPx(1);
@@ -125,7 +165,7 @@ public class ReferenceNumberAdapter extends RecyclerView.Adapter<ReferenceNumber
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         ConstraintLayout backgroundLayout, referenceNumberLayout, addRNLayout;
-        TextView tvReferenceNumber, tvTimestamp, tvValue, tvAddRN;
+        TextView tvReferenceNumber, tvTimestamp, tvValue, tvAddRN, tvInvalidRN;
         ImageView removeImage;
 
         public ViewHolder(@NonNull View itemView) {
@@ -138,6 +178,7 @@ public class ReferenceNumberAdapter extends RecyclerView.Adapter<ReferenceNumber
             tvTimestamp = itemView.findViewById(R.id.tvTimestamp);
             tvValue = itemView.findViewById(R.id.tvValue);
             tvAddRN = itemView.findViewById(R.id.tvAddRN);
+            tvInvalidRN = itemView.findViewById(R.id.tvInvalidRN);
             removeImage = itemView.findViewById(R.id.removeImage);
 
             setIsRecyclable(false);

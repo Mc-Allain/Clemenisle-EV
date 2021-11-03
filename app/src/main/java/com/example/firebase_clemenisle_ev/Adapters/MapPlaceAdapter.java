@@ -143,6 +143,8 @@ public class MapPlaceAdapter extends RecyclerView.Adapter<MapPlaceAdapter.ViewHo
 
             cbName = itemView.findViewById(R.id.cbName);
             locateImage = itemView.findViewById(R.id.locateImage);
+
+            setIsRecyclable(false);
         }
     }
 

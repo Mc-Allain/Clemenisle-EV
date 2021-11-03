@@ -122,6 +122,8 @@ public class BookingSpotAdapter extends RecyclerView.Adapter<BookingSpotAdapter.
             thumbnail = itemView.findViewById(R.id.thumbnail);
             tvName = itemView.findViewById(R.id.tvName);
             backgroundLayout = itemView.findViewById(R.id.backgroundLayout);
+
+            setIsRecyclable(false);
         }
     }
 

@@ -228,6 +228,8 @@ public class BookingRouteAdapter extends RecyclerView.Adapter<BookingRouteAdapte
             tvLocate = itemView.findViewById(R.id.tvLocate);
             locateImage = itemView.findViewById(R.id.locateImage);
             recommendedSpotsView = itemView.findViewById(R.id.recommendedSpotsView);
+
+            setIsRecyclable(false);
         }
     }
 }

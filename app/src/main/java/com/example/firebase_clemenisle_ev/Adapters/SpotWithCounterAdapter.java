@@ -110,6 +110,8 @@ public class SpotWithCounterAdapter extends RecyclerView.Adapter<SpotWithCounter
             tvName = itemView.findViewById(R.id.tvName);
             tvCounterBadge = itemView.findViewById(R.id.tvCounterBadge);
             backgroundLayout = itemView.findViewById(R.id.backgroundLayout);
+
+            setIsRecyclable(false);
         }
     }
 }

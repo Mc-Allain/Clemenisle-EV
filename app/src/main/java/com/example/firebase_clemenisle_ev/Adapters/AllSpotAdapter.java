@@ -149,6 +149,8 @@ public class AllSpotAdapter extends RecyclerView.Adapter<AllSpotAdapter.ViewHold
             tvName = itemView.findViewById(R.id.tvName);
             addButton = itemView.findViewById(R.id.addButton);
             backgroundLayout = itemView.findViewById(R.id.backgroundLayout);
+
+            setIsRecyclable(false);
         }
     }
 

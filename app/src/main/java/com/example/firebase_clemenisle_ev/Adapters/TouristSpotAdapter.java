@@ -453,6 +453,8 @@ public class TouristSpotAdapter extends RecyclerView.Adapter<TouristSpotAdapter.
             tv360Image = itemView.findViewById(R.id.tv360Image);
             tvLocate = itemView.findViewById(R.id.tvLocate);
             connectingLayout = itemView.findViewById(R.id.connectingLayout);
+
+            setIsRecyclable(false);
         }
     }
 }

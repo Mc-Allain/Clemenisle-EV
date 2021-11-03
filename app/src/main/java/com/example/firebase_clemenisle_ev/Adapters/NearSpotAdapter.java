@@ -109,6 +109,8 @@ public class NearSpotAdapter extends RecyclerView.Adapter<NearSpotAdapter.ViewHo
             thumbnail = itemView.findViewById(R.id.thumbnail);
             tvName = itemView.findViewById(R.id.tvName);
             backgroundLayout = itemView.findViewById(R.id.backgroundLayout);
+
+            setIsRecyclable(false);
         }
     }
 
