@@ -54,10 +54,10 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
     FirebaseAuth firebaseAuth;
     FirebaseUser firebaseUser;
 
-    ConstraintLayout buttonLayout;
+    ConstraintLayout buttonLayout, refundAmountLayout, refundedAmountLayout;
     Button refundButton;
-    TextView tvActivityCaption, tvHelp,
-            tvPrice2, tvCreditedAmount2, tvBalance2, tvLog;
+    TextView tvActivityCaption, tvActivityCaption2, tvActivityCaption3, tvHelp,
+            tvPrice2, tvCreditedAmount2, tvBalance2, tvRefundAmount2, tvRefundedAmount2, tvLog;
     ImageView helpImage, reloadImage;
     RecyclerView referenceNumberView;
     ProgressBar progressBar;
@@ -116,9 +116,14 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
         helpImage = findViewById(R.id.helpImage);
         tvHelp = findViewById(R.id.tvHelp);
 
+        refundAmountLayout = findViewById(R.id.refundAmountLayout);
+        refundedAmountLayout = findViewById(R.id.refundedAmountLayout);
+
         tvPrice2 = findViewById(R.id.tvPrice2);
         tvCreditedAmount2 = findViewById(R.id.tvCreditedAmount2);
         tvBalance2 = findViewById(R.id.tvBalance2);
+        tvRefundAmount2 = findViewById(R.id.tvRefundAmount2);
+        tvRefundedAmount2 = findViewById(R.id.tvRefundedAmount2);
 
         buttonLayout = findViewById(R.id.buttonLayout);
         refundButton = findViewById(R.id.refundButton);
@@ -302,7 +307,7 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
         usersRef.child(userId).child("bookingList").child(bookingId).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                double price, creditedAmount = 0, balance;
+                double price, creditedAmount = 0, balance, refundAmount = 0, refundedAmount = 0;
                 referenceNumberList.clear();
 
                 if(snapshot.exists()) {
@@ -316,21 +321,42 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
                     }
 
                     DataSnapshot priceRef = snapshot.child("bookingType").child("price");
+                    DataSnapshot refundedAmountRef = snapshot.child("refundedAmount");
                     if(priceRef.exists()) {
                         price = priceRef.getValue(Double.class);
                         balance = price - creditedAmount;
+                        if(balance < 0) {
+                            refundAmount = balance * -1;
+                            balance = 0;
+                            if(refundedAmountRef.exists()) {
+                                refundedAmount = refundedAmountRef.getValue(Double.class);
+                                refundAmount -= refundedAmount;
+                            }
+                        }
+                        refundAmountLayout.setVisibility(View.GONE);
+                        refundedAmountLayout.setVisibility(View.GONE);
+
+                        if(refundAmount != 0 || refundedAmount != 0)
+                            refundAmountLayout.setVisibility(View.VISIBLE);
+                        if(refundedAmount != 0) refundedAmountLayout.setVisibility(View.VISIBLE);
 
                         String priceText = "₱" + price;
                         String creditedAmountText = "₱" + creditedAmount;
                         String balanceText = "₱" + balance;
+                        String refundAmountText = "₱" + refundAmount;
+                        String refundedAmountText = "₱" + refundedAmount;
 
                         if(priceText.split("\\.")[1].length() == 1) priceText += 0;
                         if(creditedAmountText.split("\\.")[1].length() == 1) creditedAmountText += 0;
                         if(balanceText.split("\\.")[1].length() == 1) balanceText += 0;
+                        if(refundAmountText.split("\\.")[1].length() == 1) refundAmountText += 0;
+                        if(refundedAmountText.split("\\.")[1].length() == 1) refundedAmountText += 0;
 
                         tvPrice2.setText(priceText);
                         tvCreditedAmount2.setText(creditedAmountText);
                         tvBalance2.setText(balanceText);
+                        tvRefundAmount2.setText(refundAmountText);
+                        tvRefundedAmount2.setText(refundedAmountText);
                     }
 
                     DataSnapshot statusRef = snapshot.child("status");
@@ -348,17 +374,8 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
                                     layoutParams.rightMargin, layoutParams.bottomMargin);
                         }
                         else {
-                            if(status != null && !status.equals("Completed"))
-                                buttonLayout.setVisibility(View.VISIBLE);
                             layoutParams.setMargins(layoutParams.leftMargin, dpToPx(24),
                                     layoutParams.rightMargin, layoutParams.bottomMargin);
-
-                            refundButton.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-
-                                }
-                            });
                         }
 
                         tvLog.setLayoutParams(layoutParams);
