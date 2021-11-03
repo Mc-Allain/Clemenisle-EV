@@ -11,8 +11,6 @@ public class SimpleTouristSpot {
 
     private double lat, lng;
 
-    boolean unliked = true;
-
     public SimpleTouristSpot() {
     }
 
@@ -62,13 +60,5 @@ public class SimpleTouristSpot {
 
     public double getLng() {
         return lng;
-    }
-
-    public boolean isUnliked() {
-        return unliked;
-    }
-
-    public void setUnliked(boolean unliked) {
-        this.unliked = unliked;
     }
 }

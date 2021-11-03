@@ -67,8 +67,6 @@ public class LikedSpotAdapter extends RecyclerView.Adapter<LikedSpotAdapter.View
         String name = likedSpot.getName();
         String img = likedSpot.getImg();
 
-        boolean isUnliked = likedSpot.isUnliked();
-
         try {
             Glide.with(myContext).load(img).
                     placeholder(R.drawable.image_loading_placeholder).
@@ -97,13 +95,11 @@ public class LikedSpotAdapter extends RecyclerView.Adapter<LikedSpotAdapter.View
         backgroundLayout.setLayoutParams(layoutParams);
 
         unlikeButton.setOnClickListener(view -> {
-            if(unlikePressedTime + 2500 > System.currentTimeMillis() && !isUnliked) {
+            if(unlikePressedTime + 2500 > System.currentTimeMillis()) {
                 unlikeToast.cancel();
 
                  firebaseDatabase.getReference("users").child(userId).
                          child("likedSpots").child(id).removeValue();
-
-                likedSpot.setUnliked(true);
             }
             else {
                 unlikeToast = Toast.makeText(myContext,
@@ -111,11 +107,7 @@ public class LikedSpotAdapter extends RecyclerView.Adapter<LikedSpotAdapter.View
                 unlikeToast.show();
 
                 unlikePressedTime = System.currentTimeMillis();
-
-                likedSpot.setUnliked(false);
             }
-            likedSpots.set(position, likedSpot);
-            notifyDataSetChanged();
         });
     }
 

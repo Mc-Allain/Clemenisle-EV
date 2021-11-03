@@ -4,10 +4,9 @@ public class ReferenceNumber {
 
     String id, referenceNumber, timestamp;
     double value;
-    boolean valid = true;
+    boolean valid = true, notified = true;
 
     String userId, bookingId;
-    boolean removed = true;
 
     public ReferenceNumber() {
     }
@@ -39,6 +38,10 @@ public class ReferenceNumber {
         return valid;
     }
 
+    public boolean isNotified() {
+        return notified;
+    }
+
     public String getUserId() {
         return userId;
     }
@@ -53,13 +56,5 @@ public class ReferenceNumber {
 
     public void setBookingId(String bookingId) {
         this.bookingId = bookingId;
-    }
-
-    public boolean isRemoved() {
-        return removed;
-    }
-
-    public void setRemoved(boolean removed) {
-        this.removed = removed;
     }
 }

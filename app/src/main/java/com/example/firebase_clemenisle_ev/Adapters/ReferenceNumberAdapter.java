@@ -28,6 +28,7 @@ public class ReferenceNumberAdapter extends RecyclerView.Adapter<ReferenceNumber
 
     List<ReferenceNumber> referenceNumberList;
     String status;
+    boolean showAddRN = true;
     LayoutInflater inflater;
 
     Context myContext;
@@ -65,7 +66,8 @@ public class ReferenceNumberAdapter extends RecyclerView.Adapter<ReferenceNumber
         referenceNumberLayout.setVisibility(View.GONE);
         addRNLayout.setVisibility(View.GONE);
 
-        if(status != null && (status.equals("Pending") || status.equals("Booked")) && position == 0) {
+        if(status != null && (status.equals("Pending") || status.equals("Booked"))
+                && position == 0 && showAddRN) {
             addRNLayout.setVisibility(View.VISIBLE);
             addRNLayout.setOnClickListener(view -> onAddRNListener.addReferenceNumber());
         }
@@ -81,7 +83,6 @@ public class ReferenceNumberAdapter extends RecyclerView.Adapter<ReferenceNumber
 
             String userId = referenceNumber.getUserId();
             String bookingId = referenceNumber.getBookingId();
-            boolean isRemoved = referenceNumber.isRemoved();
 
             tvReferenceNumber.setText(referenceNumberValue);
 
@@ -106,25 +107,19 @@ public class ReferenceNumberAdapter extends RecyclerView.Adapter<ReferenceNumber
             }
 
             removeImage.setOnClickListener(view -> {
-                if (removePressedTime + 2500 > System.currentTimeMillis() && !isRemoved) {
+                if (removePressedTime + 2500 > System.currentTimeMillis()) {
                     removeToast.cancel();
 
                     firebaseDatabase.getReference("users").child(userId).
                             child("bookingList").child(bookingId).
                             child("referenceNumberList").child(id).removeValue();
-
-                    referenceNumber.setRemoved(true);
                 } else {
                     removeToast = Toast.makeText(myContext,
-                            "Press again to log out", Toast.LENGTH_SHORT);
+                            "Press again to remove", Toast.LENGTH_SHORT);
                     removeToast.show();
 
                     removePressedTime = System.currentTimeMillis();
-
-                    referenceNumber.setRemoved(false);
                 }
-                referenceNumberList.set(position-1, referenceNumber);
-                notifyDataSetChanged();
             });
         }
 
@@ -187,5 +182,9 @@ public class ReferenceNumberAdapter extends RecyclerView.Adapter<ReferenceNumber
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public void setShowAddRN(boolean showAddRN) {
+        this.showAddRN = showAddRN;
     }
 }

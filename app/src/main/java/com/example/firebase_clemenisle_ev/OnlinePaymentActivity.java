@@ -24,9 +24,11 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.firebase_clemenisle_ev.Adapters.ReferenceNumberAdapter;
+import com.example.firebase_clemenisle_ev.Classes.Booking;
 import com.example.firebase_clemenisle_ev.Classes.DateTimeToString;
 import com.example.firebase_clemenisle_ev.Classes.FirebaseURL;
 import com.example.firebase_clemenisle_ev.Classes.ReferenceNumber;
+import com.example.firebase_clemenisle_ev.Classes.User;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -68,6 +70,7 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
     String bookingId;
 
     List<ReferenceNumber> referenceNumberList = new ArrayList<>();
+    List<String> referenceNumberValueList = new ArrayList<>();
     ReferenceNumberAdapter referenceNumberAdapter;
 
     String userId;
@@ -79,7 +82,7 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
 
     String referenceNumberValue;
 
-    int colorBlue, colorInitial;
+    int colorBlue, colorInitial, colorRed;
     ColorStateList cslInitial, cslBlue;
 
     Dialog dialog;
@@ -138,6 +141,7 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
 
         colorBlue = myResources.getColor(R.color.blue);
         colorInitial = myResources.getColor(R.color.initial);
+        colorRed = myResources.getColor(R.color.red);
 
         cslInitial = ColorStateList.valueOf(myResources.getColor(R.color.initial));
         cslBlue = ColorStateList.valueOf(myResources.getColor(R.color.blue));
@@ -181,6 +185,16 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
         tvHelp.setOnClickListener(view -> openHelp());
 
         getReferenceNumber();
+    }
+
+    private void setDialogScreenEnabled(boolean value) {
+        dialog.setCanceledOnTouchOutside(value);
+        tlReferenceNumber.setEnabled(value);
+        submitButton.setEnabled(value);
+        dialogCloseImage.setEnabled(value);
+
+        if(value) dialogCloseImage.getDrawable().setTint(colorRed);
+        else dialogCloseImage.getDrawable().setTint(colorInitial);
     }
 
     private void initAddReferenceNumberDialog() {
@@ -236,8 +250,29 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
         dialog.getWindow().setGravity(Gravity.BOTTOM);
     }
 
+    private boolean isReferenceNumberExisting(String targetReferenceNumber) {
+        for(String referenceNumberValue : referenceNumberValueList) {
+            if(targetReferenceNumber.equals(referenceNumberValue))
+                return true;
+        }
+        return false;
+    }
+
     private void submitReferenceNumber() {
+        setDialogScreenEnabled(false);
         dialogProgressBar.setVisibility(View.VISIBLE);
+
+        if(isReferenceNumberExisting(referenceNumberValue)) {
+            Toast.makeText(
+                    myContext,
+                    "The Reference Number is already existing",
+                    Toast.LENGTH_LONG
+            ).show();
+
+            setDialogScreenEnabled(true);
+            dialogProgressBar.setVisibility(View.GONE);
+            return;
+        }
 
         String rnIdSuffix = String.valueOf(referenceNumberList.size() + 1);
         if(rnIdSuffix.length() == 1) rnIdSuffix = "0" + rnIdSuffix;
@@ -246,9 +281,9 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
         ReferenceNumber referenceNumber = new ReferenceNumber(rnId, referenceNumberValue,
                 new DateTimeToString().getDateAndTime(), 0);
 
-        usersRef.child(userId).child("bookingList").child(bookingId).
-                child("referenceNumberList").child(rnId).setValue(referenceNumber)
-                .addOnCompleteListener(task -> {
+        DatabaseReference rnRef = usersRef.child(userId).child("bookingList").child(bookingId).
+                child("referenceNumberList").child(rnId);
+        rnRef.setValue(referenceNumber).addOnCompleteListener(task -> {
                     if(task.isSuccessful()) {
                         dialog.dismiss();
 
@@ -270,6 +305,7 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
                         }
                     }
                     dialogProgressBar.setVisibility(View.GONE);
+                    setDialogScreenEnabled(true);
                 });
     }
 
@@ -304,99 +340,103 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
             }
         });
 
-        usersRef.child(userId).child("bookingList").child(bookingId).addValueEventListener(new ValueEventListener() {
+        usersRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 double price, creditedAmount = 0, balance, refundAmount = 0, refundedAmount = 0;
                 referenceNumberList.clear();
+                referenceNumberValueList.clear();
 
                 if(snapshot.exists()) {
-                    DataSnapshot referenceNumberListRef = snapshot.child("referenceNumberList");
-                    if(referenceNumberListRef.exists()) {
-                        for(DataSnapshot dataSnapshot : referenceNumberListRef.getChildren()) {
-                            ReferenceNumber referenceNumber = dataSnapshot.getValue(ReferenceNumber.class);
-                            if(referenceNumber != null) {
-                                creditedAmount += referenceNumber.getValue();
-                                referenceNumber.setUserId(userId);
-                                referenceNumber.setBookingId(bookingId);
+                    for(DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        User user = new User(dataSnapshot);
+                        List<Booking> bookingList = user.getBookingList();
+
+                        for(Booking booking : bookingList) {
+                            List<ReferenceNumber> referenceNumberList1 =
+                                    booking.getReferenceNumberList();
+
+                            for(ReferenceNumber referenceNumber : referenceNumberList1) {
+                                if(referenceNumber != null) {
+                                    referenceNumberValueList.add(referenceNumber.getReferenceNumber());
+
+                                    if(user.getId().equals(userId) && booking.getId().equals(bookingId)) {
+                                        creditedAmount += referenceNumber.getValue();
+                                        referenceNumber.setUserId(userId);
+                                        referenceNumber.setBookingId(bookingId);
+                                        referenceNumberList.add(referenceNumber);
+
+                                        price = booking.getBookingType().getPrice();
+                                        balance = price - creditedAmount;
+                                        if(balance < 0) {
+                                            referenceNumberAdapter.setShowAddRN(false);
+
+                                            refundAmount = balance * -1;
+                                            balance = 0;
+                                            refundedAmount = booking.getRefundedAmount();
+                                            refundAmount -= refundedAmount;
+                                        }
+                                        refundAmountLayout.setVisibility(View.GONE);
+                                        refundedAmountLayout.setVisibility(View.GONE);
+
+                                        if(refundAmount != 0 || refundedAmount != 0)
+                                            refundAmountLayout.setVisibility(View.VISIBLE);
+                                        if(refundedAmount != 0) refundedAmountLayout.setVisibility(View.VISIBLE);
+
+                                        String priceText = "₱" + price;
+                                        String creditedAmountText = "₱" + creditedAmount;
+                                        String balanceText = "₱" + balance;
+                                        String refundAmountText = "₱" + refundAmount;
+                                        String refundedAmountText = "₱" + refundedAmount;
+
+                                        if(priceText.split("\\.")[1].length() == 1) priceText += 0;
+                                        if(creditedAmountText.split("\\.")[1].length() == 1) creditedAmountText += 0;
+                                        if(balanceText.split("\\.")[1].length() == 1) balanceText += 0;
+                                        if(refundAmountText.split("\\.")[1].length() == 1) refundAmountText += 0;
+                                        if(refundedAmountText.split("\\.")[1].length() == 1) refundedAmountText += 0;
+
+                                        tvPrice2.setText(priceText);
+                                        tvCreditedAmount2.setText(creditedAmountText);
+                                        tvBalance2.setText(balanceText);
+                                        tvRefundAmount2.setText(refundAmountText);
+                                        tvRefundedAmount2.setText(refundedAmountText);
+
+                                        String status = booking.getStatus();
+                                        referenceNumberAdapter.setStatus(status);
+
+                                        ConstraintLayout.LayoutParams layoutParams =
+                                                (ConstraintLayout.LayoutParams) tvLog.getLayoutParams();
+
+                                        buttonLayout.setVisibility(View.GONE);
+
+                                        if(status != null && (status.equals("Pending") || status.equals("Booked"))) {
+                                            layoutParams.setMargins(layoutParams.leftMargin, dpToPx(64),
+                                                    layoutParams.rightMargin, layoutParams.bottomMargin);
+                                        }
+                                        else {
+                                            layoutParams.setMargins(layoutParams.leftMargin, dpToPx(24),
+                                                    layoutParams.rightMargin, layoutParams.bottomMargin);
+                                        }
+
+                                        tvLog.setLayoutParams(layoutParams);
+
+                                        Collections.sort(referenceNumberList, (referenceNumberList, t1) -> {
+                                            DateTimeToString dateTimeToString = new DateTimeToString();
+                                            dateTimeToString.setFormattedSchedule(referenceNumberList.getTimestamp());
+                                            String rnTS = dateTimeToString.getDateNo(true) + " " +
+                                                    dateTimeToString.getTime(true);
+                                            dateTimeToString.setFormattedSchedule(t1.getTimestamp());
+                                            String rnTS1 = dateTimeToString.getDateNo(true) + " " +
+                                                    dateTimeToString.getTime(true);
+
+                                            return rnTS1.compareToIgnoreCase(rnTS);
+                                        });
+                                    }
+                                }
                             }
-                            referenceNumberList.add(referenceNumber);
                         }
-                    }
-
-                    DataSnapshot priceRef = snapshot.child("bookingType").child("price");
-                    DataSnapshot refundedAmountRef = snapshot.child("refundedAmount");
-                    if(priceRef.exists()) {
-                        price = priceRef.getValue(Double.class);
-                        balance = price - creditedAmount;
-                        if(balance < 0) {
-                            refundAmount = balance * -1;
-                            balance = 0;
-                            if(refundedAmountRef.exists()) {
-                                refundedAmount = refundedAmountRef.getValue(Double.class);
-                                refundAmount -= refundedAmount;
-                            }
-                        }
-                        refundAmountLayout.setVisibility(View.GONE);
-                        refundedAmountLayout.setVisibility(View.GONE);
-
-                        if(refundAmount != 0 || refundedAmount != 0)
-                            refundAmountLayout.setVisibility(View.VISIBLE);
-                        if(refundedAmount != 0) refundedAmountLayout.setVisibility(View.VISIBLE);
-
-                        String priceText = "₱" + price;
-                        String creditedAmountText = "₱" + creditedAmount;
-                        String balanceText = "₱" + balance;
-                        String refundAmountText = "₱" + refundAmount;
-                        String refundedAmountText = "₱" + refundedAmount;
-
-                        if(priceText.split("\\.")[1].length() == 1) priceText += 0;
-                        if(creditedAmountText.split("\\.")[1].length() == 1) creditedAmountText += 0;
-                        if(balanceText.split("\\.")[1].length() == 1) balanceText += 0;
-                        if(refundAmountText.split("\\.")[1].length() == 1) refundAmountText += 0;
-                        if(refundedAmountText.split("\\.")[1].length() == 1) refundedAmountText += 0;
-
-                        tvPrice2.setText(priceText);
-                        tvCreditedAmount2.setText(creditedAmountText);
-                        tvBalance2.setText(balanceText);
-                        tvRefundAmount2.setText(refundAmountText);
-                        tvRefundedAmount2.setText(refundedAmountText);
-                    }
-
-                    DataSnapshot statusRef = snapshot.child("status");
-                    if(statusRef.exists()) {
-                        String status = statusRef.getValue(String.class);
-                        referenceNumberAdapter.setStatus(status);
-
-                        ConstraintLayout.LayoutParams layoutParams =
-                                (ConstraintLayout.LayoutParams) tvLog.getLayoutParams();
-
-                        buttonLayout.setVisibility(View.GONE);
-
-                        if(status != null && (status.equals("Pending") || status.equals("Booked"))) {
-                            layoutParams.setMargins(layoutParams.leftMargin, dpToPx(64),
-                                    layoutParams.rightMargin, layoutParams.bottomMargin);
-                        }
-                        else {
-                            layoutParams.setMargins(layoutParams.leftMargin, dpToPx(24),
-                                    layoutParams.rightMargin, layoutParams.bottomMargin);
-                        }
-
-                        tvLog.setLayoutParams(layoutParams);
                     }
                 }
-
-                Collections.sort(referenceNumberList, (referenceNumberList, t1) -> {
-                    DateTimeToString dateTimeToString = new DateTimeToString();
-                    dateTimeToString.setFormattedSchedule(referenceNumberList.getTimestamp());
-                    String rnTS = dateTimeToString.getDateNo(true) + " " +
-                            dateTimeToString.getTime(true);
-                    dateTimeToString.setFormattedSchedule(t1.getTimestamp());
-                    String rnTS1 = dateTimeToString.getDateNo(true) + " " +
-                            dateTimeToString.getTime(true);
-
-                    return rnTS1.compareToIgnoreCase(rnTS);
-                });
 
                 if(referenceNumberList.size() > 0) finishLoading();
                 else errorLoading(defaultLogText);
@@ -423,6 +463,8 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
     private void finishLoading() {
         referenceNumberAdapter.notifyDataSetChanged();
 
+        tvLog.setVisibility(View.GONE);
+        reloadImage.setVisibility(View.GONE);
         progressBar.setVisibility(View.GONE);
     }
 
