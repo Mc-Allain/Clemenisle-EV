@@ -637,7 +637,7 @@ public class DriverActivity extends AppCompatActivity {
             List<Booking> taskList = user.getTaskList();
 
             for(Booking task : taskList) {
-                if(task.getId().equals(booking.getId())) {
+                if(task.getId().equals(booking.getId()) && !task.getStatus().equals("Passed")) {
                     usersRef.child(user.getId()).child("taskList").
                             child(task.getId()).child("status").setValue("Failed");
 
