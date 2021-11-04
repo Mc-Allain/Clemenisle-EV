@@ -43,6 +43,7 @@ import com.example.firebase_clemenisle_ev.Classes.FirebaseURL;
 import com.example.firebase_clemenisle_ev.Classes.Route;
 import com.example.firebase_clemenisle_ev.Classes.SimpleTouristSpot;
 import com.example.firebase_clemenisle_ev.Classes.User;
+import com.example.firebase_clemenisle_ev.IWalletActivity;
 import com.example.firebase_clemenisle_ev.MainActivity;
 import com.example.firebase_clemenisle_ev.R;
 import com.google.android.material.textfield.TextInputLayout;
@@ -89,6 +90,10 @@ public class LoggedInUserProfileFragment extends Fragment {
     ConstraintLayout fullNameLayout;
     TextView tvFullName2;
     ImageView updateFullNameImage;
+
+    ConstraintLayout iWalletLayout;
+    TextView tvIWallet;
+    Button viewButton;
 
     ConstraintLayout accountDetailsLayout;
     TextView tvEmailAddress2;
@@ -199,6 +204,10 @@ public class LoggedInUserProfileFragment extends Fragment {
         tvFullName2 = view.findViewById(R.id.tvFullName2);
         updateFullNameImage = view.findViewById(R.id.updateFullNameImage);
 
+        iWalletLayout = view.findViewById(R.id.iWalletLayout);
+        tvIWallet = view.findViewById(R.id.tvIWallet);
+        viewButton = view.findViewById(R.id.viewButton);
+
         accountDetailsLayout = view.findViewById(R.id.accountDetailsLayout);
         tvEmailAddress2 = view.findViewById(R.id.tvEmailAddress2);
         updateEmailAddressImage = view.findViewById(R.id.updateEmailAddressImage);
@@ -283,6 +292,11 @@ public class LoggedInUserProfileFragment extends Fragment {
         visitedSpotView.setLayoutManager(linearLayout3);
         visitedSpotAdapter = new SpotWithCounterAdapter(myContext, visitedSpots, 1);
         visitedSpotView.setAdapter(visitedSpotAdapter);
+
+        viewButton.setOnClickListener(view12 -> {
+            Intent intent = new Intent(myContext, IWalletActivity.class);
+            startActivity(intent);
+        });
 
         return view;
     }
@@ -1370,6 +1384,11 @@ public class LoggedInUserProfileFragment extends Fragment {
     private void finishLoading() {
         showFullName();
         showAccountDetails();
+
+        String iWallet = "₱" + user.getIWallet();
+        if(iWallet.split("\\.")[1].length() == 1) iWallet += 0;
+
+        tvIWallet.setText(iWallet);
 
         likedSpots.clear();
         likedSpots.addAll(user.getLikedSpots());

@@ -56,9 +56,8 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
     FirebaseAuth firebaseAuth;
     FirebaseUser firebaseUser;
 
-    ConstraintLayout buttonLayout, refundAmountLayout, refundedAmountLayout;
-    Button refundButton;
-    TextView tvActivityCaption, tvActivityCaption2, tvActivityCaption3, tvHelp,
+    ConstraintLayout refundAmountLayout, refundedAmountLayout;
+    TextView tvActivityCaption, tvActivityCaption2, tvActivityCaption3, tvHelp, tvView,
             tvPrice2, tvCreditedAmount2, tvBalance2, tvRefundAmount2, tvRefundedAmount2, tvLog;
     ImageView helpImage, reloadImage;
     RecyclerView referenceNumberView;
@@ -115,9 +114,12 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
         setContentView(R.layout.activity_online_payment);
 
         tvActivityCaption = findViewById(R.id.tvActivityCaption);
+        tvActivityCaption2 = findViewById(R.id.tvActivityCaption2);
+        tvActivityCaption3 = findViewById(R.id.tvActivityCaption3);
 
         helpImage = findViewById(R.id.helpImage);
         tvHelp = findViewById(R.id.tvHelp);
+        tvView = findViewById(R.id.tvView);
 
         refundAmountLayout = findViewById(R.id.refundAmountLayout);
         refundedAmountLayout = findViewById(R.id.refundedAmountLayout);
@@ -127,9 +129,6 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
         tvBalance2 = findViewById(R.id.tvBalance2);
         tvRefundAmount2 = findViewById(R.id.tvRefundAmount2);
         tvRefundedAmount2 = findViewById(R.id.tvRefundedAmount2);
-
-        buttonLayout = findViewById(R.id.buttonLayout);
-        refundButton = findViewById(R.id.refundButton);
 
         tvLog = findViewById(R.id.tvLog);
         reloadImage = findViewById(R.id.reloadImage);
@@ -183,6 +182,11 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
 
         helpImage.setOnClickListener(view -> openHelp());
         tvHelp.setOnClickListener(view -> openHelp());
+
+        tvView.setOnClickListener(view -> {
+            Intent intent1 = new Intent(myContext, IWalletActivity.class);
+            startActivity(intent1);
+        });
 
         getReferenceNumber();
     }
@@ -343,7 +347,9 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
         usersRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                double price, creditedAmount = 0, balance, refundAmount = 0, refundedAmount = 0;
+                double price = 0, creditedAmount = 0, balance = 0, refundAmount = 0, refundedAmount = 0;
+                String status = "Booked";
+
                 referenceNumberList.clear();
                 referenceNumberValueList.clear();
 
@@ -365,78 +371,81 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
                                         referenceNumber.setUserId(userId);
                                         referenceNumber.setBookingId(bookingId);
                                         referenceNumberList.add(referenceNumber);
-
-                                        price = booking.getBookingType().getPrice();
-                                        balance = price - creditedAmount;
-                                        if(balance < 0) {
-                                            referenceNumberAdapter.setShowAddRN(false);
-
-                                            refundAmount = balance * -1;
-                                            balance = 0;
-                                            refundedAmount = booking.getRefundedAmount();
-                                            refundAmount -= refundedAmount;
-                                        }
-                                        refundAmountLayout.setVisibility(View.GONE);
-                                        refundedAmountLayout.setVisibility(View.GONE);
-
-                                        if(refundAmount != 0 || refundedAmount != 0)
-                                            refundAmountLayout.setVisibility(View.VISIBLE);
-                                        if(refundedAmount != 0) refundedAmountLayout.setVisibility(View.VISIBLE);
-
-                                        String priceText = "₱" + price;
-                                        String creditedAmountText = "₱" + creditedAmount;
-                                        String balanceText = "₱" + balance;
-                                        String refundAmountText = "₱" + refundAmount;
-                                        String refundedAmountText = "₱" + refundedAmount;
-
-                                        if(priceText.split("\\.")[1].length() == 1) priceText += 0;
-                                        if(creditedAmountText.split("\\.")[1].length() == 1) creditedAmountText += 0;
-                                        if(balanceText.split("\\.")[1].length() == 1) balanceText += 0;
-                                        if(refundAmountText.split("\\.")[1].length() == 1) refundAmountText += 0;
-                                        if(refundedAmountText.split("\\.")[1].length() == 1) refundedAmountText += 0;
-
-                                        tvPrice2.setText(priceText);
-                                        tvCreditedAmount2.setText(creditedAmountText);
-                                        tvBalance2.setText(balanceText);
-                                        tvRefundAmount2.setText(refundAmountText);
-                                        tvRefundedAmount2.setText(refundedAmountText);
-
-                                        String status = booking.getStatus();
-                                        referenceNumberAdapter.setStatus(status);
-
-                                        ConstraintLayout.LayoutParams layoutParams =
-                                                (ConstraintLayout.LayoutParams) tvLog.getLayoutParams();
-
-                                        buttonLayout.setVisibility(View.GONE);
-
-                                        if(status != null && (status.equals("Pending") || status.equals("Booked"))) {
-                                            layoutParams.setMargins(layoutParams.leftMargin, dpToPx(64),
-                                                    layoutParams.rightMargin, layoutParams.bottomMargin);
-                                        }
-                                        else {
-                                            layoutParams.setMargins(layoutParams.leftMargin, dpToPx(24),
-                                                    layoutParams.rightMargin, layoutParams.bottomMargin);
-                                        }
-
-                                        tvLog.setLayoutParams(layoutParams);
-
-                                        Collections.sort(referenceNumberList, (referenceNumberList, t1) -> {
-                                            DateTimeToString dateTimeToString = new DateTimeToString();
-                                            dateTimeToString.setFormattedSchedule(referenceNumberList.getTimestamp());
-                                            String rnTS = dateTimeToString.getDateNo(true) + " " +
-                                                    dateTimeToString.getTime(true);
-                                            dateTimeToString.setFormattedSchedule(t1.getTimestamp());
-                                            String rnTS1 = dateTimeToString.getDateNo(true) + " " +
-                                                    dateTimeToString.getTime(true);
-
-                                            return rnTS1.compareToIgnoreCase(rnTS);
-                                        });
                                     }
                                 }
+                            }
+
+                            if(booking.getId().equals(bookingId)) {
+                                price = booking.getBookingType().getPrice();
+                                refundedAmount = booking.getRefundedAmount();
+                                status = booking.getStatus();
                             }
                         }
                     }
                 }
+
+                balance = price - creditedAmount;
+                if(balance < 0) {
+                    referenceNumberAdapter.setShowAddRN(false);
+
+                    refundAmount = balance * -1;
+                    balance = 0;
+                    refundAmount -= refundedAmount;
+                }
+                refundAmountLayout.setVisibility(View.GONE);
+                refundedAmountLayout.setVisibility(View.GONE);
+
+                if(refundAmount != 0 || refundedAmount != 0)
+                    refundAmountLayout.setVisibility(View.VISIBLE);
+                if(refundedAmount != 0) refundedAmountLayout.setVisibility(View.VISIBLE);
+
+                String priceText = "₱" + price;
+                String creditedAmountText = "₱" + creditedAmount;
+                String balanceText = "₱" + balance;
+                String refundAmountText = "₱" + refundAmount;
+                String refundedAmountText = "₱" + refundedAmount;
+
+                if(priceText.split("\\.")[1].length() == 1) priceText += 0;
+                if(creditedAmountText.split("\\.")[1].length() == 1) creditedAmountText += 0;
+                if(balanceText.split("\\.")[1].length() == 1) balanceText += 0;
+                if(refundAmountText.split("\\.")[1].length() == 1) refundAmountText += 0;
+                if(refundedAmountText.split("\\.")[1].length() == 1) refundedAmountText += 0;
+
+                tvPrice2.setText(priceText);
+                tvCreditedAmount2.setText(creditedAmountText);
+                tvBalance2.setText(balanceText);
+                tvRefundAmount2.setText(refundAmountText);
+                tvRefundedAmount2.setText(refundedAmountText);
+
+                referenceNumberAdapter.setStatus(status);
+
+                ConstraintLayout.LayoutParams layoutParams =
+                        (ConstraintLayout.LayoutParams) tvLog.getLayoutParams();
+
+                if(status != null && (status.equals("Pending") || status.equals("Booked"))) {
+                    setActivityCaptionVisibility(true);
+                    layoutParams.setMargins(layoutParams.leftMargin, dpToPx(64),
+                            layoutParams.rightMargin, layoutParams.bottomMargin);
+                }
+                else {
+                    setActivityCaptionVisibility(false);
+                    layoutParams.setMargins(layoutParams.leftMargin, dpToPx(24),
+                            layoutParams.rightMargin, layoutParams.bottomMargin);
+                }
+
+                tvLog.setLayoutParams(layoutParams);
+
+                Collections.sort(referenceNumberList, (referenceNumberList, t1) -> {
+                    DateTimeToString dateTimeToString = new DateTimeToString();
+                    dateTimeToString.setFormattedSchedule(referenceNumberList.getTimestamp());
+                    String rnTS = dateTimeToString.getDateNo(true) + " " +
+                            dateTimeToString.getTime(true);
+                    dateTimeToString.setFormattedSchedule(t1.getTimestamp());
+                    String rnTS1 = dateTimeToString.getDateNo(true) + " " +
+                            dateTimeToString.getTime(true);
+
+                    return rnTS1.compareToIgnoreCase(rnTS);
+                });
 
                 if(referenceNumberList.size() > 0) finishLoading();
                 else errorLoading(defaultLogText);
@@ -454,6 +463,18 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
             }
         });
     }
+
+    private void setActivityCaptionVisibility(boolean value) {
+        if(value) {
+            tvActivityCaption.setVisibility(View.VISIBLE);
+            tvActivityCaption2.setVisibility(View.VISIBLE);
+        }
+        else {
+            tvActivityCaption.setVisibility(View.GONE);
+            tvActivityCaption2.setVisibility(View.GONE);
+        }
+    }
+
 
     private int dpToPx(int dp) {
         float px = dp * myResources.getDisplayMetrics().density;

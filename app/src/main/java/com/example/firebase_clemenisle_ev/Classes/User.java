@@ -17,6 +17,8 @@ public class User {
     private final List<Booking> taskList = new ArrayList<>();
     private boolean developer, admin, driver;
     private String plateNumber;
+    private double iWallet;
+    private final List<IWalletTransaction> transactionList = new ArrayList<>();
 
     public User() {
     }
@@ -127,6 +129,20 @@ public class User {
             driver = dataSnapshot.child("driver").getValue(Boolean.class);
 
         plateNumber = dataSnapshot.child("plateNumber").getValue(String.class);
+
+        if(dataSnapshot.child("iWallet").exists())
+            iWallet = dataSnapshot.child("iWallet").getValue(Double.class);
+
+        transactionList.clear();
+        DataSnapshot transactionListRef = dataSnapshot.child("iWalletTransactionList");
+        if(transactionListRef.exists()) {
+            for(DataSnapshot dataSnapshot1 : transactionListRef.getChildren()) {
+                if(dataSnapshot1.hasChildren()) {
+                    IWalletTransaction transaction = dataSnapshot1.getValue(IWalletTransaction.class);
+                    transactionList.add(transaction);
+                }
+            }
+        }
     }
 
     public User(String firstName, String id, String lastName, String middleName) {
@@ -198,5 +214,13 @@ public class User {
 
     public String getPlateNumber() {
         return plateNumber;
+    }
+
+    public double getIWallet() {
+        return iWallet;
+    }
+
+    public List<IWalletTransaction> getTransactionList() {
+        return transactionList;
     }
 }

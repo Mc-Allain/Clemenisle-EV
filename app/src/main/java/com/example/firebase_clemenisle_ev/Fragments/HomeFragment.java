@@ -594,6 +594,8 @@ public class HomeFragment extends Fragment implements
         searchTouristSpot();
 
         progressBar.setVisibility(View.GONE);
+        tvLog.setVisibility(View.GONE);
+        reloadImage.setVisibility(View.GONE);
         touristSpotView.setVisibility(View.VISIBLE);
 
         isResponseError = false;
