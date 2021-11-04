@@ -17,6 +17,81 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraintLayout3"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/constraintLayout2">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/statusLayout3"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:background="@drawable/custom_ripple_effect"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <ImageView
+                    android:id="@+id/ongoingArrowImage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:src="@drawable/ic_baseline_expand_more_24"
+                    app:layout_constraintBottom_toBottomOf="@+id/tvBadge3"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/tvBadge3"
+                    app:tint="@color/black" />
+
+                <TextView
+                    android:id="@+id/tvStatus3"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:fontFamily="@font/ubuntu"
+                    android:text="Ongoing"
+                    android:textColor="@color/black"
+                    android:textSize="18sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/tvBadge3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:background="@drawable/corner_layout"
+                    android:backgroundTint="@color/blue"
+                    android:fontFamily="@font/ubuntu"
+                    android:minWidth="28dp"
+                    android:padding="5dp"
+                    android:text="0"
+                    android:textAlignment="center"
+                    android:textColor="@color/white"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="@+id/tvStatus3"
+                    app:layout_constraintStart_toEndOf="@+id/tvStatus3"
+                    app:layout_constraintTop_toTopOf="@+id/tvStatus3" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/ongoingView"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:background="@color/gainsboro"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/statusLayout3" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/constraintLayout1"
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -68,7 +143,7 @@
                     android:backgroundTint="@color/green"
                     android:fontFamily="@font/ubuntu"
                     android:minWidth="28dp"
-                    android:padding="4dp"
+                    android:padding="5dp"
                     android:text="0"
                     android:textAlignment="center"
                     android:textColor="@color/white"
@@ -143,7 +218,7 @@
                     android:backgroundTint="@color/green"
                     android:fontFamily="@font/ubuntu"
                     android:minWidth="28dp"
-                    android:padding="4dp"
+                    android:padding="5dp"
                     android:text="0"
                     android:textAlignment="center"
                     android:textColor="@color/white"
@@ -167,81 +242,6 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/constraintLayout3"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/constraintLayout2">
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/statusLayout3"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:background="@drawable/custom_ripple_effect"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <ImageView
-                    android:id="@+id/completedArrowImage"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="16dp"
-                    android:src="@drawable/ic_baseline_expand_more_24"
-                    app:layout_constraintBottom_toBottomOf="@+id/tvBadge3"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/tvBadge3"
-                    app:tint="@color/black" />
-
-                <TextView
-                    android:id="@+id/tvStatus3"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginBottom="8dp"
-                    android:fontFamily="@font/ubuntu"
-                    android:text="Completed"
-                    android:textColor="@color/black"
-                    android:textSize="18sp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <TextView
-                    android:id="@+id/tvBadge3"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:background="@drawable/corner_layout"
-                    android:backgroundTint="@color/blue"
-                    android:fontFamily="@font/ubuntu"
-                    android:minWidth="28dp"
-                    android:padding="4dp"
-                    android:text="0"
-                    android:textAlignment="center"
-                    android:textColor="@color/white"
-                    android:textStyle="bold"
-                    app:layout_constraintBottom_toBottomOf="@+id/tvStatus3"
-                    app:layout_constraintStart_toEndOf="@+id/tvStatus3"
-                    app:layout_constraintTop_toTopOf="@+id/tvStatus3" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/completedView"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:background="@color/gainsboro"
-                android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/statusLayout3" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/constraintLayout4"
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -259,7 +259,7 @@
                 app:layout_constraintTop_toTopOf="parent">
 
                 <ImageView
-                    android:id="@+id/passedArrowImage"
+                    android:id="@+id/completedArrowImage"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="16dp"
@@ -277,7 +277,7 @@
                     android:layout_marginTop="8dp"
                     android:layout_marginBottom="8dp"
                     android:fontFamily="@font/ubuntu"
-                    android:text="Passed"
+                    android:text="Completed"
                     android:textColor="@color/black"
                     android:textSize="18sp"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -290,10 +290,10 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:background="@drawable/corner_layout"
-                    android:backgroundTint="@color/red"
+                    android:backgroundTint="@color/blue"
                     android:fontFamily="@font/ubuntu"
                     android:minWidth="28dp"
-                    android:padding="4dp"
+                    android:padding="5dp"
                     android:text="0"
                     android:textAlignment="center"
                     android:textColor="@color/white"
@@ -305,7 +305,7 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/passedView"
+                android:id="@+id/completedView"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:background="@color/gainsboro"
@@ -334,7 +334,7 @@
                 app:layout_constraintTop_toTopOf="parent">
 
                 <ImageView
-                    android:id="@+id/failedArrowImage"
+                    android:id="@+id/passedArrowImage"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="16dp"
@@ -352,7 +352,7 @@
                     android:layout_marginTop="8dp"
                     android:layout_marginBottom="8dp"
                     android:fontFamily="@font/ubuntu"
-                    android:text="Failed"
+                    android:text="Passed"
                     android:textColor="@color/black"
                     android:textSize="18sp"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -368,7 +368,7 @@
                     android:backgroundTint="@color/red"
                     android:fontFamily="@font/ubuntu"
                     android:minWidth="28dp"
-                    android:padding="4dp"
+                    android:padding="5dp"
                     android:text="0"
                     android:textAlignment="center"
                     android:textColor="@color/white"
@@ -376,6 +376,81 @@
                     app:layout_constraintBottom_toBottomOf="@+id/tvStatus5"
                     app:layout_constraintStart_toEndOf="@+id/tvStatus5"
                     app:layout_constraintTop_toTopOf="@+id/tvStatus5" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/passedView"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:background="@color/gainsboro"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/statusLayout5" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraintLayout6"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/constraintLayout5">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/statusLayout6"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:background="@drawable/custom_ripple_effect"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <ImageView
+                    android:id="@+id/failedArrowImage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:src="@drawable/ic_baseline_expand_more_24"
+                    app:layout_constraintBottom_toBottomOf="@+id/tvBadge6"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/tvBadge6"
+                    app:tint="@color/black" />
+
+                <TextView
+                    android:id="@+id/tvStatus6"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:fontFamily="@font/ubuntu"
+                    android:text="Failed"
+                    android:textColor="@color/black"
+                    android:textSize="18sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/tvBadge6"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:background="@drawable/corner_layout"
+                    android:backgroundTint="@color/red"
+                    android:fontFamily="@font/ubuntu"
+                    android:minWidth="28dp"
+                    android:padding="5dp"
+                    android:text="0"
+                    android:textAlignment="center"
+                    android:textColor="@color/white"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="@+id/tvStatus6"
+                    app:layout_constraintStart_toEndOf="@+id/tvStatus6"
+                    app:layout_constraintTop_toTopOf="@+id/tvStatus6" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -388,13 +463,13 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/statusLayout5" />
+                app:layout_constraintTop_toBottomOf="@+id/statusLayout6" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <ImageView
             android:id="@+id/reloadImage"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="58dp"
+            android:layout_height="58dp"
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="@+id/tvLog"
             app:layout_constraintStart_toStartOf="@+id/tvLog"
@@ -425,7 +500,7 @@
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/constraintLayout5" />
+            app:layout_constraintTop_toBottomOf="@+id/constraintLayout6" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

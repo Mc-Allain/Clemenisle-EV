@@ -1214,6 +1214,14 @@ public class BookingActivity extends AppCompatActivity implements
             fusedLocationProviderClient.removeLocationUpdates(locationCallback);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if(locationCallback != null)
+            fusedLocationProviderClient.removeLocationUpdates(locationCallback);
+    }
+
     private void getUserCurrentLocation(Location location) {
         if(location != null) {
             tvCaption.setText(currentLocationCaptionText);

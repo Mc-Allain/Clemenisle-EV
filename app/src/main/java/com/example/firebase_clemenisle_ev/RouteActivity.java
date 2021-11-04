@@ -136,6 +136,8 @@ public class RouteActivity extends AppCompatActivity implements
 
     String defaultPassengerText = "Passenger", requestText = "Your Task on Request";
 
+    String initiateService = "Initiate Service", markAsCompleted = "Mark as Completed";
+
     private void initSharedPreferences() {
         SharedPreferences sharedPreferences = myContext
                 .getSharedPreferences("login", Context.MODE_PRIVATE);
@@ -527,6 +529,7 @@ public class RouteActivity extends AppCompatActivity implements
 
                             tvStop.setVisibility(View.GONE);
                             stopImage.setVisibility(View.GONE);
+                            tvCheck.setText(initiateService);
                             tvCheck.setVisibility(View.VISIBLE);
                             checkImage.setVisibility(View.VISIBLE);
 
@@ -556,6 +559,7 @@ public class RouteActivity extends AppCompatActivity implements
                                 tvStop.setOnClickListener(view -> stopRequest(booking));
                                 stopImage.setOnClickListener(view -> stopRequest(booking));
 
+                                tvCheck.setText(initiateService);
                                 tvCheck.setVisibility(View.VISIBLE);
                                 checkImage.setVisibility(View.VISIBLE);
 
@@ -588,6 +592,23 @@ public class RouteActivity extends AppCompatActivity implements
                                 tvCheck.setVisibility(View.GONE);
                                 checkImage.setVisibility(View.GONE);
                             }
+                            break;
+                        case "Ongoing":
+                            tvChat.setVisibility(View.GONE);
+                            chatImage.setVisibility(View.GONE);
+                            tvDriver.setVisibility(View.GONE);
+                            driverImage.setVisibility(View.GONE);
+                            tvPass.setVisibility(View.GONE);
+                            passImage.setVisibility(View.GONE);
+                            tvStop.setVisibility(View.GONE);
+                            stopImage.setVisibility(View.GONE);
+
+                            tvCheck.setText(markAsCompleted);
+                            tvCheck.setVisibility(View.VISIBLE);
+                            checkImage.setVisibility(View.VISIBLE);
+
+                            tvCheck.setOnClickListener(view -> scanQRCode());
+                            checkImage.setOnClickListener(view -> scanQRCode());
                             break;
                         default:
                             tvChat.setVisibility(View.GONE);
@@ -771,16 +792,42 @@ public class RouteActivity extends AppCompatActivity implements
 
         if(intentResult.getContents() != null) {
             if(intentResult.getContents().equals(bookingId)) {
-                usersRef.child(userId).child("bookingList").
-                        child(bookingId).child("status").setValue("Completed");
-                usersRef.child(driverUserId).child("taskList").
-                        child(bookingId).child("status").setValue("Completed");
+                if(status.equals("Ongoing")) {
+                    usersRef.child(userId).child("bookingList").
+                            child(bookingId).child("dropOffTime").
+                            setValue(new DateTimeToString().getDateAndTime());
 
-                Toast.makeText(
-                        myContext,
-                        "QR Code successfully scanned. The Booking Record is now on Completed.",
-                        Toast.LENGTH_LONG
-                ).show();
+                    usersRef.child(driverUserId).child("taskList").
+                            child(bookingId).child("status").setValue("Completed");
+                    usersRef.child(driverUserId).child("taskList").
+                            child(bookingId).child("dropOffTime").
+                            setValue(new DateTimeToString().getDateAndTime());
+
+                    Toast.makeText(
+                            myContext,
+                            "QR Code successfully scanned. The Booking Record is now on Completed.",
+                            Toast.LENGTH_LONG
+                    ).show();
+                }
+                else {
+                    usersRef.child(userId).child("bookingList").
+                            child(bookingId).child("status").setValue("Completed");
+                    usersRef.child(userId).child("bookingList").
+                            child(bookingId).child("pickUpTime").
+                            setValue(new DateTimeToString().getDateAndTime());
+
+                    usersRef.child(driverUserId).child("taskList").
+                            child(bookingId).child("status").setValue("Ongoing");
+                    usersRef.child(driverUserId).child("taskList").
+                            child(bookingId).child("pickUpTime").
+                            setValue(new DateTimeToString().getDateAndTime());
+
+                    Toast.makeText(
+                            myContext,
+                            "QR Code successfully scanned. The Service is now initiated.",
+                            Toast.LENGTH_LONG
+                    ).show();
+                }
             }
             else {
                 Toast.makeText(
@@ -848,6 +895,7 @@ public class RouteActivity extends AppCompatActivity implements
 
                 if(!inDriverModule) if(isShowBookingAlertEnabled) dialog.show();
                 break;
+            case "Ongoing":
             case "Completed":
                 color = myResources.getColor(R.color.blue);
                 break;
@@ -994,8 +1042,8 @@ public class RouteActivity extends AppCompatActivity implements
                     schedule = booking.getSchedule();
 
                     String currentStatus = booking.getStatus();
-                    if(!inDriverModule || (status != null && !status.equals("Request")) ||
-                            !currentStatus.equals("Booked"))
+                    if(!inDriverModule || (status != null && !status.equals("Request") && !status.equals("Ongoing")) ||
+                            !currentStatus.equals("Booked") && !currentStatus.equals("Completed"))
                         status = currentStatus;
 
                     typeName = booking.getBookingType().getName();

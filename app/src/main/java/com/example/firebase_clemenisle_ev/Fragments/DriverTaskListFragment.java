@@ -48,12 +48,12 @@ public class DriverTaskListFragment extends Fragment implements BookingAdapter.O
     FirebaseUser firebaseUser;
 
     ConstraintLayout constraintLayout,
-            constraintLayout1, constraintLayout2, constraintLayout3, constraintLayout4, constraintLayout5;
+            constraintLayout1, constraintLayout2, constraintLayout3, constraintLayout4, constraintLayout5, constraintLayout6;
 
-    RecyclerView upcomingView, requestView, completedView, passedView, failedView;
-    ConstraintLayout statusLayout1, statusLayout2, statusLayout3, statusLayout4, statusLayout5;
-    ImageView upcomingArrow, requestArrow, completedArrow, passedArrow, failedArrow, reloadImage;
-    TextView badgeText1, badgeText2, badgeText3, badgeText4, badgeText5;
+    RecyclerView upcomingView, requestView, ongoingView, completedView, passedView, failedView;
+    ConstraintLayout statusLayout1, statusLayout2, statusLayout3, statusLayout4, statusLayout5, statusLayout6;
+    ImageView upcomingArrow, requestArrow, ongoingArrow, completedArrow, passedArrow, failedArrow, reloadImage;
+    TextView badgeText1, badgeText2, badgeText3, badgeText4, badgeText5, badgeText6;
 
     ProgressBar progressBar;
 
@@ -65,15 +65,16 @@ public class DriverTaskListFragment extends Fragment implements BookingAdapter.O
 
     String defaultLogText = "No Record";
 
-    BookingAdapter adapter1, adapter2, adapter3, adapter4, adapter5;
+    BookingAdapter adapter1, adapter2, adapter3, adapter4, adapter5, adapter6;
 
     List<Booking> taskList1 = new ArrayList<>();
     List<Booking> taskList2 = new ArrayList<>();
     List<Booking> taskList3 = new ArrayList<>();
     List<Booking> taskList4 = new ArrayList<>();
     List<Booking> taskList5 = new ArrayList<>();
+    List<Booking> taskList6 = new ArrayList<>();
 
-    boolean success1, success2, success3, success4, success5;
+    boolean success1, success2, success3, success4, success5, success6;
 
     String userId;
     boolean isLoggedIn = false;
@@ -106,6 +107,7 @@ public class DriverTaskListFragment extends Fragment implements BookingAdapter.O
         constraintLayout3 = view.findViewById(R.id.constraintLayout3);
         constraintLayout4 = view.findViewById(R.id.constraintLayout4);
         constraintLayout5 = view.findViewById(R.id.constraintLayout5);
+        constraintLayout6 = view.findViewById(R.id.constraintLayout6);
 
         upcomingView = view.findViewById(R.id.upcomingView);
         statusLayout1 = view.findViewById(R.id.statusLayout1);
@@ -117,20 +119,25 @@ public class DriverTaskListFragment extends Fragment implements BookingAdapter.O
         requestArrow = view.findViewById(R.id.requestArrowImage);
         badgeText2 = view.findViewById(R.id.tvBadge2);
 
-        completedView = view.findViewById(R.id.completedView);
+        ongoingView = view.findViewById(R.id.ongoingView);
         statusLayout3 = view.findViewById(R.id.statusLayout3);
-        completedArrow = view.findViewById(R.id.completedArrowImage);
+        ongoingArrow = view.findViewById(R.id.ongoingArrowImage);
         badgeText3 = view.findViewById(R.id.tvBadge3);
 
-        passedView = view.findViewById(R.id.passedView);
+        completedView = view.findViewById(R.id.completedView);
         statusLayout4 = view.findViewById(R.id.statusLayout4);
-        passedArrow = view.findViewById(R.id.passedArrowImage);
+        completedArrow = view.findViewById(R.id.completedArrowImage);
         badgeText4 = view.findViewById(R.id.tvBadge4);
 
-        failedView = view.findViewById(R.id.failedView);
+        passedView = view.findViewById(R.id.passedView);
         statusLayout5 = view.findViewById(R.id.statusLayout5);
-        failedArrow = view.findViewById(R.id.failedArrowImage);
+        passedArrow = view.findViewById(R.id.passedArrowImage);
         badgeText5 = view.findViewById(R.id.tvBadge5);
+
+        failedView = view.findViewById(R.id.failedView);
+        statusLayout6 = view.findViewById(R.id.statusLayout6);
+        failedArrow = view.findViewById(R.id.failedArrowImage);
+        badgeText6 = view.findViewById(R.id.tvBadge6);
 
         tvLog = view.findViewById(R.id.tvLog);
         reloadImage = view.findViewById(R.id.reloadImage);
@@ -176,22 +183,28 @@ public class DriverTaskListFragment extends Fragment implements BookingAdapter.O
         adapter2.setOnLikeClickListener(this);
 
         LinearLayoutManager linearLayout3 = new LinearLayoutManager(myContext, LinearLayoutManager.VERTICAL, false);
-        completedView.setLayoutManager(linearLayout3);
+        ongoingView.setLayoutManager(linearLayout3);
         adapter3 = new BookingAdapter(myContext, taskList3);
-        completedView.setAdapter(adapter3);
+        ongoingView.setAdapter(adapter3);
         adapter3.setOnLikeClickListener(this);
 
         LinearLayoutManager linearLayout4 = new LinearLayoutManager(myContext, LinearLayoutManager.VERTICAL, false);
-        passedView.setLayoutManager(linearLayout4);
+        completedView.setLayoutManager(linearLayout4);
         adapter4 = new BookingAdapter(myContext, taskList4);
-        passedView.setAdapter(adapter4);
+        completedView.setAdapter(adapter4);
         adapter4.setOnLikeClickListener(this);
 
         LinearLayoutManager linearLayout5 = new LinearLayoutManager(myContext, LinearLayoutManager.VERTICAL, false);
-        failedView.setLayoutManager(linearLayout5);
+        passedView.setLayoutManager(linearLayout5);
         adapter5 = new BookingAdapter(myContext, taskList5);
-        failedView.setAdapter(adapter5);
+        passedView.setAdapter(adapter5);
         adapter5.setOnLikeClickListener(this);
+
+        LinearLayoutManager linearLayout6 = new LinearLayoutManager(myContext, LinearLayoutManager.VERTICAL, false);
+        failedView.setLayoutManager(linearLayout6);
+        adapter6 = new BookingAdapter(myContext, taskList5);
+        failedView.setAdapter(adapter6);
+        adapter6.setOnLikeClickListener(this);
 
         getBookings();
 
@@ -228,6 +241,22 @@ public class DriverTaskListFragment extends Fragment implements BookingAdapter.O
         });
 
         statusLayout3.setOnClickListener(view1 -> {
+            if(ongoingView.getVisibility() == View.VISIBLE) {
+                setViewsToGone();
+                resetConstraint();
+            }
+            else {
+                setViewsToGone();
+                ongoingView.setVisibility(View.VISIBLE);
+                ongoingArrow.setImageResource(R.drawable.ic_baseline_expand_less_24);
+
+                clickedIndex = 3;
+                resetConstraint();
+                connectConstraintBottom();
+            }
+        });
+
+        statusLayout4.setOnClickListener(view1 -> {
             if(completedView.getVisibility() == View.VISIBLE) {
                 setViewsToGone();
                 resetConstraint();
@@ -237,13 +266,13 @@ public class DriverTaskListFragment extends Fragment implements BookingAdapter.O
                 completedView.setVisibility(View.VISIBLE);
                 completedArrow.setImageResource(R.drawable.ic_baseline_expand_less_24);
 
-                clickedIndex = 3;
+                clickedIndex = 4;
                 resetConstraint();
                 connectConstraintBottom();
             }
         });
 
-        statusLayout4.setOnClickListener(view1 -> {
+        statusLayout5.setOnClickListener(view1 -> {
             if(passedView.getVisibility() == View.VISIBLE) {
                 setViewsToGone();
                 resetConstraint();
@@ -253,13 +282,13 @@ public class DriverTaskListFragment extends Fragment implements BookingAdapter.O
                 passedView.setVisibility(View.VISIBLE);
                 passedArrow.setImageResource(R.drawable.ic_baseline_expand_less_24);
 
-                clickedIndex = 4;
+                clickedIndex = 5;
                 resetConstraint();
                 connectConstraintBottom();
             }
         });
 
-        statusLayout5.setOnClickListener(view1 -> {
+        statusLayout6.setOnClickListener(view1 -> {
             if(failedView.getVisibility() == View.VISIBLE) {
                 setViewsToGone();
                 resetConstraint();
@@ -269,7 +298,7 @@ public class DriverTaskListFragment extends Fragment implements BookingAdapter.O
                 failedView.setVisibility(View.VISIBLE);
                 failedArrow.setImageResource(R.drawable.ic_baseline_expand_less_24);
 
-                clickedIndex = 5;
+                clickedIndex = 6;
                 resetConstraint();
                 connectConstraintBottom();
             }
@@ -296,6 +325,8 @@ public class DriverTaskListFragment extends Fragment implements BookingAdapter.O
                 break;
             case 5:
                 count = Integer.parseInt(badgeText5.getText().toString());
+            case 6:
+                count = Integer.parseInt(badgeText6.getText().toString());
                 break;
         }
 
@@ -306,8 +337,15 @@ public class DriverTaskListFragment extends Fragment implements BookingAdapter.O
         ConstraintSet constraintSet = new ConstraintSet();
         constraintSet.clone(constraintLayout);
 
-        constraintSet.connect(constraintLayout5.getId(), ConstraintSet.BOTTOM,
+        constraintSet.connect(constraintLayout6.getId(), ConstraintSet.BOTTOM,
                 constraintLayout.getId(), ConstraintSet.BOTTOM);
+
+        if(clickedIndex <= 5) {
+            constraintSet.clear(constraintLayout6.getId(), ConstraintSet.TOP);
+
+            constraintSet.connect(constraintLayout5.getId(), ConstraintSet.BOTTOM,
+                    constraintLayout6.getId(), ConstraintSet.TOP);
+        }
 
         if(clickedIndex <= 4) {
             constraintSet.clear(constraintLayout5.getId(), ConstraintSet.TOP);
@@ -345,6 +383,10 @@ public class DriverTaskListFragment extends Fragment implements BookingAdapter.O
         ConstraintSet constraintSet = new ConstraintSet();
         constraintSet.clone(constraintLayout);
 
+        constraintSet.clear(constraintLayout6.getId(), ConstraintSet.BOTTOM);
+        constraintSet.connect(constraintLayout6.getId(), ConstraintSet.TOP,
+                constraintLayout5.getId(), ConstraintSet.BOTTOM);
+
         constraintSet.clear(constraintLayout5.getId(), ConstraintSet.BOTTOM);
         constraintSet.connect(constraintLayout5.getId(), ConstraintSet.TOP,
                 constraintLayout4.getId(), ConstraintSet.BOTTOM);
@@ -378,12 +420,14 @@ public class DriverTaskListFragment extends Fragment implements BookingAdapter.O
 
         upcomingView.setVisibility(View.GONE);
         requestView.setVisibility(View.GONE);
+        ongoingView.setVisibility(View.GONE);
         completedView.setVisibility(View.GONE);
         passedView.setVisibility(View.GONE);
         failedView.setVisibility(View.GONE);
 
         upcomingArrow.setImageResource(R.drawable.ic_baseline_expand_more_24);
         requestArrow.setImageResource(R.drawable.ic_baseline_expand_more_24);
+        ongoingArrow.setImageResource(R.drawable.ic_baseline_expand_more_24);
         completedArrow.setImageResource(R.drawable.ic_baseline_expand_more_24);
         passedArrow.setImageResource(R.drawable.ic_baseline_expand_more_24);
         failedArrow.setImageResource(R.drawable.ic_baseline_expand_more_24);
@@ -398,12 +442,14 @@ public class DriverTaskListFragment extends Fragment implements BookingAdapter.O
                 requestView.setVisibility(View.VISIBLE);
                 break;
             case 3:
+                ongoingView.setVisibility(View.VISIBLE);
+            case 4:
                 completedView.setVisibility(View.VISIBLE);
                 break;
-            case 4:
+            case 5:
                 passedView.setVisibility(View.VISIBLE);
                 break;
-            case 5:
+            case 6:
                 failedView.setVisibility(View.VISIBLE);
                 break;
         }
@@ -418,6 +464,7 @@ public class DriverTaskListFragment extends Fragment implements BookingAdapter.O
         statusLayout3.setEnabled(value);
         statusLayout4.setEnabled(value);
         statusLayout5.setEnabled(value);
+        statusLayout6.setEnabled(value);
     }
 
     private void getBookings() {
@@ -530,7 +577,7 @@ public class DriverTaskListFragment extends Fragment implements BookingAdapter.O
         });
 
         Query task3Query = firebaseDatabase.getReference("users").
-                child(userId).child("taskList").orderByChild("status").equalTo("Completed");
+                child(userId).child("taskList").orderByChild("status").equalTo("Ongoing");
 
         success3 = false;
         task3Query.addValueEventListener(new ValueEventListener() {
@@ -545,7 +592,6 @@ public class DriverTaskListFragment extends Fragment implements BookingAdapter.O
                     }
                 }
                 success3 = true;
-                Collections.reverse(taskList3);
                 finishLoading();
             }
 
@@ -563,7 +609,7 @@ public class DriverTaskListFragment extends Fragment implements BookingAdapter.O
         });
 
         Query task4Query = firebaseDatabase.getReference("users").
-                child(userId).child("taskList").orderByChild("status").equalTo("Passed");
+                child(userId).child("taskList").orderByChild("status").equalTo("Completed");
 
         success4 = false;
         task4Query.addValueEventListener(new ValueEventListener() {
@@ -596,7 +642,7 @@ public class DriverTaskListFragment extends Fragment implements BookingAdapter.O
         });
 
         Query task5Query = firebaseDatabase.getReference("users").
-                child(userId).child("taskList").orderByChild("status").equalTo("Failed");
+                child(userId).child("taskList").orderByChild("status").equalTo("Passed");
 
         success5 = false;
         task5Query.addValueEventListener(new ValueEventListener() {
@@ -627,10 +673,43 @@ public class DriverTaskListFragment extends Fragment implements BookingAdapter.O
                 errorLoading(error.toString());
             }
         });
+
+        Query task6Query = firebaseDatabase.getReference("users").
+                child(userId).child("taskList").orderByChild("status").equalTo("Cancelled");
+
+        success6 = false;
+        task6Query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                taskList6.clear();
+
+                if(snapshot.exists()) {
+                    for(DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        Booking task = new Booking(dataSnapshot);
+                        taskList6.add(task);
+                    }
+                }
+                success6 = true;
+                Collections.reverse(taskList6);
+                finishLoading();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(
+                        myContext,
+                        error.toString(),
+                        Toast.LENGTH_LONG
+                ).show();
+
+                success6 = false;
+                errorLoading(error.toString());
+            }
+        });
     }
 
     private void finishLoading() {
-        if(success1 && success2 && success3 && success4 && success5) {
+        if(success1 && success2 && success3 && success4 && success5 && success6) {
             updateAdapter();
 
             progressBar.setVisibility(View.GONE);
@@ -642,9 +721,10 @@ public class DriverTaskListFragment extends Fragment implements BookingAdapter.O
             badgeText3.setText(String.valueOf(taskList3.size()));
             badgeText4.setText(String.valueOf(taskList4.size()));
             badgeText5.setText(String.valueOf(taskList5.size()));
+            badgeText5.setText(String.valueOf(taskList6.size()));
 
             if(taskList1.size() + taskList2.size() + taskList3.size() +
-                    taskList4.size() + taskList5.size() == 0) {
+                    taskList4.size() + taskList5.size() + taskList6.size() == 0) {
                 tvLog.setText(defaultLogText);
                 tvLog.setVisibility(View.VISIBLE);
                 reloadImage.setVisibility(View.VISIBLE);
@@ -659,12 +739,13 @@ public class DriverTaskListFragment extends Fragment implements BookingAdapter.O
     }
 
     private void errorLoading(String error) {
-        if(!(success1 && success2 && success3 && success4 && success5)) {
+        if(!(success1 && success2 && success3 && success4 && success5 && success6)) {
             taskList1.clear();
             taskList2.clear();
             taskList3.clear();
             taskList4.clear();
             taskList5.clear();
+            taskList6.clear();
             updateAdapter();
 
             tvLog.setText(error);
@@ -680,6 +761,7 @@ public class DriverTaskListFragment extends Fragment implements BookingAdapter.O
         adapter3.setInDriverMode(true);
         adapter4.setInDriverMode(true);
         adapter5.setInDriverMode(true);
+        adapter6.setInDriverMode(true);
     }
 
     @Override

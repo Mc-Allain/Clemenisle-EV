@@ -182,20 +182,23 @@ public class IWalletActivity extends AppCompatActivity {
             tlMobileNumber.setStartIconTintList(cslInitial);
             tlAmount.setStartIconTintList(cslInitial);
 
-            double maxAmount = Double.parseDouble(tvIWallet.getText().toString().split("₱")[1]);
+            String[] iWalletSplit = tvIWallet.getText().toString().split("₱");
+            if(iWalletSplit.length > 1) {
+                double maxAmount = Double.parseDouble(iWalletSplit[1]);
 
-            if(maxAmount < minAmount) {
-                tlAmount.setErrorEnabled(true);
-                String error = "You do not have enough iWallet to transfer";
-                tlAmount.setError(error);
-                tlAmount.setErrorTextColor(cslRed);
-                tlAmount.setStartIconTintList(cslRed);
+                if(maxAmount < minAmount) {
+                    tlAmount.setErrorEnabled(true);
+                    String error = "You do not have enough iWallet to transfer";
+                    tlAmount.setError(error);
+                    tlAmount.setErrorTextColor(cslRed);
+                    tlAmount.setStartIconTintList(cslRed);
+                }
+
+                etMobileNumber.clearFocus();
+                etMobileNumber.requestFocus();
+
+                transferDialog.show();
             }
-
-            etMobileNumber.clearFocus();
-            etMobileNumber.requestFocus();
-
-            transferDialog.show();
         });
     }
 
@@ -288,37 +291,39 @@ public class IWalletActivity extends AppCompatActivity {
                 if(etAmount.getText().toString().length() >= 1)
                     amount = Double.parseDouble(etAmount.getText().toString());
                 else amount = 0;
+                String[] iWalletSplit = tvIWallet.getText().toString().split("₱");
+                if(iWalletSplit.length > 1) {
+                    double maxAmount = Double.parseDouble(iWalletSplit[1]);
 
-                double maxAmount = Double.parseDouble(tvIWallet.getText().toString().split("₱")[1]);
+                    if(maxAmount < minAmount) {
+                        tlAmount.setErrorEnabled(true);
+                        String error = "You do not have enough iWallet to transfer";
+                        tlAmount.setError(error);
+                        tlAmount.setErrorTextColor(cslRed);
+                        tlAmount.setStartIconTintList(cslRed);
+                    }
+                    else if(amount < minAmount) {
+                        tlAmount.setErrorEnabled(true);
+                        String error = "Amount must be at least ₱100.00";
+                        tlAmount.setError(error);
+                        tlAmount.setErrorTextColor(cslRed);
+                        tlAmount.setStartIconTintList(cslRed);
+                    }
+                    else if(amount > maxAmount) {
+                        tlAmount.setErrorEnabled(true);
+                        String error = "Amount must be at maximum of ₱" + maxAmount;
+                        tlAmount.setError(error);
+                        tlAmount.setErrorTextColor(cslRed);
+                        tlAmount.setStartIconTintList(cslRed);
+                    }
+                    else {
+                        tlAmount.setErrorEnabled(false);
+                        tlAmount.setError(null);
+                        tlAmount.setStartIconTintList(cslBlue);
+                    }
 
-                if(maxAmount < minAmount) {
-                    tlAmount.setErrorEnabled(true);
-                    String error = "You do not have enough iWallet to transfer";
-                    tlAmount.setError(error);
-                    tlAmount.setErrorTextColor(cslRed);
-                    tlAmount.setStartIconTintList(cslRed);
+                    checkTransferInput();
                 }
-                else if(amount < minAmount) {
-                    tlAmount.setErrorEnabled(true);
-                    String error = "Amount must be at least ₱100.00";
-                    tlAmount.setError(error);
-                    tlAmount.setErrorTextColor(cslRed);
-                    tlAmount.setStartIconTintList(cslRed);
-                }
-                else if(amount > maxAmount) {
-                    tlAmount.setErrorEnabled(true);
-                    String error = "Amount must be at maximum of ₱" + maxAmount;
-                    tlAmount.setError(error);
-                    tlAmount.setErrorTextColor(cslRed);
-                    tlAmount.setStartIconTintList(cslRed);
-                }
-                else {
-                    tlAmount.setErrorEnabled(false);
-                    tlAmount.setError(null);
-                    tlAmount.setStartIconTintList(cslBlue);
-                }
-
-                checkTransferInput();
             }
         });
 
@@ -334,10 +339,13 @@ public class IWalletActivity extends AppCompatActivity {
     }
 
     private void checkTransferInput() {
-        double maxAmount = Double.parseDouble(tvIWallet.getText().toString().split("₱")[1]);
-        submitButton.setEnabled(
-                mobileNumber.length() == 13 && amount >= minAmount && amount <= maxAmount
-        );
+        String[] iWalletSplit = tvIWallet.getText().toString().split("₱");
+        if(iWalletSplit.length > 1) {
+            double maxAmount = Double.parseDouble(iWalletSplit[1]);
+            submitButton.setEnabled(
+                    mobileNumber.length() == 13 && amount >= minAmount && amount <= maxAmount
+            );
+        }
     }
 
     private void setDialogScreenEnabled(boolean value) {
@@ -365,17 +373,19 @@ public class IWalletActivity extends AppCompatActivity {
         usersRef.child(userId).child("iWalletTransactionList").child(wtId).setValue(transaction).
                 addOnCompleteListener(task -> {
                     if(task.isSuccessful()) {
-                        double iWallet =
-                                Double.parseDouble(tvIWallet.getText().toString().split("₱")[1]);
-                        double newIWallet = iWallet - amount;
-                        usersRef.child(userId).child("iWallet").setValue(newIWallet);
+                        String[] iWalletSplit = tvIWallet.getText().toString().split("₱");
+                        if(iWalletSplit.length > 1) {
+                            double iWallet = Double.parseDouble(iWalletSplit[1]);
+                            double newIWallet = iWallet - amount;
+                            usersRef.child(userId).child("iWallet").setValue(newIWallet);
 
-                        Toast.makeText(
-                                myContext,
-                                "Successfully requested for transfer." +
-                                        "It will take at least 24 hours to take effect.",
-                                Toast.LENGTH_LONG
-                        ).show();
+                            Toast.makeText(
+                                    myContext,
+                                    "Successfully requested for transfer." +
+                                            "It will take at least 24 hours to take effect.",
+                                    Toast.LENGTH_LONG
+                            ).show();
+                        }
                     }
                     else {
                         if(task.getException() != null) {
@@ -457,6 +467,11 @@ public class IWalletActivity extends AppCompatActivity {
     private void errorLoading(String error) {
         transactionList.clear();
         iWalletTransactionAdapter.notifyDataSetChanged();
+
+        String iWallet = "₱" + user.getIWallet();
+        if(iWallet.split("\\.")[1].length() == 1) iWallet += 0;
+
+        tvIWallet.setText(iWallet);
 
         tvLog.setText(error);
         tvLog.setVisibility(View.VISIBLE);

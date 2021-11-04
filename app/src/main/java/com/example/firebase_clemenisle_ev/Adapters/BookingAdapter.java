@@ -100,6 +100,10 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
 
     String defaultPassengerText = "Passenger", requestText = "Your Task on Request";
 
+    List<Booking> onGoingTaskList = new ArrayList<>();
+
+    String initiateService = "Initiate Service", markAsCompleted = "Mark as Completed";
+
     public void setOnLikeClickListener(OnActionClickListener onActionClickListener) {
         this.onActionClickListener = onActionClickListener;
     }
@@ -224,6 +228,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
             case "Booked":
                 color = myResources.getColor(R.color.green);
                 break;
+            case "Ongoing":
             case "Completed":
                 color = myResources.getColor(R.color.blue);
                 break;
@@ -236,6 +241,9 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
 
         tvBookingId.setBackgroundColor(color);
         tvPrice.setTextColor(color);
+
+        tvOnlinePayment.setVisibility(View.GONE);
+        onlinePaymentImage.setVisibility(View.GONE);
 
         if(!bookingType.getId().equals("BT99")) {
             Station startStation = booking.getStartStation();
@@ -275,6 +283,14 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
             tvLocateEnd.setOnClickListener(view -> openMap(endStation));
 
             locateEndImage.setOnClickListener(view -> openMap(endStation));
+
+            if(!inDriverModule) {
+                tvOnlinePayment.setVisibility(View.VISIBLE);
+                onlinePaymentImage.setVisibility(View.VISIBLE);
+
+                tvOnlinePayment.setOnClickListener(view -> openOnlinePayment(bookingId));
+                onlinePaymentImage.setOnClickListener(view -> openOnlinePayment(bookingId));
+            }
 
             paidImage.setOnLongClickListener(view -> {
                 Toast.makeText(
@@ -330,8 +346,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
         openImage.setOnClickListener(view -> openItem(booking, false));
 
         getUsers(driverInfoLayout, userInfoLayout, extvMessage, message, bookingId, status, tvUserFullName,
-                profileImage, tvOnlinePayment, onlinePaymentImage,
-                tvViewQR, viewQRImage, tvChat, chatImage, tvDriver, driverImage,
+                profileImage, tvViewQR, viewQRImage, tvChat, chatImage, tvDriver, driverImage,
                 tvPass, passImage, tvStop, stopImage, tvCheck, checkImage, tvDriverFullName, driverProfileImage,
                 tvPassenger, tvPlateNumber, previousDriverUserId);
 
@@ -360,7 +375,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
     private void getUsers(
             ConstraintLayout driverInfoLayout, ConstraintLayout userInfoLayout,
             ExpandableTextView extvMessage, String message, String bookingId, String status,
-            TextView tvUserFullName, ImageView profileImage, TextView tvOnlinePayment, ImageView onlinePaymentImage,
+            TextView tvUserFullName, ImageView profileImage,
             TextView tvViewQR, ImageView viewQRImage, TextView tvChat, ImageView chatImage,
             TextView tvDriver, ImageView driverImage, TextView tvPass, ImageView passImage,
             TextView tvStop, ImageView stopImage, TextView tvCheck, ImageView checkImage,
@@ -403,12 +418,6 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
 
                     tvViewQR.setOnClickListener(view -> viewQRCode(bookingId));
                     viewQRImage.setOnClickListener(view -> viewQRCode(bookingId));
-
-                    tvOnlinePayment.setVisibility(View.VISIBLE);
-                    onlinePaymentImage.setVisibility(View.VISIBLE);
-
-                    tvOnlinePayment.setOnClickListener(view -> openOnlinePayment(bookingId));
-                    onlinePaymentImage.setOnClickListener(view -> openOnlinePayment(bookingId));
 
                     if(status.equals("Booked")) {
                         tvChat.setVisibility(View.VISIBLE);
@@ -658,7 +667,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                             tvChat.setVisibility(View.GONE);
                             chatImage.setVisibility(View.GONE);
 
-                            if (userId.equals(user.getId())) {
+                            if (userId.equals(user.getId()) || onGoingTaskList.size() > 0) {
                                 tvDriver.setVisibility(View.GONE);
                                 driverImage.setVisibility(View.GONE);
                             }
@@ -696,6 +705,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
 
                             tvStop.setVisibility(View.GONE);
                             stopImage.setVisibility(View.GONE);
+                            tvCheck.setText(initiateService);
                             tvCheck.setVisibility(View.VISIBLE);
                             checkImage.setVisibility(View.VISIBLE);
 
@@ -703,7 +713,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                             checkImage.setOnClickListener(view -> openItem(booking, true));
                             break;
                         case "Request":
-                            if(userId.equals(taskDriverUserId)) {
+                            if(userId.equals(taskDriverUserId) || onGoingTaskList.size() > 0) {
                                 tvPassenger.setText(requestText);
                                 tvPassenger.setTextColor(colorGreen);
 
@@ -725,6 +735,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                                 tvStop.setOnClickListener(view -> stopRequest(booking));
                                 stopImage.setOnClickListener(view -> stopRequest(booking));
 
+                                tvCheck.setText(initiateService);
                                 tvCheck.setVisibility(View.VISIBLE);
                                 checkImage.setVisibility(View.VISIBLE);
 
@@ -757,6 +768,23 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                                 tvCheck.setVisibility(View.GONE);
                                 checkImage.setVisibility(View.GONE);
                             }
+                            break;
+                        case "Ongoing":
+                            tvChat.setVisibility(View.GONE);
+                            chatImage.setVisibility(View.GONE);
+                            tvDriver.setVisibility(View.GONE);
+                            driverImage.setVisibility(View.GONE);
+                            tvPass.setVisibility(View.GONE);
+                            passImage.setVisibility(View.GONE);
+                            tvStop.setVisibility(View.GONE);
+                            stopImage.setVisibility(View.GONE);
+
+                            tvCheck.setText(markAsCompleted);
+                            tvCheck.setVisibility(View.VISIBLE);
+                            checkImage.setVisibility(View.VISIBLE);
+
+                            tvCheck.setOnClickListener(view -> openItem(booking, true));
+                            checkImage.setOnClickListener(view -> openItem(booking, true));
                             break;
                         default:
                             tvChat.setVisibility(View.GONE);
@@ -1023,5 +1051,11 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
 
             setIsRecyclable(false);
         }
+    }
+
+    public void setOnGoingTaskList(List<Booking> onGoingTaskList) {
+        this.onGoingTaskList.clear();
+        this.onGoingTaskList.addAll(onGoingTaskList);
+        notifyDataSetChanged();
     }
 }
