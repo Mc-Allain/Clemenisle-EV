@@ -359,7 +359,8 @@ public class IWalletActivity extends AppCompatActivity {
         String wtId = "WT" + wtIdSuffix;
 
         IWalletTransaction transaction = new IWalletTransaction(wtId,
-                new DateTimeToString().getDateAndTime(), "Transfer", amount, mobileNumber);
+                new DateTimeToString().getDateAndTime(), "Transfer", amount);
+        transaction.setMobileNumber(mobileNumber);
 
         usersRef.child(userId).child("iWalletTransactionList").child(wtId).setValue(transaction).
                 addOnCompleteListener(task -> {

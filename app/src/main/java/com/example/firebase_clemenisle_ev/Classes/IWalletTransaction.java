@@ -9,12 +9,11 @@ public class IWalletTransaction {
     public IWalletTransaction() {
     }
 
-    public IWalletTransaction(String id, String timestamp, String category, double value, String mobileNumber) {
+    public IWalletTransaction(String id, String timestamp, String category, double value) {
         this.id = id;
         this.timestamp = timestamp;
         this.category = category;
         this.value = value;
-        this.mobileNumber = mobileNumber;
     }
 
     public String getId() {
@@ -23,6 +22,10 @@ public class IWalletTransaction {
 
     public String getBookingId() {
         return bookingId;
+    }
+
+    public void setBookingId(String bookingId) {
+        this.bookingId = bookingId;
     }
 
     public String getTimestamp() {
@@ -43,6 +46,10 @@ public class IWalletTransaction {
 
     public String getMobileNumber() {
         return mobileNumber;
+    }
+
+    public void setMobileNumber(String mobileNumber) {
+        this.mobileNumber = mobileNumber;
     }
 
     public boolean isValid() {

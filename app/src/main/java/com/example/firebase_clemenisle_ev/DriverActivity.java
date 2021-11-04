@@ -16,6 +16,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.Handler;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,6 +31,8 @@ import com.example.firebase_clemenisle_ev.Classes.Booking;
 import com.example.firebase_clemenisle_ev.Classes.Chat;
 import com.example.firebase_clemenisle_ev.Classes.DateTimeToString;
 import com.example.firebase_clemenisle_ev.Classes.FirebaseURL;
+import com.example.firebase_clemenisle_ev.Classes.IWalletTransaction;
+import com.example.firebase_clemenisle_ev.Classes.ReferenceNumber;
 import com.example.firebase_clemenisle_ev.Classes.User;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -121,6 +124,10 @@ public class DriverActivity extends AppCompatActivity {
 
     int newChats = 0;
 
+    int transactionListCount;
+    double iWallet;
+    boolean isRefunded = true;
+
     private void initSharedPreferences() {
         SharedPreferences sharedPreferences = getSharedPreferences("login", Context.MODE_PRIVATE);
         isLoggedIn = sharedPreferences.getBoolean("isLoggedIn", false);
@@ -191,6 +198,8 @@ public class DriverActivity extends AppCompatActivity {
         getAppMetaData();
         getUsers();
 
+        if(userId != null) getTransactionList();
+
         navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.fragmentContainerView);
         if(navHostFragment != null) driverNavCtrlr = navHostFragment.getNavController();
         NavigationUI.setupWithNavController(driverNav, driverNavCtrlr);
@@ -205,6 +214,101 @@ public class DriverActivity extends AppCompatActivity {
             Intent intent = new Intent(myContext, ChatListActivity.class);
             startActivity(intent);
         });
+    }
+
+    private void getTransactionList() {
+        usersRef.child(userId).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                transactionListCount = 0;
+                iWallet = 0;
+
+                if(snapshot.exists()) {
+                    DataSnapshot dataSnapshot = snapshot.child("iWalletTransactionList");
+                    transactionListCount = (int) dataSnapshot.getChildrenCount();
+                    DataSnapshot dataSnapshot1 = snapshot.child("iWallet");
+                    if(dataSnapshot1.getValue(Double.class) != null)
+                        iWallet = dataSnapshot1.getValue(Double.class);
+                }
+
+                new Handler().postDelayed(() -> getReferenceNumber(), 3000);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(
+                        myContext,
+                        error.toString(),
+                        Toast.LENGTH_LONG
+                ).show();
+            }
+        });
+    }
+
+    private void getReferenceNumber() {
+        usersRef.child(userId).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                double price, creditedAmount, balance, refundAmount = 0, refundedAmount;
+                String status;
+
+                if(snapshot.exists()) {
+                    User user = new User(snapshot);
+                    for(Booking booking : user.getBookingList()) {
+                        List<ReferenceNumber> referenceNumberList1 =
+                                booking.getReferenceNumberList();
+
+                        creditedAmount = 0;
+                        for(ReferenceNumber referenceNumber : referenceNumberList1) {
+                            if(referenceNumber != null)
+                                creditedAmount += referenceNumber.getValue();
+                        }
+
+                        price = booking.getBookingType().getPrice();
+                        refundedAmount = booking.getRefundedAmount();
+                        status = booking.getStatus();
+
+                        balance = price - creditedAmount;
+                        if(balance < 0) {
+                            refundAmount = balance * -1;
+                            refundAmount -= refundedAmount;
+                        }
+
+                        if(status.equals("Cancelled") || status.equals("Failed"))
+                            refundAmount = creditedAmount - refundedAmount;
+
+                        if(refundAmount > 0) refund(refundAmount, refundedAmount, booking.getId());
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(
+                        myContext,
+                        error.toString(),
+                        Toast.LENGTH_LONG
+                ).show();
+            }
+        });
+    }
+
+    private void refund(double refundAmount, double refundedAmount, String bookingId) {
+        if(!isRefunded) return;
+        isRefunded = false;
+
+        String wtIdSuffix = String.valueOf(transactionListCount + 1);
+        if(wtIdSuffix.length() == 1) wtIdSuffix = "0" + wtIdSuffix;
+        String wtId = "WT" + wtIdSuffix;
+
+        IWalletTransaction transaction = new IWalletTransaction(wtId,
+                new DateTimeToString().getDateAndTime(), "Refund", refundAmount);
+        transaction.setBookingId(bookingId);
+
+        usersRef.child(userId).child("iWallet").setValue(iWallet + refundAmount);
+        usersRef.child(userId).child("iWalletTransactionList").child(wtId).setValue(transaction);
+        usersRef.child(userId).child("bookingList").child(bookingId).child("refundedAmount").
+                setValue(refundAmount + refundedAmount).addOnCompleteListener(task -> isRefunded = true);
     }
 
     private void getBookingList() {

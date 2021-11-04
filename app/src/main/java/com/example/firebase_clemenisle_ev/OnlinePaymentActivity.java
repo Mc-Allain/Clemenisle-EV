@@ -56,9 +56,9 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
     FirebaseAuth firebaseAuth;
     FirebaseUser firebaseUser;
 
-    ConstraintLayout refundAmountLayout, refundedAmountLayout;
+    ConstraintLayout refundedAmountLayout;
     TextView tvActivityCaption, tvActivityCaption2, tvActivityCaption3, tvHelp, tvView,
-            tvPrice2, tvCreditedAmount2, tvBalance2, tvRefundAmount2, tvRefundedAmount2, tvLog;
+            tvPrice2, tvCreditedAmount2, tvBalance2, tvRefundedAmount2, tvLog;
     ImageView helpImage, reloadImage;
     RecyclerView referenceNumberView;
     ProgressBar progressBar;
@@ -122,13 +122,11 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
         tvHelp = findViewById(R.id.tvHelp);
         tvView = findViewById(R.id.tvView);
 
-        refundAmountLayout = findViewById(R.id.refundAmountLayout);
         refundedAmountLayout = findViewById(R.id.refundedAmountLayout);
 
         tvPrice2 = findViewById(R.id.tvPrice2);
         tvCreditedAmount2 = findViewById(R.id.tvCreditedAmount2);
         tvBalance2 = findViewById(R.id.tvBalance2);
-        tvRefundAmount2 = findViewById(R.id.tvRefundAmount2);
         tvRefundedAmount2 = findViewById(R.id.tvRefundedAmount2);
 
         tvLog = findViewById(R.id.tvLog);
@@ -353,7 +351,7 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
         usersRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                double price = 0, creditedAmount = 0, balance = 0, refundAmount = 0, refundedAmount = 0;
+                double price = 0, creditedAmount = 0, balance, refundedAmount = 0;
                 String status = "Booked";
 
                 referenceNumberList.clear();
@@ -395,33 +393,25 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
                 if(balance < 0) {
                     referenceNumberAdapter.setShowAddRN(false);
 
-                    refundAmount = balance * -1;
                     balance = 0;
-                    refundAmount -= refundedAmount;
                 }
-                refundAmountLayout.setVisibility(View.GONE);
                 refundedAmountLayout.setVisibility(View.GONE);
 
-                if(refundAmount != 0 || refundedAmount != 0)
-                    refundAmountLayout.setVisibility(View.VISIBLE);
                 if(refundedAmount != 0) refundedAmountLayout.setVisibility(View.VISIBLE);
 
                 String priceText = "₱" + price;
                 String creditedAmountText = "₱" + creditedAmount;
                 String balanceText = "₱" + balance;
-                String refundAmountText = "₱" + refundAmount;
                 String refundedAmountText = "₱" + refundedAmount;
 
                 if(priceText.split("\\.")[1].length() == 1) priceText += 0;
                 if(creditedAmountText.split("\\.")[1].length() == 1) creditedAmountText += 0;
                 if(balanceText.split("\\.")[1].length() == 1) balanceText += 0;
-                if(refundAmountText.split("\\.")[1].length() == 1) refundAmountText += 0;
                 if(refundedAmountText.split("\\.")[1].length() == 1) refundedAmountText += 0;
 
                 tvPrice2.setText(priceText);
                 tvCreditedAmount2.setText(creditedAmountText);
                 tvBalance2.setText(balanceText);
-                tvRefundAmount2.setText(refundAmountText);
                 tvRefundedAmount2.setText(refundedAmountText);
 
                 referenceNumberAdapter.setStatus(status);
@@ -429,7 +419,7 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
                 ConstraintLayout.LayoutParams layoutParams =
                         (ConstraintLayout.LayoutParams) tvLog.getLayoutParams();
 
-                if(status != null && (status.equals("Pending") || status.equals("Booked"))) {
+                if(status.equals("Pending") || status.equals("Booked")) {
                     setActivityCaptionVisibility(true);
                     layoutParams.setMargins(layoutParams.leftMargin, dpToPx(64),
                             layoutParams.rightMargin, layoutParams.bottomMargin);

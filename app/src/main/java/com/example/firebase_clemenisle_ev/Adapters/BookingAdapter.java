@@ -390,7 +390,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                             tvCheck, checkImage, tvPassenger);
                     if(inDriverModule && (status.equals("Passed") ||
                             previousDriverUserId != null && previousDriverUserId.length() > 0 ||
-                            status.equals("Request") && !taskDriverUserId.equals(userId)))
+                            status.equals("Request") && taskDriverUserId != null  && !taskDriverUserId.equals(userId)))
                         getDriverInfo(bookingId, tvDriverFullName, tvPlateNumber,
                                 driverProfileImage, driverInfoLayout, status, previousDriverUserId);
                 }
@@ -832,7 +832,6 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
         if(onActionClickListener != null)
             onActionClickListener.setProgressBarToVisible(true);
         String status = "Booked";
-        List<Route> bookingRouteList = booking.getRouteList();
         booking.setTimestamp(new DateTimeToString().getDateAndTime());
         Booking driverTask = new Booking(booking);
         driverTask.setStatus(status);
@@ -841,6 +840,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
 
         if(fromRequest) {
             driverTask.setPreviousDriverUserId(taskDriverUserId);
+            if(taskDriverUserId == null) return;
             usersRef.child(taskDriverUserId).child("taskList").
                     child(driverTask.getId()).child("status").setValue("Passed");
         }
@@ -856,8 +856,16 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                 bookingListRef.child("read").setValue(false);
                 bookingListRef.child("status").setValue(status).
                         addOnCompleteListener(task1 -> {
-                            if(task1.isSuccessful())
-                                addBookingRoute(bookingRouteList, taskListRef);
+                            if(task1.isSuccessful()) {
+                                Toast.makeText(
+                                        myContext,
+                                        "Successfully taken the task",
+                                        Toast.LENGTH_SHORT
+                                ).show();
+
+                                if(onActionClickListener != null)
+                                    onActionClickListener.setProgressBarToVisible(false);
+                            }
                             else errorTask();
                         });
             }
@@ -874,33 +882,6 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
 
         if(onActionClickListener != null)
             onActionClickListener.setProgressBarToVisible(false);
-    }
-
-    private void addBookingRoute(List<Route> bookingRouteList,
-                                 DatabaseReference taskListRef) {
-        int index = 1;
-        for(Route route : bookingRouteList) {
-            boolean isLastItem;
-            isLastItem = index == bookingRouteList.size();
-
-            DatabaseReference routeSpotsRef =
-                    taskListRef.child("routeSpots").child(route.getRouteId());
-            routeSpotsRef.setValue(route).addOnCompleteListener(task -> {
-                if(task.isSuccessful()) {
-                    if(isLastItem) {
-                        Toast.makeText(
-                                myContext,
-                                "Successfully taken the task",
-                                Toast.LENGTH_SHORT
-                        ).show();
-
-                        if(onActionClickListener != null)
-                            onActionClickListener.setProgressBarToVisible(false);
-                    }
-                }
-            });
-            index++;
-        }
     }
 
     @SuppressWarnings("deprecation")

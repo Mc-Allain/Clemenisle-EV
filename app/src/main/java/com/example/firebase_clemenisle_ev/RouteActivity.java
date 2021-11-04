@@ -34,6 +34,7 @@ import com.example.firebase_clemenisle_ev.Classes.Booking;
 import com.example.firebase_clemenisle_ev.Classes.Capture;
 import com.example.firebase_clemenisle_ev.Classes.DateTimeToString;
 import com.example.firebase_clemenisle_ev.Classes.FirebaseURL;
+import com.example.firebase_clemenisle_ev.Classes.ReferenceNumber;
 import com.example.firebase_clemenisle_ev.Classes.Route;
 import com.example.firebase_clemenisle_ev.Classes.Station;
 import com.example.firebase_clemenisle_ev.Classes.User;
@@ -657,7 +658,6 @@ public class RouteActivity extends AppCompatActivity implements
     private void takeTask(Booking booking, boolean fromRequest) {
         progressBar.setVisibility(View.VISIBLE);
         String status = "Booked";
-        List<Route> bookingRouteList = booking.getRouteList();
         booking.setTimestamp(new DateTimeToString().getDateAndTime());
         Booking driverTask = new Booking(booking);
         driverTask.setStatus(status);
@@ -676,8 +676,15 @@ public class RouteActivity extends AppCompatActivity implements
                 bookingListRef.child("read").setValue(false);
                 bookingListRef.child("status").setValue(status).
                         addOnCompleteListener(task1 -> {
-                            if(task1.isSuccessful())
-                                addBookingRoute(bookingRouteList, taskListRef);
+                            if(task1.isSuccessful()) {
+                                Toast.makeText(
+                                        myContext,
+                                        "Successfully taken the task",
+                                        Toast.LENGTH_SHORT
+                                ).show();
+
+                                progressBar.setVisibility(View.GONE);
+                            }
                             else errorTask();
                         });
             }
@@ -693,32 +700,6 @@ public class RouteActivity extends AppCompatActivity implements
         ).show();
 
         progressBar.setVisibility(View.GONE);
-    }
-
-    private void addBookingRoute(List<Route> bookingRouteList,
-                                 DatabaseReference taskListRef) {
-        int index = 1;
-        for(Route route : bookingRouteList) {
-            boolean isLastItem;
-            isLastItem = index == bookingRouteList.size();
-
-            DatabaseReference routeSpotsRef =
-                    taskListRef.child("routeSpots").child(route.getRouteId());
-            routeSpotsRef.setValue(route).addOnCompleteListener(task -> {
-                if(task.isSuccessful()) {
-                    if(isLastItem) {
-                        Toast.makeText(
-                                myContext,
-                                "Successfully taken the task",
-                                Toast.LENGTH_SHORT
-                        ).show();
-
-                        progressBar.setVisibility(View.GONE);
-                    }
-                }
-            });
-            index++;
-        }
     }
 
     @SuppressWarnings("deprecation")
@@ -1073,9 +1054,36 @@ public class RouteActivity extends AppCompatActivity implements
     }
 
     private void cancelBooking() {
-        usersRef.child(userId).child("bookingList").child(bookingId).child("status").setValue("Cancelled")
+        DatabaseReference bookingRef = usersRef.child(userId).child("bookingList").child(bookingId);
+        bookingRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                double creditedAmount = 0, refundAmount = 0, refundedAmount = 0;
+                if(snapshot.exists()) {
+                    Booking booking = new Booking(snapshot);
+                    refundedAmount = booking.getRefundedAmount();
+
+                    for(ReferenceNumber referenceNumber : booking.getReferenceNumberList()) {
+                        if(referenceNumber != null) {
+                            creditedAmount += referenceNumber.getValue();
+                        }
+                    }
+                }
+                refundAmount = creditedAmount - refundedAmount;
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(
+                        myContext,
+                        error.toString(),
+                        Toast.LENGTH_LONG
+                ).show();
+            }
+        });
+
+        bookingListRef.child("status").setValue("Cancelled")
                 .addOnCompleteListener(task -> {
-                    progressBar.setVisibility(View.GONE);
 
                     if(task.isSuccessful()) {
                         Toast.makeText(
@@ -1094,6 +1102,7 @@ public class RouteActivity extends AppCompatActivity implements
                         cancelButton.setEnabled(true);
                         cancelButton.setText(cancelButtonText);
                     }
+                    progressBar.setVisibility(View.GONE);
                 });
     }
 

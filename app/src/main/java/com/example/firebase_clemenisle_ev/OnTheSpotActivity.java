@@ -36,7 +36,6 @@ import com.example.firebase_clemenisle_ev.Classes.Booking;
 import com.example.firebase_clemenisle_ev.Classes.Capture;
 import com.example.firebase_clemenisle_ev.Classes.DateTimeToString;
 import com.example.firebase_clemenisle_ev.Classes.FirebaseURL;
-import com.example.firebase_clemenisle_ev.Classes.Route;
 import com.example.firebase_clemenisle_ev.Classes.SimpleTouristSpot;
 import com.example.firebase_clemenisle_ev.Classes.User;
 import com.example.firebase_clemenisle_ev.Fragments.MapFragment;
@@ -789,7 +788,6 @@ public class OnTheSpotActivity extends AppCompatActivity {
     private void takeTask(Booking booking, boolean fromRequest) {
         progressBar.setVisibility(View.VISIBLE);
         String status = "Booked";
-        List<Route> bookingRouteList = booking.getRouteList();
         booking.setTimestamp(new DateTimeToString().getDateAndTime());
         Booking driverTask = new Booking(booking);
         driverTask.setStatus(status);
@@ -811,8 +809,15 @@ public class OnTheSpotActivity extends AppCompatActivity {
                 bookingListRef.child("read").setValue(false);
                 bookingListRef.child("status").setValue(status).
                         addOnCompleteListener(task1 -> {
-                            if(task1.isSuccessful())
-                                addBookingRoute(bookingRouteList, taskListRef);
+                            if(task1.isSuccessful()) {
+                                Toast.makeText(
+                                        myContext,
+                                        "Successfully taken the task",
+                                        Toast.LENGTH_SHORT
+                                ).show();
+
+                                progressBar.setVisibility(View.GONE);
+                            }
                             else errorTask();
                         });
                 progressBar.setVisibility(View.GONE);
@@ -829,30 +834,6 @@ public class OnTheSpotActivity extends AppCompatActivity {
         ).show();
 
         progressBar.setVisibility(View.GONE);
-    }
-
-    private void addBookingRoute(List<Route> bookingRouteList,
-                                 DatabaseReference taskListRef) {
-        int index = 1;
-        for(Route route : bookingRouteList) {
-            boolean isLastItem;
-            isLastItem = index == bookingRouteList.size();
-
-            DatabaseReference routeSpotsRef =
-                    taskListRef.child("routeSpots").child(route.getRouteId());
-            routeSpotsRef.setValue(route).addOnCompleteListener(task -> {
-                if(task.isSuccessful()) {
-                    if(isLastItem) {
-                        Toast.makeText(
-                                myContext,
-                                "Successfully taken the task",
-                                Toast.LENGTH_SHORT
-                        ).show();
-                    }
-                }
-            });
-            index++;
-        }
     }
 
     @SuppressWarnings("deprecation")
