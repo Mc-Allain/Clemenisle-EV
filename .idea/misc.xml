@@ -59,6 +59,7 @@
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/activity_web_view.xml" value="0.23425925925925925" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/badge_booking_list_icon_layout.xml" value="0.67" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/custom_all_spot_layout.xml" value="0.32407407407407407" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/custom_booking_action_list_layout.xml" value="0.5" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/custom_booking_layout.xml" value="0.33" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/custom_booking_route_layout.xml" value="0.33" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/custom_booking_station_layout.xml" value="0.32685185185185184" />
@@ -69,7 +70,7 @@
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/custom_driver_booking_layout.xml" value="0.33" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/custom_driver_chat_layout.xml" value="0.33" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/custom_iwallet_list_layout.xml" value="0.5" />
-        <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/custom_iwallet_transaction_list_layout.xml" value="0.2074074074074074" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/custom_iwallet_transaction_list_layout.xml" value="0.33" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/custom_liked_spot_layout.xml" value="0.2916666666666667" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/custom_map_place_layout.xml" value="0.32222222222222224" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/custom_map_tourist_spot_layout.xml" value="0.33" />
