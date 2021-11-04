@@ -9,9 +9,8 @@ public class IWalletTransaction {
     public IWalletTransaction() {
     }
 
-    public IWalletTransaction(String id, String bookingId, String timestamp, String category, double value) {
+    public IWalletTransaction(String id, String timestamp, String category, double value, String mobileNumber) {
         this.id = id;
-        this.bookingId = bookingId;
         this.timestamp = timestamp;
         this.category = category;
         this.value = value;

@@ -4,83 +4,34 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <ImageView
-        android:id="@+id/verifyImage"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:enabled="false"
-        android:padding="4dp"
-        app:layout_constraintEnd_toStartOf="@+id/tvVerify"
-        app:layout_constraintTop_toBottomOf="@+id/tlOTP"
-        app:srcCompat="@drawable/ic_baseline_check_24"
-        app:tint="@color/initial" />
-
-    <TextView
-        android:id="@+id/tvVerify"
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:enabled="false"
-        android:fontFamily="@font/ubuntu"
-        android:gravity="center_vertical"
-        android:text="Verify One Time Pin"
-        android:textColor="@color/initial"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@+id/verifyImage"
-        app:layout_constraintEnd_toEndOf="@+id/tlMobileNumber"
-        app:layout_constraintTop_toTopOf="@+id/verifyImage" />
-
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/tlOTP"
+        android:id="@+id/tlAmount"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="24dp"
-        android:hint="One Time Pin"
-        app:counterEnabled="true"
-        app:counterMaxLength="6"
+        android:hint="Amount"
+        android:visibility="visible"
         app:endIconMode="clear_text"
+        app:helperText="Maximum Amount:"
+        app:helperTextEnabled="true"
+        app:helperTextTextColor="@color/black"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvSendOTP"
-        app:startIconDrawable="@drawable/ic_baseline_fiber_pin_24">
+        app:layout_constraintTop_toBottomOf="@+id/tlMobileNumber"
+        app:startIconDrawable="@drawable/ic_baseline_credit_card_24">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/etOTP"
+            android:id="@+id/etAmount"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fontFamily="@font/ubuntu"
             android:inputType="number"
-            android:maxLength="6"
             android:textColor="@color/black" />
 
     </com.google.android.material.textfield.TextInputLayout>
-
-    <TextView
-        android:id="@+id/tvSendOTP"
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:enabled="false"
-        android:fontFamily="@font/ubuntu"
-        android:gravity="center_vertical"
-        android:text="Send One Time Pin"
-        android:textColor="@color/initial"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@+id/otpImage"
-        app:layout_constraintEnd_toEndOf="@+id/tlOTP"
-        app:layout_constraintTop_toTopOf="@+id/otpImage" />
-
-    <ImageView
-        android:id="@+id/otpImage"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:enabled="false"
-        android:padding="4dp"
-        app:layout_constraintEnd_toStartOf="@+id/tvSendOTP"
-        app:layout_constraintTop_toBottomOf="@+id/tlMobileNumber"
-        app:srcCompat="@drawable/ic_baseline_fiber_pin_24"
-        app:tint="@color/initial" />
 
     <ImageView
         android:id="@+id/dialogCloseImage"
@@ -125,7 +76,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="24dp"
         android:fontFamily="@font/ubuntu"
-        android:text="Transfer iWallet"
+        android:text="Transfer to GCash"
         android:textColor="@color/black"
         android:textSize="18sp"
         android:textStyle="bold"
@@ -139,7 +90,7 @@
         android:layout_marginTop="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/verifyImage">
+        app:layout_constraintTop_toBottomOf="@+id/tlAmount">
 
         <Button
             android:id="@+id/submitButton"
@@ -173,6 +124,9 @@
         app:counterEnabled="true"
         app:counterMaxLength="10"
         app:endIconMode="clear_text"
+        app:helperText="Make sure the mobile number is correct."
+        app:helperTextEnabled="true"
+        app:helperTextTextColor="@color/black"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvDialogCaption"

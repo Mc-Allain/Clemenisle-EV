@@ -1,6 +1,5 @@
 package com.example.firebase_clemenisle_ev;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
@@ -23,18 +22,15 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.firebase_clemenisle_ev.Adapters.IWalletTransactionAdapter;
 import com.example.firebase_clemenisle_ev.Classes.DateTimeToString;
 import com.example.firebase_clemenisle_ev.Classes.FirebaseURL;
 import com.example.firebase_clemenisle_ev.Classes.IWalletTransaction;
 import com.example.firebase_clemenisle_ev.Classes.User;
-import com.google.android.gms.tasks.TaskExecutors;
 import com.google.android.material.textfield.TextInputLayout;
-import com.google.firebase.FirebaseException;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.PhoneAuthCredential;
-import com.google.firebase.auth.PhoneAuthProvider;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -44,7 +40,6 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -75,7 +70,6 @@ public class IWalletActivity extends AppCompatActivity {
     IWalletTransactionAdapter iWalletTransactionAdapter;
 
     String bookingId;
-    boolean fromOnlinePayment;
 
     String userId;
     User user;
@@ -84,20 +78,19 @@ public class IWalletActivity extends AppCompatActivity {
 
     String defaultLogText = "No Record";
 
-    ColorStateList cslInitial, cslBlue;
+    ColorStateList cslInitial, cslBlue, cslRed;
     int colorRed, colorBlue, colorInitial;
 
     String mobileNumber;
+    double amount = 0, minAmount = 100;
 
     Dialog transferDialog;
-    TextView tvDialogTitle, tvDialogCaption, tvSendOTP;
-    EditText etMobileNumber, etOTP;
-    TextInputLayout tlMobileNumber, tlOTP;
+    TextView tvDialogTitle, tvDialogCaption;
+    EditText etMobileNumber, etAmount;
+    TextInputLayout tlMobileNumber, tlAmount;
     Button submitButton;
-    ImageView dialogCloseImage, otpImage;
+    ImageView dialogCloseImage;
     ProgressBar dialogProgressBar;
-
-    String otpSent;
 
     private void initSharedPreferences() {
         SharedPreferences sharedPreferences = myContext
@@ -135,6 +128,7 @@ public class IWalletActivity extends AppCompatActivity {
 
         cslInitial = ColorStateList.valueOf(myResources.getColor(R.color.initial));
         cslBlue = ColorStateList.valueOf(myResources.getColor(R.color.blue));
+        cslRed = ColorStateList.valueOf(myResources.getColor(R.color.red));
 
         colorBlue = myResources.getColor(R.color.blue);
         colorInitial = myResources.getColor(R.color.initial);
@@ -163,6 +157,11 @@ public class IWalletActivity extends AppCompatActivity {
             else userId = firebaseUser.getUid();
         }
 
+        try {
+            Glide.with(myContext).load(R.drawable.magnify_4s_256px).into(reloadImage);
+        }
+        catch (Exception ignored) {}
+
         LinearLayoutManager linearLayout =
                 new LinearLayoutManager(myContext, LinearLayoutManager.VERTICAL, false);
         transactionView.setLayoutManager(linearLayout);
@@ -173,10 +172,25 @@ public class IWalletActivity extends AppCompatActivity {
 
         transferButton.setOnClickListener(view ->{
             etMobileNumber.setText(null);
-            etOTP.setText(null);
+            etAmount.setText("0");
+
+            tlMobileNumber.setErrorEnabled(false);
+            tlMobileNumber.setError(null);
+            tlAmount.setErrorEnabled(false);
+            tlMobileNumber.setError(null);
 
             tlMobileNumber.setStartIconTintList(cslInitial);
-            tlOTP.setStartIconTintList(cslInitial);
+            tlAmount.setStartIconTintList(cslInitial);
+
+            double maxAmount = Double.parseDouble(tvIWallet.getText().toString().split("₱")[1]);
+
+            if(maxAmount < minAmount) {
+                tlAmount.setErrorEnabled(true);
+                String error = "You do not have enough iWallet to transfer";
+                tlAmount.setError(error);
+                tlAmount.setErrorTextColor(cslRed);
+                tlAmount.setStartIconTintList(cslRed);
+            }
 
             etMobileNumber.clearFocus();
             etMobileNumber.requestFocus();
@@ -194,14 +208,11 @@ public class IWalletActivity extends AppCompatActivity {
         tvDialogCaption = transferDialog.findViewById(R.id.tvDialogCaption);
         etMobileNumber = transferDialog.findViewById(R.id.etMobileNumber);
         tlMobileNumber = transferDialog.findViewById(R.id.tlMobileNumber);
-        etOTP = transferDialog.findViewById(R.id.etOTP);
-        tlOTP = transferDialog.findViewById(R.id.tlOTP);
+        etAmount = transferDialog.findViewById(R.id.etAmount);
+        tlAmount = transferDialog.findViewById(R.id.tlAmount);
         submitButton = transferDialog.findViewById(R.id.submitButton);
         dialogCloseImage = transferDialog.findViewById(R.id.dialogCloseImage);
         dialogProgressBar = transferDialog.findViewById(R.id.dialogProgressBar);
-
-        tvSendOTP = transferDialog.findViewById(R.id.tvSendOTP);
-        otpImage = transferDialog.findViewById(R.id.otpImage);
 
         etMobileNumber.setOnFocusChangeListener((view1, b) -> {
             if(!tlMobileNumber.isErrorEnabled()) {
@@ -233,33 +244,35 @@ public class IWalletActivity extends AppCompatActivity {
 
                 mobileNumber = prefixMobileNumber + etMobileNumber.getText().toString();
 
-                boolean isEnabled = mobileNumber.length() == 13;
-                tvSendOTP.setEnabled(isEnabled);
-                otpImage.setEnabled(isEnabled);
-
-                if(isEnabled) {
-                    tvSendOTP.setTextColor(colorBlue);
-                    otpImage.getDrawable().setTint(colorBlue);
+                if(mobileNumber.length() != 13) {
+                    tlMobileNumber.setErrorEnabled(true);
+                    String error = "Invalid Mobile Number";
+                    tlMobileNumber.setError(error);
+                    tlMobileNumber.setErrorTextColor(cslRed);
+                    tlMobileNumber.setStartIconTintList(cslRed);
                 }
                 else {
-                    tvSendOTP.setTextColor(colorInitial);
-                    otpImage.getDrawable().setTint(colorInitial);
+                    tlMobileNumber.setErrorEnabled(false);
+                    tlMobileNumber.setError(null);
+                    tlMobileNumber.setStartIconTintList(cslBlue);
                 }
+
+                checkTransferInput();
             }
         });
 
-        etOTP.setOnFocusChangeListener((view1, b) -> {
-            if(!tlOTP.isErrorEnabled()) {
+        etAmount.setOnFocusChangeListener((view1, b) -> {
+            if(!tlAmount.isErrorEnabled()) {
                 if(b) {
-                    tlOTP.setStartIconTintList(cslBlue);
+                    tlAmount.setStartIconTintList(cslBlue);
                 }
                 else {
-                    tlOTP.setStartIconTintList(cslInitial);
+                    tlAmount.setStartIconTintList(cslInitial);
                 }
             }
         });
 
-        etOTP.addTextChangedListener(new TextWatcher() {
+        etAmount.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
@@ -272,15 +285,46 @@ public class IWalletActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable editable) {
+                if(etAmount.getText().toString().length() >= 1)
+                    amount = Double.parseDouble(etAmount.getText().toString());
+                else amount = 0;
+
+                double maxAmount = Double.parseDouble(tvIWallet.getText().toString().split("₱")[1]);
+
+                if(maxAmount < minAmount) {
+                    tlAmount.setErrorEnabled(true);
+                    String error = "You do not have enough iWallet to transfer";
+                    tlAmount.setError(error);
+                    tlAmount.setErrorTextColor(cslRed);
+                    tlAmount.setStartIconTintList(cslRed);
+                }
+                else if(amount < minAmount) {
+                    tlAmount.setErrorEnabled(true);
+                    String error = "Amount must be at least ₱100.00";
+                    tlAmount.setError(error);
+                    tlAmount.setErrorTextColor(cslRed);
+                    tlAmount.setStartIconTintList(cslRed);
+                }
+                else if(amount > maxAmount) {
+                    tlAmount.setErrorEnabled(true);
+                    String error = "Amount must be at maximum of ₱" + maxAmount;
+                    tlAmount.setError(error);
+                    tlAmount.setErrorTextColor(cslRed);
+                    tlAmount.setStartIconTintList(cslRed);
+                }
+                else {
+                    tlAmount.setErrorEnabled(false);
+                    tlAmount.setError(null);
+                    tlAmount.setStartIconTintList(cslBlue);
+                }
+
+                checkTransferInput();
             }
         });
 
         submitButton.setOnClickListener(view -> submitRequest());
 
         dialogCloseImage.setOnClickListener(view -> transferDialog.dismiss());
-
-        tvSendOTP.setOnClickListener(view -> sendVerificationOTP());
-        otpImage.setOnClickListener(view -> sendVerificationOTP());
 
         transferDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -289,46 +333,64 @@ public class IWalletActivity extends AppCompatActivity {
         transferDialog.getWindow().setGravity(Gravity.BOTTOM);
     }
 
-    @SuppressWarnings("deprecation")
-    private void sendVerificationOTP() {
-        PhoneAuthProvider.getInstance().verifyPhoneNumber(
-                mobileNumber, 3, TimeUnit.MINUTES, (Activity) TaskExecutors.MAIN_THREAD,
-                new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
-
-                    @Override
-                    public void onCodeSent(@NonNull String value,
-                                           @NonNull PhoneAuthProvider.ForceResendingToken forceResendingToken) {
-                        super.onCodeSent(value, forceResendingToken);
-                        otpSent = value;
-                    }
-
-                    @Override
-                    public void onVerificationCompleted(@NonNull PhoneAuthCredential phoneAuthCredential) {
-                        String otp = phoneAuthCredential.getSmsCode();
-                        if(otp != null) {
-                            dialogProgressBar.setVisibility(View.VISIBLE);
-                            verifyOTP(otp);
-                        }
-                    }
-
-                    @Override
-                    public void onVerificationFailed(@NonNull FirebaseException e) {
-                        Toast.makeText(
-                                myContext,
-                                e.toString(),
-                                Toast.LENGTH_LONG
-                        ).show();
-                    }
-                }
+    private void checkTransferInput() {
+        double maxAmount = Double.parseDouble(tvIWallet.getText().toString().split("₱")[1]);
+        submitButton.setEnabled(
+                mobileNumber.length() == 13 && amount >= minAmount && amount <= maxAmount
         );
     }
 
-    private void verifyOTP(String otp) {
-        PhoneAuthCredential credential = PhoneAuthProvider.getCredential(otpSent, otp);
+    private void setDialogScreenEnabled(boolean value) {
+        transferDialog.setCanceledOnTouchOutside(false);
+        tlMobileNumber.setEnabled(value);
+        tlAmount.setEnabled(value);
+        submitButton.setEnabled(value);
+
+        if(value) dialogCloseImage.getDrawable().setTint(colorRed);
+        else dialogCloseImage.getDrawable().setTint(colorInitial);
     }
 
     private void submitRequest() {
+        dialogProgressBar.setVisibility(View.VISIBLE);
+        setDialogScreenEnabled(false);
 
+        String wtIdSuffix = String.valueOf(transactionList.size() + 1);
+        if(wtIdSuffix.length() == 1) wtIdSuffix = "0" + wtIdSuffix;
+        String wtId = "WT" + wtIdSuffix;
+
+        IWalletTransaction transaction = new IWalletTransaction(wtId,
+                new DateTimeToString().getDateAndTime(), "Transfer", amount, mobileNumber);
+
+        usersRef.child(userId).child("iWalletTransactionList").child(wtId).setValue(transaction).
+                addOnCompleteListener(task -> {
+                    if(task.isSuccessful()) {
+                        double iWallet =
+                                Double.parseDouble(tvIWallet.getText().toString().split("₱")[1]);
+                        double newIWallet = iWallet - amount;
+                        usersRef.child(userId).child("iWallet").setValue(newIWallet);
+
+                        Toast.makeText(
+                                myContext,
+                                "Successfully requested for transfer." +
+                                        "It will take at least 24 hours to take effect.",
+                                Toast.LENGTH_LONG
+                        ).show();
+                    }
+                    else {
+                        if(task.getException() != null) {
+                            String error = task.getException().toString();
+
+                            Toast.makeText(
+                                    myContext,
+                                    error,
+                                    Toast.LENGTH_LONG
+                            ).show();
+                        }
+                    }
+                    dialogProgressBar.setVisibility(View.GONE);
+                    setDialogScreenEnabled(true);
+                    transferDialog.dismiss();
+                });
     }
 
     private void getTransactionList() {
@@ -382,6 +444,8 @@ public class IWalletActivity extends AppCompatActivity {
         if(iWallet.split("\\.")[1].length() == 1) iWallet += 0;
 
         tvIWallet.setText(iWallet);
+        String helpText = "Maxmimum Amount: " + iWallet;
+        tlAmount.setHelperText(helpText);
 
         progressBar.setVisibility(View.GONE);
         tvLog.setVisibility(View.GONE);

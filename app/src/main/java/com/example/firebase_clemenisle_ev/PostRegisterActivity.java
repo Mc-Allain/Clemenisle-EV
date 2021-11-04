@@ -476,8 +476,7 @@ public class PostRegisterActivity extends AppCompatActivity {
             sendLoginPreferences();
         }
 
-        remainingTime = currentTime;
-        sendTimerPreferences(remainingTime);
+        sendTimerPreferences(currentTime);
     }
 
     private void runTime() {
