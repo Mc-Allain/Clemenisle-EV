@@ -2,8 +2,9 @@ package com.example.firebase_clemenisle_ev.Classes;
 
 public class IWalletTransaction {
 
-    String id, bookingId, timestamp, category;
+    String id, bookingId, timestamp, category, referenceNumber, mobileNumber;
     double value;
+    boolean valid = true;
 
     public IWalletTransaction() {
     }
@@ -14,6 +15,7 @@ public class IWalletTransaction {
         this.timestamp = timestamp;
         this.category = category;
         this.value = value;
+        this.mobileNumber = mobileNumber;
     }
 
     public String getId() {
@@ -34,5 +36,17 @@ public class IWalletTransaction {
 
     public double getValue() {
         return value;
+    }
+
+    public String getReferenceNumber() {
+        return referenceNumber;
+    }
+
+    public String getMobileNumber() {
+        return mobileNumber;
+    }
+
+    public boolean isValid() {
+        return valid;
     }
 }

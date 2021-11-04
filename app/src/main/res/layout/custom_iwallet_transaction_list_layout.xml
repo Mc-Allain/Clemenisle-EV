@@ -17,6 +17,21 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
+            android:id="@+id/tvInvalidMN"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:fontFamily="@font/ubuntu"
+            android:text="Invalid Mobile Number"
+            android:textAlignment="textEnd"
+            android:textColor="@color/red"
+            app:layout_constraintBottom_toBottomOf="@+id/tvTimestamp"
+            app:layout_constraintEnd_toStartOf="@+id/tvValue"
+            app:layout_constraintStart_toEndOf="@+id/tvTimestamp"
+            app:layout_constraintTop_toTopOf="@+id/tvTimestamp" />
+
+        <TextView
             android:id="@+id/tvCategory"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -27,6 +42,21 @@
             android:textColor="@color/black"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tvReferenceNumber"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:fontFamily="@font/ubuntu"
+            android:text="Reference Number"
+            android:textAlignment="textEnd"
+            android:textColor="@color/black"
+            app:layout_constraintEnd_toStartOf="@+id/tvValue"
+            app:layout_constraintStart_toEndOf="@+id/tvCategory"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView

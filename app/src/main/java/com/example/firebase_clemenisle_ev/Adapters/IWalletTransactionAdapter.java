@@ -2,6 +2,7 @@ package com.example.firebase_clemenisle_ev.Adapters;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +26,10 @@ public class IWalletTransactionAdapter extends RecyclerView.Adapter<IWalletTrans
     Context myContext;
     Resources myResources;
 
+    int colorRed, colorInitial, colorGreen;
+
+    String defaultInvalidMNText = "Invalid Mobile Number", pendingText = "Pending";
+
     public IWalletTransactionAdapter(Context context, List<IWalletTransaction> transactionList) {
         this.transactionList = transactionList;
         this.inflater = LayoutInflater.from(context);
@@ -41,16 +46,24 @@ public class IWalletTransactionAdapter extends RecyclerView.Adapter<IWalletTrans
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         ConstraintLayout backgroundLayout = holder.backgroundLayout;
         TextView tvCategory = holder.tvCategory, tvTimestamp = holder.tvTimestamp,
-                tvValue = holder.tvValue;
+                tvReferenceNumber = holder.tvReferenceNumber, tvValue = holder.tvValue,
+                tvInvalidMN = holder.tvInvalidMN;
 
         myContext = inflater.getContext();
         myResources = myContext.getResources();
+
+        colorGreen = myResources.getColor(R.color.green);
+        colorInitial = myResources.getColor(R.color.initial);
+        colorRed = myResources.getColor(R.color.red);
 
         IWalletTransaction transaction = transactionList.get(position);
         String id = transaction.getId();
         String category = transaction.getCategory();
         String timestamp = transaction.getTimestamp();
+        String referenceNumber = transaction.getReferenceNumber();
+        String mobileNumber = transaction.getMobileNumber();
         double value = transaction.getValue();
+        boolean valid = transaction.isValid();
 
         String bookingId = transaction.getBookingId();
 
@@ -64,6 +77,36 @@ public class IWalletTransactionAdapter extends RecyclerView.Adapter<IWalletTrans
         if(valueText.split("\\.")[1].length() == 1) valueText += 0;
 
         tvValue.setText(valueText);
+
+        tvReferenceNumber.setVisibility(View.GONE);
+        tvInvalidMN.setVisibility(View.GONE);
+
+        if(category.equals("Transfer")) {
+            if(referenceNumber != null) {
+                referenceNumber = "#" + referenceNumber;
+                tvReferenceNumber.setVisibility(View.VISIBLE);
+                tvReferenceNumber.setText(referenceNumber);
+            }
+
+            tvInvalidMN.setVisibility(View.VISIBLE);
+            if(!valid) {
+                tvInvalidMN.setTextColor(colorRed);
+                tvInvalidMN.setText(defaultInvalidMNText);
+                tvInvalidMN.setTypeface(tvInvalidMN.getTypeface(), Typeface.ITALIC);
+            }
+            else {
+                if(referenceNumber == null && mobileNumber != null) {
+                    tvInvalidMN.setTextColor(colorGreen);
+                    tvInvalidMN.setText(pendingText);
+                    tvInvalidMN.setTypeface(tvInvalidMN.getTypeface(), Typeface.ITALIC);
+                }
+                else if(mobileNumber != null) {
+                    tvInvalidMN.setTypeface(tvInvalidMN.getTypeface(), Typeface.NORMAL);
+                    tvInvalidMN.setTextColor(colorInitial);
+                    tvInvalidMN.setText(mobileNumber);
+                }
+            }
+        }
 
         int top = dpToPx(1), bottom = dpToPx(1);
 
@@ -94,7 +137,7 @@ public class IWalletTransactionAdapter extends RecyclerView.Adapter<IWalletTrans
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         ConstraintLayout backgroundLayout;
-        TextView tvCategory, tvTimestamp, tvValue;
+        TextView tvCategory, tvTimestamp, tvReferenceNumber, tvValue, tvInvalidMN;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -102,7 +145,9 @@ public class IWalletTransactionAdapter extends RecyclerView.Adapter<IWalletTrans
             backgroundLayout = itemView.findViewById(R.id.backgroundLayout);
             tvCategory = itemView.findViewById(R.id.tvCategory);
             tvTimestamp = itemView.findViewById(R.id.tvTimestamp);
+            tvReferenceNumber = itemView.findViewById(R.id.tvReferenceNumber);
             tvValue = itemView.findViewById(R.id.tvValue);
+            tvInvalidMN = itemView.findViewById(R.id.tvInvalidMN);
 
             setIsRecyclable(false);
         }

@@ -79,10 +79,10 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
     String defaultCaptionText = "Please send your payment to this/these GCash number/s: ",
             defaultLogText = "No Record";
 
-    String referenceNumberValue;
-
     int colorBlue, colorInitial, colorRed;
     ColorStateList cslInitial, cslBlue;
+
+    String referenceNumberValue;
 
     Dialog dialog;
     TextView tvDialogTitle, tvDialogCaption;
@@ -435,9 +435,9 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
 
                 tvLog.setLayoutParams(layoutParams);
 
-                Collections.sort(referenceNumberList, (referenceNumberList, t1) -> {
+                Collections.sort(referenceNumberList, (referenceNumber, t1) -> {
                     DateTimeToString dateTimeToString = new DateTimeToString();
-                    dateTimeToString.setFormattedSchedule(referenceNumberList.getTimestamp());
+                    dateTimeToString.setFormattedSchedule(referenceNumber.getTimestamp());
                     String rnTS = dateTimeToString.getDateNo(true) + " " +
                             dateTimeToString.getTime(true);
                     dateTimeToString.setFormattedSchedule(t1.getTimestamp());
@@ -501,6 +501,7 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
 
     @Override
     public void addReferenceNumber() {
+        etReferenceNumber.setText(null);
         dialog.show();
     }
 }

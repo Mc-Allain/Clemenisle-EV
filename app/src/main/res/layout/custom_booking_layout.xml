@@ -404,13 +404,25 @@
                 app:tint="@color/blue" />
 
             <ImageView
+                android:id="@+id/onlinePaymentImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                android:padding="4dp"
+                android:visibility="gone"
+                app:layout_constraintBottom_toTopOf="@+id/viewQRImage"
+                app:layout_constraintStart_toStartOf="@+id/locateImage"
+                app:srcCompat="@drawable/ic_baseline_credit_score_24"
+                app:tint="@color/blue" />
+
+            <ImageView
                 android:id="@+id/locateEndImage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:layout_marginBottom="4dp"
                 android:padding="4dp"
-                app:layout_constraintBottom_toTopOf="@+id/viewQRImage"
+                app:layout_constraintBottom_toTopOf="@+id/onlinePaymentImage"
                 app:layout_constraintStart_toStartOf="@+id/locateImage"
                 app:layout_constraintTop_toBottomOf="@+id/locateImage"
                 app:srcCompat="@drawable/ic_baseline_location_searching_24"
@@ -529,6 +541,22 @@
                 app:layout_constraintEnd_toEndOf="@+id/tvLocateEnd"
                 app:layout_constraintStart_toEndOf="@+id/viewQRImage"
                 app:layout_constraintTop_toTopOf="@+id/viewQRImage" />
+
+            <TextView
+                android:id="@+id/tvOnlinePayment"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginStart="1dp"
+                android:fontFamily="@font/ubuntu"
+                android:gravity="center_vertical"
+                android:text="Online Payment"
+                android:textColor="@color/blue"
+                android:textStyle="bold"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@+id/onlinePaymentImage"
+                app:layout_constraintEnd_toEndOf="@+id/tvLocateEnd"
+                app:layout_constraintStart_toEndOf="@+id/viewQRImage"
+                app:layout_constraintTop_toTopOf="@+id/onlinePaymentImage" />
 
             <TextView
                 android:id="@+id/tvLocateEnd"

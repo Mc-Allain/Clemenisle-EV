@@ -76,7 +76,7 @@ public class ReferenceNumberAdapter extends RecyclerView.Adapter<ReferenceNumber
 
             ReferenceNumber referenceNumber = referenceNumberList.get(position-1);
             String id = referenceNumber.getId();
-            String referenceNumberValue = referenceNumber.getReferenceNumber();
+            String referenceNumberValue = "#" + referenceNumber.getReferenceNumber();
             String timestamp = referenceNumber.getTimestamp();
             double value = referenceNumber.getValue();
             boolean isValid = referenceNumber.isValid();
