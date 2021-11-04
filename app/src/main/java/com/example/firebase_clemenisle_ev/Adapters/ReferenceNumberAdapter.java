@@ -57,7 +57,7 @@ public class ReferenceNumberAdapter extends RecyclerView.Adapter<ReferenceNumber
                 referenceNumberLayout = holder.referenceNumberLayout,
                 addRNLayout = holder.addRNLayout;
         TextView tvReferenceNumber = holder.tvReferenceNumber, tvTimestamp = holder.tvTimestamp,
-                tvValue = holder.tvValue, tvInvalidRN = holder.tvInvalidRN;
+                tvValue = holder.tvValue, tvInvalidRN = holder.tvInvalidRN, tvRemoved = holder.tvRemoved;
         ImageView removeImage = holder.removeImage;
 
         myContext = inflater.getContext();
@@ -107,18 +107,23 @@ public class ReferenceNumberAdapter extends RecyclerView.Adapter<ReferenceNumber
             }
 
             removeImage.setOnClickListener(view -> {
-                if (removePressedTime + 2500 > System.currentTimeMillis()) {
+                if (removePressedTime + 2500 > System.currentTimeMillis() &&
+                        tvRemoved.getText().toString().equals("true")) {
                     removeToast.cancel();
 
                     firebaseDatabase.getReference("users").child(userId).
                             child("bookingList").child(bookingId).
                             child("referenceNumberList").child(id).removeValue();
+
+                    tvRemoved.setText("false");
                 } else {
                     removeToast = Toast.makeText(myContext,
                             "Press again to remove", Toast.LENGTH_SHORT);
                     removeToast.show();
 
                     removePressedTime = System.currentTimeMillis();
+
+                    tvRemoved.setText("true");
                 }
             });
         }
@@ -160,7 +165,7 @@ public class ReferenceNumberAdapter extends RecyclerView.Adapter<ReferenceNumber
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         ConstraintLayout backgroundLayout, referenceNumberLayout, addRNLayout;
-        TextView tvReferenceNumber, tvTimestamp, tvValue, tvAddRN, tvInvalidRN;
+        TextView tvReferenceNumber, tvTimestamp, tvValue, tvAddRN, tvInvalidRN, tvRemoved;
         ImageView removeImage;
 
         public ViewHolder(@NonNull View itemView) {
@@ -175,6 +180,7 @@ public class ReferenceNumberAdapter extends RecyclerView.Adapter<ReferenceNumber
             tvAddRN = itemView.findViewById(R.id.tvAddRN);
             tvInvalidRN = itemView.findViewById(R.id.tvInvalidRN);
             removeImage = itemView.findViewById(R.id.removeImage);
+            tvRemoved = itemView.findViewById(R.id.tvRemoved);
 
             setIsRecyclable(false);
         }

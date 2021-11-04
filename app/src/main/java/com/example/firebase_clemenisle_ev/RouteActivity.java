@@ -96,7 +96,7 @@ public class RouteActivity extends AppCompatActivity implements
     Context myContext;
     Resources myResources;
 
-    int colorGreen, colorInitial;
+    int colorGreen, colorInitial, colorBlue;
 
     String userId, driverUserId, taskDriverUserId;
 
@@ -137,6 +137,8 @@ public class RouteActivity extends AppCompatActivity implements
     String defaultPassengerText = "Passenger", requestText = "Your Task on Request";
 
     String initiateService = "Initiate Service", markAsCompleted = "Mark as Completed";
+
+    List<Booking> taskList3 = new ArrayList<>();
 
     private void initSharedPreferences() {
         SharedPreferences sharedPreferences = myContext
@@ -206,6 +208,7 @@ public class RouteActivity extends AppCompatActivity implements
 
         colorGreen = myResources.getColor(R.color.green);
         colorInitial = myResources.getColor(R.color.initial);
+        colorBlue = myResources.getColor(R.color.blue);
 
         optionRunnable = () -> closeOption();
 
@@ -342,16 +345,44 @@ public class RouteActivity extends AppCompatActivity implements
                 }
 
                 if(inDriverModule) {
-                    driverInfoLayout.setVisibility(View.GONE);
-                    userInfoLayout.setVisibility(View.VISIBLE);
+                    Query task3Query = usersRef.child(driverUserId).child("taskList").
+                            orderByChild("status").equalTo("Ongoing");
 
-                    getDriverUserId();
+                    task3Query.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            taskList3.clear();
 
-                    getUserInfo();
-                    if(inDriverModule && (status.equals("Passed") ||
-                            previousDriverUserId != null && previousDriverUserId.length() > 0 ||
-                            status.equals("Request") && !taskDriverUserId.equals(userId)))
-                        getDriverInfo();
+                            if(snapshot.exists()) {
+                                for(DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                                    Booking task = new Booking(dataSnapshot);
+                                    taskList3.add(task);
+                                }
+                            }
+
+                            driverInfoLayout.setVisibility(View.GONE);
+                            userInfoLayout.setVisibility(View.VISIBLE);
+
+                            getDriverUserId();
+
+                            getUserInfo();
+                            if(inDriverModule && (status.equals("Passed") ||
+                                    previousDriverUserId != null && previousDriverUserId.length() > 0 ||
+                                    status.equals("Request") && !taskDriverUserId.equals(userId)))
+                                getDriverInfo();
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+                            Toast.makeText(
+                                    myContext,
+                                    error.toString(),
+                                    Toast.LENGTH_LONG
+                            ).show();
+
+                            taskList3.clear();
+                        }
+                    });
                 }
                 else {
                     userInfoLayout.setVisibility(View.GONE);
@@ -488,14 +519,38 @@ public class RouteActivity extends AppCompatActivity implements
                     }
                     catch (Exception ignored) {}
 
+                    String takeTask = "Take Task";
+                    tvDriver.setText(takeTask);
+
+                    tvDriver.setEnabled(true);
+                    driverImage.setEnabled(true);
+
+                    tvDriver.setTextColor(colorBlue);
+                    driverImage.getDrawable().setTint(colorBlue);
+
                     switch (status) {
                         case "Pending":
                             tvChat.setVisibility(View.GONE);
                             chatImage.setVisibility(View.GONE);
 
-                            if (driverUserId.equals(user.getId())) {
-                                tvDriver.setVisibility(View.GONE);
-                                driverImage.setVisibility(View.GONE);
+                            if (driverUserId.equals(user.getId()) || taskList3.size() > 0) {
+                                if(taskList3.size() > 0) {
+                                    takeTask = "Currently Unavailable";
+                                    tvDriver.setText(takeTask);
+
+                                    tvDriver.setVisibility(View.VISIBLE);
+                                    driverImage.setVisibility(View.VISIBLE);
+
+                                    tvDriver.setEnabled(false);
+                                    driverImage.setEnabled(false);
+
+                                    tvDriver.setTextColor(colorInitial);
+                                    driverImage.getDrawable().setTint(colorInitial);
+                                }
+                                else {
+                                    tvDriver.setVisibility(View.GONE);
+                                    driverImage.setVisibility(View.GONE);
+                                }
                             }
                             else {
                                 tvDriver.setVisibility(View.VISIBLE);
@@ -539,7 +594,7 @@ public class RouteActivity extends AppCompatActivity implements
                         case "Request":
                             tvPassenger.setVisibility(View.VISIBLE);
 
-                            if(driverUserId.equals(taskDriverUserId)) {
+                            if(driverUserId.equals(taskDriverUserId) || taskList3.size() > 0) {
                                 tvPassenger.setText(requestText);
                                 tvPassenger.setTextColor(colorGreen);
 
@@ -549,8 +604,24 @@ public class RouteActivity extends AppCompatActivity implements
                                 tvChat.setOnClickListener(view -> openChat());
                                 chatImage.setOnClickListener(view -> openChat());
 
-                                tvDriver.setVisibility(View.GONE);
-                                driverImage.setVisibility(View.GONE);
+                                if(taskList3.size() > 0) {
+                                    takeTask = "Currently Unavailable";
+                                    tvDriver.setText(takeTask);
+
+                                    tvDriver.setVisibility(View.VISIBLE);
+                                    driverImage.setVisibility(View.VISIBLE);
+
+                                    tvDriver.setEnabled(false);
+                                    driverImage.setEnabled(false);
+
+                                    tvDriver.setTextColor(colorInitial);
+                                    driverImage.getDrawable().setTint(colorInitial);
+                                }
+                                else {
+                                    tvDriver.setVisibility(View.GONE);
+                                    driverImage.setVisibility(View.GONE);
+                                }
+
                                 tvPass.setVisibility(View.GONE);
                                 passImage.setVisibility(View.GONE);
                                 tvStop.setVisibility(View.VISIBLE);
@@ -808,6 +879,8 @@ public class RouteActivity extends AppCompatActivity implements
                             "QR Code successfully scanned. The Booking Record is now on Completed.",
                             Toast.LENGTH_LONG
                     ).show();
+
+                    status = "Completed";
                 }
                 else {
                     usersRef.child(userId).child("bookingList").
@@ -827,6 +900,8 @@ public class RouteActivity extends AppCompatActivity implements
                             "QR Code successfully scanned. The Service is now initiated.",
                             Toast.LENGTH_LONG
                     ).show();
+
+                    status = "Ongoing";
                 }
             }
             else {
@@ -878,22 +953,23 @@ public class RouteActivity extends AppCompatActivity implements
 
         int color = 0;
 
+        buttonLayout.setVisibility(View.VISIBLE);
         cancelButton.setVisibility(View.GONE);
+
+        if(inDriverModule) buttonLayout.setVisibility(View.GONE);
 
         switch (status) {
             case "Pending":
                 color = myResources.getColor(R.color.orange);
 
-                if(!inDriverModule) {
-                    cancelButton.setVisibility(View.VISIBLE);
-                    if(isShowBookingAlertEnabled) dialog.show();
-                }
+                cancelButton.setVisibility(View.VISIBLE);
+                if(!inDriverModule && isShowBookingAlertEnabled)dialog.show();
                 break;
             case "Request":
             case "Booked":
                 color = myResources.getColor(R.color.green);
 
-                if(!inDriverModule) if(isShowBookingAlertEnabled) dialog.show();
+                if(!inDriverModule && isShowBookingAlertEnabled)dialog.show();
                 break;
             case "Ongoing":
             case "Completed":
@@ -1043,8 +1119,9 @@ public class RouteActivity extends AppCompatActivity implements
 
                     String currentStatus = booking.getStatus();
                     if(!inDriverModule || (status != null && !status.equals("Request") && !status.equals("Ongoing")) ||
-                            !currentStatus.equals("Booked") && !currentStatus.equals("Completed"))
+                            !currentStatus.equals("Booked") && !currentStatus.equals("Completed")) {
                         status = currentStatus;
+                    }
 
                     typeName = booking.getBookingType().getName();
                     price = String.valueOf(booking.getBookingType().getPrice());

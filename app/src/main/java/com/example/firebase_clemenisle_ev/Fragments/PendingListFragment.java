@@ -1,6 +1,7 @@
 package com.example.firebase_clemenisle_ev.Fragments;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -17,10 +18,13 @@ import com.example.firebase_clemenisle_ev.Classes.Booking;
 import com.example.firebase_clemenisle_ev.Classes.FirebaseURL;
 import com.example.firebase_clemenisle_ev.Classes.User;
 import com.example.firebase_clemenisle_ev.R;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
@@ -36,6 +40,8 @@ public class PendingListFragment extends Fragment implements BookingAdapter.OnAc
 
     private final static String firebaseURL = FirebaseURL.getFirebaseURL();
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance(firebaseURL);
+    FirebaseAuth firebaseAuth;
+    FirebaseUser firebaseUser;
 
     TextView tvLog;
     ImageView reloadImage;
@@ -51,7 +57,27 @@ public class PendingListFragment extends Fragment implements BookingAdapter.OnAc
 
     List<Booking> pendingBookingList = new ArrayList<>(),
             isNotOnTheSpotBookingList = new ArrayList<>(),
-            isNotPaidBookingList = new ArrayList<>();
+            isNotPaidBookingList = new ArrayList<>(),
+            taskList3 = new ArrayList<>();
+
+    String userId;
+    boolean isLoggedIn = false;
+
+    private void initSharedPreferences() {
+        SharedPreferences sharedPreferences = myContext
+                .getSharedPreferences("login", Context.MODE_PRIVATE);
+        isLoggedIn = sharedPreferences.getBoolean("isLoggedIn", false);
+    }
+
+    private void sendLoginPreferences() {
+        SharedPreferences sharedPreferences = myContext.getSharedPreferences(
+                "login", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        editor.putBoolean("isLoggedIn", false);
+        editor.putBoolean("isRemembered", false);
+        editor.apply();
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -66,6 +92,25 @@ public class PendingListFragment extends Fragment implements BookingAdapter.OnAc
 
         myContext = getContext();
         myResources = getResources();
+
+        initSharedPreferences();
+
+        firebaseAuth = FirebaseAuth.getInstance();
+        if(isLoggedIn) {
+            firebaseUser = firebaseAuth.getCurrentUser();
+            if(firebaseUser != null) firebaseUser.reload();
+            if(firebaseUser == null) {
+                firebaseAuth.signOut();
+                sendLoginPreferences();
+
+                Toast.makeText(
+                        myContext,
+                        "Failed to get the current user",
+                        Toast.LENGTH_LONG
+                ).show();
+            }
+            else userId = firebaseUser.getUid();
+        }
 
         try {
             Glide.with(myContext).load(R.drawable.magnify_4s_256px).into(reloadImage);
@@ -87,6 +132,37 @@ public class PendingListFragment extends Fragment implements BookingAdapter.OnAc
         progressBar.setVisibility(View.VISIBLE);
 
         DatabaseReference usersRef = firebaseDatabase.getReference("users");
+
+        Query task3Query = usersRef.child(userId).child("taskList").
+                orderByChild("status").equalTo("Ongoing");
+
+        task3Query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                taskList3.clear();
+
+                if(snapshot.exists()) {
+                    for(DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        Booking task = new Booking(dataSnapshot);
+                        taskList3.add(task);
+                    }
+                }
+                bookingAdapter.setOnGoingTaskList(taskList3);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(
+                        myContext,
+                        error.toString(),
+                        Toast.LENGTH_LONG
+                ).show();
+
+                taskList3.clear();
+                bookingAdapter.setOnGoingTaskList(taskList3);
+            }
+        });
+
         usersRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {

@@ -54,7 +54,7 @@ public class LikedSpotAdapter extends RecyclerView.Adapter<LikedSpotAdapter.View
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         ImageView thumbnail = holder.thumbnail;
-        TextView tvName = holder.tvName;
+        TextView tvName = holder.tvName, tvUnliked = holder.tvUnliked;
         Button unlikeButton = holder.unlikeButton;
         ConstraintLayout backgroundLayout = holder.backgroundLayout;
 
@@ -95,11 +95,14 @@ public class LikedSpotAdapter extends RecyclerView.Adapter<LikedSpotAdapter.View
         backgroundLayout.setLayoutParams(layoutParams);
 
         unlikeButton.setOnClickListener(view -> {
-            if(unlikePressedTime + 2500 > System.currentTimeMillis()) {
+            if(unlikePressedTime + 2500 > System.currentTimeMillis() &&
+                    tvUnliked.getText().toString().equals("true")) {
                 unlikeToast.cancel();
 
                  firebaseDatabase.getReference("users").child(userId).
                          child("likedSpots").child(id).removeValue();
+
+                tvUnliked.setText("false");
             }
             else {
                 unlikeToast = Toast.makeText(myContext,
@@ -107,6 +110,8 @@ public class LikedSpotAdapter extends RecyclerView.Adapter<LikedSpotAdapter.View
                 unlikeToast.show();
 
                 unlikePressedTime = System.currentTimeMillis();
+
+                tvUnliked.setText("true");
             }
         });
     }
@@ -123,7 +128,7 @@ public class LikedSpotAdapter extends RecyclerView.Adapter<LikedSpotAdapter.View
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView thumbnail;
-        TextView tvName;
+        TextView tvName, tvUnliked;
         Button unlikeButton;
         ConstraintLayout backgroundLayout;
 
@@ -134,6 +139,7 @@ public class LikedSpotAdapter extends RecyclerView.Adapter<LikedSpotAdapter.View
 
             thumbnail = itemView.findViewById(R.id.thumbnail);
             tvName = itemView.findViewById(R.id.tvName);
+            tvUnliked = itemView.findViewById(R.id.tvUnliked);
             unlikeButton = itemView.findViewById(R.id.unlikeButton);
 
             setIsRecyclable(false);

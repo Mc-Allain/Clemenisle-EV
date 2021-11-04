@@ -46,6 +46,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
@@ -97,7 +98,7 @@ public class OnTheSpotActivity extends AppCompatActivity {
     Context myContext;
     Resources myResources;
 
-    int colorGreen, colorInitial;
+    int colorGreen, colorInitial, colorBlue;
 
     String userId, driverUserId, taskDriverUserId;
 
@@ -149,6 +150,8 @@ public class OnTheSpotActivity extends AppCompatActivity {
     String defaultPassengerText = "Passenger", requestText = "Your Task on Request";
 
     String initiateService = "Initiate Service", markAsCompleted = "Mark as Completed";
+
+    List<Booking> taskList3 = new ArrayList<>();
 
     private void initSharedPreferences() {
         SharedPreferences sharedPreferences = myContext
@@ -223,6 +226,7 @@ public class OnTheSpotActivity extends AppCompatActivity {
 
         colorGreen = myResources.getColor(R.color.green);
         colorInitial = myResources.getColor(R.color.initial);
+        colorBlue = myResources.getColor(R.color.blue);
 
         optionRunnable = () -> closeOption();
 
@@ -347,16 +351,44 @@ public class OnTheSpotActivity extends AppCompatActivity {
                 }
 
                 if(inDriverModule) {
-                    driverInfoLayout.setVisibility(View.GONE);
-                    userInfoLayout.setVisibility(View.VISIBLE);
+                    Query task3Query = usersRef.child(driverUserId).child("taskList").
+                            orderByChild("status").equalTo("Ongoing");
 
-                    getDriverUserId();
+                    task3Query.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            taskList3.clear();
 
-                    getUserInfo();
-                    if(inDriverModule && (status.equals("Passed") ||
-                            previousDriverUserId != null && previousDriverUserId.length() > 0 ||
-                            status.equals("Request") && !taskDriverUserId.equals(userId)))
-                        getDriverInfo();
+                            if(snapshot.exists()) {
+                                for(DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                                    Booking task = new Booking(dataSnapshot);
+                                    taskList3.add(task);
+                                }
+                            }
+
+                            driverInfoLayout.setVisibility(View.GONE);
+                            userInfoLayout.setVisibility(View.VISIBLE);
+
+                            getDriverUserId();
+
+                            getUserInfo();
+                            if(inDriverModule && (status.equals("Passed") ||
+                                    previousDriverUserId != null && previousDriverUserId.length() > 0 ||
+                                    status.equals("Request") && !taskDriverUserId.equals(userId)))
+                                getDriverInfo();
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+                            Toast.makeText(
+                                    myContext,
+                                    error.toString(),
+                                    Toast.LENGTH_LONG
+                            ).show();
+
+                            taskList3.clear();
+                        }
+                    });
                 }
                 else {
                     userInfoLayout.setVisibility(View.GONE);
@@ -553,14 +585,40 @@ public class OnTheSpotActivity extends AppCompatActivity {
                     }
                     catch (Exception ignored) {}
 
+                    String takeTask = "Take Task";
+                    tvDriver.setText(takeTask);
+
+                    tvDriver.setEnabled(true);
+                    driverImage.setEnabled(true);
+
+                    tvDriver.setTextColor(colorBlue);
+                    driverImage.getDrawable().setTint(colorBlue);
+
+                    booking.setStatus(status);
+
                     switch (status) {
                         case "Pending":
                             tvChat.setVisibility(View.GONE);
                             chatImage.setVisibility(View.GONE);
 
-                            if (driverUserId.equals(user.getId())) {
-                                tvDriver.setVisibility(View.GONE);
-                                driverImage.setVisibility(View.GONE);
+                            if (driverUserId.equals(user.getId()) || taskList3.size() > 0) {
+                                if(taskList3.size() > 0) {
+                                    takeTask = "Currently Unavailable";
+                                    tvDriver.setText(takeTask);
+
+                                    tvDriver.setVisibility(View.VISIBLE);
+                                    driverImage.setVisibility(View.VISIBLE);
+
+                                    tvDriver.setEnabled(false);
+                                    driverImage.setEnabled(false);
+
+                                    tvDriver.setTextColor(colorInitial);
+                                    driverImage.getDrawable().setTint(colorInitial);
+                                }
+                                else {
+                                    tvDriver.setVisibility(View.GONE);
+                                    driverImage.setVisibility(View.GONE);
+                                }
                             }
                             else {
                                 tvDriver.setVisibility(View.VISIBLE);
@@ -604,7 +662,7 @@ public class OnTheSpotActivity extends AppCompatActivity {
                         case "Request":
                             tvPassenger.setVisibility(View.VISIBLE);
 
-                            if(driverUserId.equals(taskDriverUserId)) {
+                            if(driverUserId.equals(taskDriverUserId) || taskList3.size() > 0) {
                                 tvPassenger.setText(requestText);
                                 tvPassenger.setTextColor(colorGreen);
 
@@ -613,6 +671,24 @@ public class OnTheSpotActivity extends AppCompatActivity {
 
                                 tvChat.setOnClickListener(view -> openChat());
                                 chatImage.setOnClickListener(view -> openChat());
+
+                                if(taskList3.size() > 0) {
+                                    takeTask = "Currently Unavailable";
+                                    tvDriver.setText(takeTask);
+
+                                    tvDriver.setVisibility(View.VISIBLE);
+                                    driverImage.setVisibility(View.VISIBLE);
+
+                                    tvDriver.setEnabled(false);
+                                    driverImage.setEnabled(false);
+
+                                    tvDriver.setTextColor(colorInitial);
+                                    driverImage.getDrawable().setTint(colorInitial);
+                                }
+                                else {
+                                    tvDriver.setVisibility(View.GONE);
+                                    driverImage.setVisibility(View.GONE);
+                                }
 
                                 tvDriver.setVisibility(View.GONE);
                                 driverImage.setVisibility(View.GONE);
@@ -786,6 +862,8 @@ public class OnTheSpotActivity extends AppCompatActivity {
                                 "QR Code successfully scanned. The Booking Record is now on Completed.",
                                 Toast.LENGTH_LONG
                         ).show();
+
+                        status = "Completed";
                     }
                     else {
                         usersRef.child(userId).child("bookingList").
@@ -805,6 +883,8 @@ public class OnTheSpotActivity extends AppCompatActivity {
                                 "QR Code successfully scanned. The Service is now initiated.",
                                 Toast.LENGTH_LONG
                         ).show();
+
+                        status = "Ongoing";
                     }
                 }
                 else {
@@ -1109,8 +1189,9 @@ public class OnTheSpotActivity extends AppCompatActivity {
 
                     String currentStatus = booking.getStatus();
                     if(!inDriverModule || (status != null && !status.equals("Request") && !status.equals("Ongoing")) ||
-                            !currentStatus.equals("Booked") && !currentStatus.equals("Completed"))
+                            !currentStatus.equals("Booked") && !currentStatus.equals("Completed")) {
                         status = currentStatus;
+                    }
 
                     typeName = booking.getBookingType().getName();
                     price = String.valueOf(booking.getBookingType().getPrice());

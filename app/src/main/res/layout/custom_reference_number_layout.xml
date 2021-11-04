@@ -54,6 +54,16 @@
             app:layout_constraintTop_toBottomOf="@+id/addRNLayout">
 
             <TextView
+                android:id="@+id/tvRemoved"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/ubuntu"
+                android:text="false"
+                android:visibility="gone"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
                 android:id="@+id/tvInvalidRN"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"

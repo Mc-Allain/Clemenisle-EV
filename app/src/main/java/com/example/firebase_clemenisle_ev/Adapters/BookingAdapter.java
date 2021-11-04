@@ -76,7 +76,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
     Context myContext;
     Resources myResources;
 
-    int colorGreen, colorInitial;
+    int colorGreen, colorInitial, colorBlue;
 
     String userId;
     boolean isLoggedIn = false;
@@ -100,7 +100,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
 
     String defaultPassengerText = "Passenger", requestText = "Your Task on Request";
 
-    List<Booking> onGoingTaskList = new ArrayList<>();
+    List<Booking> ongoingTaskList = new ArrayList<>();
 
     String initiateService = "Initiate Service", markAsCompleted = "Mark as Completed";
 
@@ -174,6 +174,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
 
         colorGreen = myResources.getColor(R.color.green);
         colorInitial = myResources.getColor(R.color.initial);
+        colorBlue = myResources.getColor(R.color.blue);
 
         initSharedPreferences();
         initQRCodeDialog();
@@ -662,14 +663,40 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
 
                     String taskDriverUserId = getDriverUserId(booking.getId());
 
+                    String takeTask = "Take Task";
+                    tvDriver.setText(takeTask);
+
+                    tvDriver.setEnabled(true);
+                    driverImage.setEnabled(true);
+
+                    tvDriver.setTextColor(colorBlue);
+                    driverImage.getDrawable().setTint(colorBlue);
+
+                    booking.setStatus(status);
+
                     switch (status) {
                         case "Pending":
                             tvChat.setVisibility(View.GONE);
                             chatImage.setVisibility(View.GONE);
 
-                            if (userId.equals(user.getId()) || onGoingTaskList.size() > 0) {
-                                tvDriver.setVisibility(View.GONE);
-                                driverImage.setVisibility(View.GONE);
+                            if (userId.equals(user.getId()) || ongoingTaskList.size() > 0) {
+                                if(ongoingTaskList.size() > 0) {
+                                    takeTask = "Currently Unavailable";
+                                    tvDriver.setText(takeTask);
+
+                                    tvDriver.setVisibility(View.VISIBLE);
+                                    driverImage.setVisibility(View.VISIBLE);
+
+                                    tvDriver.setEnabled(false);
+                                    driverImage.setEnabled(false);
+
+                                    tvDriver.setTextColor(colorInitial);
+                                    driverImage.getDrawable().setTint(colorInitial);
+                                }
+                                else {
+                                    tvDriver.setVisibility(View.GONE);
+                                    driverImage.setVisibility(View.GONE);
+                                }
                             }
                             else {
                                 tvDriver.setVisibility(View.VISIBLE);
@@ -713,7 +740,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                             checkImage.setOnClickListener(view -> openItem(booking, true));
                             break;
                         case "Request":
-                            if(userId.equals(taskDriverUserId) || onGoingTaskList.size() > 0) {
+                            if(userId.equals(taskDriverUserId) || ongoingTaskList.size() > 0) {
                                 tvPassenger.setText(requestText);
                                 tvPassenger.setTextColor(colorGreen);
 
@@ -725,8 +752,24 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                                 chatImage.setOnClickListener(view ->
                                         openChat(true, bookingId, taskDriverUserId));
 
-                                tvDriver.setVisibility(View.GONE);
-                                driverImage.setVisibility(View.GONE);
+                                if(ongoingTaskList.size() > 0) {
+                                    takeTask = "Currently Unavailable";
+                                    tvDriver.setText(takeTask);
+
+                                    tvDriver.setVisibility(View.VISIBLE);
+                                    driverImage.setVisibility(View.VISIBLE);
+
+                                    tvDriver.setEnabled(false);
+                                    driverImage.setEnabled(false);
+
+                                    tvDriver.setTextColor(colorInitial);
+                                    driverImage.getDrawable().setTint(colorInitial);
+                                }
+                                else {
+                                    tvDriver.setVisibility(View.GONE);
+                                    driverImage.setVisibility(View.GONE);
+                                }
+
                                 tvPass.setVisibility(View.GONE);
                                 passImage.setVisibility(View.GONE);
                                 tvStop.setVisibility(View.VISIBLE);
@@ -1053,9 +1096,9 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
         }
     }
 
-    public void setOnGoingTaskList(List<Booking> onGoingTaskList) {
-        this.onGoingTaskList.clear();
-        this.onGoingTaskList.addAll(onGoingTaskList);
+    public void setOnGoingTaskList(List<Booking> ongoingTaskList) {
+        this.ongoingTaskList.clear();
+        this.ongoingTaskList.addAll(ongoingTaskList);
         notifyDataSetChanged();
     }
 }
