@@ -67,6 +67,7 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
     Resources myResources;
 
     String bookingId;
+    boolean fromIWallet;
 
     List<ReferenceNumber> referenceNumberList = new ArrayList<>();
     List<String> referenceNumberValueList = new ArrayList<>();
@@ -147,6 +148,7 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
 
         Intent intent = getIntent();
         bookingId = intent.getStringExtra("bookingId");
+        fromIWallet = intent.getBooleanExtra("fromIWallet", false);
 
         initSharedPreferences();
         initAddReferenceNumberDialog();
@@ -184,8 +186,12 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
         tvHelp.setOnClickListener(view -> openHelp());
 
         tvView.setOnClickListener(view -> {
-            Intent intent1 = new Intent(myContext, IWalletActivity.class);
-            startActivity(intent1);
+            if(fromIWallet) onBackPressed();
+            else {
+                Intent intent1 = new Intent(myContext, IWalletActivity.class);
+                intent1.putExtra("bookingId", bookingId);
+                startActivity(intent1);
+            }
         });
 
         getReferenceNumber();
@@ -370,6 +376,7 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
                                         creditedAmount += referenceNumber.getValue();
                                         referenceNumber.setUserId(userId);
                                         referenceNumber.setBookingId(bookingId);
+
                                         referenceNumberList.add(referenceNumber);
                                     }
                                 }

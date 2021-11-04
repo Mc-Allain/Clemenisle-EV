@@ -57,4 +57,8 @@ public class ReferenceNumber {
     public void setBookingId(String bookingId) {
         this.bookingId = bookingId;
     }
+
+    public void setReferenceNumber(String referenceNumber) {
+        this.referenceNumber = referenceNumber;
+    }
 }

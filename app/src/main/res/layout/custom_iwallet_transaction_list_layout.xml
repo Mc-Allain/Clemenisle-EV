@@ -53,7 +53,6 @@
             android:layout_marginEnd="8dp"
             android:fontFamily="@font/ubuntu"
             android:text="Reference Number"
-            android:textAlignment="textEnd"
             android:textColor="@color/black"
             app:layout_constraintEnd_toStartOf="@+id/tvValue"
             app:layout_constraintStart_toEndOf="@+id/tvCategory"

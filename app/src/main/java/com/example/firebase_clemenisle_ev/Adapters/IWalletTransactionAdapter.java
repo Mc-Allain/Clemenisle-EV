@@ -1,6 +1,8 @@
 package com.example.firebase_clemenisle_ev.Adapters;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Typeface;
 import android.view.LayoutInflater;
@@ -10,6 +12,7 @@ import android.widget.TextView;
 
 import com.example.firebase_clemenisle_ev.Classes.DateTimeDifference;
 import com.example.firebase_clemenisle_ev.Classes.IWalletTransaction;
+import com.example.firebase_clemenisle_ev.OnlinePaymentActivity;
 import com.example.firebase_clemenisle_ev.R;
 
 import java.util.List;
@@ -21,17 +24,20 @@ import androidx.recyclerview.widget.RecyclerView;
 public class IWalletTransactionAdapter extends RecyclerView.Adapter<IWalletTransactionAdapter.ViewHolder> {
 
     List<IWalletTransaction> transactionList;
+    String selectedBookingId;
     LayoutInflater inflater;
 
     Context myContext;
     Resources myResources;
 
-    int colorRed, colorInitial, colorGreen;
+    int colorRed, colorBlue, colorGreen;
 
     String defaultInvalidMNText = "Invalid Mobile Number", pendingText = "Pending";
 
-    public IWalletTransactionAdapter(Context context, List<IWalletTransaction> transactionList) {
+    public IWalletTransactionAdapter(Context context, List<IWalletTransaction> transactionList,
+                                     String selectedBookingId) {
         this.transactionList = transactionList;
+        this.selectedBookingId = selectedBookingId;
         this.inflater = LayoutInflater.from(context);
     }
 
@@ -53,11 +59,10 @@ public class IWalletTransactionAdapter extends RecyclerView.Adapter<IWalletTrans
         myResources = myContext.getResources();
 
         colorGreen = myResources.getColor(R.color.green);
-        colorInitial = myResources.getColor(R.color.initial);
+        colorBlue = myResources.getColor(R.color.blue);
         colorRed = myResources.getColor(R.color.red);
 
         IWalletTransaction transaction = transactionList.get(position);
-        String id = transaction.getId();
         String category = transaction.getCategory();
         String timestamp = transaction.getTimestamp();
         String referenceNumber = transaction.getReferenceNumber();
@@ -83,8 +88,8 @@ public class IWalletTransactionAdapter extends RecyclerView.Adapter<IWalletTrans
 
         if(category.equals("Transfer")) {
             if(referenceNumber != null) {
-                referenceNumber = "#" + referenceNumber;
                 tvReferenceNumber.setVisibility(View.VISIBLE);
+                referenceNumber = "#" + referenceNumber;
                 tvReferenceNumber.setText(referenceNumber);
             }
 
@@ -102,9 +107,26 @@ public class IWalletTransactionAdapter extends RecyclerView.Adapter<IWalletTrans
                 }
                 else if(mobileNumber != null) {
                     tvInvalidMN.setTypeface(tvInvalidMN.getTypeface(), Typeface.NORMAL);
-                    tvInvalidMN.setTextColor(colorInitial);
+                    tvInvalidMN.setTextColor(colorBlue);
                     tvInvalidMN.setText(mobileNumber);
                 }
+            }
+        }
+
+        if(category.equals("Refund")) {
+            if(bookingId != null) {
+                tvReferenceNumber.setVisibility(View.VISIBLE);
+                tvReferenceNumber.setText(bookingId);
+
+                backgroundLayout.setOnClickListener(view -> {
+                    if(bookingId.equals(selectedBookingId)) ((Activity) myContext).onBackPressed();
+                    else {
+                        Intent intent1 = new Intent(myContext, OnlinePaymentActivity.class);
+                        intent1.putExtra("bookingId", bookingId);
+                        intent1.putExtra("fromIWallet", true);
+                        myContext.startActivity(intent1);
+                    }
+                });
             }
         }
 

@@ -3,6 +3,7 @@ package com.example.firebase_clemenisle_ev;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
@@ -73,6 +74,9 @@ public class IWalletActivity extends AppCompatActivity {
     List<IWalletTransaction> transactionList = new ArrayList<>();
     IWalletTransactionAdapter iWalletTransactionAdapter;
 
+    String bookingId;
+    boolean fromOnlinePayment;
+
     String userId;
     User user;
 
@@ -136,6 +140,9 @@ public class IWalletActivity extends AppCompatActivity {
         colorInitial = myResources.getColor(R.color.initial);
         colorRed = myResources.getColor(R.color.red);
 
+        Intent intent = getIntent();
+        bookingId = intent.getStringExtra("bookingId");
+
         initSharedPreferences();
         initTransferDialog();
 
@@ -159,7 +166,7 @@ public class IWalletActivity extends AppCompatActivity {
         LinearLayoutManager linearLayout =
                 new LinearLayoutManager(myContext, LinearLayoutManager.VERTICAL, false);
         transactionView.setLayoutManager(linearLayout);
-        iWalletTransactionAdapter = new IWalletTransactionAdapter(myContext, transactionList);
+        iWalletTransactionAdapter = new IWalletTransactionAdapter(myContext, transactionList, bookingId);
         transactionView.setAdapter(iWalletTransactionAdapter);
 
         getTransactionList();

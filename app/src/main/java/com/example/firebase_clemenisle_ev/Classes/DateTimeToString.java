@@ -202,7 +202,11 @@ public class DateTimeToString {
 
     public String getTime(boolean _24HourFormat) {
         if(timeSplit.length == 3) {
-            if(_24HourFormat) return  getRawHour() + ":" + getMin();
+            if(_24HourFormat) {
+                String hour = getRawHour();
+                if(hour.length() == 1) hour = "0" + hour;
+                return hour + ":" + getMin();
+            }
             return  getHour() + ":" + getMin() + " " + getTimeMode();
         }
         return "Invalid Time";
