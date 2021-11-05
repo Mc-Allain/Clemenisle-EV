@@ -84,7 +84,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
     Context myContext;
     Resources myResources;
 
-    int colorGreen, colorInitial, colorBlue;
+    int colorGreen, colorInitial, colorBlue, colorRed;
     ColorStateList cslInitial, cslBlue;
 
     String userId;
@@ -196,6 +196,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
         colorGreen = myResources.getColor(R.color.green);
         colorInitial = myResources.getColor(R.color.initial);
         colorBlue = myResources.getColor(R.color.blue);
+        colorRed = myResources.getColor(R.color.red);
 
         cslInitial = ColorStateList.valueOf(myResources.getColor(R.color.initial));
         cslBlue = ColorStateList.valueOf(myResources.getColor(R.color.blue));
@@ -461,9 +462,18 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
         dialog.show();
     }
 
+    private void setDialogScreenEnabled(boolean value) {
+        dialog.setCanceledOnTouchOutside(false);
+        tlReason.setEnabled(value);
+        dialogSubmitButton.setEnabled(value);
+
+        if(value) dialogCloseImage.getDrawable().setTint(colorRed);
+        else dialogCloseImage.getDrawable().setTint(colorInitial);
+    }
+
     private void submitReason(Booking booking) {
-        if(onActionClickListener != null)
-            onActionClickListener.setProgressBarToVisible(true);
+        dialogProgressBar.setVisibility(View.VISIBLE);
+        setDialogScreenEnabled(false);
         usersRef.child(userId).child("taskList").
                 child(booking.getId()).child("reason").setValue(reasonValue)
                 .addOnCompleteListener(task -> {
@@ -474,8 +484,8 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                                 "Failed to pass the task",
                                 Toast.LENGTH_LONG
                         ).show();
-                        if(onActionClickListener != null)
-                            onActionClickListener.setProgressBarToVisible(false);
+                        dialogProgressBar.setVisibility(View.GONE);
+                        setDialogScreenEnabled(true);
                     }
                 });
     }
@@ -838,6 +848,9 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
 
                     booking.setStatus(status);
 
+                    tvPassenger.setText(defaultPassengerText);
+                    tvPassenger.setTextColor(colorInitial);
+
                     switch (status) {
                         case "Pending":
                             tvChat.setVisibility(View.GONE);
@@ -950,9 +963,6 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                                 checkImage.setOnClickListener(view -> openItem(booking, true));
                             }
                             else {
-                                tvPassenger.setText(defaultPassengerText);
-                                tvPassenger.setTextColor(colorInitial);
-
                                 tvChat.setVisibility(View.GONE);
                                 chatImage.setVisibility(View.GONE);
 
@@ -1078,6 +1088,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                                 "Your task is now on request",
                                 Toast.LENGTH_LONG
                         ).show();
+                        dialog.dismiss();
                     }
                     else {
                         Toast.makeText(
@@ -1086,8 +1097,8 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                                 Toast.LENGTH_LONG
                         ).show();
                     }
-                    if(onActionClickListener != null)
-                        onActionClickListener.setProgressBarToVisible(false);
+                    dialogProgressBar.setVisibility(View.GONE);
+                    setDialogScreenEnabled(true);
                 });
     }
 

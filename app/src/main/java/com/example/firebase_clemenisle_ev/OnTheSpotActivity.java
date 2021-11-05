@@ -104,7 +104,7 @@ public class OnTheSpotActivity extends AppCompatActivity {
     Context myContext;
     Resources myResources;
 
-    int colorGreen, colorInitial, colorBlue;
+    int colorGreen, colorInitial, colorBlue, colorRed;
     ColorStateList cslInitial, cslBlue;
 
     String userId, driverUserId, taskDriverUserId;
@@ -254,6 +254,7 @@ public class OnTheSpotActivity extends AppCompatActivity {
         colorGreen = myResources.getColor(R.color.green);
         colorInitial = myResources.getColor(R.color.initial);
         colorBlue = myResources.getColor(R.color.blue);
+        colorRed = myResources.getColor(R.color.red);
 
         cslInitial = ColorStateList.valueOf(myResources.getColor(R.color.initial));
         cslBlue = ColorStateList.valueOf(myResources.getColor(R.color.blue));
@@ -397,8 +398,18 @@ public class OnTheSpotActivity extends AppCompatActivity {
         dialog2.show();
     }
 
+    private void setDialogScreenEnabled(boolean value) {
+        dialog2.setCanceledOnTouchOutside(false);
+        tlReason.setEnabled(value);
+        dialogSubmitButton.setEnabled(value);
+
+        if(value) dialogCloseImage2.getDrawable().setTint(colorRed);
+        else dialogCloseImage2.getDrawable().setTint(colorInitial);
+    }
+
     private void submitReason(Booking booking) {
-        progressBar.setVisibility(View.VISIBLE);
+        dialogProgressBar.setVisibility(View.VISIBLE);
+        setDialogScreenEnabled(false);
         usersRef.child(driverUserId).child("taskList").
                 child(booking.getId()).child("reason").setValue(reasonValue)
                 .addOnCompleteListener(task -> {
@@ -409,7 +420,8 @@ public class OnTheSpotActivity extends AppCompatActivity {
                                 "Failed to pass the task",
                                 Toast.LENGTH_LONG
                         ).show();
-                        progressBar.setVisibility(View.GONE);
+                        dialogProgressBar.setVisibility(View.GONE);
+                        setDialogScreenEnabled(true);
                     }
                 });
     }
@@ -472,15 +484,26 @@ public class OnTheSpotActivity extends AppCompatActivity {
                 child(bookingId).child("status").setValue("Completed");
         usersRef.child(driverUserId).child("taskList").
                 child(bookingId).child("dropOffTime").
-                setValue(new DateTimeToString().getDateAndTime());
+                setValue(new DateTimeToString().getDateAndTime()).
+        addOnCompleteListener(task -> {
+            if(task.isSuccessful()) {
+                Toast.makeText(
+                        myContext,
+                        "The Task is now Completed",
+                        Toast.LENGTH_SHORT
+                ).show();
 
-        Toast.makeText(
-                myContext,
-                "The Task is now Completed",
-                Toast.LENGTH_SHORT
-        ).show();
-
-        status = "Completed";
+                status = "Completed";
+                getUsers();
+            }
+            else {
+                Toast.makeText(
+                        myContext,
+                        "Failed to complete the task",
+                        Toast.LENGTH_LONG
+                ).show();
+            }
+        });
     }
 
     private void getUsers() {
@@ -513,6 +536,8 @@ public class OnTheSpotActivity extends AppCompatActivity {
 
                             driverInfoLayout.setVisibility(View.GONE);
                             userInfoLayout.setVisibility(View.VISIBLE);
+
+                            extvMessage.setText(message);
 
                             getDriverUserId();
                             reason = getReason();
@@ -761,6 +786,9 @@ public class OnTheSpotActivity extends AppCompatActivity {
 
                     booking.setStatus(status);
 
+                    tvPassenger.setText(defaultPassengerText);
+                    tvPassenger.setTextColor(colorInitial);
+
                     switch (status) {
                         case "Pending":
                             tvChat.setVisibility(View.GONE);
@@ -871,9 +899,6 @@ public class OnTheSpotActivity extends AppCompatActivity {
                                 checkImage.setOnClickListener(view -> scanQRCode());
                             }
                             else {
-                                tvPassenger.setText(defaultPassengerText);
-                                tvPassenger.setTextColor(colorInitial);
-
                                 tvChat.setVisibility(View.GONE);
                                 chatImage.setVisibility(View.GONE);
 
@@ -919,7 +944,7 @@ public class OnTheSpotActivity extends AppCompatActivity {
 
     private void stopRequest(Booking booking) {
         progressBar.setVisibility(View.VISIBLE);
-        usersRef.child(userId).child("taskList").
+        usersRef.child(driverUserId).child("taskList").
                 child(booking.getId()).child("status").setValue("Booked")
                 .addOnCompleteListener(task -> {
                     if(task.isSuccessful()) {
@@ -928,6 +953,9 @@ public class OnTheSpotActivity extends AppCompatActivity {
                                 "You stopped your task's request",
                                 Toast.LENGTH_LONG
                         ).show();
+
+                        status = "Booked";
+                        getUsers();
                     }
                     else {
                         Toast.makeText(
@@ -941,7 +969,6 @@ public class OnTheSpotActivity extends AppCompatActivity {
     }
 
     private void passTask(Booking booking) {
-        progressBar.setVisibility(View.VISIBLE);
         usersRef.child(driverUserId).child("taskList").
                 child(booking.getId()).child("status").setValue("Request")
                 .addOnCompleteListener(task -> {
@@ -951,6 +978,10 @@ public class OnTheSpotActivity extends AppCompatActivity {
                                 "Your task is now on request",
                                 Toast.LENGTH_LONG
                         ).show();
+                        dialog2.dismiss();
+
+                        status = "Request";
+                        getUsers();
                     }
                     else {
                         Toast.makeText(
@@ -959,7 +990,8 @@ public class OnTheSpotActivity extends AppCompatActivity {
                                 Toast.LENGTH_LONG
                         ).show();
                     }
-                    progressBar.setVisibility(View.GONE);
+                    dialogProgressBar.setVisibility(View.GONE);
+                    setDialogScreenEnabled(true);
                 });
     }
 
@@ -1002,15 +1034,26 @@ public class OnTheSpotActivity extends AppCompatActivity {
                             child(bookingId).child("status").setValue("Ongoing");
                     usersRef.child(driverUserId).child("taskList").
                             child(bookingId).child("pickUpTime").
-                            setValue(new DateTimeToString().getDateAndTime());
+                            setValue(new DateTimeToString().getDateAndTime()).
+                    addOnCompleteListener(task -> {
+                        if(task.isSuccessful()) {
+                            Toast.makeText(
+                                    myContext,
+                                    "QR Code successfully scanned. The Service is now initiated.",
+                                    Toast.LENGTH_LONG
+                            ).show();
 
-                    Toast.makeText(
-                            myContext,
-                            "QR Code successfully scanned. The Service is now initiated.",
-                            Toast.LENGTH_LONG
-                    ).show();
-
-                    status = "Ongoing";
+                            status = "Ongoing";
+                            getUsers();
+                        }
+                        else {
+                            Toast.makeText(
+                                    myContext,
+                                    "Failed to pass the task",
+                                    Toast.LENGTH_LONG
+                            ).show();
+                        }
+                    });
                 }
                 else {
                     Toast.makeText(

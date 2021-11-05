@@ -593,6 +593,13 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
                                 isPaid = booking.isPaid();
                             }
                         }
+
+                        List<IWalletTransaction> transactionList = user.getTransactionList();
+                        for (IWalletTransaction transaction : transactionList) {
+                            String referenceNumber = transaction.getReferenceNumber();
+                            if (referenceNumber != null)
+                                referenceNumberValueList.add(referenceNumber);
+                        }
                     }
                 }
 

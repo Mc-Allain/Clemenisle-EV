@@ -44,6 +44,10 @@ public class IWalletTransaction {
         return referenceNumber;
     }
 
+    public void setReferenceNumber(String referenceNumber) {
+        this.referenceNumber = referenceNumber;
+    }
+
     public String getMobileNumber() {
         return mobileNumber;
     }

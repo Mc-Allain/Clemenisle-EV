@@ -27,6 +27,7 @@ import com.example.firebase_clemenisle_ev.Adapters.IWalletTransactionAdapter;
 import com.example.firebase_clemenisle_ev.Classes.DateTimeToString;
 import com.example.firebase_clemenisle_ev.Classes.FirebaseURL;
 import com.example.firebase_clemenisle_ev.Classes.IWalletTransaction;
+import com.example.firebase_clemenisle_ev.Classes.ReferenceNumber;
 import com.example.firebase_clemenisle_ev.Classes.User;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
@@ -92,6 +93,19 @@ public class IWalletActivity extends AppCompatActivity {
     ImageView dialogCloseImage;
     ProgressBar dialogProgressBar;
 
+    List<ReferenceNumber> referenceNumberList = new ArrayList<>();
+    List<String> referenceNumberValueList = new ArrayList<>();
+
+    String referenceNumberValue;
+
+    Dialog dialog;
+    TextView tvDialogTitle2, tvDialogCaption2;
+    EditText etReferenceNumber;
+    TextInputLayout tlReferenceNumber;
+    Button submitButton2;
+    ImageView dialogCloseImage2;
+    ProgressBar dialogProgressBar2;
+
     private void initSharedPreferences() {
         SharedPreferences sharedPreferences = myContext
                 .getSharedPreferences("login", Context.MODE_PRIVATE);
@@ -139,6 +153,7 @@ public class IWalletActivity extends AppCompatActivity {
 
         initSharedPreferences();
         initTransferDialog();
+        initAddReferenceNumberDialog();
 
         firebaseAuth = FirebaseAuth.getInstance();
         if(isLoggedIn) {
@@ -200,6 +215,74 @@ public class IWalletActivity extends AppCompatActivity {
                 transferDialog.show();
             }
         });
+    }
+
+    private void initAddReferenceNumberDialog() {
+        dialog = new Dialog(myContext);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.dialog_input_reference_number_layout);
+
+        tvDialogTitle2 = dialog.findViewById(R.id.tvDialogTitle);
+        tvDialogCaption2 = dialog.findViewById(R.id.tvDialogCaption);
+        etReferenceNumber = dialog.findViewById(R.id.etReferenceNumber);
+        tlReferenceNumber = dialog.findViewById(R.id.tlReferenceNumber);
+        submitButton2 = dialog.findViewById(R.id.submitButton);
+        dialogCloseImage2 = dialog.findViewById(R.id.dialogCloseImage);
+        dialogProgressBar2 = dialog.findViewById(R.id.dialogProgressBar);
+
+        String dialogTitle = "Top-up";
+        tvDialogTitle2.setText(dialogTitle);
+
+        etReferenceNumber.setOnFocusChangeListener((view1, b) -> {
+            if(!tlReferenceNumber.isErrorEnabled()) {
+                if(b) {
+                    tlReferenceNumber.setStartIconTintList(cslBlue);
+                }
+                else {
+                    tlReferenceNumber.setStartIconTintList(cslInitial);
+                }
+            }
+        });
+
+        etReferenceNumber.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                referenceNumberValue = etReferenceNumber.getText().toString();
+                submitButton2.setEnabled(referenceNumberValue.length() == tlReferenceNumber.getCounterMaxLength());
+            }
+        });
+
+        submitButton2.setOnClickListener(view -> submitReferenceNumber());
+
+        dialogCloseImage2.setOnClickListener(view -> dialog.dismiss());
+
+        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+        dialog.getWindow().getAttributes().windowAnimations = R.style.animBottomSlide;
+        dialog.getWindow().setGravity(Gravity.BOTTOM);
+    }
+
+    private void submitReferenceNumber() {
+        dialogProgressBar.setVisibility(View.VISIBLE);
+        setDialogScreenEnabled(false);
+
+        String wtId = getWTID();
+
+        IWalletTransaction transaction = new IWalletTransaction(wtId,
+                new DateTimeToString().getDateAndTime(), "Top-up", 0);
+        transaction.setReferenceNumber(referenceNumberValue);
+        addTransactionToDatabase(transaction, wtId);
     }
 
     private void initTransferDialog() {
@@ -358,37 +441,66 @@ public class IWalletActivity extends AppCompatActivity {
         tlAmount.setEnabled(value);
         submitButton.setEnabled(value);
 
-        if(value) dialogCloseImage.getDrawable().setTint(colorRed);
-        else dialogCloseImage.getDrawable().setTint(colorInitial);
+        dialog.setCanceledOnTouchOutside(false);
+        etReferenceNumber.setEnabled(value);
+        tlReferenceNumber.setEnabled(value);
+        submitButton2.setEnabled(value);
+
+        if(value) {
+            dialogCloseImage.getDrawable().setTint(colorRed);
+            dialogCloseImage2.getDrawable().setTint(colorRed);
+        }
+        else {
+            dialogCloseImage.getDrawable().setTint(colorInitial);
+            dialogCloseImage2.getDrawable().setTint(colorInitial);
+        }
     }
 
     private void submitRequest() {
         dialogProgressBar.setVisibility(View.VISIBLE);
         setDialogScreenEnabled(false);
 
-        String wtIdSuffix = String.valueOf(transactionList.size() + 1);
-        if(wtIdSuffix.length() == 1) wtIdSuffix = "0" + wtIdSuffix;
-        String wtId = "WT" + wtIdSuffix;
+        String wtId = getWTID();
 
         IWalletTransaction transaction = new IWalletTransaction(wtId,
                 new DateTimeToString().getDateAndTime(), "Transfer", amount);
         transaction.setMobileNumber(mobileNumber);
+        addTransactionToDatabase(transaction, wtId);
+    }
 
+    private String getWTID() {
+        String wtIdSuffix = String.valueOf(transactionList.size() + 1);
+        if(wtIdSuffix.length() == 1) wtIdSuffix = "0" + wtIdSuffix;
+        return "WT" + wtIdSuffix;
+    }
+
+    private void addTransactionToDatabase(IWalletTransaction transaction, String wtId) {
+        String category = transaction.getCategory();
         usersRef.child(userId).child("iWalletTransactionList").child(wtId).setValue(transaction).
                 addOnCompleteListener(task -> {
                     if(task.isSuccessful()) {
                         String[] iWalletSplit = tvIWallet.getText().toString().split("₱");
                         if(iWalletSplit.length > 1) {
-                            double iWallet = Double.parseDouble(iWalletSplit[1]);
-                            double newIWallet = iWallet - amount;
-                            usersRef.child(userId).child("iWallet").setValue(newIWallet);
+                            if(category.equals("Transfer")) {
+                                double iWallet = Double.parseDouble(iWalletSplit[1]);
+                                double newIWallet = iWallet - amount;
+                                usersRef.child(userId).child("iWallet").setValue(newIWallet);
 
-                            Toast.makeText(
-                                    myContext,
-                                    "Successfully requested for transfer." +
-                                            "It will take at least 24 hours to take effect.",
-                                    Toast.LENGTH_LONG
-                            ).show();
+                                Toast.makeText(
+                                        myContext,
+                                        "Successfully requested for transfer." +
+                                                "It will take at least 24 hours to take effect.",
+                                        Toast.LENGTH_LONG
+                                ).show();
+                            }
+                            else if(category.equals("Top-up")) {
+                                Toast.makeText(
+                                        myContext,
+                                        "Successfully submitted the reference number." +
+                                                "It will take at least 24 hours to take effect.",
+                                        Toast.LENGTH_LONG
+                                ).show();
+                            }
                         }
                     }
                     else {
@@ -403,8 +515,10 @@ public class IWalletActivity extends AppCompatActivity {
                         }
                     }
                     dialogProgressBar.setVisibility(View.GONE);
+                    dialogProgressBar2.setVisibility(View.GONE);
                     setDialogScreenEnabled(true);
                     transferDialog.dismiss();
+                    dialog.dismiss();
                 });
     }
 
