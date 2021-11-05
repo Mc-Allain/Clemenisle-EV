@@ -120,12 +120,7 @@ public class IWalletTransactionAdapter extends RecyclerView.Adapter<IWalletTrans
 
                 backgroundLayout.setOnClickListener(view -> {
                     if(bookingId.equals(selectedBookingId)) ((Activity) myContext).onBackPressed();
-                    else {
-                        Intent intent1 = new Intent(myContext, OnlinePaymentActivity.class);
-                        intent1.putExtra("bookingId", bookingId);
-                        intent1.putExtra("fromIWallet", true);
-                        myContext.startActivity(intent1);
-                    }
+                    else openOnlinePayment(bookingId);
                 });
             }
         }
@@ -145,6 +140,13 @@ public class IWalletTransactionAdapter extends RecyclerView.Adapter<IWalletTrans
                 (ConstraintLayout.LayoutParams) backgroundLayout.getLayoutParams();
         layoutParams.setMargins(layoutParams.leftMargin, top, layoutParams.rightMargin, bottom);
         backgroundLayout.setLayoutParams(layoutParams);
+    }
+
+    private void openOnlinePayment(String bookingId) {
+        Intent intent1 = new Intent(myContext, OnlinePaymentActivity.class);
+        intent1.putExtra("bookingId", bookingId);
+        intent1.putExtra("fromIWallet", true);
+        myContext.startActivity(intent1);
     }
 
     private int dpToPx(int dp) {

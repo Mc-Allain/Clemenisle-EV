@@ -87,8 +87,9 @@ public class OnTheSpotActivity extends AppCompatActivity {
             tvPrice, tvOriginLocation2, tvDestinationSpot2, tvLocate, tvLocateDestination, tvViewQR,
             tvChat, tvDriver, tvPass, tvStop, tvCheck, tvLog;
     ExpandableTextView extvMessage;
-    ConstraintLayout buttonLayout, bookingInfoLayout, bookingInfoButtonLayout, userInfoLayout, driverInfoLayout;
-    Button cancelButton;
+    ConstraintLayout buttonLayout, buttonLayout2, bookingInfoLayout, bookingInfoButtonLayout,
+            userInfoLayout, driverInfoLayout;
+    Button cancelButton, dropOffButton;
     FrameLayout mapLayout;
     ProgressBar progressBar;
 
@@ -124,6 +125,9 @@ public class OnTheSpotActivity extends AppCompatActivity {
     long lastPressSec = 0;
     int pressCount = 0;
     Toast cancelToast, errorToast;
+    
+    long dropOffPressedTime;
+    Toast dropOffToast;
 
     String cancelButtonText = "Cancel Booking", cancellingButtonText = "Cancelling…";
 
@@ -148,8 +152,6 @@ public class OnTheSpotActivity extends AppCompatActivity {
     List<User> users = new ArrayList<>();
 
     String defaultPassengerText = "Passenger", requestText = "Your Task on Request";
-
-    String initiateService = "Initiate Service", markAsCompleted = "Mark as Completed";
 
     List<Booking> taskList3 = new ArrayList<>();
 
@@ -220,6 +222,9 @@ public class OnTheSpotActivity extends AppCompatActivity {
         locateOnTheSpotImage = findViewById(R.id.locateOnTheSpotImage);
         tvMapSettings = findViewById(R.id.tvMapSettings);
         mapSettingsImage = findViewById(R.id.mapSettingsImage);
+
+        buttonLayout2 = findViewById(R.id.buttonLayout2);
+        dropOffButton = findViewById(R.id.dropOffButton);
 
         myContext = OnTheSpotActivity.this;
         myResources = getResources();
@@ -335,7 +340,40 @@ public class OnTheSpotActivity extends AppCompatActivity {
         mapSettingsImage.setOnClickListener(view -> openMapSettings());
         tvMapSettings.setOnClickListener(view -> openMapSettings());
 
+        dropOffButton.setOnClickListener(view -> {
+            if (dropOffPressedTime + 2500 > System.currentTimeMillis()) {
+                dropOffToast.cancel();
+                completeTask();
+            } else {
+                dropOffToast = Toast.makeText(myContext,
+                        "Press again to drop off", Toast.LENGTH_SHORT);
+                dropOffToast.show();
+            }
+
+            dropOffPressedTime = System.currentTimeMillis();
+        });
+
         getUsers();
+    }
+
+    private void completeTask() {
+        usersRef.child(userId).child("bookingList").
+                child(bookingId).child("dropOffTime").
+                setValue(new DateTimeToString().getDateAndTime());
+
+        usersRef.child(driverUserId).child("taskList").
+                child(bookingId).child("status").setValue("Completed");
+        usersRef.child(driverUserId).child("taskList").
+                child(bookingId).child("dropOffTime").
+                setValue(new DateTimeToString().getDateAndTime());
+
+        Toast.makeText(
+                myContext,
+                "The Task is now Completed",
+                Toast.LENGTH_SHORT
+        ).show();
+
+        status = "Completed";
     }
 
     private void getUsers() {
@@ -418,6 +456,7 @@ public class OnTheSpotActivity extends AppCompatActivity {
         Intent intent = new Intent(myContext, ChatActivity.class);
         intent.putExtra("taskId", bookingId);
         intent.putExtra("inDriverModule", inDriverModule);
+        getDriverUserId();
         if(!inDriverModule) intent.putExtra("driverUserId", taskDriverUserId);
         myContext.startActivity(intent);
     }
@@ -652,7 +691,6 @@ public class OnTheSpotActivity extends AppCompatActivity {
 
                             tvStop.setVisibility(View.GONE);
                             stopImage.setVisibility(View.GONE);
-                            tvCheck.setText(initiateService);
                             tvCheck.setVisibility(View.VISIBLE);
                             checkImage.setVisibility(View.VISIBLE);
 
@@ -700,7 +738,6 @@ public class OnTheSpotActivity extends AppCompatActivity {
                                 tvStop.setOnClickListener(view -> stopRequest(booking));
                                 stopImage.setOnClickListener(view -> stopRequest(booking));
 
-                                tvCheck.setText(initiateService);
                                 tvCheck.setVisibility(View.VISIBLE);
                                 checkImage.setVisibility(View.VISIBLE);
 
@@ -733,23 +770,6 @@ public class OnTheSpotActivity extends AppCompatActivity {
                                 tvCheck.setVisibility(View.GONE);
                                 checkImage.setVisibility(View.GONE);
                             }
-                            break;
-                        case "Ongoing":
-                            tvChat.setVisibility(View.GONE);
-                            chatImage.setVisibility(View.GONE);
-                            tvDriver.setVisibility(View.GONE);
-                            driverImage.setVisibility(View.GONE);
-                            tvPass.setVisibility(View.GONE);
-                            passImage.setVisibility(View.GONE);
-                            tvStop.setVisibility(View.GONE);
-                            stopImage.setVisibility(View.GONE);
-
-                            tvCheck.setText(markAsCompleted);
-                            tvCheck.setVisibility(View.VISIBLE);
-                            checkImage.setVisibility(View.VISIBLE);
-
-                            tvCheck.setOnClickListener(view -> scanQRCode());
-                            checkImage.setOnClickListener(view -> scanQRCode());
                             break;
                         default:
                             tvChat.setVisibility(View.GONE);
@@ -846,46 +866,25 @@ public class OnTheSpotActivity extends AppCompatActivity {
 
             if(intentResult.getContents() != null) {
                 if(intentResult.getContents().equals(bookingId)) {
-                    if(status.equals("Ongoing")) {
-                        usersRef.child(userId).child("bookingList").
-                                child(bookingId).child("dropOffTime").
-                                setValue(new DateTimeToString().getDateAndTime());
+                    usersRef.child(userId).child("bookingList").
+                            child(bookingId).child("status").setValue("Completed");
+                    usersRef.child(userId).child("bookingList").
+                            child(bookingId).child("pickUpTime").
+                            setValue(new DateTimeToString().getDateAndTime());
 
-                        usersRef.child(driverUserId).child("taskList").
-                                child(bookingId).child("status").setValue("Completed");
-                        usersRef.child(driverUserId).child("taskList").
-                                child(bookingId).child("dropOffTime").
-                                setValue(new DateTimeToString().getDateAndTime());
+                    usersRef.child(driverUserId).child("taskList").
+                            child(bookingId).child("status").setValue("Ongoing");
+                    usersRef.child(driverUserId).child("taskList").
+                            child(bookingId).child("pickUpTime").
+                            setValue(new DateTimeToString().getDateAndTime());
 
-                        Toast.makeText(
-                                myContext,
-                                "QR Code successfully scanned. The Booking Record is now on Completed.",
-                                Toast.LENGTH_LONG
-                        ).show();
+                    Toast.makeText(
+                            myContext,
+                            "QR Code successfully scanned. The Service is now initiated.",
+                            Toast.LENGTH_LONG
+                    ).show();
 
-                        status = "Completed";
-                    }
-                    else {
-                        usersRef.child(userId).child("bookingList").
-                                child(bookingId).child("status").setValue("Completed");
-                        usersRef.child(userId).child("bookingList").
-                                child(bookingId).child("pickUpTime").
-                                setValue(new DateTimeToString().getDateAndTime());
-
-                        usersRef.child(driverUserId).child("taskList").
-                                child(bookingId).child("status").setValue("Ongoing");
-                        usersRef.child(driverUserId).child("taskList").
-                                child(bookingId).child("pickUpTime").
-                                setValue(new DateTimeToString().getDateAndTime());
-
-                        Toast.makeText(
-                                myContext,
-                                "QR Code successfully scanned. The Service is now initiated.",
-                                Toast.LENGTH_LONG
-                        ).show();
-
-                        status = "Ongoing";
-                    }
+                    status = "Ongoing";
                 }
                 else {
                     Toast.makeText(
@@ -1053,6 +1052,7 @@ public class OnTheSpotActivity extends AppCompatActivity {
         int color = 0;
 
         buttonLayout.setVisibility(View.GONE);
+        buttonLayout2.setVisibility(View.GONE);
 
         switch (status) {
             case "Pending":
@@ -1070,6 +1070,7 @@ public class OnTheSpotActivity extends AppCompatActivity {
                 if(isShowBookingAlertEnabled && !inDriverModule) dialog.show();
                 break;
             case "Ongoing":
+                if(inDriverModule) buttonLayout2.setVisibility(View.VISIBLE);
             case "Completed":
                 color = myResources.getColor(R.color.blue);
                 break;

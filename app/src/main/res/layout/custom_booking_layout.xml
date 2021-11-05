@@ -457,7 +457,7 @@
                 android:layout_height="0dp"
                 android:fontFamily="@font/ubuntu"
                 android:gravity="center_vertical"
-                android:text="Mark as Completed"
+                android:text="Initiate Service"
                 android:textColor="@color/green"
                 android:textStyle="bold"
                 android:visibility="gone"

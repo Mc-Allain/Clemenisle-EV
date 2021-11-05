@@ -593,6 +593,17 @@ public class MainActivity extends AppCompatActivity {
 
         if(booking.getStatus().equals("Booked") || booking.getStatus().equals("Request"))
             getEndPointInfo(booking, inDriverModule);
+
+        if((booking.getStatus().equals("Pending") || booking.getStatus().equals("Booked")) &&
+                !inDriverModule) {
+            List<ReferenceNumber> referenceNumberList = booking.getReferenceNumberList();
+            for(ReferenceNumber referenceNumber : referenceNumberList) {
+                boolean isNotified = referenceNumber.isNotified();
+                if(!isNotified) {
+                    showCreditedRNNotification(booking, referenceNumber);
+                }
+            }
+        }
     }
 
     private void getEndPointInfo(Booking booking, boolean inDriverModule) {
@@ -612,8 +623,8 @@ public class MainActivity extends AppCompatActivity {
                         if(!notified && message.length() > 0)
                             showChatNotification(booking, fullName, message, true);
                         else {
-                            usersRef.child(userId).child("taskList").child(booking.getId()).child("notified")
-                                    .setValue(true);
+                            usersRef.child(userId).child("taskList").child(booking.getId()).
+                                    child("notified").setValue(true);
                         }
                         break;
                     }
@@ -634,8 +645,8 @@ public class MainActivity extends AppCompatActivity {
                         if(!notified && message.length() > 0)
                             showChatNotification(booking, fullName, message, false);
                         else {
-                            usersRef.child(userId).child("bookingList").child(booking.getId()).child("notified")
-                                    .setValue(true);
+                            usersRef.child(userId).child("bookingList").child(booking.getId()).
+                                    child("notified").setValue(true);
                         }
                         break;
                     }
@@ -791,7 +802,7 @@ public class MainActivity extends AppCompatActivity {
                         .setCategory(NotificationCompat.CATEGORY_MESSAGE)
                         .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                         .setDefaults(NotificationCompat.DEFAULT_ALL)
-                        .setAutoCancel(true);
+                        .setAutoCancel(false);
 
         if(Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
             builder.setPriority(Notification.PRIORITY_HIGH);
@@ -816,25 +827,13 @@ public class MainActivity extends AppCompatActivity {
         notificationManager.notify(1, builder.build());
 
         if(inDriverModule) {
-            usersRef.child(userId).child("taskList").child(task.getId()).child("notified")
-                    .setValue(true);
+            usersRef.child(userId).child("taskList").child(task.getId()).
+                    child("notified").setValue(true);
         }
         else {
-            usersRef.child(userId).child("bookingList").child(task.getId()).child("notified")
-                    .setValue(true);
+            usersRef.child(userId).child("bookingList").child(task.getId()).
+                    child("notified").setValue(true);
         }
-    }
-
-    private String getPassengerUserId(String bookingId) {
-        for(User user : users) {
-            List<Booking> bookingList = user.getBookingList();
-            for(Booking booking : bookingList) {
-                if(booking.getId().equals(bookingId)) {
-                    return user.getId();
-                }
-            }
-        }
-        return null;
     }
 
     private void showFailedBookingNotification(Booking booking) {
@@ -844,7 +843,7 @@ public class MainActivity extends AppCompatActivity {
         NotificationCompat.Builder builder =
                 new NotificationCompat.Builder(myContext, booking.getId())
                         .setSmallIcon(R.drawable.front_icon).setLargeIcon(icon)
-                        .setContentTitle("Clemenisle-EV Booking Reminder")
+                        .setContentTitle("Clemenisle-EV Booking Status")
                         .setContentText("You have failed to go to your Booking (ID: " + booking.getId() +").")
                         .setCategory(NotificationCompat.CATEGORY_STATUS)
                         .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
@@ -872,6 +871,55 @@ public class MainActivity extends AppCompatActivity {
         builder.setContentIntent(pendingIntent);
         builder.setFullScreenIntent(pendingIntent, true);
         notificationManager.notify(1, builder.build());
+    }
+
+    private void showCreditedRNNotification(Booking booking, ReferenceNumber referenceNumber) {
+        NotificationManager notificationManager = getNotificationManager(booking.getId());
+        Bitmap icon = BitmapFactory.decodeResource(myResources, R.drawable.front_icon);
+
+        String value = "₱" + referenceNumber.getValue();
+        if(value.split("\\.")[1].length() == 1) value += 0;
+
+        NotificationCompat.Builder builder =
+                new NotificationCompat.Builder(myContext, booking.getId())
+                        .setSmallIcon(R.drawable.front_icon).setLargeIcon(icon)
+                        .setContentTitle("Clemenisle-EV Online Payment Status")
+                        .setContentText(value + " has been to credited to #" +
+                                referenceNumber.getReferenceNumber() + ".")
+                        .setCategory(NotificationCompat.CATEGORY_STATUS)
+                        .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                        .setDefaults(NotificationCompat.DEFAULT_ALL)
+                        .setAutoCancel(false);
+
+        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
+            builder.setPriority(Notification.PRIORITY_HIGH);
+
+        Intent notificationIntent;
+        notificationIntent = new Intent(myContext, OnlinePaymentActivity.class);
+        notificationIntent.putExtra("bookingId", booking.getId());
+
+        PendingIntent pendingIntent = PendingIntent.getActivity(
+                myContext, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT
+        );
+        builder.setContentIntent(pendingIntent);
+        builder.setFullScreenIntent(pendingIntent, true);
+        notificationManager.notify(1, builder.build());
+
+        usersRef.child(userId).child("bookingList").child(booking.getId()).
+                child("referenceNumberList").child(referenceNumber.getId()).
+                child("notified").setValue(true);
+    }
+
+    private String getPassengerUserId(String bookingId) {
+        for(User user : users) {
+            List<Booking> bookingList = user.getBookingList();
+            for(Booking booking : bookingList) {
+                if(booking.getId().equals(bookingId)) {
+                    return user.getId();
+                }
+            }
+        }
+        return null;
     }
 
     @Override

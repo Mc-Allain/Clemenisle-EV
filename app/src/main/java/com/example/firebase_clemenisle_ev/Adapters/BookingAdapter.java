@@ -102,7 +102,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
 
     List<Booking> ongoingTaskList = new ArrayList<>();
 
-    String initiateService = "Initiate Service", markAsCompleted = "Mark as Completed";
+    String initiateService = "Initiate Service", dropOffText = "Drop Off";
 
     public void setOnLikeClickListener(OnActionClickListener onActionClickListener) {
         this.onActionClickListener = onActionClickListener;
@@ -822,12 +822,12 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                             tvStop.setVisibility(View.GONE);
                             stopImage.setVisibility(View.GONE);
 
-                            tvCheck.setText(markAsCompleted);
+                            tvCheck.setText(dropOffText);
                             tvCheck.setVisibility(View.VISIBLE);
                             checkImage.setVisibility(View.VISIBLE);
 
-                            tvCheck.setOnClickListener(view -> openItem(booking, true));
-                            checkImage.setOnClickListener(view -> openItem(booking, true));
+                            tvCheck.setOnClickListener(view -> completeTask(booking));
+                            checkImage.setOnClickListener(view -> completeTask(booking));
                             break;
                         default:
                             tvChat.setVisibility(View.GONE);
@@ -846,6 +846,36 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                     break;
                 }
             }
+        }
+    }
+
+    private void completeTask(Booking booking) {
+        String taskDriverUserId = getDriverUserId(booking.getId());
+        String passengerId = getPassengerUserId(booking.getId());
+
+        if(taskDriverUserId != null && passengerId != null) {
+            usersRef.child(passengerId).child("bookingList").
+                    child(booking.getId()).child("dropOffTime").
+                    setValue(new DateTimeToString().getDateAndTime());
+
+            usersRef.child(taskDriverUserId).child("taskList").
+                    child(booking.getId()).child("status").setValue("Completed");
+            usersRef.child(taskDriverUserId).child("taskList").
+                    child(booking.getId()).child("dropOffTime").
+                    setValue(new DateTimeToString().getDateAndTime());
+
+            Toast.makeText(
+                    myContext,
+                    "The Task is now Completed",
+                    Toast.LENGTH_SHORT
+            ).show();
+        }
+        else {
+            Toast.makeText(
+                    myContext,
+                    "Failed to complete the task",
+                    Toast.LENGTH_LONG
+            ).show();
         }
     }
 

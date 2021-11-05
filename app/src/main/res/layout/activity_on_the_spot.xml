@@ -7,12 +7,49 @@
     android:background="@color/gainsboro"
     tools:context=".OnTheSpotActivity">
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/buttonLayout2"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@color/white"
+        android:visibility="visible"
+        app:layout_constraintBottom_toTopOf="@+id/buttonLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <Button
+            android:id="@+id/dropOffButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="8dp"
+            android:fontFamily="@font/ubuntu"
+            android:text="Drop Off"
+            android:textAllCaps="false"
+            app:cornerRadius="20dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <View
+            style="@style/line_color"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
     <HorizontalScrollView
         android:id="@+id/horizontalScrollView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:background="@color/white"
-        app:layout_constraintBottom_toTopOf="@+id/buttonLayout"
+        app:layout_constraintBottom_toTopOf="@+id/buttonLayout2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
@@ -594,7 +631,7 @@
                 android:layout_height="0dp"
                 android:fontFamily="@font/ubuntu"
                 android:gravity="center_vertical"
-                android:text="Mark as Completed"
+                android:text="Initiate Service"
                 android:textColor="@color/green"
                 android:textStyle="bold"
                 android:visibility="gone"
