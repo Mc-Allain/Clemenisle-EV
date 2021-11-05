@@ -5,15 +5,11 @@ import android.content.res.Resources;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.firebase_clemenisle_ev.Classes.DateTimeDifference;
-import com.example.firebase_clemenisle_ev.Classes.FirebaseURL;
 import com.example.firebase_clemenisle_ev.Classes.ReferenceNumber;
 import com.example.firebase_clemenisle_ev.R;
-import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.List;
 
@@ -22,9 +18,6 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class ReferenceNumberAdapter extends RecyclerView.Adapter<ReferenceNumberAdapter.ViewHolder> {
-
-    private final static String firebaseURL = FirebaseURL.getFirebaseURL();
-    FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance(firebaseURL);
 
     List<ReferenceNumber> referenceNumberList;
     String status;
@@ -35,9 +28,6 @@ public class ReferenceNumberAdapter extends RecyclerView.Adapter<ReferenceNumber
     Resources myResources;
 
     OnInitiatePaymentListener onInitiatePaymentListener;
-
-    long removePressedTime;
-    Toast removeToast;
 
     public ReferenceNumberAdapter(Context context, List<ReferenceNumber> referenceNumberList) {
         this.referenceNumberList = referenceNumberList;
@@ -57,8 +47,7 @@ public class ReferenceNumberAdapter extends RecyclerView.Adapter<ReferenceNumber
                 referenceNumberLayout = holder.referenceNumberLayout,
                 addRNLayout = holder.addRNLayout, iWalletLayout = holder.iWalletLayout;
         TextView tvReferenceNumber = holder.tvReferenceNumber, tvTimestamp = holder.tvTimestamp,
-                tvValue = holder.tvValue, tvInvalidRN = holder.tvInvalidRN, tvRemoved = holder.tvRemoved;
-        ImageView removeImage = holder.removeImage;
+                tvValue = holder.tvValue, tvInvalidRN = holder.tvInvalidRN;
 
         myContext = inflater.getContext();
         myResources = myContext.getResources();
@@ -82,13 +71,9 @@ public class ReferenceNumberAdapter extends RecyclerView.Adapter<ReferenceNumber
             referenceNumberLayout.setVisibility(View.VISIBLE);
 
             ReferenceNumber referenceNumber = referenceNumberList.get(position-2);
-            String id = referenceNumber.getId();
             String timestamp = referenceNumber.getTimestamp();
             double value = referenceNumber.getValue();
             boolean isValid = referenceNumber.isValid();
-
-            String userId = referenceNumber.getUserId();
-            String bookingId = referenceNumber.getBookingId();
 
             String referenceNumberValue = "#" + referenceNumber.getReferenceNumber();
             boolean isIWalletUsed = referenceNumber.isiWalletUsed();
@@ -100,42 +85,16 @@ public class ReferenceNumberAdapter extends RecyclerView.Adapter<ReferenceNumber
             timestamp = dateTimeDifference.getResult();
             tvTimestamp.setText(timestamp);
 
-            tvValue.setVisibility(View.GONE);
-            removeImage.setVisibility(View.GONE);
             tvInvalidRN.setVisibility(View.GONE);
 
-            if(value == 0 || !isValid) {
-                removeImage.setVisibility(View.VISIBLE);
-                if(!isValid) tvInvalidRN.setVisibility(View.VISIBLE);
-            }
-            else {
+            if(value > 0) {
                 String valueText = "₱" + value;
                 if(valueText.split("\\.")[1].length() == 1) valueText += 0;
 
                 tvValue.setText(valueText);
                 tvValue.setVisibility(View.VISIBLE);
             }
-
-            removeImage.setOnClickListener(view -> {
-                if (removePressedTime + 2500 > System.currentTimeMillis() &&
-                        tvRemoved.getText().toString().equals("true")) {
-                    removeToast.cancel();
-
-                    firebaseDatabase.getReference("users").child(userId).
-                            child("bookingList").child(bookingId).
-                            child("referenceNumberList").child(id).removeValue();
-
-                    tvRemoved.setText("false");
-                } else {
-                    removeToast = Toast.makeText(myContext,
-                            "Press again to remove", Toast.LENGTH_SHORT);
-                    removeToast.show();
-
-                    removePressedTime = System.currentTimeMillis();
-
-                    tvRemoved.setText("true");
-                }
-            });
+            else if(!isValid) tvInvalidRN.setVisibility(View.VISIBLE);
         }
 
         int top = dpToPx(1), bottom = dpToPx(1);
@@ -176,8 +135,7 @@ public class ReferenceNumberAdapter extends RecyclerView.Adapter<ReferenceNumber
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         ConstraintLayout backgroundLayout, referenceNumberLayout, addRNLayout, iWalletLayout;
-        TextView tvReferenceNumber, tvTimestamp, tvValue,tvInvalidRN,  tvAddRN, tvIWallet, tvRemoved;
-        ImageView removeImage;
+        TextView tvReferenceNumber, tvTimestamp, tvValue, tvInvalidRN, tvAddRN, tvIWallet;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -188,15 +146,12 @@ public class ReferenceNumberAdapter extends RecyclerView.Adapter<ReferenceNumber
             tvTimestamp = itemView.findViewById(R.id.tvTimestamp);
             tvValue = itemView.findViewById(R.id.tvValue);
             tvInvalidRN = itemView.findViewById(R.id.tvInvalidRN);
-            removeImage = itemView.findViewById(R.id.removeImage);
 
             addRNLayout = itemView.findViewById(R.id.addRNLayout);
             tvAddRN = itemView.findViewById(R.id.tvAddRN);
 
             iWalletLayout = itemView.findViewById(R.id.iWalletLayout);
             tvIWallet = itemView.findViewById(R.id.tvIWallet);
-
-            tvRemoved = itemView.findViewById(R.id.tvRemoved);
 
             setIsRecyclable(false);
         }

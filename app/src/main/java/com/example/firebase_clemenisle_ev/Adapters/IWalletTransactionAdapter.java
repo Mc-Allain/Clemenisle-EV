@@ -30,7 +30,7 @@ public class IWalletTransactionAdapter extends RecyclerView.Adapter<IWalletTrans
     Context myContext;
     Resources myResources;
 
-    int colorRed, colorBlue, colorGreen;
+    int colorRed, colorBlue, colorGreen, colorBlack;
 
     String defaultInvalidMNText = "Invalid Mobile Number", pendingText = "Pending";
 
@@ -51,9 +51,9 @@ public class IWalletTransactionAdapter extends RecyclerView.Adapter<IWalletTrans
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         ConstraintLayout backgroundLayout = holder.backgroundLayout;
-        TextView tvCategory = holder.tvCategory, tvTimestamp = holder.tvTimestamp,
-                tvMobileNumber = holder.tvMobileNumber, tvValue = holder.tvValue,
-                tvInvalidMN = holder.tvInvalidMN;
+        TextView tvTransactionId = holder.tvTransactionId, tvCategory = holder.tvCategory,
+                tvTimestamp = holder.tvTimestamp, tvMobileNumber = holder.tvMobileNumber,
+                tvValue = holder.tvValue, tvInvalidMN = holder.tvInvalidMN;
 
         myContext = inflater.getContext();
         myResources = myContext.getResources();
@@ -61,8 +61,10 @@ public class IWalletTransactionAdapter extends RecyclerView.Adapter<IWalletTrans
         colorGreen = myResources.getColor(R.color.green);
         colorBlue = myResources.getColor(R.color.blue);
         colorRed = myResources.getColor(R.color.red);
+        colorBlack = myResources.getColor(R.color.black);
 
         IWalletTransaction transaction = transactionList.get(position);
+        String transactionId = transaction.getId();
         String category = transaction.getCategory();
         String timestamp = transaction.getTimestamp();
         String referenceNumber = transaction.getReferenceNumber();
@@ -72,6 +74,7 @@ public class IWalletTransactionAdapter extends RecyclerView.Adapter<IWalletTrans
 
         String bookingId = transaction.getBookingId();
 
+        tvTransactionId.setText(transactionId);
         tvCategory.setText(category);
 
         DateTimeDifference dateTimeDifference = new DateTimeDifference(timestamp);
@@ -100,7 +103,7 @@ public class IWalletTransactionAdapter extends RecyclerView.Adapter<IWalletTrans
                     tvMobileNumber.setText(referenceNumber);
                 }
                 else {
-                    tvInvalidMN.setTextColor(colorBlue);
+                    tvInvalidMN.setTextColor(colorBlack);
                     tvInvalidMN.setText(referenceNumber);
                     tvInvalidMN.setTypeface(tvInvalidMN.getTypeface(), Typeface.NORMAL);
                 }
@@ -127,14 +130,14 @@ public class IWalletTransactionAdapter extends RecyclerView.Adapter<IWalletTrans
                 }
                 else {
                     referenceNumber = "#" + referenceNumber;
-                    tvInvalidMN.setTextColor(colorBlue);
+                    tvInvalidMN.setTextColor(colorBlack);
                     tvInvalidMN.setText(referenceNumber);
                     tvInvalidMN.setTypeface(tvInvalidMN.getTypeface(), Typeface.NORMAL);
                 }
             }
         }
 
-        if(category.equals("Refund")) {
+        if(category.equals("Refund") || category.equals("Payment")) {
             if(bookingId != null) {
                 tvMobileNumber.setVisibility(View.VISIBLE);
                 tvMobileNumber.setText(bookingId);
@@ -146,7 +149,7 @@ public class IWalletTransactionAdapter extends RecyclerView.Adapter<IWalletTrans
             }
         }
 
-        int top = dpToPx(1), bottom = dpToPx(1);
+        int top = dpToPx(2), bottom = dpToPx(2);
 
         boolean isFirstItem = position + 1 == 1, isLastItem = position + 1 == getItemCount();
 
@@ -182,12 +185,13 @@ public class IWalletTransactionAdapter extends RecyclerView.Adapter<IWalletTrans
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         ConstraintLayout backgroundLayout;
-        TextView tvCategory, tvTimestamp, tvMobileNumber, tvValue, tvInvalidMN;
+        TextView tvTransactionId, tvCategory, tvTimestamp, tvMobileNumber, tvValue, tvInvalidMN;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
             backgroundLayout = itemView.findViewById(R.id.backgroundLayout);
+            tvTransactionId = itemView.findViewById(R.id.tvTransactionId);
             tvCategory = itemView.findViewById(R.id.tvCategory);
             tvTimestamp = itemView.findViewById(R.id.tvTimestamp);
             tvMobileNumber = itemView.findViewById(R.id.tvMobileNumber);

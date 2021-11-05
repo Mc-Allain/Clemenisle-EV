@@ -107,6 +107,11 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
     ImageView dialogCloseImage2;
     ProgressBar dialogProgressBar2;
 
+    long submitPressedTime;
+    Toast submitToast;
+
+    boolean isGeneratingTransactionId = false;
+
     private void initSharedPreferences() {
         SharedPreferences sharedPreferences = myContext
                 .getSharedPreferences("login", Context.MODE_PRIVATE);
@@ -297,7 +302,19 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
             }
         });
 
-        submitButton.setOnClickListener(view -> submitReferenceNumber());
+        submitButton.setOnClickListener(view -> {
+            if (submitPressedTime + 2500 > System.currentTimeMillis()) {
+                submitToast.cancel();
+
+                submitReferenceNumber();
+            } else {
+                submitToast = Toast.makeText(myContext,
+                        "Press again to submit", Toast.LENGTH_SHORT);
+                submitToast.show();
+            }
+
+            submitPressedTime = System.currentTimeMillis();
+        });
 
         dialogCloseImage.setOnClickListener(view -> dialog.dismiss());
 
@@ -456,7 +473,19 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
             }
         });
 
-        submitButton2.setOnClickListener(view -> submitIWalletPayment());
+        submitButton2.setOnClickListener(view -> {
+            if (submitPressedTime + 2500 > System.currentTimeMillis()) {
+                submitToast.cancel();
+
+                generateTransactionId();
+            } else {
+                submitToast = Toast.makeText(myContext,
+                        "Press again to submit", Toast.LENGTH_SHORT);
+                submitToast.show();
+            }
+
+            submitPressedTime = System.currentTimeMillis();
+        });
 
         dialogCloseImage2.setOnClickListener(view -> dialog2.dismiss());
 
@@ -467,7 +496,69 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
         dialog2.getWindow().setGravity(Gravity.BOTTOM);
     }
 
-    private void submitIWalletPayment() {
+    private void generateTransactionId() {
+        dialogProgressBar.setVisibility(View.VISIBLE);
+        dialogProgressBar2.setVisibility(View.VISIBLE);
+        setDialogScreenEnabled(false);
+
+        isGeneratingTransactionId = false;
+        usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(!isGeneratingTransactionId) {
+                    isGeneratingTransactionId = true;
+
+                    DateTimeToString dateTimeToString = new DateTimeToString();
+                    String yearId = dateTimeToString.getYear2Suffix();
+                    int month = Integer.parseInt(dateTimeToString.getMonthNo()) + 1;
+                    String monthId = String.valueOf(month);
+                    if(monthId.length() == 1) monthId = "0" + monthId;
+                    String dayId = dateTimeToString.getDay();
+                    if(dayId.length() == 1) dayId = "0" + dayId;
+
+                    String transactionId = "WT" + yearId + "-" + monthId + dayId;
+
+                    int suffixCount = 0;
+
+                    if(snapshot.exists()) {
+                        for(DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                            User user = new User(dataSnapshot);
+
+                            List<IWalletTransaction> transactionList = user.getTransactionList();
+                            if(transactionList.size() > 0) {
+                                for(IWalletTransaction transaction : transactionList) {
+                                    if(transaction.getId().startsWith(transactionId)) {
+                                        suffixCount++;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    String idSuffix = String.valueOf(suffixCount);
+                    if(idSuffix.length() == 1) idSuffix = "0" + idSuffix;
+
+                    transactionId += "-" + idSuffix;
+
+                    submitIWalletPayment(transactionId);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(
+                        myContext,
+                        error.toString(),
+                        Toast.LENGTH_LONG
+                ).show();
+
+                isGeneratingTransactionId = false;
+
+                setDialogScreenEnabled(true);
+            }
+        });
+    }
+
+    private void submitIWalletPayment(String transactionId) {
         setDialogScreenEnabled(false);
         dialogProgressBar2.setVisibility(View.VISIBLE);
 
@@ -479,14 +570,10 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
         referenceNumber.setNotified(false);
 
         addReferenceNumberToDatabase(referenceNumber, rnId);
-        addToTransactionList();
+        addToTransactionList(transactionId);
     }
 
-    private void addToTransactionList() {
-        String wtIdSuffix = String.valueOf(transactionList.size() + 1);
-        if(wtIdSuffix.length() == 1) wtIdSuffix = "0" + wtIdSuffix;
-        String wtId = "WT" + wtIdSuffix;
-
+    private void addToTransactionList(String wtId) {
         IWalletTransaction transaction = new IWalletTransaction(wtId,
                 new DateTimeToString().getDateAndTime(), "Payment", amount);
         transaction.setBookingId(bookingId);
@@ -536,6 +623,7 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
                 }
 
                 tvActivityCaption.setText(captionText.toString());
+                tvDialogCaption.setText(captionText.toString());
             }
 
             @Override
@@ -578,8 +666,6 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
 
                                     if(user.getId().equals(userId) && booking.getId().equals(bookingId)) {
                                         creditedAmount += referenceNumber.getValue();
-                                        referenceNumber.setUserId(userId);
-                                        referenceNumber.setBookingId(bookingId);
 
                                         referenceNumberList.add(referenceNumber);
                                     }
@@ -604,12 +690,18 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
                 }
 
                 balance = price - creditedAmount;
-                if(balance < 0) {
-                    referenceNumberAdapter.setCompletePayment(false);
+                if(balance <= 0) {
+                    referenceNumberAdapter.setCompletePayment(true);
                     balance = 0;
 
                     if(!isPaid) usersRef.child(userId).child("bookingList").child(bookingId).
                             child("paid").setValue(true);
+                }
+                else {
+                    referenceNumberAdapter.setCompletePayment(false);
+
+                    if(isPaid) usersRef.child(userId).child("bookingList").child(bookingId).
+                            child("paid").setValue(false);
                 }
                 refundedAmountLayout.setVisibility(View.GONE);
 

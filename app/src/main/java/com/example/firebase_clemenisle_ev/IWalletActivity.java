@@ -76,7 +76,8 @@ public class IWalletActivity extends AppCompatActivity {
 
     boolean isLoggedIn = false;
 
-    String defaultLogText = "No Record";
+    String defaultCaptionText = "Please send your payment to this/these GCash number/s: ",
+            defaultLogText = "No Record";
 
     ColorStateList cslInitial, cslBlue, cslRed;
     int colorRed, colorBlue, colorInitial;
@@ -101,6 +102,11 @@ public class IWalletActivity extends AppCompatActivity {
     Button submitButton2;
     ImageView dialogCloseImage2;
     ProgressBar dialogProgressBar2;
+
+    long submitPressedTime;
+    Toast submitToast;
+
+    boolean isGeneratingTransactionId = false;
 
     private void initSharedPreferences() {
         SharedPreferences sharedPreferences = myContext
@@ -274,7 +280,19 @@ public class IWalletActivity extends AppCompatActivity {
             }
         });
 
-        submitButton2.setOnClickListener(view -> submitReferenceNumber());
+        submitButton2.setOnClickListener(view -> {
+            if (submitPressedTime + 2500 > System.currentTimeMillis()) {
+                submitToast.cancel();
+                
+                generateTransactionId(1);
+            } else {
+                submitToast = Toast.makeText(myContext,
+                        "Press again to submit", Toast.LENGTH_SHORT);
+                submitToast.show();
+            }
+
+            submitPressedTime = System.currentTimeMillis();
+        });
 
         dialogCloseImage2.setOnClickListener(view -> dialog.dismiss());
 
@@ -285,11 +303,8 @@ public class IWalletActivity extends AppCompatActivity {
         dialog.getWindow().setGravity(Gravity.BOTTOM);
     }
 
-    private void submitReferenceNumber() {
-        dialogProgressBar.setVisibility(View.VISIBLE);
+    private void submitReferenceNumber(String wtId) {
         setDialogScreenEnabled(false);
-
-        String wtId = getWTID();
 
         IWalletTransaction transaction = new IWalletTransaction(wtId,
                 new DateTimeToString().getDateAndTime(), "Top-up", 0);
@@ -426,7 +441,19 @@ public class IWalletActivity extends AppCompatActivity {
             }
         });
 
-        submitButton.setOnClickListener(view -> submitRequest());
+        submitButton.setOnClickListener(view -> {
+            if (submitPressedTime + 2500 > System.currentTimeMillis()) {
+                submitToast.cancel();
+
+                generateTransactionId(0);
+            } else {
+                submitToast = Toast.makeText(myContext,
+                        "Press again to submit", Toast.LENGTH_SHORT);
+                submitToast.show();
+            }
+
+            submitPressedTime = System.currentTimeMillis();
+        });
 
         dialogCloseImage.setOnClickListener(view -> transferDialog.dismiss());
 
@@ -468,22 +495,76 @@ public class IWalletActivity extends AppCompatActivity {
         }
     }
 
-    private void submitRequest() {
+    private void generateTransactionId(int sender) {
         dialogProgressBar.setVisibility(View.VISIBLE);
+        dialogProgressBar2.setVisibility(View.VISIBLE);
         setDialogScreenEnabled(false);
 
-        String wtId = getWTID();
+        isGeneratingTransactionId = false;
+        usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(!isGeneratingTransactionId) {
+                    isGeneratingTransactionId = true;
+
+                    DateTimeToString dateTimeToString = new DateTimeToString();
+                    String yearId = dateTimeToString.getYear2Suffix();
+                    int month = Integer.parseInt(dateTimeToString.getMonthNo()) + 1;
+                    String monthId = String.valueOf(month);
+                    if(monthId.length() == 1) monthId = "0" + monthId;
+                    String dayId = dateTimeToString.getDay();
+                    if(dayId.length() == 1) dayId = "0" + dayId;
+
+                    String transactionId = "WT" + yearId + "-" + monthId + dayId;
+
+                    int suffixCount = 0;
+
+                    if(snapshot.exists()) {
+                        for(DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                            User user = new User(dataSnapshot);
+
+                            List<IWalletTransaction> transactionList = user.getTransactionList();
+                            if(transactionList.size() > 0) {
+                                for(IWalletTransaction transaction : transactionList) {
+                                    if(transaction.getId().startsWith(transactionId)) {
+                                        suffixCount++;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    String idSuffix = String.valueOf(suffixCount);
+                    if(idSuffix.length() == 1) idSuffix = "0" + idSuffix;
+
+                    transactionId += "-" + idSuffix;
+
+                    if(sender == 0) submitRequest(transactionId);
+                    else if(sender == 1) submitReferenceNumber(transactionId);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(
+                        myContext,
+                        error.toString(),
+                        Toast.LENGTH_LONG
+                ).show();
+
+                isGeneratingTransactionId = false;
+
+                setDialogScreenEnabled(true);
+            }
+        });
+    }
+
+    private void submitRequest(String wtId) {
+        setDialogScreenEnabled(false);
 
         IWalletTransaction transaction = new IWalletTransaction(wtId,
                 new DateTimeToString().getDateAndTime(), "Transfer", amount);
         transaction.setMobileNumber(mobileNumber);
         addTransactionToDatabase(transaction, wtId);
-    }
-
-    private String getWTID() {
-        String wtIdSuffix = String.valueOf(transactionList.size() + 1);
-        if(wtIdSuffix.length() == 1) wtIdSuffix = "0" + wtIdSuffix;
-        return "WT" + wtIdSuffix;
     }
 
     private void addTransactionToDatabase(IWalletTransaction transaction, String wtId) {
@@ -539,6 +620,27 @@ public class IWalletActivity extends AppCompatActivity {
         reloadImage.setVisibility(View.GONE);
         progressBar.setVisibility(View.VISIBLE);
         transactionView.setVisibility(View.INVISIBLE);
+
+        firebaseDatabase.getReference("gCashNumberList").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                StringBuilder captionText = new StringBuilder(defaultCaptionText);
+
+                if(snapshot.exists()) {
+                    for(DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        String gCashNumber = dataSnapshot.getValue(String.class);
+                        captionText.append("\n\t● ").append(gCashNumber);
+                    }
+                }
+
+                tvDialogCaption2.setText(captionText.toString());
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
 
         usersRef.child(userId).addValueEventListener(new ValueEventListener() {
             @Override

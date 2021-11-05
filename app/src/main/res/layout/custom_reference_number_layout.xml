@@ -81,16 +81,6 @@
             app:layout_constraintTop_toBottomOf="@+id/addRNLayout">
 
             <TextView
-                android:id="@+id/tvRemoved"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/ubuntu"
-                android:text="false"
-                android:visibility="gone"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
                 android:id="@+id/tvInvalidRN"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -104,18 +94,6 @@
                 app:layout_constraintEnd_toStartOf="@+id/tvValue"
                 app:layout_constraintStart_toEndOf="@+id/tvTimestamp"
                 app:layout_constraintTop_toTopOf="@+id/tvTimestamp" />
-
-            <ImageView
-                android:id="@+id/removeImage"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:padding="4dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_baseline_close_24"
-                app:tint="@color/red" />
 
             <TextView
                 android:id="@+id/tvReferenceNumber"
@@ -140,7 +118,7 @@
                 android:textSize="18sp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="@+id/tvTimestamp"
-                app:layout_constraintEnd_toStartOf="@+id/removeImage"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/tvReferenceNumber" />
 
             <TextView

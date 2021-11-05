@@ -6,8 +6,6 @@ public class ReferenceNumber {
     double value;
     boolean valid = true, iWalletUsed = false, notified = true;
 
-    String userId, bookingId;
-
     public ReferenceNumber() {
     }
 
@@ -51,22 +49,6 @@ public class ReferenceNumber {
 
     public boolean isNotified() {
         return notified;
-    }
-
-    public String getUserId() {
-        return userId;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
-
-    public String getBookingId() {
-        return bookingId;
-    }
-
-    public void setBookingId(String bookingId) {
-        this.bookingId = bookingId;
     }
 
     public void setNotified(boolean notified) {
