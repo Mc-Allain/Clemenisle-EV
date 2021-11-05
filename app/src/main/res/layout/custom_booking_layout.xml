@@ -393,13 +393,24 @@
             app:layout_constraintTop_toBottomOf="parent">
 
             <ImageView
-                android:id="@+id/checkImage"
+                android:id="@+id/rateImage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="4dp"
                 android:padding="4dp"
                 android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/locateImage"
+                app:srcCompat="@drawable/ic_baseline_star_24"
+                app:tint="@color/blue" />
+
+            <ImageView
+                android:id="@+id/checkImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="4dp"
+                android:visibility="gone"
+                app:layout_constraintBottom_toTopOf="@+id/rateImage"
                 app:layout_constraintStart_toStartOf="@+id/locateImage"
                 app:srcCompat="@drawable/ic_baseline_check_24"
                 app:tint="@color/green" />
@@ -513,6 +524,21 @@
                 app:tint="@color/blue" />
 
             <TextView
+                android:id="@+id/tvRate"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:fontFamily="@font/ubuntu"
+                android:gravity="center_vertical"
+                android:text="Rate the Driver"
+                android:textColor="@color/blue"
+                android:textStyle="bold"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@+id/rateImage"
+                app:layout_constraintEnd_toEndOf="@+id/tvLocateEnd"
+                app:layout_constraintStart_toEndOf="@+id/rateImage"
+                app:layout_constraintTop_toTopOf="@+id/rateImage" />
+
+            <TextView
                 android:id="@+id/tvCheck"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
@@ -591,7 +617,6 @@
                 android:id="@+id/tvViewQR"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:layout_marginStart="1dp"
                 android:fontFamily="@font/ubuntu"
                 android:gravity="center_vertical"
                 android:text="View QR Code"
@@ -607,7 +632,6 @@
                 android:id="@+id/tvOnlinePayment"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:layout_marginStart="1dp"
                 android:fontFamily="@font/ubuntu"
                 android:gravity="center_vertical"
                 android:text="Online Payment"
@@ -616,7 +640,7 @@
                 android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="@+id/onlinePaymentImage"
                 app:layout_constraintEnd_toEndOf="@+id/tvLocateEnd"
-                app:layout_constraintStart_toEndOf="@+id/viewQRImage"
+                app:layout_constraintStart_toEndOf="@+id/onlinePaymentImage"
                 app:layout_constraintTop_toTopOf="@+id/onlinePaymentImage" />
 
             <TextView

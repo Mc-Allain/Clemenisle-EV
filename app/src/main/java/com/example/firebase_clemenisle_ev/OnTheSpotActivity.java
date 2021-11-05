@@ -87,10 +87,10 @@ public class OnTheSpotActivity extends AppCompatActivity {
     private final static int MAP_SETTINGS_REQUEST = 1;
 
     ImageView profileImage, driverProfileImage, thumbnail, moreImage, locateImage, locateDestinationImage, viewQRImage,
-            chatImage, driverImage, passImage, stopImage, checkImage, reloadImage;
+            chatImage, driverImage, passImage, stopImage, checkImage, rateImage, reloadImage;
     TextView tvUserFullName, tvPassenger, tvDriverFullName, tvPlateNumber, tvPickUpTime, tvDropOffTime,
             tvBookingId, tvSchedule, tvTypeName, tvPrice, tvOriginLocation2, tvDestinationSpot2,
-            tvLocate, tvLocateDestination, tvViewQR, tvChat, tvDriver, tvPass, tvStop, tvCheck, tvLog;
+            tvLocate, tvLocateDestination, tvViewQR, tvChat, tvDriver, tvPass, tvStop, tvCheck, tvRate, tvLog;
     ExpandableTextView extvMessage;
     ConstraintLayout buttonLayout, buttonLayout2, bookingInfoLayout, bookingInfoButtonLayout,
             userInfoLayout, driverInfoLayout, timeInfoLayout;
@@ -173,6 +173,16 @@ public class OnTheSpotActivity extends AppCompatActivity {
     TextInputLayout tlReason;
     String reasonValue;
 
+    Dialog dialog3;
+    ImageView dialogCloseImage3, star1Image, star2Image, star3Image, star4Image, star5Image;
+    Button dialogSubmitButton2;
+    ProgressBar dialogProgressBar2;
+
+    EditText etRemarks;
+    TextInputLayout tlRemarks;
+    String remarksValue;
+    int starValue = 0;
+
     private void initSharedPreferences() {
         SharedPreferences sharedPreferences = myContext
                 .getSharedPreferences("login", Context.MODE_PRIVATE);
@@ -233,6 +243,8 @@ public class OnTheSpotActivity extends AppCompatActivity {
         stopImage = findViewById(R.id.stopImage);
         tvCheck = findViewById(R.id.tvCheck);
         checkImage = findViewById(R.id.checkImage);
+        tvRate = findViewById(R.id.tvRate);
+        rateImage = findViewById(R.id.rateImage);
 
         reloadImage = findViewById(R.id.reloadImage);
         mapLayout = findViewById(R.id.mapLayout);
@@ -265,6 +277,7 @@ public class OnTheSpotActivity extends AppCompatActivity {
         initBookingAlertDialog();
         initQRCodeDialog();
         initReasonDialog();
+        initRateTheDriverDialog();
 
         Intent intent = getIntent();
         bookingId = intent.getStringExtra("bookingId");
@@ -383,6 +396,136 @@ public class OnTheSpotActivity extends AppCompatActivity {
         getUsers();
     }
 
+    private void openRateTheDriverDialog(String bookingId) {
+        etRemarks.setText(null);
+        clickStar(0);
+
+        tlRemarks.setErrorEnabled(false);
+        tlRemarks.setError(null);
+        tlRemarks.setStartIconTintList(cslInitial);
+
+        tlRemarks.clearFocus();
+        tlRemarks.requestFocus();
+
+        dialogSubmitButton2.setOnClickListener(view -> rate());
+
+        dialog3.show();
+    }
+
+    private void initRateTheDriverDialog() {
+        dialog3 = new Dialog(myContext);
+        dialog3.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog3.setContentView(R.layout.dialog_input_rate_layout);
+
+        etRemarks = dialog3.findViewById(R.id.etRemarks);
+        tlRemarks = dialog3.findViewById(R.id.tlRemarks);
+        dialogSubmitButton2 = dialog3.findViewById(R.id.submitButton);
+        dialogCloseImage3 = dialog3.findViewById(R.id.dialogCloseImage);
+        dialogProgressBar2 = dialog3.findViewById(R.id.dialogProgressBar);
+
+        star1Image = dialog3.findViewById(R.id.star1Image);
+        star2Image = dialog3.findViewById(R.id.star2Image);
+        star3Image = dialog3.findViewById(R.id.star3Image);
+        star4Image = dialog3.findViewById(R.id.star4Image);
+        star5Image = dialog3.findViewById(R.id.star5Image);
+
+        star1Image.setOnClickListener(view -> clickStar(1));
+        star2Image.setOnClickListener(view -> clickStar(2));
+        star3Image.setOnClickListener(view -> clickStar(3));
+        star4Image.setOnClickListener(view -> clickStar(4));
+        star5Image.setOnClickListener(view -> clickStar(5));
+
+        etRemarks.setOnFocusChangeListener((view1, b) -> {
+            if(!tlRemarks.isErrorEnabled()) {
+                if(b) {
+                    tlRemarks.setStartIconTintList(cslBlue);
+                }
+                else {
+                    tlRemarks.setStartIconTintList(cslInitial);
+                }
+            }
+        });
+
+        etRemarks.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                remarksValue = etRemarks.getText().toString();
+            }
+        });
+
+        dialogCloseImage3.setOnClickListener(view -> dialog3.dismiss());
+
+        dialog3.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT);
+        dialog3.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+        dialog3.getWindow().getAttributes().windowAnimations = R.style.animBottomSlide;
+        dialog3.getWindow().setGravity(Gravity.BOTTOM);
+    }
+
+    private void clickStar(int count) {
+        starValue = count;
+
+        star1Image.setImageResource(R.drawable.ic_baseline_star_outline_24);
+        star2Image.setImageResource(R.drawable.ic_baseline_star_outline_24);
+        star3Image.setImageResource(R.drawable.ic_baseline_star_outline_24);
+        star4Image.setImageResource(R.drawable.ic_baseline_star_outline_24);
+        star5Image.setImageResource(R.drawable.ic_baseline_star_outline_24);
+
+        if(count >= 1) star1Image.setImageResource(R.drawable.ic_baseline_star_24);
+        if(count >= 2) star2Image.setImageResource(R.drawable.ic_baseline_star_24);
+        if(count >= 3) star3Image.setImageResource(R.drawable.ic_baseline_star_24);
+        if(count >= 4) star4Image.setImageResource(R.drawable.ic_baseline_star_24);
+        if(count >= 5) star5Image.setImageResource(R.drawable.ic_baseline_star_24);
+
+        dialogSubmitButton2.setEnabled(count != 0);
+    }
+
+    private void rate() {
+        getDriverUserId();
+
+        if(taskDriverUserId != null) {
+            dialogProgressBar2.setVisibility(View.VISIBLE);
+            setDialogScreenEnabled(false);
+
+            usersRef.child(userId).child("bookingList").
+                    child(bookingId).child("rating").setValue(starValue);
+
+            usersRef.child(taskDriverUserId).child("taskList").
+                    child(bookingId).child("remarks").setValue(remarksValue);
+            usersRef.child(taskDriverUserId).child("taskList").
+                    child(bookingId).child("rating").setValue(starValue)
+                    .addOnCompleteListener(task -> {
+                        if(task.isSuccessful()) {
+                            Toast.makeText(
+                                    myContext,
+                                    "Successfully rated the driver",
+                                    Toast.LENGTH_LONG
+                            ).show();
+                        }
+                        else {
+                            Toast.makeText(
+                                    myContext,
+                                    "Failed to rate the driver",
+                                    Toast.LENGTH_LONG
+                            ).show();
+                        }
+                        dialogProgressBar2.setVisibility(View.GONE);
+                        setDialogScreenEnabled(true);
+                        dialog3.dismiss();
+                    });
+        }
+    }
+
     private void openReasonDialog(Booking booking) {
         etReason.setText(reason);
 
@@ -399,12 +542,21 @@ public class OnTheSpotActivity extends AppCompatActivity {
     }
 
     private void setDialogScreenEnabled(boolean value) {
-        dialog2.setCanceledOnTouchOutside(false);
+        dialog.setCanceledOnTouchOutside(false);
         tlReason.setEnabled(value);
         dialogSubmitButton.setEnabled(value);
+        dialog2.setCanceledOnTouchOutside(false);
+        tlRemarks.setEnabled(value);
+        dialogSubmitButton2.setEnabled(value);
 
-        if(value) dialogCloseImage2.getDrawable().setTint(colorRed);
-        else dialogCloseImage2.getDrawable().setTint(colorInitial);
+        if(value) {
+            dialogCloseImage.getDrawable().setTint(colorRed);
+            dialogCloseImage2.getDrawable().setTint(colorRed);
+        }
+        else {
+            dialogCloseImage.getDrawable().setTint(colorInitial);
+            dialogCloseImage2.getDrawable().setTint(colorInitial);
+        }
     }
 
     private void submitReason(Booking booking) {
@@ -494,6 +646,7 @@ public class OnTheSpotActivity extends AppCompatActivity {
                 ).show();
 
                 status = "Completed";
+                updateInfo();
                 getUsers();
             }
             else {
@@ -1044,6 +1197,7 @@ public class OnTheSpotActivity extends AppCompatActivity {
                             ).show();
 
                             status = "Ongoing";
+                            updateInfo();
                             getUsers();
                         }
                         else {
@@ -1383,6 +1537,18 @@ public class OnTheSpotActivity extends AppCompatActivity {
 
                     pickUpTime = booking.getPickUpTime();
                     dropOffTime = booking.getDropOffTime();
+
+                    int rating = booking.getRating();
+
+                    tvRate.setVisibility(View.GONE);
+                    rateImage.setVisibility(View.GONE);
+                    if(!inDriverModule && status.equals("Completed") && rating == 0) {
+                        tvRate.setVisibility(View.VISIBLE);
+                        rateImage.setVisibility(View.VISIBLE);
+
+                        tvRate.setOnClickListener(view -> openRateTheDriverDialog(bookingId));
+                        rateImage.setOnClickListener(view -> openRateTheDriverDialog(bookingId));
+                    }
 
                     if(!inDriverModule) startTimer(booking);
                     finishLoading();

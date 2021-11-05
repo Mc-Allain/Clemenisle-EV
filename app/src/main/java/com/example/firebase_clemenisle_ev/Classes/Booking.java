@@ -28,6 +28,9 @@ public class Booking {
 
     String reason;
 
+    String remarks;
+    int rating = 0;
+
     public Booking() {
     }
 
@@ -136,6 +139,10 @@ public class Booking {
         this.dropOffTime = dataSnapshot.child("dropOffTime").getValue(String.class);
 
         this.reason = dataSnapshot.child("reason").getValue(String.class);
+
+        this.remarks = dataSnapshot.child("remarks").getValue(String.class);
+        if(dataSnapshot.child("rating").exists())
+            this.rating = dataSnapshot.child("rating").getValue(Integer.class);
     }
 
     public Booking(BookingType bookingType, Station endStation, String id, String message,
@@ -251,5 +258,13 @@ public class Booking {
 
     public String getReason() {
         return reason;
+    }
+
+    public String getRemarks() {
+        return remarks;
+    }
+
+    public int getRating() {
+        return rating;
     }
 }

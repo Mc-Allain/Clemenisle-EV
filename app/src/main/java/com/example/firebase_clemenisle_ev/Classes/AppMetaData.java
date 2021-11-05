@@ -4,7 +4,8 @@ public class AppMetaData {
 
     String newlyAddedFeatures = "● Chat List Added\n" +
             "● Online Payment Added\n" +
-            "● iWallet(Digital Wallet) Added";
+            "● iWallet(Digital Wallet) Added\n" +
+            "● Driver Rating System Added";
     double currentVersion = 0.31;
     boolean isDeveloper = false;
 

@@ -128,6 +128,7 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
                 rippleDrawable = ResourcesCompat.getDrawable(myResources,
                         R.drawable.custom_green_ripple_effect, null);
                 break;
+            case "Ongoing":
             case "Completed":
                 rippleDrawable = ResourcesCompat.getDrawable(myResources,
                         R.drawable.custom_blue_ripple_effect, null);
