@@ -93,7 +93,7 @@
         android:layout_marginEnd="24dp"
         android:hint="Reference Number"
         app:counterEnabled="true"
-        app:counterMaxLength="16"
+        app:counterMaxLength="13"
         app:endIconMode="clear_text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -106,7 +106,7 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/ubuntu"
             android:inputType="textEmailAddress"
-            android:maxLength="16"
+            android:maxLength="13"
             android:textColor="@color/black" />
 
     </com.google.android.material.textfield.TextInputLayout>

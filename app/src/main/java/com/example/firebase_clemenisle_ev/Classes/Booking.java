@@ -24,6 +24,8 @@ public class Booking {
     List<ReferenceNumber> referenceNumberList = new ArrayList<>();
     double refundedAmount;
 
+    String pickUpTime, dropOffTime;
+
     public Booking() {
     }
 
@@ -127,6 +129,9 @@ public class Booking {
         }
         if(dataSnapshot.child("refundedAmount").exists())
             this.refundedAmount = dataSnapshot.child("refundedAmount").getValue(Double.class);
+
+        this.pickUpTime = dataSnapshot.child("pickUpTime").getValue(String.class);
+        this.dropOffTime = dataSnapshot.child("dropOffTime").getValue(String.class);
     }
 
     public Booking(BookingType bookingType, Station endStation, String id, String message,
@@ -230,5 +235,13 @@ public class Booking {
 
     public double getRefundedAmount() {
         return refundedAmount;
+    }
+
+    public String getPickUpTime() {
+        return pickUpTime;
+    }
+
+    public String getDropOffTime() {
+        return dropOffTime;
     }
 }

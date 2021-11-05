@@ -4,16 +4,15 @@ public class ReferenceNumber {
 
     String id, referenceNumber, timestamp;
     double value;
-    boolean valid = true, notified = true;
+    boolean valid = true, iWalletUsed = false, notified = true;
 
     String userId, bookingId;
 
     public ReferenceNumber() {
     }
 
-    public ReferenceNumber(String id, String referenceNumber, String timestamp, double value) {
+    public ReferenceNumber(String id, String timestamp, double value) {
         this.id = id;
-        this.referenceNumber = referenceNumber;
         this.timestamp = timestamp;
         this.value = value;
     }
@@ -26,6 +25,10 @@ public class ReferenceNumber {
         return referenceNumber;
     }
 
+    public void setReferenceNumber(String referenceNumber) {
+        this.referenceNumber = referenceNumber;
+    }
+
     public String getTimestamp() {
         return timestamp;
     }
@@ -36,6 +39,14 @@ public class ReferenceNumber {
 
     public boolean isValid() {
         return valid;
+    }
+
+    public boolean isiWalletUsed() {
+        return iWalletUsed;
+    }
+
+    public void setiWalletUsed(boolean iWalletUsed) {
+        this.iWalletUsed = iWalletUsed;
     }
 
     public boolean isNotified() {

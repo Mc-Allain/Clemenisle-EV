@@ -48,7 +48,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class OnlinePaymentActivity extends AppCompatActivity implements ReferenceNumberAdapter.OnAddRNListener {
+public class OnlinePaymentActivity extends AppCompatActivity implements ReferenceNumberAdapter.OnInitiatePaymentListener {
 
     private final static String firebaseURL = FirebaseURL.getFirebaseURL();
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance(firebaseURL);
@@ -74,14 +74,15 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
     ReferenceNumberAdapter referenceNumberAdapter;
 
     String userId;
+    double iWalletAmount;
 
     boolean isLoggedIn = false;
 
     String defaultCaptionText = "Please send your payment to this/these GCash number/s: ",
             defaultLogText = "No Record";
 
-    int colorBlue, colorInitial, colorRed;
-    ColorStateList cslInitial, cslBlue;
+    ColorStateList cslInitial, cslBlue, cslRed;
+    int colorRed, colorBlue, colorInitial;
 
     String referenceNumberValue;
 
@@ -92,6 +93,16 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
     Button submitButton;
     ImageView dialogCloseImage;
     ProgressBar dialogProgressBar;
+
+    double amount;
+
+    Dialog dialog2;
+    TextView tvDialogTitle2, tvDialogCaption2;
+    EditText etAmount;
+    TextInputLayout tlAmount;
+    Button submitButton2;
+    ImageView dialogCloseImage2;
+    ProgressBar dialogProgressBar2;
 
     private void initSharedPreferences() {
         SharedPreferences sharedPreferences = myContext
@@ -143,6 +154,7 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
 
         cslInitial = ColorStateList.valueOf(myResources.getColor(R.color.initial));
         cslBlue = ColorStateList.valueOf(myResources.getColor(R.color.blue));
+        cslRed = ColorStateList.valueOf(myResources.getColor(R.color.red));
 
         Intent intent = getIntent();
         bookingId = intent.getStringExtra("bookingId");
@@ -150,6 +162,7 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
 
         initSharedPreferences();
         initAddReferenceNumberDialog();
+        iniIWalletPaymentDialog();
 
         firebaseAuth = FirebaseAuth.getInstance();
         if(isLoggedIn) {
@@ -178,7 +191,7 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
         referenceNumberView.setLayoutManager(linearLayout);
         referenceNumberAdapter = new ReferenceNumberAdapter(myContext, referenceNumberList);
         referenceNumberView.setAdapter(referenceNumberAdapter);
-        referenceNumberAdapter.setOnAddRNListener(this);
+        referenceNumberAdapter.setInitiatePaymentListener(this);
 
         helpImage.setOnClickListener(view -> openHelp());
         tvHelp.setOnClickListener(view -> openHelp());
@@ -201,8 +214,19 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
         submitButton.setEnabled(value);
         dialogCloseImage.setEnabled(value);
 
-        if(value) dialogCloseImage.getDrawable().setTint(colorRed);
-        else dialogCloseImage.getDrawable().setTint(colorInitial);
+        dialog2.setCanceledOnTouchOutside(value);
+        tlAmount.setEnabled(value);
+        submitButton2.setEnabled(value);
+        dialogCloseImage2.setEnabled(value);
+
+        if(value) {
+            dialogCloseImage.getDrawable().setTint(colorRed);
+            dialogCloseImage2.getDrawable().setTint(colorRed);
+        }
+        else {
+            dialogCloseImage.getDrawable().setTint(colorInitial);
+            dialogCloseImage2.getDrawable().setTint(colorInitial);
+        }
     }
 
     private void initAddReferenceNumberDialog() {
@@ -243,7 +267,7 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
             @Override
             public void afterTextChanged(Editable editable) {
                 referenceNumberValue = etReferenceNumber.getText().toString();
-                submitButton.setEnabled(referenceNumberValue.length() != 0);
+                submitButton.setEnabled(referenceNumberValue.length() == tlReferenceNumber.getCounterMaxLength());
             }
         });
 
@@ -282,39 +306,152 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
             return;
         }
 
+        String rnId = getRNID();
+
+        ReferenceNumber referenceNumber = new ReferenceNumber(rnId,
+                new DateTimeToString().getDateAndTime(), 0);
+        referenceNumber.setReferenceNumber(referenceNumberValue);
+
+        addReferenceNumberToDatabase(referenceNumber, rnId);
+    }
+
+    private String getRNID() {
         String rnIdSuffix = String.valueOf(referenceNumberList.size() + 1);
         if(rnIdSuffix.length() == 1) rnIdSuffix = "0" + rnIdSuffix;
-        String rnId = "RN" + rnIdSuffix;
+        return "RN" + rnIdSuffix;
+    }
 
-        ReferenceNumber referenceNumber = new ReferenceNumber(rnId, referenceNumberValue,
-                new DateTimeToString().getDateAndTime(), 0);
-
+    private void addReferenceNumberToDatabase(ReferenceNumber referenceNumber, String rnId) {
         DatabaseReference rnRef = usersRef.child(userId).child("bookingList").child(bookingId).
                 child("referenceNumberList").child(rnId);
         rnRef.setValue(referenceNumber).addOnCompleteListener(task -> {
-                    if(task.isSuccessful()) {
-                        dialog.dismiss();
+            if(task.isSuccessful()) {
+                dialog.dismiss();
+                dialog2.dismiss();
 
-                        Toast.makeText(
-                                myContext,
-                                "Successfully submitted a reference number",
-                                Toast.LENGTH_SHORT
-                        ).show();
-                    }
-                    else {
-                        if(task.getException() != null) {
-                            String error = task.getException().toString();
+                Toast.makeText(
+                        myContext,
+                        "Successfully submitted a reference number",
+                        Toast.LENGTH_SHORT
+                ).show();
+            }
+            else {
+                if(task.getException() != null) {
+                    String error = task.getException().toString();
 
-                            Toast.makeText(
-                                    myContext,
-                                    error,
-                                    Toast.LENGTH_LONG
-                            ).show();
-                        }
-                    }
-                    dialogProgressBar.setVisibility(View.GONE);
-                    setDialogScreenEnabled(true);
-                });
+                    Toast.makeText(
+                            myContext,
+                            error,
+                            Toast.LENGTH_LONG
+                    ).show();
+                }
+            }
+            dialogProgressBar.setVisibility(View.GONE);
+            dialogProgressBar2.setVisibility(View.GONE);
+            setDialogScreenEnabled(true);
+        });
+    }
+
+    private void iniIWalletPaymentDialog() {
+        dialog2 = new Dialog(myContext);
+        dialog2.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog2.setContentView(R.layout.dialog_input_iwallet_payment_layout);
+
+        tvDialogTitle2 = dialog2.findViewById(R.id.tvDialogTitle);
+        tvDialogCaption2 = dialog2.findViewById(R.id.tvDialogCaption);
+        etAmount = dialog2.findViewById(R.id.etAmount);
+        tlAmount = dialog2.findViewById(R.id.tlAmount);
+        submitButton2 = dialog2.findViewById(R.id.submitButton);
+        dialogCloseImage2 = dialog2.findViewById(R.id.dialogCloseImage);
+        dialogProgressBar2 = dialog2.findViewById(R.id.dialogProgressBar);
+
+        etAmount.setOnFocusChangeListener((view1, b) -> {
+            if(!tlAmount.isErrorEnabled()) {
+                if(b) {
+                    tlAmount.setStartIconTintList(cslBlue);
+                }
+                else {
+                    tlAmount.setStartIconTintList(cslInitial);
+                }
+            }
+        });
+
+        etAmount.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if(etAmount.getText().toString().length() >= 1)
+                    amount = Double.parseDouble(etAmount.getText().toString());
+                else amount = 0;
+
+                double maxAmount = iWalletAmount;
+
+                if(maxAmount == 0) {
+                    tlAmount.setErrorEnabled(true);
+                    String error = "You do not have enough iWallet to pay";
+                    tlAmount.setError(error);
+                    tlAmount.setErrorTextColor(cslRed);
+                    tlAmount.setStartIconTintList(cslRed);
+                }
+                else if(amount == 0) {
+                    tlAmount.setErrorEnabled(true);
+                    String error = "Amount must be at least ₱1.00";
+                    tlAmount.setError(error);
+                    tlAmount.setErrorTextColor(cslRed);
+                    tlAmount.setStartIconTintList(cslRed);
+                }
+                else if(amount > maxAmount) {
+                    tlAmount.setErrorEnabled(true);
+
+                    String iWallet = "₱" + maxAmount;
+                    if(iWallet.split("\\.")[1].length() == 1) iWallet += 0;
+                    String error = "Amount must be at maximum of " + iWallet;
+
+                    tlAmount.setError(error);
+                    tlAmount.setErrorTextColor(cslRed);
+                    tlAmount.setStartIconTintList(cslRed);
+                }
+                else {
+                    tlAmount.setErrorEnabled(false);
+                    tlAmount.setError(null);
+                    tlAmount.setStartIconTintList(cslBlue);
+                }
+
+                submitButton.setEnabled(amount > 0 && amount <= maxAmount);
+            }
+        });
+
+        submitButton2.setOnClickListener(view -> submitIWalletPayment());
+
+        dialogCloseImage2.setOnClickListener(view -> dialog2.dismiss());
+
+        dialog2.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT);
+        dialog2.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+        dialog2.getWindow().getAttributes().windowAnimations = R.style.animBottomSlide;
+        dialog2.getWindow().setGravity(Gravity.BOTTOM);
+    }
+
+    private void submitIWalletPayment() {
+        setDialogScreenEnabled(false);
+        dialogProgressBar2.setVisibility(View.VISIBLE);
+
+        String rnId = getRNID();
+
+        ReferenceNumber referenceNumber = new ReferenceNumber(rnId,
+                new DateTimeToString().getDateAndTime(), amount);
+        referenceNumber.setiWalletUsed(true);
+
+        addReferenceNumberToDatabase(referenceNumber, rnId);
     }
 
     private void openHelp() {
@@ -362,6 +499,15 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
                         User user = new User(dataSnapshot);
                         List<Booking> bookingList = user.getBookingList();
 
+                        if(user.getId().equals(userId)) {
+                            iWalletAmount = user.getIWallet();
+                            String iWallet = "₱" + iWalletAmount;
+                            if(iWallet.split("\\.")[1].length() == 1) iWallet += 0;
+
+                            String helpText = "Maximum Amount: " + iWallet;
+                            tlAmount.setHelperText(helpText);
+                        }
+
                         for(Booking booking : bookingList) {
                             List<ReferenceNumber> referenceNumberList1 =
                                     booking.getReferenceNumberList();
@@ -391,7 +537,7 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
 
                 balance = price - creditedAmount;
                 if(balance < 0) {
-                    referenceNumberAdapter.setShowAddRN(false);
+                    referenceNumberAdapter.setCompletePayment(false);
 
                     balance = 0;
                 }
@@ -421,7 +567,7 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
 
                 if(status.equals("Pending") || status.equals("Booked")) {
                     setActivityCaptionVisibility(true);
-                    layoutParams.setMargins(layoutParams.leftMargin, dpToPx(64),
+                    layoutParams.setMargins(layoutParams.leftMargin, dpToPx(96),
                             layoutParams.rightMargin, layoutParams.bottomMargin);
                 }
                 else {
@@ -499,6 +645,26 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
     @Override
     public void addReferenceNumber() {
         etReferenceNumber.setText(null);
+
+        tlReferenceNumber.setErrorEnabled(false);
+        tlReferenceNumber.setError(null);
+        tlReferenceNumber.setStartIconTintList(cslInitial);
+
+        tlReferenceNumber.clearFocus();
+        tlReferenceNumber.requestFocus();
         dialog.show();
+    }
+
+    @Override
+    public void useIWallet() {
+        etAmount.setText("0");
+
+        tlAmount.setErrorEnabled(false);
+        tlAmount.setError(null);
+        tlAmount.setStartIconTintList(cslInitial);
+
+        tlAmount.clearFocus();
+        tlAmount.requestFocus();
+        dialog2.show();
     }
 }

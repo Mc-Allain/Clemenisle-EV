@@ -782,6 +782,8 @@ public class OnTheSpotActivity extends AppCompatActivity {
                             stopImage.setVisibility(View.GONE);
                             tvCheck.setVisibility(View.GONE);
                             checkImage.setVisibility(View.GONE);
+
+                            extvMessage.setVisibility(View.GONE);
                             break;
                     }
 

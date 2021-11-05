@@ -28,13 +28,13 @@ public class ReferenceNumberAdapter extends RecyclerView.Adapter<ReferenceNumber
 
     List<ReferenceNumber> referenceNumberList;
     String status;
-    boolean showAddRN = true;
+    boolean isCompletePayment = false;
     LayoutInflater inflater;
 
     Context myContext;
     Resources myResources;
 
-    OnAddRNListener onAddRNListener;
+    OnInitiatePaymentListener onInitiatePaymentListener;
 
     long removePressedTime;
     Toast removeToast;
@@ -55,7 +55,7 @@ public class ReferenceNumberAdapter extends RecyclerView.Adapter<ReferenceNumber
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         ConstraintLayout backgroundLayout = holder.backgroundLayout,
                 referenceNumberLayout = holder.referenceNumberLayout,
-                addRNLayout = holder.addRNLayout;
+                addRNLayout = holder.addRNLayout, iWalletLayout = holder.iWalletLayout;
         TextView tvReferenceNumber = holder.tvReferenceNumber, tvTimestamp = holder.tvTimestamp,
                 tvValue = holder.tvValue, tvInvalidRN = holder.tvInvalidRN, tvRemoved = holder.tvRemoved;
         ImageView removeImage = holder.removeImage;
@@ -65,24 +65,33 @@ public class ReferenceNumberAdapter extends RecyclerView.Adapter<ReferenceNumber
 
         referenceNumberLayout.setVisibility(View.GONE);
         addRNLayout.setVisibility(View.GONE);
+        iWalletLayout.setVisibility(View.GONE);
 
-        if(status != null && (status.equals("Pending") || status.equals("Booked"))
-                && position == 0 && showAddRN) {
-            addRNLayout.setVisibility(View.VISIBLE);
-            addRNLayout.setOnClickListener(view -> onAddRNListener.addReferenceNumber());
+        if(status != null && (status.equals("Pending") || status.equals("Booked"))&& !isCompletePayment) {
+            if(position == 0) {
+                iWalletLayout.setVisibility(View.VISIBLE);
+                iWalletLayout.setOnClickListener(view -> onInitiatePaymentListener.useIWallet());
+            }
+            else if(position == 1) {
+                addRNLayout.setVisibility(View.VISIBLE);
+                addRNLayout.setOnClickListener(view -> onInitiatePaymentListener.addReferenceNumber());
+            }
         }
-        else if(position != 0) {
+        else if(position >= 2) {
             referenceNumberLayout.setVisibility(View.VISIBLE);
 
-            ReferenceNumber referenceNumber = referenceNumberList.get(position-1);
+            ReferenceNumber referenceNumber = referenceNumberList.get(position-2);
             String id = referenceNumber.getId();
-            String referenceNumberValue = "#" + referenceNumber.getReferenceNumber();
             String timestamp = referenceNumber.getTimestamp();
             double value = referenceNumber.getValue();
             boolean isValid = referenceNumber.isValid();
 
             String userId = referenceNumber.getUserId();
             String bookingId = referenceNumber.getBookingId();
+
+            String referenceNumberValue = "#" + referenceNumber.getReferenceNumber();
+            boolean isIWalletUsed = referenceNumber.isiWalletUsed();
+            if(isIWalletUsed) referenceNumberValue = "iWallet";
 
             tvReferenceNumber.setText(referenceNumberValue);
 
@@ -145,12 +154,13 @@ public class ReferenceNumberAdapter extends RecyclerView.Adapter<ReferenceNumber
         backgroundLayout.setLayoutParams(layoutParams);
     }
 
-    public void setOnAddRNListener(OnAddRNListener onAddRNListener) {
-        this.onAddRNListener = onAddRNListener;
+    public void setInitiatePaymentListener(OnInitiatePaymentListener onInitiatePaymentListener) {
+        this.onInitiatePaymentListener = onInitiatePaymentListener;
     }
 
-    public interface OnAddRNListener {
+    public interface OnInitiatePaymentListener {
         void addReferenceNumber();
+        void useIWallet();
     }
 
     private int dpToPx(int dp) {
@@ -160,12 +170,12 @@ public class ReferenceNumberAdapter extends RecyclerView.Adapter<ReferenceNumber
 
     @Override
     public int getItemCount() {
-        return referenceNumberList.size() + 1;
+        return referenceNumberList.size() + 2;
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        ConstraintLayout backgroundLayout, referenceNumberLayout, addRNLayout;
-        TextView tvReferenceNumber, tvTimestamp, tvValue, tvAddRN, tvInvalidRN, tvRemoved;
+        ConstraintLayout backgroundLayout, referenceNumberLayout, addRNLayout, iWalletLayout;
+        TextView tvReferenceNumber, tvTimestamp, tvValue,tvInvalidRN,  tvAddRN, tvIWallet, tvRemoved;
         ImageView removeImage;
 
         public ViewHolder(@NonNull View itemView) {
@@ -173,13 +183,18 @@ public class ReferenceNumberAdapter extends RecyclerView.Adapter<ReferenceNumber
 
             backgroundLayout = itemView.findViewById(R.id.backgroundLayout);
             referenceNumberLayout = itemView.findViewById(R.id.referenceNumberLayout);
-            addRNLayout = itemView.findViewById(R.id.addRNLayout);
             tvReferenceNumber = itemView.findViewById(R.id.tvReferenceNumber);
             tvTimestamp = itemView.findViewById(R.id.tvTimestamp);
             tvValue = itemView.findViewById(R.id.tvValue);
-            tvAddRN = itemView.findViewById(R.id.tvAddRN);
             tvInvalidRN = itemView.findViewById(R.id.tvInvalidRN);
             removeImage = itemView.findViewById(R.id.removeImage);
+
+            addRNLayout = itemView.findViewById(R.id.addRNLayout);
+            tvAddRN = itemView.findViewById(R.id.tvAddRN);
+
+            iWalletLayout = itemView.findViewById(R.id.iWalletLayout);
+            tvIWallet = itemView.findViewById(R.id.tvIWallet);
+
             tvRemoved = itemView.findViewById(R.id.tvRemoved);
 
             setIsRecyclable(false);
@@ -190,7 +205,7 @@ public class ReferenceNumberAdapter extends RecyclerView.Adapter<ReferenceNumber
         this.status = status;
     }
 
-    public void setShowAddRN(boolean showAddRN) {
-        this.showAddRN = showAddRN;
+    public void setCompletePayment(boolean isCompletePayment) {
+        this.isCompletePayment = isCompletePayment;
     }
 }

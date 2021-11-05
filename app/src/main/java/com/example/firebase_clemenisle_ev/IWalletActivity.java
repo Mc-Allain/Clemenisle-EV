@@ -177,7 +177,7 @@ public class IWalletActivity extends AppCompatActivity {
             tlMobileNumber.setErrorEnabled(false);
             tlMobileNumber.setError(null);
             tlAmount.setErrorEnabled(false);
-            tlMobileNumber.setError(null);
+            tlAmount.setError(null);
 
             tlMobileNumber.setStartIconTintList(cslInitial);
             tlAmount.setStartIconTintList(cslInitial);
@@ -311,7 +311,11 @@ public class IWalletActivity extends AppCompatActivity {
                     }
                     else if(amount > maxAmount) {
                         tlAmount.setErrorEnabled(true);
-                        String error = "Amount must be at maximum of ₱" + maxAmount;
+
+                        String iWallet = "₱" + maxAmount;
+                        if(iWallet.split("\\.")[1].length() == 1) iWallet += 0;
+                        String error = "Amount must be at maximum of " + iWallet;
+
                         tlAmount.setError(error);
                         tlAmount.setErrorTextColor(cslRed);
                         tlAmount.setStartIconTintList(cslRed);
@@ -455,7 +459,7 @@ public class IWalletActivity extends AppCompatActivity {
         if(iWallet.split("\\.")[1].length() == 1) iWallet += 0;
 
         tvIWallet.setText(iWallet);
-        String helpText = "Maxmimum Amount: " + iWallet;
+        String helpText = "Maximum Amount: " + iWallet;
         tlAmount.setHelperText(helpText);
 
         progressBar.setVisibility(View.GONE);

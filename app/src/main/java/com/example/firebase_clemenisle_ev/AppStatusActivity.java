@@ -92,7 +92,7 @@ public class AppStatusActivity extends AppCompatActivity {
                 if(statusPromptArray.contains(status) && !appMetaData.isDeveloper() && status != null) {
                     if(status.equals(statusPromptArray.get(0)) && isOnScreen) {
                         try {
-                            Glide.with(myContext).load(R.drawable.ic_baseline_error_outline_24)
+                            Glide.with(myContext).load(R.drawable.under_development)
                                     .placeholder(R.drawable.image_loading_placeholder)
                                     .into(activityIconImage);
                         }
@@ -100,7 +100,7 @@ public class AppStatusActivity extends AppCompatActivity {
                     }
                     else if(status.equals(statusPromptArray.get(1)) && isOnScreen) {
                         try {
-                            Glide.with(myContext).load(R.drawable.ic_baseline_error_outline_24)
+                            Glide.with(myContext).load(R.drawable.under_maintenance)
                                     .placeholder(R.drawable.image_loading_placeholder)
                                     .into(activityIconImage);
                         }

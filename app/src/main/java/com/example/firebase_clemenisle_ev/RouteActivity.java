@@ -569,6 +569,8 @@ public class RouteActivity extends AppCompatActivity implements
                     tvDriver.setTextColor(colorBlue);
                     driverImage.getDrawable().setTint(colorBlue);
 
+                    extvMessage.setVisibility(View.VISIBLE);
+
                     switch (status) {
                         case "Pending":
                             tvChat.setVisibility(View.GONE);
@@ -714,6 +716,8 @@ public class RouteActivity extends AppCompatActivity implements
                             stopImage.setVisibility(View.GONE);
                             tvCheck.setVisibility(View.GONE);
                             checkImage.setVisibility(View.GONE);
+
+                            extvMessage.setVisibility(View.GONE);
                             break;
                     }
 

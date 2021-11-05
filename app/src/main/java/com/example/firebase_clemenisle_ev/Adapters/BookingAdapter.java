@@ -403,7 +403,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                     extvMessage.setText(message);
                     getUserInfo(bookingId, status, tvUserFullName, profileImage, tvChat, chatImage,
                             tvDriver, driverImage, tvPass, passImage, tvStop, stopImage,
-                            tvCheck, checkImage, tvPassenger);
+                            tvCheck, checkImage, tvPassenger, extvMessage);
                     if(inDriverModule && (status.equals("Passed") ||
                             previousDriverUserId != null && previousDriverUserId.length() > 0 ||
                             status.equals("Request") && taskDriverUserId != null  && !taskDriverUserId.equals(userId)))
@@ -645,7 +645,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                              TextView tvPass, ImageView passImage,
                              TextView tvStop, ImageView stopImage,
                              TextView tvCheck, ImageView checkImage,
-                             TextView tvPassenger) {
+                             TextView tvPassenger, ExpandableTextView extvMessage) {
         for(User user : users) {
             List<Booking> bookingList = user.getBookingList();
             for(Booking booking : bookingList) {
@@ -673,6 +673,8 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                     driverImage.getDrawable().setTint(colorBlue);
 
                     booking.setStatus(status);
+
+                    extvMessage.setVisibility(View.VISIBLE);
 
                     switch (status) {
                         case "Pending":
@@ -828,6 +830,8 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
 
                             tvCheck.setOnClickListener(view -> completeTask(booking));
                             checkImage.setOnClickListener(view -> completeTask(booking));
+
+                            extvMessage.setVisibility(View.GONE);
                             break;
                         default:
                             tvChat.setVisibility(View.GONE);
@@ -840,6 +844,8 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                             stopImage.setVisibility(View.GONE);
                             tvCheck.setVisibility(View.GONE);
                             checkImage.setVisibility(View.GONE);
+
+                            extvMessage.setVisibility(View.GONE);
                             break;
                     }
 

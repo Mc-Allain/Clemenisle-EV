@@ -6,7 +6,7 @@ public class AppMetaData {
             "● Online Payment Added\n" +
             "● iWallet(Digital Wallet) Added";
     double currentVersion = 0.31;
-    boolean isDeveloper = true;
+    boolean isDeveloper = false;
 
     public AppMetaData() {
     }

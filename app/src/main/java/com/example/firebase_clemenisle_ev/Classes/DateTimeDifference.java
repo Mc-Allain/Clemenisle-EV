@@ -14,6 +14,7 @@ public class DateTimeDifference {
         int yearNow = Integer.parseInt(dateTimeToString.getYear());
 
         dateTimeToString.setFormattedSchedule(timestamp);
+        String chatDateAndTime = dateTimeToString.getDateAndTime();
         String chatDate = dateTimeToString.getDate();
         String chatTime = dateTimeToString.getTime(false);
         int chatMin = Integer.parseInt(dateTimeToString.getMin());
@@ -60,11 +61,11 @@ public class DateTimeDifference {
                     dayDifference = dayNow - chatDay;
                 else dayDifference = dayNow + chatMaxDay - chatDay;
 
-                if(dayDifference == 1) timestamp = "Yesterday";
-                else if(dayDifference < 7) timestamp = dayDifference + " days ago";
-                else timestamp = chatDateNoYear;
+                if(dayDifference == 1) timestamp = "Yesterday | " + chatTime;
+                else if(dayDifference < 7) timestamp = dayDifference + " days ago | " + chatTime;
+                else timestamp = chatDateNoYear + " | " + chatTime;
             }
-            else timestamp = chatDate;
+            else timestamp = chatDateAndTime;
         }
         this.timestamp = timestamp;
     }

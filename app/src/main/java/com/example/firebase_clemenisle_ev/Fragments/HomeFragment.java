@@ -412,6 +412,7 @@ public class HomeFragment extends Fragment implements
         setActionButtonEnabled(false);
 
         acSort.requestFocus();
+        tlSort.setVisibility(View.VISIBLE);
     }
 
     private void closeSortLayout() {
@@ -429,6 +430,7 @@ public class HomeFragment extends Fragment implements
         setActionButtonEnabled(true);
 
         acSort.clearFocus();
+        tlSort.setVisibility(View.INVISIBLE);
     }
 
     private void openSearchLayout() {
@@ -447,6 +449,7 @@ public class HomeFragment extends Fragment implements
         setActionButtonEnabled(false);
 
         acSearch.requestFocus();
+        tlSearch.setVisibility(View.VISIBLE);
     }
 
     private void closeSearchLayout() {
@@ -464,6 +467,7 @@ public class HomeFragment extends Fragment implements
         setActionButtonEnabled(true);
 
         acSearch.clearFocus();
+        tlSearch.setVisibility(View.INVISIBLE);
     }
 
     private void setTransition(ConstraintLayout constraintLayout, int sender, int action) {
