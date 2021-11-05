@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -13,9 +14,11 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
+import android.text.Editable;
 import android.text.Html;
 import android.text.SpannableString;
 import android.text.Spanned;
+import android.text.TextWatcher;
 import android.transition.ChangeBounds;
 import android.transition.Transition;
 import android.transition.TransitionManager;
@@ -24,6 +27,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -40,6 +44,7 @@ import com.example.firebase_clemenisle_ev.Classes.SimpleTouristSpot;
 import com.example.firebase_clemenisle_ev.Classes.User;
 import com.example.firebase_clemenisle_ev.Fragments.MapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -100,6 +105,7 @@ public class OnTheSpotActivity extends AppCompatActivity {
     Resources myResources;
 
     int colorGreen, colorInitial, colorBlue;
+    ColorStateList cslInitial, cslBlue;
 
     String userId, driverUserId, taskDriverUserId;
 
@@ -109,7 +115,7 @@ public class OnTheSpotActivity extends AppCompatActivity {
 
     String bookingId, schedule, typeName, price, status, message, previousDriverUserId;
     LatLng originLocation, destinationSpotLocation;
-    String pickUpTime, dropOffTime;
+    String pickUpTime, dropOffTime, reason;
 
     SimpleTouristSpot destinationSpot;
 
@@ -157,6 +163,15 @@ public class OnTheSpotActivity extends AppCompatActivity {
     List<Booking> taskList3 = new ArrayList<>();
 
     String pickUpTimeText = "<b>Pick-up Time</b>: ", dropOffTimeText = "<b>Drop-off Time</b>: ";
+
+    Dialog dialog2;
+    ImageView dialogCloseImage2;
+    Button dialogSubmitButton;
+    ProgressBar dialogProgressBar;
+
+    EditText etReason;
+    TextInputLayout tlReason;
+    String reasonValue;
 
     private void initSharedPreferences() {
         SharedPreferences sharedPreferences = myContext
@@ -240,11 +255,15 @@ public class OnTheSpotActivity extends AppCompatActivity {
         colorInitial = myResources.getColor(R.color.initial);
         colorBlue = myResources.getColor(R.color.blue);
 
+        cslInitial = ColorStateList.valueOf(myResources.getColor(R.color.initial));
+        cslBlue = ColorStateList.valueOf(myResources.getColor(R.color.blue));
+
         optionRunnable = () -> closeOption();
 
         initSharedPreferences();
         initBookingAlertDialog();
         initQRCodeDialog();
+        initReasonDialog();
 
         Intent intent = getIntent();
         bookingId = intent.getStringExtra("bookingId");
@@ -363,6 +382,87 @@ public class OnTheSpotActivity extends AppCompatActivity {
         getUsers();
     }
 
+    private void openReasonDialog(Booking booking) {
+        etReason.setText(reason);
+
+        tlReason.setErrorEnabled(false);
+        tlReason.setError(null);
+        tlReason.setStartIconTintList(cslInitial);
+
+        tlReason.clearFocus();
+        tlReason.requestFocus();
+
+        dialogSubmitButton.setOnClickListener(view -> submitReason(booking));
+
+        dialog2.show();
+    }
+
+    private void submitReason(Booking booking) {
+        progressBar.setVisibility(View.VISIBLE);
+        usersRef.child(driverUserId).child("taskList").
+                child(booking.getId()).child("reason").setValue(reasonValue)
+                .addOnCompleteListener(task -> {
+                    if(task.isSuccessful()) passTask(booking);
+                    else {
+                        Toast.makeText(
+                                myContext,
+                                "Failed to pass the task",
+                                Toast.LENGTH_LONG
+                        ).show();
+                        progressBar.setVisibility(View.GONE);
+                    }
+                });
+    }
+
+    private void initReasonDialog() {
+        dialog2 = new Dialog(myContext);
+        dialog2.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog2.setContentView(R.layout.dialog_input_pass_task_reason_layout);
+
+        etReason = dialog2.findViewById(R.id.etReason);
+        tlReason = dialog2.findViewById(R.id.tlReason);
+        dialogSubmitButton = dialog2.findViewById(R.id.submitButton);
+        dialogCloseImage2 = dialog2.findViewById(R.id.dialogCloseImage);
+        dialogProgressBar = dialog2.findViewById(R.id.dialogProgressBar);
+
+        etReason.setOnFocusChangeListener((view1, b) -> {
+            if(!tlReason.isErrorEnabled()) {
+                if(b) {
+                    tlReason.setStartIconTintList(cslBlue);
+                }
+                else {
+                    tlReason.setStartIconTintList(cslInitial);
+                }
+            }
+        });
+
+        etReason.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                reasonValue = etReason.getText().toString();
+                dialogSubmitButton.setEnabled(reasonValue.length() > 0);
+            }
+        });
+
+        dialogCloseImage2.setOnClickListener(view -> dialog2.dismiss());
+
+        dialog2.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT);
+        dialog2.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+        dialog2.getWindow().getAttributes().windowAnimations = R.style.animBottomSlide;
+        dialog2.getWindow().setGravity(Gravity.BOTTOM);
+    }
+
     private void completeTask() {
         usersRef.child(userId).child("bookingList").
                 child(bookingId).child("dropOffTime").
@@ -415,6 +515,12 @@ public class OnTheSpotActivity extends AppCompatActivity {
                             userInfoLayout.setVisibility(View.VISIBLE);
 
                             getDriverUserId();
+                            reason = getReason();
+                            if((status.equals("Request") || status.equals("Passed")) &&
+                                    taskDriverUserId.equals(driverUserId)) {
+                                String reasonText = "<b>Your Reason</b>: " + reason;
+                                extvMessage.setText(fromHtml(reasonText));
+                            }
 
                             getUserInfo();
                             if(inDriverModule && (status.equals("Passed") ||
@@ -457,6 +563,19 @@ public class OnTheSpotActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    private String getReason() {
+        for(User user : users) {
+            if(user.getId().equals(driverUserId)) {
+                List<Booking> taskList = user.getTaskList();
+                for(Booking task : taskList) {
+                    if(task.getId().equals(bookingId))
+                        return task.getReason();
+                }
+            }
+        }
+        return null;
     }
 
     private void openChat() {
@@ -693,8 +812,8 @@ public class OnTheSpotActivity extends AppCompatActivity {
                             tvPass.setVisibility(View.VISIBLE);
                             passImage.setVisibility(View.VISIBLE);
 
-                            tvPass.setOnClickListener(view -> passTask(booking));
-                            passImage.setOnClickListener(view -> passTask(booking));
+                            tvPass.setOnClickListener(view -> openReasonDialog(booking));
+                            passImage.setOnClickListener(view -> openReasonDialog(booking));
 
                             tvStop.setVisibility(View.GONE);
                             stopImage.setVisibility(View.GONE);
@@ -789,8 +908,6 @@ public class OnTheSpotActivity extends AppCompatActivity {
                             stopImage.setVisibility(View.GONE);
                             tvCheck.setVisibility(View.GONE);
                             checkImage.setVisibility(View.GONE);
-
-                            extvMessage.setVisibility(View.GONE);
                             break;
                     }
 

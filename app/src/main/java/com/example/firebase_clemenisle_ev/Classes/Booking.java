@@ -26,6 +26,8 @@ public class Booking {
 
     String pickUpTime, dropOffTime;
 
+    String reason;
+
     public Booking() {
     }
 
@@ -132,6 +134,8 @@ public class Booking {
 
         this.pickUpTime = dataSnapshot.child("pickUpTime").getValue(String.class);
         this.dropOffTime = dataSnapshot.child("dropOffTime").getValue(String.class);
+
+        this.reason = dataSnapshot.child("reason").getValue(String.class);
     }
 
     public Booking(BookingType bookingType, Station endStation, String id, String message,
@@ -243,5 +247,9 @@ public class Booking {
 
     public String getDropOffTime() {
         return dropOffTime;
+    }
+
+    public String getReason() {
+        return reason;
     }
 }

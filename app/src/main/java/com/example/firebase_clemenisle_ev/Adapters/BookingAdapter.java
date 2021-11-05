@@ -4,23 +4,30 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Handler;
+import android.text.Editable;
 import android.text.Html;
 import android.text.SpannableString;
 import android.text.Spanned;
+import android.text.TextWatcher;
 import android.transition.ChangeBounds;
 import android.transition.Transition;
 import android.transition.TransitionManager;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -40,6 +47,7 @@ import com.example.firebase_clemenisle_ev.OnTheSpotActivity;
 import com.example.firebase_clemenisle_ev.OnlinePaymentActivity;
 import com.example.firebase_clemenisle_ev.R;
 import com.example.firebase_clemenisle_ev.RouteActivity;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -77,6 +85,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
     Resources myResources;
 
     int colorGreen, colorInitial, colorBlue;
+    ColorStateList cslInitial, cslBlue;
 
     String userId;
     boolean isLoggedIn = false;
@@ -105,6 +114,15 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
     String initiateService = "Initiate Service", dropOffText = "Drop Off";
 
     String pickUpTimeText = "<b>Pick-up Time</b>: ", dropOffTimeText = "<b>Drop-off Time</b>: ";
+
+    Dialog dialog;
+    ImageView dialogCloseImage;
+    Button dialogSubmitButton;
+    ProgressBar dialogProgressBar;
+
+    EditText etReason;
+    TextInputLayout tlReason;
+    String reasonValue;
 
     public void setOnLikeClickListener(OnActionClickListener onActionClickListener) {
         this.onActionClickListener = onActionClickListener;
@@ -179,8 +197,12 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
         colorInitial = myResources.getColor(R.color.initial);
         colorBlue = myResources.getColor(R.color.blue);
 
+        cslInitial = ColorStateList.valueOf(myResources.getColor(R.color.initial));
+        cslBlue = ColorStateList.valueOf(myResources.getColor(R.color.blue));
+
         initSharedPreferences();
         initQRCodeDialog();
+        initReasonDialog();
 
         firebaseAuth = FirebaseAuth.getInstance();
         if(isLoggedIn) {
@@ -211,6 +233,8 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
 
         String pickUpTime = booking.getPickUpTime();
         String dropOffTime = booking.getDropOffTime();
+
+        String reason = booking.getReason();
 
         BookingType bookingType = booking.getBookingType();
         String typeName = bookingType.getName();
@@ -269,7 +293,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
             Station endStation = booking.getEndStation();
 
             String img;
-            List<Route> routeList = bookingList.get(position).getRouteList();
+            List<Route> routeList = booking.getRouteList();
             if(routeList.size() > 0) {
                 img = routeList.get(0).getImg();
                 try {
@@ -296,11 +320,9 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
             paidImage.getDrawable().setTint(color);
 
             tvLocate.setOnClickListener(view -> openMap(startStation));
-
             locateImage.setOnClickListener(view -> openMap(startStation));
 
             tvLocateEnd.setOnClickListener(view -> openMap(endStation));
-
             locateEndImage.setOnClickListener(view -> openMap(endStation));
 
             if(!inDriverModule) {
@@ -343,11 +365,9 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
             tvLocateEnd.setText(locateDestinationSpotText);
 
             tvLocate.setOnClickListener(view -> openMap2(originLat, originLng));
-
             locateImage.setOnClickListener(view -> openMap2(originLat, originLng));
 
             tvLocateEnd.setOnClickListener(view -> openMap3(destinationSpot));
-
             locateEndImage.setOnClickListener(view -> openMap3(destinationSpot));
         }
 
@@ -367,7 +387,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
         getUsers(driverInfoLayout, userInfoLayout, extvMessage, message, bookingId, status, tvUserFullName,
                 profileImage, tvViewQR, viewQRImage, tvChat, chatImage, tvDriver, driverImage,
                 tvPass, passImage, tvStop, stopImage, tvCheck, checkImage, tvDriverFullName, driverProfileImage,
-                tvPassenger, tvPlateNumber, previousDriverUserId);
+                tvPassenger, tvPlateNumber, previousDriverUserId, reason, thumbnail);
 
         int top = dpToPx(4), bottom = dpToPx(4);
 
@@ -391,6 +411,124 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
         backgroundLayout.setLayoutParams(layoutParams);
     }
 
+    private void getThumbnail(ImageView thumbnail, String bookingId) {
+        String passengerId = getPassengerUserId(bookingId);
+
+        if(passengerId != null) {
+            usersRef.child(passengerId).child("bookingList").child(bookingId).
+                    addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    String img;
+                    if(snapshot.exists()) {
+                        Booking booking = new Booking(snapshot);
+                        List<Route> routeList = booking.getRouteList();
+                        if(routeList.size() > 0) {
+                            img = routeList.get(0).getImg();
+                            try {
+                                Glide.with(myContext).load(img).placeholder(R.drawable.image_loading_placeholder).
+                                        override(Target.SIZE_ORIGINAL).into(thumbnail);
+                            }
+                            catch (Exception ignored) {}
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Toast.makeText(
+                            myContext,
+                            error.toString(),
+                            Toast.LENGTH_LONG
+                    ).show();
+                }
+            });
+        }
+    }
+
+    private void openReasonDialog(Booking booking, String reason) {
+        etReason.setText(reason);
+
+        tlReason.setErrorEnabled(false);
+        tlReason.setError(null);
+        tlReason.setStartIconTintList(cslInitial);
+
+        tlReason.clearFocus();
+        tlReason.requestFocus();
+
+        dialogSubmitButton.setOnClickListener(view -> submitReason(booking));
+
+        dialog.show();
+    }
+
+    private void submitReason(Booking booking) {
+        if(onActionClickListener != null)
+            onActionClickListener.setProgressBarToVisible(true);
+        usersRef.child(userId).child("taskList").
+                child(booking.getId()).child("reason").setValue(reasonValue)
+                .addOnCompleteListener(task -> {
+                    if(task.isSuccessful()) passTask(booking);
+                    else {
+                        Toast.makeText(
+                                myContext,
+                                "Failed to pass the task",
+                                Toast.LENGTH_LONG
+                        ).show();
+                        if(onActionClickListener != null)
+                            onActionClickListener.setProgressBarToVisible(false);
+                    }
+                });
+    }
+
+    private void initReasonDialog() {
+        dialog = new Dialog(myContext);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.dialog_input_pass_task_reason_layout);
+
+        etReason = dialog.findViewById(R.id.etReason);
+        tlReason = dialog.findViewById(R.id.tlReason);
+        dialogSubmitButton = dialog.findViewById(R.id.submitButton);
+        dialogCloseImage = dialog.findViewById(R.id.dialogCloseImage);
+        dialogProgressBar = dialog.findViewById(R.id.dialogProgressBar);
+
+        etReason.setOnFocusChangeListener((view1, b) -> {
+            if(!tlReason.isErrorEnabled()) {
+                if(b) {
+                    tlReason.setStartIconTintList(cslBlue);
+                }
+                else {
+                    tlReason.setStartIconTintList(cslInitial);
+                }
+            }
+        });
+
+        etReason.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                reasonValue = etReason.getText().toString();
+                dialogSubmitButton.setEnabled(reasonValue.length() > 0);
+            }
+        });
+
+        dialogCloseImage.setOnClickListener(view -> dialog.dismiss());
+
+        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+        dialog.getWindow().getAttributes().windowAnimations = R.style.animBottomSlide;
+        dialog.getWindow().setGravity(Gravity.BOTTOM);
+    }
+
     private void getUsers(
             ConstraintLayout driverInfoLayout, ConstraintLayout userInfoLayout,
             ExpandableTextView extvMessage, String message, String bookingId, String status,
@@ -399,7 +537,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
             TextView tvDriver, ImageView driverImage, TextView tvPass, ImageView passImage,
             TextView tvStop, ImageView stopImage, TextView tvCheck, ImageView checkImage,
             TextView tvDriverFullName, ImageView driverProfileImage, TextView tvPassenger,
-            TextView tvPlateNumber, String previousDriverUserId
+            TextView tvPlateNumber, String previousDriverUserId, String reason, ImageView thumbnail
     ) {
         usersRef.addValueEventListener(new ValueEventListener() {
             @Override
@@ -418,10 +556,18 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                     driverInfoLayout.setVisibility(View.GONE);
                     userInfoLayout.setVisibility(View.VISIBLE);
 
+                    getThumbnail(thumbnail, bookingId);
+
                     extvMessage.setText(message);
+                    if((status.equals("Request") || status.equals("Passed")) &&
+                            taskDriverUserId != null && taskDriverUserId.equals(userId)) {
+                        String reasonText = "<b>Your Reason</b>: " + reason;
+                        extvMessage.setText(fromHtml(reasonText));
+                    }
+
                     getUserInfo(bookingId, status, tvUserFullName, profileImage, tvChat, chatImage,
                             tvDriver, driverImage, tvPass, passImage, tvStop, stopImage,
-                            tvCheck, checkImage, tvPassenger, extvMessage);
+                            tvCheck, checkImage, tvPassenger, reason);
                     if(inDriverModule && (status.equals("Passed") ||
                             previousDriverUserId != null && previousDriverUserId.length() > 0 ||
                             status.equals("Request") && taskDriverUserId != null  && !taskDriverUserId.equals(userId)))
@@ -663,7 +809,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                              TextView tvPass, ImageView passImage,
                              TextView tvStop, ImageView stopImage,
                              TextView tvCheck, ImageView checkImage,
-                             TextView tvPassenger, ExpandableTextView extvMessage) {
+                             TextView tvPassenger, String reason) {
         for(User user : users) {
             List<Booking> bookingList = user.getBookingList();
             for(Booking booking : bookingList) {
@@ -691,8 +837,6 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                     driverImage.getDrawable().setTint(colorBlue);
 
                     booking.setStatus(status);
-
-                    extvMessage.setVisibility(View.VISIBLE);
 
                     switch (status) {
                         case "Pending":
@@ -747,8 +891,8 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                             tvPass.setVisibility(View.VISIBLE);
                             passImage.setVisibility(View.VISIBLE);
 
-                            tvPass.setOnClickListener(view -> passTask(booking));
-                            passImage.setOnClickListener(view -> passTask(booking));
+                            tvPass.setOnClickListener(view -> openReasonDialog(booking, reason));
+                            passImage.setOnClickListener(view -> openReasonDialog(booking, reason));
 
                             tvStop.setVisibility(View.GONE);
                             stopImage.setVisibility(View.GONE);
@@ -848,8 +992,6 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
 
                             tvCheck.setOnClickListener(view -> completeTask(booking));
                             checkImage.setOnClickListener(view -> completeTask(booking));
-
-                            extvMessage.setVisibility(View.GONE);
                             break;
                         default:
                             tvChat.setVisibility(View.GONE);
@@ -862,8 +1004,6 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                             stopImage.setVisibility(View.GONE);
                             tvCheck.setVisibility(View.GONE);
                             checkImage.setVisibility(View.GONE);
-
-                            extvMessage.setVisibility(View.GONE);
                             break;
                     }
 
@@ -929,8 +1069,6 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
     }
 
     private void passTask(Booking booking) {
-        if(onActionClickListener != null)
-            onActionClickListener.setProgressBarToVisible(true);
         usersRef.child(userId).child("taskList").
                 child(booking.getId()).child("status").setValue("Request")
                 .addOnCompleteListener(task -> {
