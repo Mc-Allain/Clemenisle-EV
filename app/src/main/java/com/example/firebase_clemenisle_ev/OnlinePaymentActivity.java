@@ -27,6 +27,7 @@ import com.example.firebase_clemenisle_ev.Adapters.ReferenceNumberAdapter;
 import com.example.firebase_clemenisle_ev.Classes.Booking;
 import com.example.firebase_clemenisle_ev.Classes.DateTimeToString;
 import com.example.firebase_clemenisle_ev.Classes.FirebaseURL;
+import com.example.firebase_clemenisle_ev.Classes.IWalletTransaction;
 import com.example.firebase_clemenisle_ev.Classes.ReferenceNumber;
 import com.example.firebase_clemenisle_ev.Classes.User;
 import com.google.android.material.textfield.TextInputLayout;
@@ -72,6 +73,8 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
     List<ReferenceNumber> referenceNumberList = new ArrayList<>();
     List<String> referenceNumberValueList = new ArrayList<>();
     ReferenceNumberAdapter referenceNumberAdapter;
+
+    List<IWalletTransaction> transactionList = new ArrayList<>();
 
     String userId;
     double iWalletAmount;
@@ -206,6 +209,29 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
         });
 
         getReferenceNumber();
+        getTransactionList();
+    }
+
+    private void getTransactionList() {
+        usersRef.child(userId).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                transactionList.clear();
+                if(snapshot.exists()) {
+                    User user = new User(snapshot);
+                    transactionList.addAll(user.getTransactionList());
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(
+                        myContext,
+                        error.toString(),
+                        Toast.LENGTH_LONG
+                ).show();
+            }
+        });
     }
 
     private void setDialogScreenEnabled(boolean value) {
@@ -453,6 +479,38 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
         referenceNumber.setNotified(false);
 
         addReferenceNumberToDatabase(referenceNumber, rnId);
+        addToTransactionList();
+    }
+
+    private void addToTransactionList() {
+        String wtIdSuffix = String.valueOf(transactionList.size() + 1);
+        if(wtIdSuffix.length() == 1) wtIdSuffix = "0" + wtIdSuffix;
+        String wtId = "WT" + wtIdSuffix;
+
+        IWalletTransaction transaction = new IWalletTransaction(wtId,
+                new DateTimeToString().getDateAndTime(), "Payment", amount);
+        transaction.setBookingId(bookingId);
+
+        usersRef.child(userId).child("iWalletTransactionList").child(wtId).setValue(transaction).
+                addOnCompleteListener(task -> {
+                    if(task.isSuccessful()) {
+                        double newIWallet = iWalletAmount - amount;
+                        usersRef.child(userId).child("iWallet").setValue(newIWallet);
+                    }
+                    else {
+                        if(task.getException() != null) {
+                            String error = task.getException().toString();
+
+                            Toast.makeText(
+                                    myContext,
+                                    error,
+                                    Toast.LENGTH_LONG
+                            ).show();
+                        }
+                    }
+                    dialogProgressBar2.setVisibility(View.GONE);
+                    setDialogScreenEnabled(true);
+                });
     }
 
     private void openHelp() {
@@ -491,6 +549,7 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 double price = 0, creditedAmount = 0, balance, refundedAmount = 0;
                 String status = "Booked";
+                boolean isPaid = false;
 
                 referenceNumberList.clear();
                 referenceNumberValueList.clear();
@@ -531,6 +590,7 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
                                 price = booking.getBookingType().getPrice();
                                 refundedAmount = booking.getRefundedAmount();
                                 status = booking.getStatus();
+                                isPaid = booking.isPaid();
                             }
                         }
                     }
@@ -539,8 +599,10 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
                 balance = price - creditedAmount;
                 if(balance < 0) {
                     referenceNumberAdapter.setCompletePayment(false);
-
                     balance = 0;
+
+                    if(!isPaid) usersRef.child(userId).child("bookingList").child(bookingId).
+                            child("paid").setValue(true);
                 }
                 refundedAmountLayout.setVisibility(View.GONE);
 

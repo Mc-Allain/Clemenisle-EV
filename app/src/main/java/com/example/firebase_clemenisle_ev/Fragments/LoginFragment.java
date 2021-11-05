@@ -17,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -174,6 +175,15 @@ public class LoginFragment extends Fragment {
             public void afterTextChanged(Editable editable) {
                 checkLoginInput();
             }
+        });
+
+        etPassword.setOnEditorActionListener((textView, i, keyEvent) -> {
+            boolean isHandled = false;
+            if (i == EditorInfo.IME_ACTION_SEND && continueButton.isEnabled()) {
+                continueButton.performClick();
+                isHandled = true;
+            }
+            return isHandled;
         });
 
         return view;

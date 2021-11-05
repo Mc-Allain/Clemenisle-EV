@@ -1583,7 +1583,7 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
         tvComments.setText(String.valueOf(comments));
 
         isLiked = isInLikedSpots(selectedSpot);
-        checkCurrentUserComment();
+        if(userId != null) checkCurrentUserComment();
 
         int color;
         if(!isLiked) color = myResources.getColor(R.color.black);

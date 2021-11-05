@@ -11,6 +11,7 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -324,6 +325,15 @@ public class RegisterFragment extends Fragment {
             }
         });
 
+        etMiddleName.setOnEditorActionListener((textView, i, keyEvent) -> {
+            boolean isHandled = false;
+            if (i == EditorInfo.IME_ACTION_SEND && continueButton.isEnabled()) {
+                continueButton.performClick();
+                isHandled = true;
+            }
+            return isHandled;
+        });
+
         etPassword.setOnFocusChangeListener((view1, b) -> {
             if(!tlPassword.isErrorEnabled()) {
                 if(b) {
@@ -380,6 +390,15 @@ public class RegisterFragment extends Fragment {
             }
         });
 
+        etConfirmPassword.setOnEditorActionListener((textView, i, keyEvent) -> {
+            boolean isHandled = false;
+            if (i == EditorInfo.IME_ACTION_SEND && continueButton.isEnabled()) {
+                continueButton.performClick();
+                isHandled = true;
+            }
+            return isHandled;
+        });
+
         etEmailAddress.setOnFocusChangeListener((view1, b) -> {
             if(!tlEmailAddress.isErrorEnabled()) {
                 if(b) {
@@ -406,6 +425,15 @@ public class RegisterFragment extends Fragment {
             public void afterTextChanged(Editable editable) {
                 checkEmailAddressInput();
             }
+        });
+
+        etEmailAddress.setOnEditorActionListener((textView, i, keyEvent) -> {
+            boolean isHandled = false;
+            if (i == EditorInfo.IME_ACTION_SEND && continueButton.isEnabled()) {
+                continueButton.performClick();
+                isHandled = true;
+            }
+            return isHandled;
         });
 
         return view;

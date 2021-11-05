@@ -56,7 +56,8 @@
                         android:fontFamily="@font/ubuntu"
                         android:inputType="textCapWords|textPersonName"
                         android:maxLength="32"
-                        android:textColor="@color/black" />
+                        android:textColor="@color/black"
+                        android:imeOptions="actionSend" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -87,7 +88,8 @@
                         android:fontFamily="@font/ubuntu"
                         android:inputType="textCapWords|textPersonName"
                         android:maxLength="32"
-                        android:textColor="@color/black" />
+                        android:textColor="@color/black"
+                        android:imeOptions="actionSend" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -119,7 +121,8 @@
                         android:fontFamily="@font/ubuntu"
                         android:inputType="textCapWords|textPersonName"
                         android:maxLength="32"
-                        android:textColor="@color/black" />
+                        android:textColor="@color/black"
+                        android:imeOptions="actionSend" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 

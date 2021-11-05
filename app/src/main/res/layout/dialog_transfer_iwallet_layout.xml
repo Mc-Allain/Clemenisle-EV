@@ -29,7 +29,8 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/ubuntu"
             android:inputType="number"
-            android:textColor="@color/black" />
+            android:textColor="@color/black"
+            android:imeOptions="actionSend" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -141,7 +142,8 @@
             android:fontFamily="@font/ubuntu"
             android:inputType="phone"
             android:maxLength="10"
-            android:textColor="@color/black" />
+            android:textColor="@color/black"
+            android:imeOptions="actionSend" />
 
     </com.google.android.material.textfield.TextInputLayout>
 

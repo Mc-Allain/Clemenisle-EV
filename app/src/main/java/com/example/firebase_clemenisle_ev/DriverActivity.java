@@ -932,12 +932,15 @@ public class DriverActivity extends AppCompatActivity {
         String value = "₱" + referenceNumber.getValue();
         if(value.split("\\.")[1].length() == 1) value += 0;
 
+        String referenceNumberValue = referenceNumber.getReferenceNumber();
+        String content = value + " has been to credited to #" + ".";
+        if(referenceNumberValue == null) content = "You pay " + value + " in your booking.";
+
         NotificationCompat.Builder builder =
                 new NotificationCompat.Builder(myContext, booking.getId())
                         .setSmallIcon(R.drawable.front_icon).setLargeIcon(icon)
                         .setContentTitle("Clemenisle-EV Online Payment Status")
-                        .setContentText(value + " has been to credited to #" +
-                                referenceNumber.getReferenceNumber() + ".")
+                        .setContentText(content)
                         .setCategory(NotificationCompat.CATEGORY_STATUS)
                         .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                         .setDefaults(NotificationCompat.DEFAULT_ALL)

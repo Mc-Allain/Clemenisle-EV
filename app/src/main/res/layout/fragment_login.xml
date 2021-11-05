@@ -141,7 +141,8 @@
                         android:fontFamily="@font/ubuntu"
                         android:inputType="textEmailAddress"
                         android:maxLength="64"
-                        android:textColor="@color/black" />
+                        android:textColor="@color/black"
+                        android:imeOptions="actionSend" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -167,7 +168,8 @@
                         android:fontFamily="@font/ubuntu"
                         android:inputType="textPassword"
                         android:maxLength="32"
-                        android:textColor="@color/black" />
+                        android:textColor="@color/black"
+                        android:imeOptions="actionSend" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
