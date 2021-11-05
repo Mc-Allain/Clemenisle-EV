@@ -27,7 +27,6 @@ import com.example.firebase_clemenisle_ev.Adapters.IWalletTransactionAdapter;
 import com.example.firebase_clemenisle_ev.Classes.DateTimeToString;
 import com.example.firebase_clemenisle_ev.Classes.FirebaseURL;
 import com.example.firebase_clemenisle_ev.Classes.IWalletTransaction;
-import com.example.firebase_clemenisle_ev.Classes.ReferenceNumber;
 import com.example.firebase_clemenisle_ev.Classes.User;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
@@ -93,9 +92,6 @@ public class IWalletActivity extends AppCompatActivity {
     ImageView dialogCloseImage;
     ProgressBar dialogProgressBar;
 
-    List<ReferenceNumber> referenceNumberList = new ArrayList<>();
-    List<String> referenceNumberValueList = new ArrayList<>();
-
     String referenceNumberValue;
 
     Dialog dialog;
@@ -153,7 +149,7 @@ public class IWalletActivity extends AppCompatActivity {
 
         initSharedPreferences();
         initTransferDialog();
-        initAddReferenceNumberDialog();
+        initTopUpDialog();
 
         firebaseAuth = FirebaseAuth.getInstance();
         if(isLoggedIn) {
@@ -183,41 +179,57 @@ public class IWalletActivity extends AppCompatActivity {
         iWalletTransactionAdapter = new IWalletTransactionAdapter(myContext, transactionList, bookingId);
         transactionView.setAdapter(iWalletTransactionAdapter);
 
+        topUpButton.setOnClickListener(view -> openTopUpDialog());
+
         getTransactionList();
 
-        transferButton.setOnClickListener(view ->{
-            etMobileNumber.setText(null);
-            etAmount.setText("0");
-
-            tlMobileNumber.setErrorEnabled(false);
-            tlMobileNumber.setError(null);
-            tlAmount.setErrorEnabled(false);
-            tlAmount.setError(null);
-
-            tlMobileNumber.setStartIconTintList(cslInitial);
-            tlAmount.setStartIconTintList(cslInitial);
-
-            String[] iWalletSplit = tvIWallet.getText().toString().split("₱");
-            if(iWalletSplit.length > 1) {
-                double maxAmount = Double.parseDouble(iWalletSplit[1]);
-
-                if(maxAmount < minAmount) {
-                    tlAmount.setErrorEnabled(true);
-                    String error = "You do not have enough iWallet to transfer";
-                    tlAmount.setError(error);
-                    tlAmount.setErrorTextColor(cslRed);
-                    tlAmount.setStartIconTintList(cslRed);
-                }
-
-                etMobileNumber.clearFocus();
-                etMobileNumber.requestFocus();
-
-                transferDialog.show();
-            }
-        });
+        transferButton.setOnClickListener(view -> openTransferDialog());
     }
 
-    private void initAddReferenceNumberDialog() {
+    public void openTopUpDialog() {
+        etReferenceNumber.setText(null);
+
+        tlReferenceNumber.setErrorEnabled(false);
+        tlReferenceNumber.setError(null);
+        tlReferenceNumber.setStartIconTintList(cslInitial);
+
+        tlReferenceNumber.clearFocus();
+        tlReferenceNumber.requestFocus();
+        dialog.show();
+    }
+    
+    private void openTransferDialog() {
+        etMobileNumber.setText(null);
+        etAmount.setText("0");
+
+        tlMobileNumber.setErrorEnabled(false);
+        tlMobileNumber.setError(null);
+        tlAmount.setErrorEnabled(false);
+        tlAmount.setError(null);
+
+        tlMobileNumber.setStartIconTintList(cslInitial);
+        tlAmount.setStartIconTintList(cslInitial);
+
+        String[] iWalletSplit = tvIWallet.getText().toString().split("₱");
+        if(iWalletSplit.length > 1) {
+            double maxAmount = Double.parseDouble(iWalletSplit[1]);
+
+            if(maxAmount < minAmount) {
+                tlAmount.setErrorEnabled(true);
+                String error = "You do not have enough iWallet to transfer";
+                tlAmount.setError(error);
+                tlAmount.setErrorTextColor(cslRed);
+                tlAmount.setStartIconTintList(cslRed);
+            }
+
+            etMobileNumber.clearFocus();
+            etMobileNumber.requestFocus();
+
+            transferDialog.show();
+        }
+    }
+
+    private void initTopUpDialog() {
         dialog = new Dialog(myContext);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.dialog_input_reference_number_layout);

@@ -4,7 +4,7 @@ public class IWalletTransaction {
 
     String id, bookingId, timestamp, category, referenceNumber, mobileNumber;
     double value;
-    boolean valid = true;
+    boolean valid = true, notified = true;
 
     public IWalletTransaction() {
     }
@@ -58,5 +58,9 @@ public class IWalletTransaction {
 
     public boolean isValid() {
         return valid;
+    }
+
+    public boolean isNotified() {
+        return notified;
     }
 }

@@ -86,6 +86,27 @@ public class IWalletTransactionAdapter extends RecyclerView.Adapter<IWalletTrans
         tvMobileNumber.setVisibility(View.GONE);
         tvInvalidMN.setVisibility(View.GONE);
 
+        if(category.equals("Top-up")) {
+            if(referenceNumber != null) {
+                referenceNumber = "#" + referenceNumber;
+
+                tvInvalidMN.setVisibility(View.VISIBLE);
+                if(value == 0) {
+                    tvInvalidMN.setTextColor(colorGreen);
+                    tvInvalidMN.setText(pendingText);
+                    tvInvalidMN.setTypeface(tvInvalidMN.getTypeface(), Typeface.ITALIC);
+
+                    tvMobileNumber.setVisibility(View.VISIBLE);
+                    tvMobileNumber.setText(referenceNumber);
+                }
+                else {
+                    tvInvalidMN.setTextColor(colorBlue);
+                    tvInvalidMN.setText(referenceNumber);
+                    tvInvalidMN.setTypeface(tvInvalidMN.getTypeface(), Typeface.NORMAL);
+                }
+            }
+        }
+
         if(category.equals("Transfer")) {
             if(mobileNumber != null) {
                 tvMobileNumber.setVisibility(View.VISIBLE);
@@ -106,9 +127,9 @@ public class IWalletTransactionAdapter extends RecyclerView.Adapter<IWalletTrans
                 }
                 else {
                     referenceNumber = "#" + referenceNumber;
-                    tvInvalidMN.setTypeface(tvInvalidMN.getTypeface(), Typeface.NORMAL);
                     tvInvalidMN.setTextColor(colorBlue);
                     tvInvalidMN.setText(referenceNumber);
+                    tvInvalidMN.setTypeface(tvInvalidMN.getTypeface(), Typeface.NORMAL);
                 }
             }
         }
