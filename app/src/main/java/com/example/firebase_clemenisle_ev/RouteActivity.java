@@ -34,7 +34,6 @@ import com.example.firebase_clemenisle_ev.Classes.Booking;
 import com.example.firebase_clemenisle_ev.Classes.Capture;
 import com.example.firebase_clemenisle_ev.Classes.DateTimeToString;
 import com.example.firebase_clemenisle_ev.Classes.FirebaseURL;
-import com.example.firebase_clemenisle_ev.Classes.ReferenceNumber;
 import com.example.firebase_clemenisle_ev.Classes.Route;
 import com.example.firebase_clemenisle_ev.Classes.Station;
 import com.example.firebase_clemenisle_ev.Classes.User;
@@ -78,13 +77,13 @@ public class RouteActivity extends AppCompatActivity implements
 
     ImageView profileImage, driverProfileImage, thumbnail, moreImage, locateImage, locateEndImage, viewQRImage,
             chatImage, driverImage, passImage, stopImage, checkImage, reloadImage, paidImage;
-    TextView tvUserFullName, tvPassenger, tvDriverFullName, tvPlateNumber, tvBookingId, tvSchedule, tvTypeName,
-            tvPrice, tvStartStation2, tvEndStation2, tvLocate, tvLocateEnd, tvViewQR, tvChat, tvDriver,
-            tvPass, tvStop, tvCheck, tvLog;
+    TextView tvUserFullName, tvPassenger, tvDriverFullName, tvPlateNumber, tvPickUpTime, tvDropOffTime,
+            tvBookingId, tvSchedule, tvTypeName, tvPrice, tvStartStation2, tvEndStation2, tvLocate,
+            tvLocateEnd, tvViewQR, tvChat, tvDriver, tvPass, tvStop, tvCheck, tvLog;
     ExpandableTextView extvMessage;
     RecyclerView routeView;
     ConstraintLayout buttonLayout, buttonLayout2, bookingInfoLayout, bookingInfoButtonLayout,
-            userInfoLayout, driverInfoLayout;
+            userInfoLayout, driverInfoLayout, timeInfoLayout;
     Button cancelButton, onlinePaymentButton, dropOffButton;
     ProgressBar progressBar;
 
@@ -108,6 +107,7 @@ public class RouteActivity extends AppCompatActivity implements
     String bookingId, schedule, typeName, price, startStationName, endStationName, status,
             message, previousDriverUserId;
     boolean isLatest, isPaid;
+    String pickUpTime, dropOffTime;
 
     Station startStation, endStation;
 
@@ -142,6 +142,8 @@ public class RouteActivity extends AppCompatActivity implements
 
     List<Booking> taskList3 = new ArrayList<>();
 
+    String pickUpTimeText = "<b>Pick-up Time</b>: ", dropOffTimeText = "<b>Drop-off Time</b>: ";
+
     private void initSharedPreferences() {
         SharedPreferences sharedPreferences = myContext
                 .getSharedPreferences("login", Context.MODE_PRIVATE);
@@ -165,6 +167,10 @@ public class RouteActivity extends AppCompatActivity implements
         tvDriverFullName = findViewById(R.id.tvDriverFullName);
         tvPlateNumber = findViewById(R.id.tvPlateNumber);
         driverProfileImage = findViewById(R.id.driverProfileImage);
+
+        timeInfoLayout = findViewById(R.id.timeInfoLayout);
+        tvPickUpTime = findViewById(R.id.tvPickUpTime);
+        tvDropOffTime = findViewById(R.id.tvDropOffTime);
 
         thumbnail = findViewById(R.id.thumbnail);
         tvBookingId = findViewById(R.id.tvBookingId);
@@ -1008,6 +1014,18 @@ public class RouteActivity extends AppCompatActivity implements
             tvChat.setVisibility(View.GONE);
             chatImage.setVisibility(View.GONE);
         }
+
+        timeInfoLayout.setVisibility(View.GONE);
+
+        if(pickUpTime != null && pickUpTime.length() > 0) {
+            timeInfoLayout.setVisibility(View.VISIBLE);
+            tvPickUpTime.setText(fromHtml(pickUpTimeText + pickUpTime));
+        }
+
+        if(dropOffTime != null && dropOffTime.length() > 0)
+            timeInfoLayout.setVisibility(View.VISIBLE);
+        else dropOffTime = "Unset";
+        tvDropOffTime.setText(fromHtml(dropOffTimeText + dropOffTime));
     }
 
     private void openMap(Station station) {
@@ -1139,6 +1157,9 @@ public class RouteActivity extends AppCompatActivity implements
 
                     message = booking.getMessage();
                     isPaid = booking.isPaid();
+
+                    pickUpTime = booking.getPickUpTime();
+                    dropOffTime = booking.getDropOffTime();
                 }
                 if(routeList.size() > 0) finishLoading();
                 else errorLoading(defaultLogText);
@@ -1186,37 +1207,9 @@ public class RouteActivity extends AppCompatActivity implements
     }
 
     private void cancelBooking() {
-        DatabaseReference bookingRef = usersRef.child(userId).child("bookingList").child(bookingId);
-        bookingRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                double creditedAmount = 0, refundAmount = 0, refundedAmount = 0;
-                if(snapshot.exists()) {
-                    Booking booking = new Booking(snapshot);
-                    refundedAmount = booking.getRefundedAmount();
-
-                    for(ReferenceNumber referenceNumber : booking.getReferenceNumberList()) {
-                        if(referenceNumber != null) {
-                            creditedAmount += referenceNumber.getValue();
-                        }
-                    }
-                }
-                refundAmount = creditedAmount - refundedAmount;
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(
-                        myContext,
-                        error.toString(),
-                        Toast.LENGTH_LONG
-                ).show();
-            }
-        });
-
+        progressBar.setVisibility(View.VISIBLE);
         bookingListRef.child("status").setValue("Cancelled")
                 .addOnCompleteListener(task -> {
-
                     if(task.isSuccessful()) {
                         Toast.makeText(
                                 myContext,

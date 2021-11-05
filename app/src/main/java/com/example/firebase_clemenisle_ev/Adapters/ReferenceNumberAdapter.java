@@ -67,12 +67,13 @@ public class ReferenceNumberAdapter extends RecyclerView.Adapter<ReferenceNumber
         addRNLayout.setVisibility(View.GONE);
         iWalletLayout.setVisibility(View.GONE);
 
-        if(status != null && (status.equals("Pending") || status.equals("Booked"))&& !isCompletePayment) {
+        if(status != null && (status.equals("Pending") || status.equals("Booked")) &&
+                !isCompletePayment && (position == 0 || position == 1)) {
             if(position == 0) {
                 iWalletLayout.setVisibility(View.VISIBLE);
                 iWalletLayout.setOnClickListener(view -> onInitiatePaymentListener.useIWallet());
             }
-            else if(position == 1) {
+            else {
                 addRNLayout.setVisibility(View.VISIBLE);
                 addRNLayout.setOnClickListener(view -> onInitiatePaymentListener.addReferenceNumber());
             }

@@ -83,12 +83,12 @@ public class OnTheSpotActivity extends AppCompatActivity {
 
     ImageView profileImage, driverProfileImage, thumbnail, moreImage, locateImage, locateDestinationImage, viewQRImage,
             chatImage, driverImage, passImage, stopImage, checkImage, reloadImage;
-    TextView tvUserFullName, tvPassenger, tvDriverFullName, tvPlateNumber, tvBookingId, tvSchedule, tvTypeName,
-            tvPrice, tvOriginLocation2, tvDestinationSpot2, tvLocate, tvLocateDestination, tvViewQR,
-            tvChat, tvDriver, tvPass, tvStop, tvCheck, tvLog;
+    TextView tvUserFullName, tvPassenger, tvDriverFullName, tvPlateNumber, tvPickUpTime, tvDropOffTime,
+            tvBookingId, tvSchedule, tvTypeName, tvPrice, tvOriginLocation2, tvDestinationSpot2,
+            tvLocate, tvLocateDestination, tvViewQR, tvChat, tvDriver, tvPass, tvStop, tvCheck, tvLog;
     ExpandableTextView extvMessage;
     ConstraintLayout buttonLayout, buttonLayout2, bookingInfoLayout, bookingInfoButtonLayout,
-            userInfoLayout, driverInfoLayout;
+            userInfoLayout, driverInfoLayout, timeInfoLayout;
     Button cancelButton, dropOffButton;
     FrameLayout mapLayout;
     ProgressBar progressBar;
@@ -109,6 +109,7 @@ public class OnTheSpotActivity extends AppCompatActivity {
 
     String bookingId, schedule, typeName, price, status, message, previousDriverUserId;
     LatLng originLocation, destinationSpotLocation;
+    String pickUpTime, dropOffTime;
 
     SimpleTouristSpot destinationSpot;
 
@@ -155,6 +156,8 @@ public class OnTheSpotActivity extends AppCompatActivity {
 
     List<Booking> taskList3 = new ArrayList<>();
 
+    String pickUpTimeText = "<b>Pick-up Time</b>: ", dropOffTimeText = "<b>Drop-off Time</b>: ";
+
     private void initSharedPreferences() {
         SharedPreferences sharedPreferences = myContext
                 .getSharedPreferences("login", Context.MODE_PRIVATE);
@@ -178,6 +181,10 @@ public class OnTheSpotActivity extends AppCompatActivity {
         tvDriverFullName = findViewById(R.id.tvDriverFullName);
         tvPlateNumber = findViewById(R.id.tvPlateNumber);
         driverProfileImage = findViewById(R.id.driverProfileImage);
+
+        timeInfoLayout = findViewById(R.id.timeInfoLayout);
+        tvPickUpTime = findViewById(R.id.tvPickUpTime);
+        tvDropOffTime = findViewById(R.id.tvDropOffTime);
 
         thumbnail = findViewById(R.id.thumbnail);
         tvBookingId = findViewById(R.id.tvBookingId);
@@ -1111,6 +1118,18 @@ public class OnTheSpotActivity extends AppCompatActivity {
             tvChat.setVisibility(View.GONE);
             chatImage.setVisibility(View.GONE);
         }
+
+        timeInfoLayout.setVisibility(View.GONE);
+
+        if(pickUpTime != null && pickUpTime.length() > 0) {
+            timeInfoLayout.setVisibility(View.VISIBLE);
+            tvPickUpTime.setText(fromHtml(pickUpTimeText + pickUpTime));
+        }
+
+        if(dropOffTime != null && dropOffTime.length() > 0)
+            timeInfoLayout.setVisibility(View.VISIBLE);
+        else dropOffTime = "Unset";
+        tvDropOffTime.setText(fromHtml(dropOffTimeText + dropOffTime));
     }
 
     private void openMap(String id, LatLng latlng, String locationName, int type) {
@@ -1202,6 +1221,9 @@ public class OnTheSpotActivity extends AppCompatActivity {
 
                     message = booking.getMessage();
 
+                    pickUpTime = booking.getPickUpTime();
+                    dropOffTime = booking.getDropOffTime();
+
                     if(!inDriverModule) startTimer(booking);
                     finishLoading();
                 }
@@ -1243,10 +1265,10 @@ public class OnTheSpotActivity extends AppCompatActivity {
     }
 
     private void cancelBooking() {
+        progressBar.setVisibility(View.VISIBLE);
         String prevStatus = status;
         usersRef.child(userId).child("bookingList").child(bookingId).child("status").setValue("Cancelled")
                 .addOnCompleteListener(task -> {
-                    progressBar.setVisibility(View.GONE);
 
                     if(task.isSuccessful()) {
                         if(prevStatus.equals("Booked")) {
@@ -1258,6 +1280,8 @@ public class OnTheSpotActivity extends AppCompatActivity {
                                                     "Successfully cancelled the booking",
                                                     Toast.LENGTH_SHORT
                                             ).show();
+
+                                            progressBar.setVisibility(View.GONE);
                                         }
                                         else {
                                             usersRef.child(userId).child("bookingList").child(bookingId).
@@ -1287,6 +1311,6 @@ public class OnTheSpotActivity extends AppCompatActivity {
 
         cancelButton.setEnabled(true);
         cancelButton.setText(cancelButtonText);
-
+        progressBar.setVisibility(View.GONE);
     }
 }

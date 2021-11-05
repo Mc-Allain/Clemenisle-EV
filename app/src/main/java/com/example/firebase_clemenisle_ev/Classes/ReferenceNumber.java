@@ -68,4 +68,8 @@ public class ReferenceNumber {
     public void setBookingId(String bookingId) {
         this.bookingId = bookingId;
     }
+
+    public void setNotified(boolean notified) {
+        this.notified = notified;
+    }
 }

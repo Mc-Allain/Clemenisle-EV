@@ -426,7 +426,7 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
                     tlAmount.setStartIconTintList(cslBlue);
                 }
 
-                submitButton.setEnabled(amount > 0 && amount <= maxAmount);
+                submitButton2.setEnabled(amount > 0 && amount <= maxAmount);
             }
         });
 
@@ -450,6 +450,7 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
         ReferenceNumber referenceNumber = new ReferenceNumber(rnId,
                 new DateTimeToString().getDateAndTime(), amount);
         referenceNumber.setiWalletUsed(true);
+        referenceNumber.setNotified(false);
 
         addReferenceNumberToDatabase(referenceNumber, rnId);
     }

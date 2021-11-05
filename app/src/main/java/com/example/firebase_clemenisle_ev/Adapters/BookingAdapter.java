@@ -104,6 +104,8 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
 
     String initiateService = "Initiate Service", dropOffText = "Drop Off";
 
+    String pickUpTimeText = "<b>Pick-up Time</b>: ", dropOffTimeText = "<b>Drop-off Time</b>: ";
+
     public void setOnLikeClickListener(OnActionClickListener onActionClickListener) {
         this.onActionClickListener = onActionClickListener;
     }
@@ -156,9 +158,9 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                 stopImage = holder.stopImage, checkImage = holder.checkImage, paidImage = holder.paidImage;
         TextView tvUserFullName = holder.tvUserFullName, tvPassenger = holder.tvPassenger,
                 tvDriverFullName = holder.tvDriverFullName, tvPlateNumber = holder.tvPlateNumber,
-                tvBookingId = holder.tvBookingId,
-                tvSchedule = holder.tvSchedule, tvTypeName = holder.tvTypeName, tvPrice = holder.tvPrice,
-                tvStartStation = holder.tvStartStation, tvEndStation = holder.tvEndStation,
+                tvPickUpTime = holder.tvPickUpTime, tvDropOffTime = holder.tvDropOffTime,
+                tvBookingId = holder.tvBookingId, tvSchedule = holder.tvSchedule, tvTypeName = holder.tvTypeName,
+                tvPrice = holder.tvPrice, tvStartStation = holder.tvStartStation, tvEndStation = holder.tvEndStation,
                 tvStartStation2 = holder.tvStartStation2, tvEndStation2 = holder.tvEndStation2,
                 tvOption = holder.tvOption, tvOpen = holder.tvOpen,
                 tvLocate = holder.tvLocate, tvLocateEnd = holder.tvLocateEnd,
@@ -167,7 +169,8 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                 tvPass = holder.tvPass, tvStop = holder.tvStop, tvCheck = holder.tvCheck;
         ExpandableTextView extvMessage = holder.extvMessage;
         ConstraintLayout backgroundLayout = holder.backgroundLayout, buttonLayout = holder.buttonLayout,
-                userInfoLayout = holder.userInfoLayout, driverInfoLayout = holder.driverInfoLayout;
+                userInfoLayout = holder.userInfoLayout, driverInfoLayout = holder.driverInfoLayout,
+                timeInfoLayout = holder.timeInfoLayout;
 
         myContext = inflater.getContext();
         myResources = myContext.getResources();
@@ -206,6 +209,9 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
         String bookingId = booking.getId();
         String schedule = booking.getSchedule();
 
+        String pickUpTime = booking.getPickUpTime();
+        String dropOffTime = booking.getDropOffTime();
+
         BookingType bookingType = booking.getBookingType();
         String typeName = bookingType.getName();
         String price = "₱" + bookingType.getPrice();
@@ -242,6 +248,18 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
 
         tvBookingId.setBackgroundColor(color);
         tvPrice.setTextColor(color);
+
+        timeInfoLayout.setVisibility(View.GONE);
+
+        if(pickUpTime != null && pickUpTime.length() > 0) {
+            timeInfoLayout.setVisibility(View.VISIBLE);
+            tvPickUpTime.setText(fromHtml(pickUpTimeText + pickUpTime));
+        }
+
+        if(dropOffTime != null && dropOffTime.length() > 0)
+            timeInfoLayout.setVisibility(View.VISIBLE);
+        else dropOffTime = "Unset";
+        tvDropOffTime.setText(fromHtml(dropOffTimeText + dropOffTime));
 
         tvOnlinePayment.setVisibility(View.GONE);
         onlinePaymentImage.setVisibility(View.GONE);
@@ -1069,12 +1087,12 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
         ImageView profileImage, driverProfileImage, thumbnail, moreImage,
                 openImage, locateImage, locateEndImage, onlinePaymentImage, viewQRImage, chatImage,
                 driverImage, passImage, stopImage, checkImage, paidImage;
-        TextView tvUserFullName, tvPassenger, tvDriverFullName, tvPlateNumber, tvBookingId,
-                tvSchedule, tvTypeName, tvPrice, tvStartStation, tvStartStation2, tvEndStation,
+        TextView tvUserFullName, tvPassenger, tvDriverFullName, tvPlateNumber, tvPickUpTime, tvDropOffTime,
+                tvBookingId, tvSchedule, tvTypeName, tvPrice, tvStartStation, tvStartStation2, tvEndStation,
                 tvEndStation2, tvOption, tvOpen, tvLocate, tvLocateEnd, tvOnlinePayment, tvViewQR,
                 tvChat, tvDriver, tvPass, tvStop, tvCheck;
         ExpandableTextView extvMessage;
-        ConstraintLayout backgroundLayout, buttonLayout, userInfoLayout, driverInfoLayout;
+        ConstraintLayout backgroundLayout, buttonLayout, userInfoLayout, driverInfoLayout, timeInfoLayout;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -1088,6 +1106,10 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
             tvDriverFullName = itemView.findViewById(R.id.tvDriverFullName);
             tvPlateNumber = itemView.findViewById(R.id.tvPlateNumber);
             driverProfileImage = itemView.findViewById(R.id.driverProfileImage);
+
+            timeInfoLayout = itemView.findViewById(R.id.timeInfoLayout);
+            tvPickUpTime = itemView.findViewById(R.id.tvPickUpTime);
+            tvDropOffTime = itemView.findViewById(R.id.tvDropOffTime);
 
             thumbnail = itemView.findViewById(R.id.thumbnail);
             tvBookingId = itemView.findViewById(R.id.tvBookingId);
