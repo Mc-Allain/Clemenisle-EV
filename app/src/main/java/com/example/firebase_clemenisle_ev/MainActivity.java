@@ -150,6 +150,10 @@ public class MainActivity extends AppCompatActivity {
     double iWallet;
     boolean isRefunded = true;
 
+    List<IWalletTransaction> transactionList = new ArrayList<>();
+
+    boolean isGeneratingTransactionId = false;
+
     private void initSharedPreferences() {
         SharedPreferences sharedPreferences = getSharedPreferences("login", Context.MODE_PRIVATE);
         isLoggedIn = sharedPreferences.getBoolean("isLoggedIn", false);
@@ -248,12 +252,14 @@ public class MainActivity extends AppCompatActivity {
                 transactionListCount = 0;
                 iWallet = 0;
 
+                transactionList.clear();
                 if(snapshot.exists()) {
+                    User user = new User(snapshot);
+                    transactionList.addAll(user.getTransactionList());
+                    iWallet = user.getIWallet();
+
                     DataSnapshot dataSnapshot = snapshot.child("iWalletTransactionList");
                     transactionListCount = (int) dataSnapshot.getChildrenCount();
-                    DataSnapshot dataSnapshot1 = snapshot.child("iWallet");
-                    if(dataSnapshot1.getValue(Double.class) != null)
-                        iWallet = dataSnapshot1.getValue(Double.class);
                 }
 
                 new Handler().postDelayed(() -> getReferenceNumber(), 3000);
@@ -302,7 +308,7 @@ public class MainActivity extends AppCompatActivity {
                         if(status.equals("Cancelled") || status.equals("Failed"))
                             refundAmount = creditedAmount - refundedAmount;
 
-                        if(refundAmount > 0) refund(refundAmount, refundedAmount, booking.getId());
+                        if(refundAmount > 0) generateTransactionId(refundAmount, refundedAmount, booking.getId());
                     }
                 }
             }
@@ -318,13 +324,65 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void refund(double refundAmount, double refundedAmount, String bookingId) {
+    private void generateTransactionId(double refundAmount, double refundedAmount, String bookingId) {
+        isGeneratingTransactionId = false;
+        usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(!isGeneratingTransactionId) {
+                    isGeneratingTransactionId = true;
+
+                    DateTimeToString dateTimeToString = new DateTimeToString();
+                    String yearId = dateTimeToString.getYear2Suffix();
+                    int month = Integer.parseInt(dateTimeToString.getMonthNo()) + 1;
+                    String monthId = String.valueOf(month);
+                    if(monthId.length() == 1) monthId = "0" + monthId;
+                    String dayId = dateTimeToString.getDay();
+                    if(dayId.length() == 1) dayId = "0" + dayId;
+
+                    String transactionId = "WT" + yearId + "-" + monthId + dayId;
+
+                    int suffixCount = 0;
+
+                    if(snapshot.exists()) {
+                        for(DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                            User user = new User(dataSnapshot);
+
+                            List<IWalletTransaction> transactionList = user.getTransactionList();
+                            if(transactionList.size() > 0) {
+                                for(IWalletTransaction transaction : transactionList) {
+                                    if(transaction.getId().startsWith(transactionId)) {
+                                        suffixCount++;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    String idSuffix = String.valueOf(suffixCount);
+                    if(idSuffix.length() == 1) idSuffix = "0" + idSuffix;
+
+                    transactionId += "-" + idSuffix;
+
+                    refund(refundAmount, refundedAmount, transactionId, bookingId);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(
+                        myContext,
+                        error.toString(),
+                        Toast.LENGTH_LONG
+                ).show();
+
+                isGeneratingTransactionId = false;
+            }
+        });
+    }
+
+    private void refund(double refundAmount, double refundedAmount, String wtId, String bookingId) {
         if(!isRefunded) return;
         isRefunded = false;
-
-        String wtIdSuffix = String.valueOf(transactionListCount + 1);
-        if(wtIdSuffix.length() == 1) wtIdSuffix = "0" + wtIdSuffix;
-        String wtId = "WT" + wtIdSuffix;
 
         IWalletTransaction transaction = new IWalletTransaction(wtId,
                 new DateTimeToString().getDateAndTime(), "Refund", refundAmount);
@@ -498,6 +556,13 @@ public class MainActivity extends AppCompatActivity {
                     for(Booking task : taskList) {
                         if(task.getStatus().equals("Booked") || task.getStatus().equals("Request"))
                             checkBooking(task, true);
+                    }
+
+                    for(IWalletTransaction transaction : transactionList) {
+                        boolean isNotified = transaction.isNotified();
+                        if(!isNotified) {
+                            showSuccessfulTransactionNotification(transaction);
+                        }
                     }
                 }
 
@@ -910,6 +975,52 @@ public class MainActivity extends AppCompatActivity {
 
         usersRef.child(userId).child("bookingList").child(booking.getId()).
                 child("referenceNumberList").child(referenceNumber.getId()).
+                child("notified").setValue(true);
+    }
+
+    private void showSuccessfulTransactionNotification(IWalletTransaction transaction) {
+        NotificationManager notificationManager = getNotificationManager(transaction.getId());
+        Bitmap icon = BitmapFactory.decodeResource(myResources, R.drawable.front_icon);
+
+        String value = "₱" + transaction.getValue();
+        if(value.split("\\.")[1].length() == 1) value += 0;
+
+        String category = transaction.getCategory();
+
+        String content = "";
+        if(category.equals("Top-up")) {
+            if(transaction.getValue() > 0) content = value + " has been to added to your iWallet.";
+        }
+        else if(category.equals("Transfer")) {
+            if(transaction.getValue() > 0) content = value + " has been to transfer to your GCash." +
+                    "Mobile Number: " + transaction.getMobileNumber();
+        }
+        else return;
+
+        NotificationCompat.Builder builder =
+                new NotificationCompat.Builder(myContext, transaction.getId())
+                        .setSmallIcon(R.drawable.front_icon).setLargeIcon(icon)
+                        .setContentTitle("Clemenisle-EV Online Payment Status")
+                        .setContentText(content)
+                        .setCategory(NotificationCompat.CATEGORY_STATUS)
+                        .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                        .setDefaults(NotificationCompat.DEFAULT_ALL)
+                        .setAutoCancel(false);
+
+        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
+            builder.setPriority(Notification.PRIORITY_HIGH);
+
+        Intent notificationIntent;
+        notificationIntent = new Intent(myContext, IWalletActivity.class);
+
+        PendingIntent pendingIntent = PendingIntent.getActivity(
+                myContext, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT
+        );
+        builder.setContentIntent(pendingIntent);
+        builder.setFullScreenIntent(pendingIntent, true);
+        notificationManager.notify(1, builder.build());
+
+        usersRef.child(userId).child("iWalletTransactionList").child(transaction.getId()).
                 child("notified").setValue(true);
     }
 
