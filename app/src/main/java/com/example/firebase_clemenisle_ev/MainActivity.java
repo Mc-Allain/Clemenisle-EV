@@ -946,7 +946,7 @@ public class MainActivity extends AppCompatActivity {
         if(value.split("\\.")[1].length() == 1) value += 0;
 
         String referenceNumberValue = referenceNumber.getReferenceNumber();
-        String content = value + " has been to credited to #" + ".";
+        String content = value + " has been credited to #" + ".";
         if(referenceNumberValue == null) content = "You pay " + value + " in your booking.";
 
         NotificationCompat.Builder builder =
@@ -989,10 +989,10 @@ public class MainActivity extends AppCompatActivity {
 
         String content = "";
         if(category.equals("Top-up")) {
-            if(transaction.getValue() > 0) content = value + " has been to added to your iWallet.";
+            if(transaction.getValue() > 0) content = value + " has been added to your iWallet.";
         }
         else if(category.equals("Transfer")) {
-            if(transaction.getValue() > 0) content = value + " has been to transfer to your GCash." +
+            if(transaction.getValue() > 0) content = value + " has been transferred to your GCash." +
                     "Mobile Number: " + transaction.getMobileNumber();
         }
         else return;
