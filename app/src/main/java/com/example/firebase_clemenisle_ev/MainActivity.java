@@ -909,7 +909,7 @@ public class MainActivity extends AppCompatActivity {
                 new NotificationCompat.Builder(myContext, booking.getId())
                         .setSmallIcon(R.drawable.front_icon).setLargeIcon(icon)
                         .setContentTitle("Clemenisle-EV Booking Status")
-                        .setContentText("You have failed to go to your Booking (ID: " + booking.getId() +").")
+                        .setContentText("You failed to go to your Booking (ID: " + booking.getId() +").")
                         .setCategory(NotificationCompat.CATEGORY_STATUS)
                         .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                         .setDefaults(NotificationCompat.DEFAULT_ALL)

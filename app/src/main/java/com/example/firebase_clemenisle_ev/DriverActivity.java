@@ -967,7 +967,7 @@ public class DriverActivity extends AppCompatActivity {
                 new NotificationCompat.Builder(myContext, task.getId())
                         .setSmallIcon(R.drawable.front_icon).setLargeIcon(icon)
                         .setContentTitle("Clemenisle-EV Booking Status")
-                        .setContentText("You have failed to perform your Task (ID: " + task.getId() +").")
+                        .setContentText("You failed to perform your Task (ID: " + task.getId() +").")
                         .setCategory(NotificationCompat.CATEGORY_STATUS)
                         .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                         .setDefaults(NotificationCompat.DEFAULT_ALL)
