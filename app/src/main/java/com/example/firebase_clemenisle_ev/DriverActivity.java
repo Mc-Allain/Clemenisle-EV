@@ -964,13 +964,10 @@ public class DriverActivity extends AppCompatActivity {
         notificationIntent.putExtra("taskId", task.getId());
         notificationIntent.putExtra("inDriverModule", inDriverModule);
 
-        if(inDriverModule) {
-            notificationIntent.putExtra("isScanning", false);
-            notificationIntent.putExtra("status", task.getStatus());
-            notificationIntent.putExtra("previousDriverUserId", task.getPreviousDriverUserId());
-            notificationIntent.putExtra("userId", getPassengerUserId(task.getId()));
+        if(!inDriverModule) {
+            String taskDriverUserId = getDriverUserId(task.getId());
+            notificationIntent.putExtra("driverUserId", taskDriverUserId);
         }
-        else notificationIntent.putExtra("isLatest", false);
 
         PendingIntent pendingIntent = PendingIntent.getActivity(
                 myContext, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT
@@ -1147,6 +1144,18 @@ public class DriverActivity extends AppCompatActivity {
             List<Booking> bookingList = user.getBookingList();
             for(Booking booking : bookingList) {
                 if(booking.getId().equals(bookingId)) {
+                    return user.getId();
+                }
+            }
+        }
+        return null;
+    }
+
+    private String getDriverUserId(String bookingId) {
+        for(User user : users) {
+            List<Booking> taskList = user.getTaskList();
+            for(Booking task : taskList) {
+                if(task.getId().equals(bookingId) && !task.getStatus().equals("Passed")) {
                     return user.getId();
                 }
             }

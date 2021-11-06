@@ -905,14 +905,11 @@ public class MainActivity extends AppCompatActivity {
         Intent notificationIntent = new Intent(myContext, ChatActivity.class);
         notificationIntent.putExtra("taskId", task.getId());
         notificationIntent.putExtra("inDriverModule", inDriverModule);
-        
-        if(inDriverModule) {
-            notificationIntent.putExtra("isScanning", false);
-            notificationIntent.putExtra("status", task.getStatus());
-            notificationIntent.putExtra("previousDriverUserId", task.getPreviousDriverUserId());
-            notificationIntent.putExtra("userId", getPassengerUserId(task.getId()));
+
+        if(!inDriverModule) {
+            String taskDriverUserId = getDriverUserId(task.getId());
+            notificationIntent.putExtra("driverUserId", taskDriverUserId);
         }
-        else notificationIntent.putExtra("isLatest", false);
 
         PendingIntent pendingIntent = PendingIntent.getActivity(
                 myContext, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT
@@ -1084,11 +1081,11 @@ public class MainActivity extends AppCompatActivity {
                 child("notified").setValue(true);
     }
 
-    private String getPassengerUserId(String bookingId) {
+    private String getDriverUserId(String bookingId) {
         for(User user : users) {
-            List<Booking> bookingList = user.getBookingList();
-            for(Booking booking : bookingList) {
-                if(booking.getId().equals(bookingId)) {
+            List<Booking> taskList = user.getTaskList();
+            for(Booking task : taskList) {
+                if(task.getId().equals(bookingId) && !task.getStatus().equals("Passed")) {
                     return user.getId();
                 }
             }
