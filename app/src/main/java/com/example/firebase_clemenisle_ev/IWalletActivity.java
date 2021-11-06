@@ -305,6 +305,7 @@ public class IWalletActivity extends AppCompatActivity {
 
     private void submitReferenceNumber(String wtId) {
         setDialogScreenEnabled(false);
+        tlReferenceNumber.setStartIconTintList(cslInitial);
 
         IWalletTransaction transaction = new IWalletTransaction(wtId,
                 new DateTimeToString().getDateAndTime(), "Top-up", 0);
@@ -560,6 +561,8 @@ public class IWalletActivity extends AppCompatActivity {
 
     private void submitRequest(String wtId) {
         setDialogScreenEnabled(false);
+        tlMobileNumber.setStartIconTintList(cslInitial);
+        tlAmount.setStartIconTintList(cslInitial);
 
         IWalletTransaction transaction = new IWalletTransaction(wtId,
                 new DateTimeToString().getDateAndTime(), "Transfer", amount);

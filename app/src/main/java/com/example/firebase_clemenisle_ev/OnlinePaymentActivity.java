@@ -336,6 +336,7 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
     private void submitReferenceNumber() {
         setDialogScreenEnabled(false);
         dialogProgressBar.setVisibility(View.VISIBLE);
+        tlReferenceNumber.setStartIconTintList(cslInitial);
 
         if(isReferenceNumberExisting(referenceNumberValue)) {
             Toast.makeText(
@@ -355,7 +356,7 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
                 new DateTimeToString().getDateAndTime(), 0);
         referenceNumber.setReferenceNumber(referenceNumberValue);
 
-        addReferenceNumberToDatabase(referenceNumber, rnId);
+        addReferenceNumberToDatabase(referenceNumber, rnId, 0);
     }
 
     private String getRNID() {
@@ -364,7 +365,7 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
         return "RN" + rnIdSuffix;
     }
 
-    private void addReferenceNumberToDatabase(ReferenceNumber referenceNumber, String rnId) {
+    private void addReferenceNumberToDatabase(ReferenceNumber referenceNumber, String rnId, int sender) {
         DatabaseReference rnRef = usersRef.child(userId).child("bookingList").child(bookingId).
                 child("referenceNumberList").child(rnId);
         rnRef.setValue(referenceNumber).addOnCompleteListener(task -> {
@@ -372,11 +373,20 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
                 dialog.dismiss();
                 dialog2.dismiss();
 
-                Toast.makeText(
-                        myContext,
-                        "Successfully submitted a reference number",
-                        Toast.LENGTH_SHORT
-                ).show();
+                if(sender == 0) {
+                    Toast.makeText(
+                            myContext,
+                            "Successfully submitted a reference number",
+                            Toast.LENGTH_SHORT
+                    ).show();
+                }
+                else if(sender == 1) {
+                    Toast.makeText(
+                            myContext,
+                            "Successfully paid using iWallet. Amount: ₱" + amount,
+                            Toast.LENGTH_SHORT
+                    ).show();
+                }
             }
             else {
                 if(task.getException() != null) {
@@ -561,6 +571,7 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
     private void submitIWalletPayment(String transactionId) {
         setDialogScreenEnabled(false);
         dialogProgressBar2.setVisibility(View.VISIBLE);
+        tlAmount.setStartIconTintList(cslInitial);
 
         String rnId = getRNID();
 
@@ -569,7 +580,7 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
         referenceNumber.setiWalletUsed(true);
         referenceNumber.setNotified(false);
 
-        addReferenceNumberToDatabase(referenceNumber, rnId);
+        addReferenceNumberToDatabase(referenceNumber, rnId, 1);
         addToTransactionList(transactionId);
     }
 

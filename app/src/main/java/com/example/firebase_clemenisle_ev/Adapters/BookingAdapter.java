@@ -637,6 +637,8 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
     private void submitReason(Booking booking) {
         dialogProgressBar.setVisibility(View.VISIBLE);
         setDialogScreenEnabled(false);
+        tlReason.setStartIconTintList(cslInitial);
+
         usersRef.child(userId).child("taskList").
                 child(booking.getId()).child("reason").setValue(reasonValue)
                 .addOnCompleteListener(task -> {

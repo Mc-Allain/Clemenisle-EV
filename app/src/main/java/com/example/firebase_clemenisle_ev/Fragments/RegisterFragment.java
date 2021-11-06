@@ -567,9 +567,9 @@ public class RegisterFragment extends Fragment {
     }
 
     private void checkNameInput(int sender) {
-        lastName = etLastName.getText().toString();
-        firstName = etFirstName.getText().toString();
-        middleName = etMiddleName.getText().toString();
+        lastName = etLastName.getText().toString().trim();
+        firstName = etFirstName.getText().toString().trim();
+        middleName = etMiddleName.getText().toString().trim();
 
         switch(sender) {
             case 1:

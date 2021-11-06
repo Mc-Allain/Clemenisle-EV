@@ -735,9 +735,9 @@ public class LoggedInUserProfileFragment extends Fragment {
     }
 
     private void checkNameInput(int sender) {
-        newLastName = etLastName.getText().toString();
-        newFirstName = etFirstName.getText().toString();
-        newMiddleName = etMiddleName.getText().toString();
+        newLastName = etLastName.getText().toString().trim();
+        newFirstName = etFirstName.getText().toString().trim();
+        newMiddleName = etMiddleName.getText().toString().trim();
 
         switch(sender) {
             case 1:
