@@ -5,6 +5,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Typeface;
+import android.os.Build;
+import android.text.Html;
+import android.text.SpannableString;
+import android.text.Spanned;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -64,7 +68,7 @@ public class IWalletTransactionAdapter extends RecyclerView.Adapter<IWalletTrans
         colorBlack = myResources.getColor(R.color.black);
 
         IWalletTransaction transaction = transactionList.get(position);
-        String transactionId = transaction.getId();
+        String transactionId = "<b>ID</b>: " + transaction.getId();
         String category = transaction.getCategory();
         String timestamp = transaction.getTimestamp();
         String referenceNumber = transaction.getReferenceNumber();
@@ -74,7 +78,7 @@ public class IWalletTransactionAdapter extends RecyclerView.Adapter<IWalletTrans
 
         String bookingId = transaction.getBookingId();
 
-        tvTransactionId.setText(transactionId);
+        tvTransactionId.setText(fromHtml(transactionId));
         tvCategory.setText(category);
 
         DateTimeDifference dateTimeDifference = new DateTimeDifference(timestamp);
@@ -164,6 +168,19 @@ public class IWalletTransactionAdapter extends RecyclerView.Adapter<IWalletTrans
                 (ConstraintLayout.LayoutParams) backgroundLayout.getLayoutParams();
         layoutParams.setMargins(layoutParams.leftMargin, top, layoutParams.rightMargin, bottom);
         backgroundLayout.setLayoutParams(layoutParams);
+    }
+
+    @SuppressWarnings("deprecation")
+    public static Spanned fromHtml(String html){
+        if(html == null) {
+            return new SpannableString("");
+        }
+        else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            return Html.fromHtml(html, Html.FROM_HTML_MODE_LEGACY);
+        }
+        else {
+            return Html.fromHtml(html);
+        }
     }
 
     private void openOnlinePayment(String bookingId) {

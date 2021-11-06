@@ -689,7 +689,22 @@ public class MainActivity extends AppCompatActivity {
                             showChatNotification(booking, fullName, message, true);
                         else {
                             usersRef.child(userId).child("taskList").child(booking.getId()).
-                                    child("notified").setValue(true);
+                                    addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                            if(snapshot.exists())
+                                                snapshot.getRef().child("notified").setValue(true);
+                                        }
+
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError error) {
+                                            Toast.makeText(
+                                                    myContext,
+                                                    error.toString(),
+                                                    Toast.LENGTH_LONG
+                                            ).show();
+                                        }
+                                    });
                         }
                         break;
                     }
@@ -711,7 +726,22 @@ public class MainActivity extends AppCompatActivity {
                             showChatNotification(booking, fullName, message, false);
                         else {
                             usersRef.child(userId).child("bookingList").child(booking.getId()).
-                                    child("notified").setValue(true);
+                                    addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                            if(snapshot.exists())
+                                                snapshot.getRef().child("notified").setValue(true);
+                                        }
+
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError error) {
+                                            Toast.makeText(
+                                                    myContext,
+                                                    error.toString(),
+                                                    Toast.LENGTH_LONG
+                                            ).show();
+                                        }
+                                    });
                         }
                         break;
                     }
@@ -893,11 +923,41 @@ public class MainActivity extends AppCompatActivity {
 
         if(inDriverModule) {
             usersRef.child(userId).child("taskList").child(task.getId()).
-                    child("notified").setValue(true);
+                    addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            if(snapshot.exists())
+                                snapshot.getRef().child("notified").setValue(true);
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+                            Toast.makeText(
+                                    myContext,
+                                    error.toString(),
+                                    Toast.LENGTH_LONG
+                            ).show();
+                        }
+                    });
         }
         else {
             usersRef.child(userId).child("bookingList").child(task.getId()).
-                    child("notified").setValue(true);
+                    addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            if(snapshot.exists())
+                                snapshot.getRef().child("notified").setValue(true);
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+                            Toast.makeText(
+                                    myContext,
+                                    error.toString(),
+                                    Toast.LENGTH_LONG
+                            ).show();
+                        }
+                    });
         }
     }
 
