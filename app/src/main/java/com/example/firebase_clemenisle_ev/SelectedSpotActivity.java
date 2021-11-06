@@ -394,7 +394,7 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
 
             @Override
             public void afterTextChanged(Editable editable) {
-                inputComment = etComment.getText().toString();
+                inputComment = etComment.getText().toString().trim();
 
                 if(inputComment.length() > 0) {
                     sendImage.setEnabled(true);

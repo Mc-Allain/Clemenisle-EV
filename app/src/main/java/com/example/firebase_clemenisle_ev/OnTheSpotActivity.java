@@ -459,7 +459,7 @@ public class OnTheSpotActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable editable) {
-                remarksValue = etRemarks.getText().toString();
+                remarksValue = etRemarks.getText().toString().trim();
             }
         });
 
@@ -613,7 +613,7 @@ public class OnTheSpotActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable editable) {
-                reasonValue = etReason.getText().toString();
+                reasonValue = etReason.getText().toString().trim();
                 dialogSubmitButton.setEnabled(reasonValue.length() > 0);
             }
         });

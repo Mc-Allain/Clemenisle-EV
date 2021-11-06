@@ -184,7 +184,7 @@ public class ChatActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable editable) {
-                message = etMessage.getText().toString();
+                message = etMessage.getText().toString().trim();
 
                 if(message.length() > 0) {
                     sendImage.setEnabled(true);

@@ -1014,7 +1014,7 @@ public class BookingActivity extends AppCompatActivity implements
 
             @Override
             public void afterTextChanged(Editable editable) {
-                message = etMessage.getText().toString();
+                message = etMessage.getText().toString().trim();
 
                 if(bookingType.getId().equals("BT99")) {
                     if(message.length() > 0) messageLayout2.setVisibility(View.VISIBLE);
