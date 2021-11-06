@@ -949,8 +949,14 @@ public class DriverActivity extends AppCompatActivity {
         builder.setFullScreenIntent(pendingIntent, true);
         notificationManager.notify(1, builder.build());
 
-        usersRef.child(userId).child("taskList").child(task.getId()).
-                child("notified").setValue(true);
+        if(inDriverModule) {
+            usersRef.child(userId).child("taskList").child(task.getId()).
+                    child("notified").setValue(true);
+        }
+        else {
+            usersRef.child(userId).child("bookingList").child(task.getId()).
+                    child("notified").setValue(true);
+        }
     }
 
     private void showFailedTaskNotification(Booking task) {
