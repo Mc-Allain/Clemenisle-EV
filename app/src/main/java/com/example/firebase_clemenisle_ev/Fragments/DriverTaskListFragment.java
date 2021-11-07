@@ -326,6 +326,7 @@ public class DriverTaskListFragment extends Fragment implements BookingAdapter.O
                 break;
             case 5:
                 count = Integer.parseInt(badgeText5.getText().toString());
+                break;
             case 6:
                 count = Integer.parseInt(badgeText6.getText().toString());
                 break;

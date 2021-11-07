@@ -655,6 +655,7 @@ public class IWalletActivity extends AppCompatActivity {
                     transactionList.addAll(user.getTransactionList());
                 }
 
+                Collections.reverse(transactionList);
                 Collections.sort(transactionList, (transaction, t1) -> {
                     DateTimeToString dateTimeToString = new DateTimeToString();
                     dateTimeToString.setFormattedSchedule(transaction.getTimestamp());
