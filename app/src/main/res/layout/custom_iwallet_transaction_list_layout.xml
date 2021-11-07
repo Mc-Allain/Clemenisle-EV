@@ -24,7 +24,21 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
+            <TextView
+                android:id="@+id/tvTransactionId2"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="8dp"
+                android:fontFamily="@font/ubuntu"
+                android:text="Transaction ID"
+                android:textColor="@color/initial"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/tvTransactionId"
+                app:layout_constraintTop_toBottomOf="@+id/tvTransactionId" />
+
             <View
+                android:id="@+id/view3"
                 style="@style/line_color"
                 android:layout_width="0dp"
                 android:layout_height="1dp"
@@ -39,26 +53,24 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
-                android:layout_marginBottom="8dp"
                 android:fontFamily="@font/ubuntu"
-                android:text="ID: WT21-0101-00"
+                android:text="WT21-0101-00"
                 android:textColor="@color/black"
-                android:textSize="16sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/tvInvalidMN"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toStartOf="@+id/tvTransactionStatus"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/tvInvalidMN"
+                android:id="@+id/tvTransactionStatus"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="16dp"
                 android:fontFamily="@font/ubuntu"
-                android:text="Invalid Mobile Number"
+                android:text="Status"
                 android:textAlignment="textEnd"
-                android:textColor="@color/red"
-                app:layout_constraintBottom_toBottomOf="@+id/tvTransactionId"
+                android:textColor="@color/blue"
+                app:layout_constraintBottom_toBottomOf="@+id/tvTransactionId2"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/tvTransactionId" />
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -104,13 +116,13 @@
             app:layout_constraintTop_toBottomOf="@+id/tvCategory" />
 
         <TextView
-            android:id="@+id/tvMobileNumber"
+            android:id="@+id/tvPendingReferenceNumber"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
             android:fontFamily="@font/ubuntu"
-            android:text="MobileNumber"
+            android:text="Pending Reference Number"
             android:textColor="@color/black"
             app:layout_constraintEnd_toStartOf="@+id/tvValue"
             app:layout_constraintStart_toEndOf="@+id/tvCategory"

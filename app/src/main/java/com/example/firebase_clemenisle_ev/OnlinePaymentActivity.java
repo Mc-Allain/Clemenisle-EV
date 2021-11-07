@@ -526,7 +526,7 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
                     String dayId = dateTimeToString.getDay();
                     if(dayId.length() == 1) dayId = "0" + dayId;
 
-                    String transactionId = "WT" + yearId + "-" + monthId + dayId;
+                    String transactionId = "T" + yearId + "-" + monthId + dayId;
 
                     int suffixCount = 0;
 

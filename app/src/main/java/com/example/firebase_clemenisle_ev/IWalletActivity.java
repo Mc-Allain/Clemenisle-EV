@@ -54,7 +54,7 @@ public class IWalletActivity extends AppCompatActivity {
     FirebaseAuth firebaseAuth;
     FirebaseUser firebaseUser;
 
-    TextView tvIWallet;
+    TextView tvIWallet, tvBadge;
     RecyclerView transactionView;
 
     ImageView reloadImage;
@@ -130,6 +130,7 @@ public class IWalletActivity extends AppCompatActivity {
         setContentView(R.layout.activity_iwallet);
 
         tvIWallet = findViewById(R.id.tvIWallet);
+        tvBadge = findViewById(R.id.tvBadge);
         transactionView = findViewById(R.id.transactionView);
 
         reloadImage = findViewById(R.id.reloadImage);
@@ -516,7 +517,7 @@ public class IWalletActivity extends AppCompatActivity {
                     String dayId = dateTimeToString.getDay();
                     if(dayId.length() == 1) dayId = "0" + dayId;
 
-                    String transactionId = "WT" + yearId + "-" + monthId + dayId;
+                    String transactionId = "T" + yearId + "-" + monthId + dayId;
 
                     int suffixCount = 0;
 
@@ -692,6 +693,8 @@ public class IWalletActivity extends AppCompatActivity {
         tvIWallet.setText(iWallet);
         String helpText = "Maximum Amount: " + iWallet;
         tlAmount.setHelperText(helpText);
+
+        tvBadge.setText(String.valueOf(transactionList.size()));
 
         progressBar.setVisibility(View.GONE);
         tvLog.setVisibility(View.GONE);

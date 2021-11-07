@@ -5,10 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Typeface;
-import android.os.Build;
-import android.text.Html;
-import android.text.SpannableString;
-import android.text.Spanned;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,7 +30,7 @@ public class IWalletTransactionAdapter extends RecyclerView.Adapter<IWalletTrans
     Context myContext;
     Resources myResources;
 
-    int colorRed, colorBlue, colorGreen, colorBlack;
+    int colorRed, colorBlue, colorGreen, colorBlack, colorOrange;
 
     String defaultInvalidMNText = "Invalid Mobile Number", pendingText = "Pending";
 
@@ -56,8 +52,8 @@ public class IWalletTransactionAdapter extends RecyclerView.Adapter<IWalletTrans
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         ConstraintLayout backgroundLayout = holder.backgroundLayout;
         TextView tvTransactionId = holder.tvTransactionId, tvCategory = holder.tvCategory,
-                tvTimestamp = holder.tvTimestamp, tvMobileNumber = holder.tvMobileNumber,
-                tvValue = holder.tvValue, tvInvalidMN = holder.tvInvalidMN;
+                tvTimestamp = holder.tvTimestamp, tvPendingReferenceNumber = holder.tvPendingReferenceNumber,
+                tvValue = holder.tvValue, tvTransactionStatus = holder.tvTransactionStatus;
 
         myContext = inflater.getContext();
         myResources = myContext.getResources();
@@ -66,9 +62,10 @@ public class IWalletTransactionAdapter extends RecyclerView.Adapter<IWalletTrans
         colorBlue = myResources.getColor(R.color.blue);
         colorRed = myResources.getColor(R.color.red);
         colorBlack = myResources.getColor(R.color.black);
+        colorOrange = myResources.getColor(R.color.orange);
 
         IWalletTransaction transaction = transactionList.get(position);
-        String transactionId = "<b>ID</b>: " + transaction.getId();
+        String transactionId = transaction.getId();
         String category = transaction.getCategory();
         String timestamp = transaction.getTimestamp();
         String referenceNumber = transaction.getReferenceNumber();
@@ -78,7 +75,7 @@ public class IWalletTransactionAdapter extends RecyclerView.Adapter<IWalletTrans
 
         String bookingId = transaction.getBookingId();
 
-        tvTransactionId.setText(fromHtml(transactionId));
+        tvTransactionId.setText(transactionId);
         tvCategory.setText(category);
 
         DateTimeDifference dateTimeDifference = new DateTimeDifference(timestamp);
@@ -90,61 +87,62 @@ public class IWalletTransactionAdapter extends RecyclerView.Adapter<IWalletTrans
 
         tvValue.setText(valueText);
 
-        tvMobileNumber.setVisibility(View.GONE);
-        tvInvalidMN.setVisibility(View.GONE);
+        tvPendingReferenceNumber.setVisibility(View.GONE);
+        tvTransactionStatus.setVisibility(View.GONE);
 
         if(category.equals("Top-up")) {
             if(referenceNumber != null) {
                 referenceNumber = "#" + referenceNumber;
 
-                tvInvalidMN.setVisibility(View.VISIBLE);
+                tvTransactionStatus.setVisibility(View.VISIBLE);
                 if(value == 0) {
-                    tvInvalidMN.setTextColor(colorGreen);
-                    tvInvalidMN.setText(pendingText);
-                    tvInvalidMN.setTypeface(tvInvalidMN.getTypeface(), Typeface.ITALIC);
+                    tvTransactionStatus.setTextColor(colorOrange);
+                    tvTransactionStatus.setText(pendingText);
+                    tvTransactionStatus.setTypeface(tvTransactionStatus.getTypeface(), Typeface.ITALIC);
 
-                    tvMobileNumber.setVisibility(View.VISIBLE);
-                    tvMobileNumber.setText(referenceNumber);
+                    tvPendingReferenceNumber.setVisibility(View.VISIBLE);
+                    tvPendingReferenceNumber.setText(referenceNumber);
                 }
                 else {
-                    tvInvalidMN.setTextColor(colorBlack);
-                    tvInvalidMN.setText(referenceNumber);
-                    tvInvalidMN.setTypeface(tvInvalidMN.getTypeface(), Typeface.NORMAL);
+                    tvTransactionStatus.setTextColor(colorBlue);
+                    tvTransactionStatus.setText(referenceNumber);
+                    tvTransactionStatus.setTypeface(tvTransactionStatus.getTypeface(), Typeface.NORMAL);
                 }
             }
         }
 
         if(category.equals("Transfer")) {
             if(mobileNumber != null) {
-                tvMobileNumber.setVisibility(View.VISIBLE);
-                tvMobileNumber.setText(mobileNumber);
+                tvPendingReferenceNumber.setVisibility(View.VISIBLE);
+                tvPendingReferenceNumber.setText(mobileNumber);
             }
 
-            tvInvalidMN.setVisibility(View.VISIBLE);
+            tvTransactionStatus.setVisibility(View.VISIBLE);
             if(!valid) {
-                tvInvalidMN.setTextColor(colorRed);
-                tvInvalidMN.setText(defaultInvalidMNText);
-                tvInvalidMN.setTypeface(tvInvalidMN.getTypeface(), Typeface.ITALIC);
+                tvTransactionStatus.setTextColor(colorRed);
+                tvTransactionStatus.setText(defaultInvalidMNText);
+                tvTransactionStatus.setTypeface(tvTransactionStatus.getTypeface(), Typeface.ITALIC);
             }
             else {
                 if(referenceNumber == null) {
-                    tvInvalidMN.setTextColor(colorGreen);
-                    tvInvalidMN.setText(pendingText);
-                    tvInvalidMN.setTypeface(tvInvalidMN.getTypeface(), Typeface.ITALIC);
+                    tvTransactionStatus.setTextColor(colorOrange);
+                    tvTransactionStatus.setText(pendingText);
+                    tvTransactionStatus.setTypeface(tvTransactionStatus.getTypeface(), Typeface.ITALIC);
                 }
                 else {
                     referenceNumber = "#" + referenceNumber;
-                    tvInvalidMN.setTextColor(colorBlack);
-                    tvInvalidMN.setText(referenceNumber);
-                    tvInvalidMN.setTypeface(tvInvalidMN.getTypeface(), Typeface.NORMAL);
+                    tvTransactionStatus.setTextColor(colorBlue);
+                    tvTransactionStatus.setText(referenceNumber);
+                    tvTransactionStatus.setTypeface(tvTransactionStatus.getTypeface(), Typeface.NORMAL);
                 }
             }
         }
 
         if(category.equals("Refund") || category.equals("Payment")) {
             if(bookingId != null) {
-                tvMobileNumber.setVisibility(View.VISIBLE);
-                tvMobileNumber.setText(bookingId);
+                tvTransactionStatus.setVisibility(View.VISIBLE);
+                tvTransactionStatus.setTextColor(colorBlue);
+                tvTransactionStatus.setText(bookingId);
 
                 backgroundLayout.setOnClickListener(view -> {
                     if(bookingId.equals(selectedBookingId)) ((Activity) myContext).onBackPressed();
@@ -158,7 +156,7 @@ public class IWalletTransactionAdapter extends RecyclerView.Adapter<IWalletTrans
         boolean isFirstItem = position + 1 == 1, isLastItem = position + 1 == getItemCount();
 
         if(isFirstItem) {
-            top = dpToPx(8);
+            top = dpToPx(0);
         }
         if(isLastItem) {
             bottom = dpToPx(8);
@@ -168,19 +166,6 @@ public class IWalletTransactionAdapter extends RecyclerView.Adapter<IWalletTrans
                 (ConstraintLayout.LayoutParams) backgroundLayout.getLayoutParams();
         layoutParams.setMargins(layoutParams.leftMargin, top, layoutParams.rightMargin, bottom);
         backgroundLayout.setLayoutParams(layoutParams);
-    }
-
-    @SuppressWarnings("deprecation")
-    public static Spanned fromHtml(String html){
-        if(html == null) {
-            return new SpannableString("");
-        }
-        else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            return Html.fromHtml(html, Html.FROM_HTML_MODE_LEGACY);
-        }
-        else {
-            return Html.fromHtml(html);
-        }
     }
 
     private void openOnlinePayment(String bookingId) {
@@ -202,7 +187,7 @@ public class IWalletTransactionAdapter extends RecyclerView.Adapter<IWalletTrans
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         ConstraintLayout backgroundLayout;
-        TextView tvTransactionId, tvCategory, tvTimestamp, tvMobileNumber, tvValue, tvInvalidMN;
+        TextView tvTransactionId, tvCategory, tvTimestamp, tvPendingReferenceNumber, tvValue, tvTransactionStatus;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -211,9 +196,9 @@ public class IWalletTransactionAdapter extends RecyclerView.Adapter<IWalletTrans
             tvTransactionId = itemView.findViewById(R.id.tvTransactionId);
             tvCategory = itemView.findViewById(R.id.tvCategory);
             tvTimestamp = itemView.findViewById(R.id.tvTimestamp);
-            tvMobileNumber = itemView.findViewById(R.id.tvMobileNumber);
+            tvPendingReferenceNumber = itemView.findViewById(R.id.tvPendingReferenceNumber);
             tvValue = itemView.findViewById(R.id.tvValue);
-            tvInvalidMN = itemView.findViewById(R.id.tvInvalidMN);
+            tvTransactionStatus = itemView.findViewById(R.id.tvTransactionStatus);
 
             setIsRecyclable(false);
         }

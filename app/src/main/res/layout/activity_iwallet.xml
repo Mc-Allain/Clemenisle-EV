@@ -116,6 +116,23 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <TextView
+                android:id="@+id/tvBadge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:background="@drawable/corner_layout"
+                android:backgroundTint="@color/blue"
+                android:minWidth="28dp"
+                android:padding="4dp"
+                android:text="0"
+                android:textAlignment="center"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@+id/tvTransactionTitle"
+                app:layout_constraintStart_toEndOf="@+id/tvTransactionTitle"
+                app:layout_constraintTop_toTopOf="@+id/tvTransactionTitle" />
+
+            <TextView
                 android:id="@+id/tvTransactionTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
