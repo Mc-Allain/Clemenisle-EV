@@ -203,7 +203,7 @@ public class DriverTaskListFragment extends Fragment implements BookingAdapter.O
 
         LinearLayoutManager linearLayout6 = new LinearLayoutManager(myContext, LinearLayoutManager.VERTICAL, false);
         failedView.setLayoutManager(linearLayout6);
-        adapter6 = new BookingAdapter(myContext, taskList5);
+        adapter6 = new BookingAdapter(myContext, taskList6);
         failedView.setAdapter(adapter6);
         adapter6.setOnLikeClickListener(this);
 
@@ -677,7 +677,7 @@ public class DriverTaskListFragment extends Fragment implements BookingAdapter.O
         });
 
         Query task6Query = firebaseDatabase.getReference("users").
-                child(userId).child("taskList").orderByChild("status").equalTo("Cancelled");
+                child(userId).child("taskList").orderByChild("status").equalTo("Failed");
 
         success6 = false;
         task6Query.addValueEventListener(new ValueEventListener() {
@@ -723,7 +723,7 @@ public class DriverTaskListFragment extends Fragment implements BookingAdapter.O
             badgeText3.setText(String.valueOf(taskList3.size()));
             badgeText4.setText(String.valueOf(taskList4.size()));
             badgeText5.setText(String.valueOf(taskList5.size()));
-            badgeText5.setText(String.valueOf(taskList6.size()));
+            badgeText6.setText(String.valueOf(taskList6.size()));
 
             if(taskList1.size() + taskList2.size() + taskList3.size() +
                     taskList4.size() + taskList5.size() + taskList6.size() == 0) {
