@@ -1420,8 +1420,10 @@ public class LoggedInUserProfileFragment extends Fragment {
 
                     if(yearDifference == 0) {
                         if(monthDifference == 0) {
-                            if(dayDifference == 0) incomeToday += task.getBookingType().getPrice();
-                            else if(dayDifference <= 6) incomeThisWeek += task.getBookingType().getPrice();
+                            if(dayDifference <= 6) {
+                                if(dayDifference == 0) incomeToday += task.getBookingType().getPrice();
+                                incomeThisWeek += task.getBookingType().getPrice();
+                            }
                             incomeThisMonth += task.getBookingType().getPrice();
                         }
                         incomeThisYear += task.getBookingType().getPrice();

@@ -1942,6 +1942,9 @@ public class BookingActivity extends AppCompatActivity implements
                     bookingListRef.child("routeSpots").child(route.getRouteId());
             routeSpotsRef.setValue(route).addOnCompleteListener(task -> {
                         if(task.isSuccessful()) {
+                            routeSpotsRef.child("books").removeValue();
+                            routeSpotsRef.child("visits").removeValue();
+
                             if(isLastItem) {
                                 Toast.makeText(
                                         myContext,
