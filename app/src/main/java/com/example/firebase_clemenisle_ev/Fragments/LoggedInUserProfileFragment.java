@@ -39,6 +39,7 @@ import com.example.firebase_clemenisle_ev.Adapters.LikedSpotAdapter;
 import com.example.firebase_clemenisle_ev.Adapters.SpotWithCounterAdapter;
 import com.example.firebase_clemenisle_ev.Classes.Booking;
 import com.example.firebase_clemenisle_ev.Classes.Credentials;
+import com.example.firebase_clemenisle_ev.Classes.DateTimeDifference;
 import com.example.firebase_clemenisle_ev.Classes.FirebaseURL;
 import com.example.firebase_clemenisle_ev.Classes.Route;
 import com.example.firebase_clemenisle_ev.Classes.SimpleTouristSpot;
@@ -91,13 +92,17 @@ public class LoggedInUserProfileFragment extends Fragment {
     TextView tvFullName2;
     ImageView updateFullNameImage;
 
+    ConstraintLayout accountDetailsLayout;
+    TextView tvEmailAddress2;
+    ImageView updateEmailAddressImage, updatePasswordImage;
+
     ConstraintLayout iWalletLayout;
     TextView tvIWallet;
     Button viewButton;
 
-    ConstraintLayout accountDetailsLayout;
-    TextView tvEmailAddress2;
-    ImageView updateEmailAddressImage, updatePasswordImage;
+    ConstraintLayout incomeLayout;
+    TextView tvIncomeToday2, tvIncomeThisWeek2, tvIncomeThisMonth2, tvIncomeThisYear2;
+    Button viewButton2;
 
     TextView tvLikedSpotBadge;
     RecyclerView likedSpotView;
@@ -120,7 +125,7 @@ public class LoggedInUserProfileFragment extends Fragment {
     User user;
 
     String userId;
-    boolean isLoggedIn = false;
+    boolean isLoggedIn = false, isDriver = false;
 
     Dialog fullNameDialog;
     ImageView fullNameDialogCloseImage;
@@ -175,6 +180,8 @@ public class LoggedInUserProfileFragment extends Fragment {
     Dialog reLoginDialog;
     ImageView reLoginDialogCloseImage;
 
+    List<Booking> taskList = new ArrayList<>();
+
     private void initSharedPreferences() {
         SharedPreferences sharedPreferences = myContext
                 .getSharedPreferences("login", Context.MODE_PRIVATE);
@@ -204,14 +211,21 @@ public class LoggedInUserProfileFragment extends Fragment {
         tvFullName2 = view.findViewById(R.id.tvFullName2);
         updateFullNameImage = view.findViewById(R.id.updateFullNameImage);
 
-        iWalletLayout = view.findViewById(R.id.iWalletLayout);
-        tvIWallet = view.findViewById(R.id.tvIWallet);
-        viewButton = view.findViewById(R.id.viewButton);
-
         accountDetailsLayout = view.findViewById(R.id.accountDetailsLayout);
         tvEmailAddress2 = view.findViewById(R.id.tvEmailAddress2);
         updateEmailAddressImage = view.findViewById(R.id.updateEmailAddressImage);
         updatePasswordImage = view.findViewById(R.id.updatePasswordImage);
+
+        iWalletLayout = view.findViewById(R.id.iWalletLayout);
+        tvIWallet = view.findViewById(R.id.tvIWallet);
+        viewButton = view.findViewById(R.id.viewButton);
+
+        incomeLayout = view.findViewById(R.id.incomeLayout);
+        tvIncomeToday2 = view.findViewById(R.id.tvIncomeToday2);
+        tvIncomeThisWeek2 = view.findViewById(R.id.tvIncomeThisWeek2);
+        tvIncomeThisMonth2 = view.findViewById(R.id.tvIncomeThisMonth2);
+        tvIncomeThisYear2 = view.findViewById(R.id.tvIncomeThisYear2);
+        viewButton2 = view.findViewById(R.id.viewButton2);
 
         tvLikedSpotBadge = view.findViewById(R.id.tvLikedSpotBadge);
         likedSpotView = view.findViewById(R.id.likedSpotView);
@@ -268,6 +282,7 @@ public class LoggedInUserProfileFragment extends Fragment {
         initPasswordDialog();
         initPasswordChangeLoginDialog();
 
+        checkIfDriver();
         getCurrentUser();
 
         profileImage.setOnClickListener(view1 -> showProfileImageDialog());
@@ -1367,8 +1382,10 @@ public class LoggedInUserProfileFragment extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 user = null;
+                taskList.clear();
                 if(snapshot.exists()) {
                     user = new User(snapshot);
+                    taskList.addAll(user.getTaskList());
                     finishLoading();
                 }
                 else errorLoading("Failed to get the current user");
@@ -1387,8 +1404,47 @@ public class LoggedInUserProfileFragment extends Fragment {
 
         String iWallet = "₱" + user.getIWallet();
         if(iWallet.split("\\.")[1].length() == 1) iWallet += 0;
-
         tvIWallet.setText(iWallet);
+
+        incomeLayout.setVisibility(View.GONE);
+        if(isDriver) {
+            incomeLayout.setVisibility(View.VISIBLE);
+            double incomeToday = 0, incomeThisWeek = 0, incomeThisMonth = 0, incomeThisYear = 0;
+
+            for(Booking task : taskList) {
+                if(task.getStatus().equals("Completed")) {
+                    DateTimeDifference dateTimeDifference = new DateTimeDifference(task.getSchedule());
+                    int dayDifference = dateTimeDifference.getDayDifference();
+                    int monthDifference = dateTimeDifference.getMonthDifference();
+                    int yearDifference = dateTimeDifference.getYearDifference();
+
+                    if(yearDifference == 0) {
+                        if(monthDifference == 0) {
+                            if(dayDifference == 0) incomeToday += task.getBookingType().getPrice();
+                            else if(dayDifference <= 6) incomeThisWeek += task.getBookingType().getPrice();
+                            incomeThisMonth += task.getBookingType().getPrice();
+                        }
+                        incomeThisYear += task.getBookingType().getPrice();
+                    }
+                }
+            }
+
+            String incomeTodayText = "₱" + incomeToday;
+            if(incomeTodayText.split("\\.")[1].length() == 1) incomeTodayText += 0;
+            tvIncomeToday2.setText(incomeTodayText);
+
+            String incomeThisWeekText = "₱" + incomeThisWeek;
+            if(incomeThisWeekText.split("\\.")[1].length() == 1) incomeThisWeekText += 0;
+            tvIncomeThisWeek2.setText(incomeThisWeekText);
+
+            String incomeThisMonthText = "₱" + incomeThisMonth;
+            if(incomeThisMonthText.split("\\.")[1].length() == 1) incomeThisMonthText += 0;
+            tvIncomeThisMonth2.setText(incomeThisMonthText);
+
+            String incomeThisYearText = "₱" + incomeThisYear;
+            if(incomeThisYearText.split("\\.")[1].length() == 1) incomeThisYearText += 0;
+            tvIncomeThisYear2.setText(incomeThisYearText);
+        }
 
         likedSpots.clear();
         likedSpots.addAll(user.getLikedSpots());
@@ -1595,5 +1651,25 @@ public class LoggedInUserProfileFragment extends Fragment {
         else {
             return Html.fromHtml(html);
         }
+    }
+
+    private void checkIfDriver() {
+        progressBar.setVisibility(View.VISIBLE);
+        firebaseDatabase.getReference("users").child(userId).child("driver").
+                addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if(snapshot.exists()) isDriver = snapshot.getValue(Boolean.class);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Toast.makeText(
+                                myContext,
+                                "Failed to get the current user",
+                                Toast.LENGTH_LONG
+                        ).show();
+                    }
+                });
     }
 }

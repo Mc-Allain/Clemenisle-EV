@@ -2,6 +2,7 @@ package com.example.firebase_clemenisle_ev.Classes;
 
 public class DateTimeDifference {
     String timestamp;
+    int dayDifference = 0, monthDifference = 0, yearDifference = 0;
 
     public DateTimeDifference(String timestamp) {
         DateTimeToString dateTimeToString = new DateTimeToString();
@@ -51,12 +52,11 @@ public class DateTimeDifference {
             }
         }
         else {
-            int yearDifference = yearNow - chatYear;
-            int monthDifference = monthNow - chatMonth;
+            yearDifference = yearNow - chatYear;
+            monthDifference = monthNow - chatMonth;
             if(chatMonth > monthNow) monthDifference = monthNow + 12 - chatMonth;
 
             if(monthDifference == 0 || monthDifference == 1 && yearDifference == 0) {
-                int dayDifference;
                 if(dayNow > chatDay)
                     dayDifference = dayNow - chatDay;
                 else dayDifference = dayNow + chatMaxDay - chatDay;
@@ -72,5 +72,17 @@ public class DateTimeDifference {
 
     public String getResult() {
         return timestamp;
+    }
+
+    public int getDayDifference() {
+        return dayDifference;
+    }
+
+    public int getMonthDifference() {
+        return monthDifference;
+    }
+
+    public int getYearDifference() {
+        return yearDifference;
     }
 }
