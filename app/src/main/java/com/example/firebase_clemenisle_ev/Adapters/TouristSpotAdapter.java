@@ -91,7 +91,7 @@ public class TouristSpotAdapter extends RecyclerView.Adapter<TouristSpotAdapter.
                 likeImage = holder.likeImage, visitImage = holder.visitImage,
                 bookImage = holder.bookImage, commentImage = holder.commentImage,
                 moreImage = holder.moreImage, i360Image = holder.i360Image, locateImage = holder.locateImage;
-        TextView tvName = holder.tvName, tvStation = holder.tvStation,
+        TextView tvName = holder.tvName, tvNearStation = holder.tvNearStation, tvStation = holder.tvStation,
                 tvLikes = holder.tvLikes, tvVisits = holder.tvVisits,
                 tvBooks = holder.tvBooks, tvComments = holder.tvComments,
                 tvNearSpot = holder.tvNearSpot, tvOption = holder.tvOption,
@@ -154,7 +154,17 @@ public class TouristSpotAdapter extends RecyclerView.Adapter<TouristSpotAdapter.
 
         tvName.setText(name);
         extvDescription.setText(description);
-        tvStation.setText(stations.toString());
+
+        if(nearStations.size() == 0) {
+            tvNearStation.setVisibility(View.GONE);
+            tvStation.setVisibility(View.GONE);
+        }
+        else {
+            tvNearStation.setVisibility(View.VISIBLE);
+            tvStation.setVisibility(View.VISIBLE);
+            tvStation.setText(stations.toString());
+        }
+
         tvLikes.setText(String.valueOf(likes));
         tvVisits.setText(String.valueOf(visits));
         tvBooks.setText(String.valueOf(books));
@@ -420,7 +430,7 @@ public class TouristSpotAdapter extends RecyclerView.Adapter<TouristSpotAdapter.
     public static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView thumbnail, likeImage, visitImage, bookImage, commentImage,
                 moreImage, i360Image, locateImage;
-        TextView tvName, tvStation, tvLikes, tvVisits, tvBooks, tvComments,
+        TextView tvName, tvNearStation, tvStation, tvLikes, tvVisits, tvBooks, tvComments,
                 tvNearSpot, tvOption, tv360Image, tvLocate;
         ExpandableTextView extvDescription;
         ConstraintLayout backgroundLayout, buttonLayout, connectingLayout;
@@ -430,7 +440,8 @@ public class TouristSpotAdapter extends RecyclerView.Adapter<TouristSpotAdapter.
             super(itemView);
             thumbnail = itemView.findViewById(R.id.thumbnail);
             tvName = itemView.findViewById(R.id.tvName);
-            tvStation = itemView.findViewById(R.id.tvStartStation2);
+            tvNearStation = itemView.findViewById(R.id.tvNearStation);
+            tvStation = itemView.findViewById(R.id.tvStation);
             extvDescription = itemView.findViewById(R.id.extvDescription);
             likeImage = itemView.findViewById(R.id.likeImage);
             visitImage = itemView.findViewById(R.id.visitImage);

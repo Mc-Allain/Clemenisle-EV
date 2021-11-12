@@ -572,10 +572,22 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setBookingStatusToFailed(Booking booking) {
-        usersRef.child(userId).child("bookingList").
-                child(booking.getId()).child("status").setValue("Failed");
-        booking.setStatus("Failed");
-        showFailedBookingNotification(booking);
+        usersRef.child(userId).child("bookingList").child(booking.getId()).
+                addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if(snapshot.exists()) {
+                            snapshot.getRef().child("status").setValue("Failed");
+                            booking.setStatus("Failed");
+                            showFailedBookingNotification(booking);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
     }
 
     private void checkBooking(Booking booking, boolean inDriverModule) {
@@ -768,12 +780,12 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void setTaskStatusToFailed(Booking booking) {
+    private void setTaskStatusToFailed(Booking targetTask) {
         for (User user : users) {
             List<Booking> taskList = user.getTaskList();
 
             for(Booking task : taskList) {
-                if(task.getId().equals(booking.getId()) && !task.getStatus().equals("Passed")) {
+                if(task.getId().equals(targetTask.getId()) && !task.getStatus().equals("Passed")) {
                     usersRef.child(user.getId()).child("taskList").
                             child(task.getId()).child("status").setValue("Failed");
                     return;
