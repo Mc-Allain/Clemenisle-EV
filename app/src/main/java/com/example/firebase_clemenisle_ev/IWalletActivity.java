@@ -426,7 +426,7 @@ public class IWalletActivity extends AppCompatActivity {
 
                         String iWallet = "₱" + maxAmount;
                         if(iWallet.split("\\.")[1].length() == 1) iWallet += 0;
-                        String error = "Amount must be at maximum of " + iWallet;
+                        String error = "You only have " + iWallet + " in your iWallet";
 
                         tlAmount.setError(error);
                         tlAmount.setErrorTextColor(cslRed);
@@ -692,7 +692,7 @@ public class IWalletActivity extends AppCompatActivity {
         if(iWallet.split("\\.")[1].length() == 1) iWallet += 0;
 
         tvIWallet.setText(iWallet);
-        String helpText = "Maximum Amount: " + iWallet;
+        String helpText = "Current iWallet Amount: " + iWallet;
         tlAmount.setHelperText(helpText);
 
         tvBadge.setText(String.valueOf(transactionList.size()));

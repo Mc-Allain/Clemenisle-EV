@@ -56,7 +56,6 @@
                 android:fontFamily="@font/ubuntu"
                 android:text="WT21-0101-00"
                 android:textColor="@color/black"
-                android:textStyle="bold"
                 app:layout_constraintEnd_toStartOf="@+id/tvTransactionStatus"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />

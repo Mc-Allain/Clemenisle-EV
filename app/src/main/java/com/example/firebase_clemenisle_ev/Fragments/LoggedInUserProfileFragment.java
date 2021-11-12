@@ -98,11 +98,11 @@ public class LoggedInUserProfileFragment extends Fragment {
 
     ConstraintLayout iWalletLayout;
     TextView tvIWallet;
-    Button viewButton;
+    ImageView viewIWalletImage;
 
     ConstraintLayout incomeLayout;
     TextView tvIncomeToday2, tvIncomeThisWeek2, tvIncomeThisMonth2, tvIncomeThisYear2;
-    Button viewButton2;
+    ImageView viewIncomeImage;
 
     TextView tvLikedSpotBadge;
     RecyclerView likedSpotView;
@@ -218,14 +218,14 @@ public class LoggedInUserProfileFragment extends Fragment {
 
         iWalletLayout = view.findViewById(R.id.iWalletLayout);
         tvIWallet = view.findViewById(R.id.tvIWallet);
-        viewButton = view.findViewById(R.id.viewButton);
+        viewIWalletImage = view.findViewById(R.id.viewIWalletImage);
 
         incomeLayout = view.findViewById(R.id.incomeLayout);
         tvIncomeToday2 = view.findViewById(R.id.tvIncomeToday2);
         tvIncomeThisWeek2 = view.findViewById(R.id.tvIncomeThisWeek2);
         tvIncomeThisMonth2 = view.findViewById(R.id.tvIncomeThisMonth2);
         tvIncomeThisYear2 = view.findViewById(R.id.tvIncomeThisYear2);
-        viewButton2 = view.findViewById(R.id.viewButton2);
+        viewIncomeImage = view.findViewById(R.id.viewIncomeImage);
 
         tvLikedSpotBadge = view.findViewById(R.id.tvLikedSpotBadge);
         likedSpotView = view.findViewById(R.id.likedSpotView);
@@ -308,7 +308,7 @@ public class LoggedInUserProfileFragment extends Fragment {
         visitedSpotAdapter = new SpotWithCounterAdapter(myContext, visitedSpots, 1);
         visitedSpotView.setAdapter(visitedSpotAdapter);
 
-        viewButton.setOnClickListener(view12 -> {
+        viewIWalletImage.setOnClickListener(view12 -> {
             Intent intent = new Intent(myContext, IWalletActivity.class);
             startActivity(intent);
         });

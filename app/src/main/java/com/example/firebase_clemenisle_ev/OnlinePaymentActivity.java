@@ -77,7 +77,6 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
     List<IWalletTransaction> transactionList = new ArrayList<>();
 
     String userId;
-    double iWalletAmount;
 
     boolean isLoggedIn = false;
 
@@ -97,7 +96,7 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
     ImageView dialogCloseImage;
     ProgressBar dialogProgressBar;
 
-    double amount;
+    double iWalletAmount, price, amount;
 
     Dialog dialog2;
     TextView tvDialogTitle2, tvDialogCaption2;
@@ -462,12 +461,16 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
                     tlAmount.setErrorTextColor(cslRed);
                     tlAmount.setStartIconTintList(cslRed);
                 }
+                else if(amount > price) {
+                    amount = price;
+                    etAmount.setText(String.valueOf(amount));
+                }
                 else if(amount > maxAmount) {
                     tlAmount.setErrorEnabled(true);
 
                     String iWallet = "₱" + maxAmount;
                     if(iWallet.split("\\.")[1].length() == 1) iWallet += 0;
-                    String error = "Amount must be at maximum of " + iWallet;
+                    String error = "You only have " + iWallet + " in your iWallet";
 
                     tlAmount.setError(error);
                     tlAmount.setErrorTextColor(cslRed);
@@ -646,8 +649,10 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
         usersRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                double price = 0, creditedAmount = 0, balance, refundedAmount = 0;
+                price = 0;
+                double creditedAmount = 0, balance, refundedAmount = 0;
                 String status = "Booked";
+                StringBuilder helpText = new StringBuilder("Current iWallet Amount: ");
                 boolean isPaid = false;
 
                 referenceNumberList.clear();
@@ -663,8 +668,7 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
                             String iWallet = "₱" + iWalletAmount;
                             if(iWallet.split("\\.")[1].length() == 1) iWallet += 0;
 
-                            String helpText = "Maximum Amount: " + iWallet;
-                            tlAmount.setHelperText(helpText);
+                            helpText.append(iWallet);
                         }
 
                         for(Booking booking : bookingList) {
@@ -734,6 +738,9 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
                 tvRefundedAmount2.setText(refundedAmountText);
 
                 referenceNumberAdapter.setStatus(status);
+
+                helpText.append("\nAmount to Pay: ").append(priceText);
+                tlAmount.setHelperText(helpText.toString());
 
                 ConstraintLayout.LayoutParams layoutParams =
                         (ConstraintLayout.LayoutParams) tvLog.getLayoutParams();
