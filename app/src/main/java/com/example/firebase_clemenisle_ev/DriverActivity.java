@@ -92,7 +92,7 @@ public class DriverActivity extends AppCompatActivity {
     Calendar calendar = Calendar.getInstance();
     int calendarYear, calendarMonth, calendarDay;
 
-    CountDownTimer statusTimer;
+    CountDownTimer notificationTimer;
 
     long backPressedTime;
     Toast backToast;
@@ -597,8 +597,8 @@ public class DriverActivity extends AppCompatActivity {
     }
 
     private void startTimer() {
-        if(statusTimer != null) statusTimer.cancel();
-        statusTimer = new CountDownTimer(5000, 1000) {
+        if(notificationTimer != null) notificationTimer.cancel();
+        notificationTimer = new CountDownTimer(5000, 1000) {
             @Override
             public void onTick(long l) {}
 
@@ -1282,6 +1282,6 @@ public class DriverActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        statusTimer.cancel();
+        notificationTimer.cancel();
     }
 }

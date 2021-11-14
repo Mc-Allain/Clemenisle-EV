@@ -1165,6 +1165,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        notificationTimer.cancel();
         if(password != null) {
             if(!isCurrentPasswordValid() && !isPasswordUpdated) {
                 firebaseAuth.signOut();

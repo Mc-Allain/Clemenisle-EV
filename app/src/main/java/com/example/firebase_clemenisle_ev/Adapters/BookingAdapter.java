@@ -133,6 +133,15 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
     String remarksValue;
     int starValue = 0;
 
+    Dialog dialog3;
+    ImageView dialogCloseImage3;
+    Button dialogSubmitButton3;
+    ProgressBar dialogProgressBar3;
+
+    EditText etRemarks2;
+    TextInputLayout tlRemarks2;
+    String remarksValue2;
+
     public void setOnLikeClickListener(OnActionClickListener onActionClickListener) {
         this.onActionClickListener = onActionClickListener;
     }
@@ -215,6 +224,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
         initQRCodeDialog();
         if(dialog == null) initReasonDialog();
         if(dialog2 == null)  initRateTheDriverDialog();
+        if(dialog3 == null)  initRemarksDialog();
 
         firebaseAuth = FirebaseAuth.getInstance();
         if(isLoggedIn) {
@@ -246,17 +256,18 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
         String pickUpTime = booking.getPickUpTime();
         String dropOffTime = booking.getDropOffTime();
 
-        String reason = booking.getReason();
-        String remarks = booking.getRemarks();
-
-        int rating = booking.getRating();
-
         BookingType bookingType = booking.getBookingType();
         String typeName = bookingType.getName();
         String price = "₱" + bookingType.getPrice();
         if(price.split("\\.")[1].length() == 1) price += 0;
 
         String message = booking.getMessage();
+
+        String reason = booking.getReason();
+        String remarks = booking.getRemarks();
+
+        int rating = booking.getRating();
+
         String previousDriverUserId = booking.getPreviousDriverUserId();
 
         tvBookingId.setText(bookingId);
@@ -472,6 +483,119 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
         }
     }
 
+    private void setDialogScreenEnabled(boolean value) {
+        dialog.setCanceledOnTouchOutside(value);
+        dialog.setCancelable(value);
+        tlReason.setEnabled(value);
+        dialogSubmitButton.setEnabled(value);
+
+        dialog2.setCanceledOnTouchOutside(value);
+        dialog2.setCancelable(value);
+        tlRemarks.setEnabled(value);
+        dialogSubmitButton2.setEnabled(value);
+
+        dialog3.setCanceledOnTouchOutside(value);
+        dialog3.setCancelable(value);
+        tlRemarks2.setEnabled(value);
+        dialogSubmitButton3.setEnabled(value);
+
+        if(value) {
+            dialogCloseImage.getDrawable().setTint(colorRed);
+            dialogCloseImage2.getDrawable().setTint(colorRed);
+            dialogCloseImage3.getDrawable().setTint(colorRed);
+        }
+        else {
+            dialogCloseImage.getDrawable().setTint(colorInitial);
+            dialogCloseImage2.getDrawable().setTint(colorInitial);
+            dialogCloseImage3.getDrawable().setTint(colorInitial);
+        }
+    }
+
+    private void openReasonDialog(Booking booking, String reason) {
+        etReason.setText(reason);
+
+        tlReason.setErrorEnabled(false);
+        tlReason.setError(null);
+        tlReason.setStartIconTintList(cslInitial);
+
+        tlReason.clearFocus();
+        tlReason.requestFocus();
+
+        dialogSubmitButton.setOnClickListener(view -> submitReason(booking));
+
+        dialog.show();
+    }
+
+    private void initReasonDialog() {
+        dialog = new Dialog(myContext);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.dialog_input_pass_task_reason_layout);
+
+        etReason = dialog.findViewById(R.id.etReason);
+        tlReason = dialog.findViewById(R.id.tlReason);
+        dialogSubmitButton = dialog.findViewById(R.id.submitButton);
+        dialogCloseImage = dialog.findViewById(R.id.dialogCloseImage);
+        dialogProgressBar = dialog.findViewById(R.id.dialogProgressBar);
+
+        etReason.setOnFocusChangeListener((view1, b) -> {
+            if(!tlReason.isErrorEnabled()) {
+                if(b) {
+                    tlReason.setStartIconTintList(cslBlue);
+                }
+                else {
+                    tlReason.setStartIconTintList(cslInitial);
+                }
+            }
+        });
+
+        etReason.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                reasonValue = etReason.getText().toString().trim();
+                dialogSubmitButton.setEnabled(reasonValue.length() > 0);
+            }
+        });
+
+        dialogCloseImage.setOnClickListener(view -> dialog.dismiss());
+
+        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT);
+        dialog.getWindow().setBackgroundDrawable(AppCompatResources.getDrawable(myContext, R.drawable.corner_top_white_layout));
+        dialog.getWindow().getAttributes().windowAnimations = R.style.animBottomSlide;
+        dialog.getWindow().setGravity(Gravity.BOTTOM);
+    }
+
+    private void submitReason(Booking booking) {
+        dialogProgressBar.setVisibility(View.VISIBLE);
+        setDialogScreenEnabled(false);
+        tlReason.setStartIconTintList(cslInitial);
+
+        usersRef.child(userId).child("taskList").
+                child(booking.getId()).child("reason").setValue(reasonValue)
+                .addOnCompleteListener(task -> {
+                    if(task.isSuccessful()) passTask(booking);
+                    else {
+                        Toast.makeText(
+                                myContext,
+                                "Failed to pass the task",
+                                Toast.LENGTH_LONG
+                        ).show();
+                        dialogProgressBar.setVisibility(View.GONE);
+                        setDialogScreenEnabled(true);
+                    }
+                });
+    }
+
     private void openRateTheDriverDialog(String bookingId) {
         etRemarks.setText(null);
         clickStar(0);
@@ -567,121 +691,72 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
     }
 
     private void rate(String bookingId) {
-        String taskDriverUserId = getDriverUserId(bookingId);
-
-        if(taskDriverUserId != null) {
-            dialogProgressBar2.setVisibility(View.VISIBLE);
-            setDialogScreenEnabled(false);
-
-            usersRef.child(userId).child("bookingList").
-                    child(bookingId).child("rating").setValue(starValue);
-
-            usersRef.child(taskDriverUserId).child("taskList").
-                    child(bookingId).child("remarks").setValue(remarksValue);
-            usersRef.child(taskDriverUserId).child("taskList").
-                    child(bookingId).child("rating").setValue(starValue)
-                    .addOnCompleteListener(task -> {
-                        if(task.isSuccessful()) {
-                            Toast.makeText(
-                                    myContext,
-                                    "Successfully rated the driver",
-                                    Toast.LENGTH_LONG
-                            ).show();
-                        }
-                        else {
-                            Toast.makeText(
-                                    myContext,
-                                    "Failed to rate the driver",
-                                    Toast.LENGTH_LONG
-                            ).show();
-                        }
-                        dialogProgressBar2.setVisibility(View.GONE);
-                        setDialogScreenEnabled(true);
-                        dialog2.dismiss();
-                    });
-        }
-    }
-
-    private void openReasonDialog(Booking booking, String reason) {
-        etReason.setText(reason);
-
-        tlReason.setErrorEnabled(false);
-        tlReason.setError(null);
-        tlReason.setStartIconTintList(cslInitial);
-
-        tlReason.clearFocus();
-        tlReason.requestFocus();
-
-        dialogSubmitButton.setOnClickListener(view -> submitReason(booking));
-
-        dialog.show();
-    }
-
-    private void setDialogScreenEnabled(boolean value) {
-        dialog.setCanceledOnTouchOutside(value);
-        dialog.setCancelable(value);
-        tlReason.setEnabled(value);
-        dialogSubmitButton.setEnabled(value);
-
-        dialog2.setCanceledOnTouchOutside(value);
-        dialog2.setCancelable(value);
-        tlRemarks.setEnabled(value);
-        dialogSubmitButton2.setEnabled(value);
-
-        if(value) {
-            dialogCloseImage.getDrawable().setTint(colorRed);
-            dialogCloseImage2.getDrawable().setTint(colorRed);
-        }
-        else {
-            dialogCloseImage.getDrawable().setTint(colorInitial);
-            dialogCloseImage2.getDrawable().setTint(colorInitial);
-        }
-    }
-
-    private void submitReason(Booking booking) {
-        dialogProgressBar.setVisibility(View.VISIBLE);
+        dialogProgressBar2.setVisibility(View.VISIBLE);
         setDialogScreenEnabled(false);
-        tlReason.setStartIconTintList(cslInitial);
 
-        usersRef.child(userId).child("taskList").
-                child(booking.getId()).child("reason").setValue(reasonValue)
+        usersRef.child(userId).child("bookingList").
+                child(bookingId).child("remarks").setValue(remarksValue);
+        usersRef.child(userId).child("bookingList").
+                child(bookingId).child("rating").setValue(starValue)
                 .addOnCompleteListener(task -> {
-                    if(task.isSuccessful()) passTask(booking);
+                    if(task.isSuccessful()) {
+                        Toast.makeText(
+                                myContext,
+                                "Successfully rated the driver",
+                                Toast.LENGTH_LONG
+                        ).show();
+                        dialog2.dismiss();
+                    }
                     else {
                         Toast.makeText(
                                 myContext,
-                                "Failed to pass the task",
+                                "Failed to rate the driver",
                                 Toast.LENGTH_LONG
                         ).show();
-                        dialogProgressBar.setVisibility(View.GONE);
-                        setDialogScreenEnabled(true);
                     }
+                    dialogProgressBar2.setVisibility(View.GONE);
+                    setDialogScreenEnabled(true);
                 });
     }
 
-    private void initReasonDialog() {
-        dialog = new Dialog(myContext);
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setContentView(R.layout.dialog_input_pass_task_reason_layout);
+    private void openRemarksDialog(String bookingId, String remarksValue2) {
+        etRemarks2.setText(remarksValue2);
 
-        etReason = dialog.findViewById(R.id.etReason);
-        tlReason = dialog.findViewById(R.id.tlReason);
-        dialogSubmitButton = dialog.findViewById(R.id.submitButton);
-        dialogCloseImage = dialog.findViewById(R.id.dialogCloseImage);
-        dialogProgressBar = dialog.findViewById(R.id.dialogProgressBar);
+        tlRemarks2.setErrorEnabled(false);
+        tlRemarks2.setError(null);
+        tlRemarks2.setStartIconTintList(cslInitial);
 
-        etReason.setOnFocusChangeListener((view1, b) -> {
-            if(!tlReason.isErrorEnabled()) {
+        tlRemarks2.clearFocus();
+        tlRemarks2.requestFocus();
+
+        dialogSubmitButton3.setOnClickListener(view -> submitRemarks(bookingId));
+
+        dialog3.show();
+    }
+
+    private void initRemarksDialog() {
+        dialog3 = new Dialog(myContext);
+        dialog3.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog3.setContentView(R.layout.dialog_input_remarks_layout);
+
+        etRemarks2 = dialog3.findViewById(R.id.etRemarks);
+        tlRemarks2 = dialog3.findViewById(R.id.tlRemarks);
+        dialogSubmitButton3 = dialog3.findViewById(R.id.submitButton);
+        dialogCloseImage3 = dialog3.findViewById(R.id.dialogCloseImage);
+        dialogProgressBar3 = dialog3.findViewById(R.id.dialogProgressBar);
+
+        etRemarks2.setOnFocusChangeListener((view1, b) -> {
+            if(!tlRemarks2.isErrorEnabled()) {
                 if(b) {
-                    tlReason.setStartIconTintList(cslBlue);
+                    tlRemarks2.setStartIconTintList(cslBlue);
                 }
                 else {
-                    tlReason.setStartIconTintList(cslInitial);
+                    tlRemarks2.setStartIconTintList(cslInitial);
                 }
             }
         });
 
-        etReason.addTextChangedListener(new TextWatcher() {
+        etRemarks2.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
@@ -694,18 +769,48 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
 
             @Override
             public void afterTextChanged(Editable editable) {
-                reasonValue = etReason.getText().toString().trim();
-                dialogSubmitButton.setEnabled(reasonValue.length() > 0);
+                remarksValue2 = etRemarks2.getText().toString().trim();
+                dialogSubmitButton3.setEnabled(remarksValue2.length() > 0);
             }
         });
 
-        dialogCloseImage.setOnClickListener(view -> dialog.dismiss());
+        dialogCloseImage3.setOnClickListener(view -> dialog3.dismiss());
 
-        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
+        dialog3.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
-        dialog.getWindow().setBackgroundDrawable(AppCompatResources.getDrawable(myContext, R.drawable.corner_top_white_layout));
-        dialog.getWindow().getAttributes().windowAnimations = R.style.animBottomSlide;
-        dialog.getWindow().setGravity(Gravity.BOTTOM);
+        dialog3.getWindow().setBackgroundDrawable(AppCompatResources.getDrawable(myContext, R.drawable.corner_top_white_layout));
+        dialog3.getWindow().getAttributes().windowAnimations = R.style.animBottomSlide;
+        dialog3.getWindow().setGravity(Gravity.BOTTOM);
+    }
+
+    private void submitRemarks(String bookingId) {
+        dialogProgressBar3.setVisibility(View.VISIBLE);
+        setDialogScreenEnabled(false);
+        tlRemarks2.setStartIconTintList(cslInitial);
+
+        DatabaseReference reference = inDriverModule ?
+                usersRef.child(userId).child("taskList") : usersRef.child(userId).child("bookingList");
+
+        reference.child(bookingId).child("remarks").setValue(remarksValue2)
+                .addOnCompleteListener(task -> {
+                    if(task.isSuccessful()) {
+                        Toast.makeText(
+                                myContext,
+                                "Successfully submitted the remarks",
+                                Toast.LENGTH_LONG
+                        ).show();
+                        dialog3.dismiss();
+                    }
+                    else {
+                        Toast.makeText(
+                                myContext,
+                                "Failed to submit the remarks",
+                                Toast.LENGTH_LONG
+                        ).show();
+                    }
+                    dialogProgressBar3.setVisibility(View.GONE);
+                    setDialogScreenEnabled(true);
+                });
     }
 
     private void getUsers(
@@ -749,20 +854,22 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                     if((status.equals("Request") || status.equals("Passed") &&
                             reason != null && reason.length() > 0) &&
                             taskDriverUserId != null && taskDriverUserId.equals(userId)) {
-                        reasonText += "<br><br><b>Your Reason</b>: " + reason;
+                        if(reasonText.length() > 0) reasonText += "<br><br>";
+                        reasonText += "<b>Your Reason</b>: " + reason;
                         extvMessage.setText(fromHtml(reasonText));
                     }
 
                     String remarksText = reasonText;
-                    if((status.equals("Cancelled") || status.equals("Failed")) &&
+                    if((status.equals("Completed") || status.equals("Cancelled") || status.equals("Failed")) &&
                             remarks != null && remarks.length() > 0) {
-                        remarksText += "<br><br><b>Your Remarks</b>: " + remarks;
+                        if(remarksText.length() > 0) remarksText += "<br><br>";
+                        remarksText += "<b>Your Remarks</b>: " + remarks;
                         extvMessage.setText(fromHtml(remarksText));
                     }
 
                     getUserInfo(bookingId, status, tvUserFullName, profileImage, tvChat, chatImage,
                             tvDriver, driverImage, tvPass, passImage, tvStop, stopImage,
-                            tvCheck, checkImage, tvRemarks, remarksImage, tvPassenger, reason);
+                            tvCheck, checkImage, tvRemarks, remarksImage, tvPassenger, reason, remarks);
                     if(inDriverModule && (status.equals("Passed") ||
                             previousDriverUserId != null && previousDriverUserId.length() > 0 ||
                             status.equals("Request") && taskDriverUserId != null  && !taskDriverUserId.equals(userId)))
@@ -796,6 +903,9 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                     else if(status.equals("Cancelled") || status.equals("Failed")) {
                         tvRemarks.setVisibility(View.VISIBLE);
                         remarksImage.setVisibility(View.VISIBLE);
+
+                        tvRemarks.setOnClickListener(view -> openRemarksDialog(bookingId, remarks));
+                        remarksImage.setOnClickListener(view -> openRemarksDialog(bookingId, remarks));
                     }
 
                     extvMessage.setText(null);
@@ -1010,7 +1120,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                              TextView tvStop, ImageView stopImage,
                              TextView tvCheck, ImageView checkImage,
                              TextView tvRemarks, ImageView remarksImage,
-                             TextView tvPassenger, String reason) {
+                             TextView tvPassenger, String reason, String remarks) {
         for(User user : users) {
             List<Booking> bookingList = user.getBookingList();
             for(Booking booking : bookingList) {
@@ -1218,6 +1328,9 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                             checkImage.setVisibility(View.GONE);
                             tvRemarks.setVisibility(View.VISIBLE);
                             remarksImage.setVisibility(View.VISIBLE);
+
+                            tvRemarks.setOnClickListener(view -> openRemarksDialog(bookingId, remarks));
+                            remarksImage.setOnClickListener(view -> openRemarksDialog(bookingId, remarks));
                             break;
                     }
 
