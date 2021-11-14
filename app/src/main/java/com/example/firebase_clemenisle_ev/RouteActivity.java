@@ -112,7 +112,7 @@ public class RouteActivity extends AppCompatActivity implements
     String bookingId, schedule, typeName, price, startStationName, endStationName, status,
             message, previousDriverUserId;
     boolean isLatest, isPaid;
-    String pickUpTime, dropOffTime, reason;
+    String pickUpTime, dropOffTime, reason, remarks;
 
     Station startStation, endStation;
 
@@ -689,17 +689,29 @@ public class RouteActivity extends AppCompatActivity implements
                             driverInfoLayout.setVisibility(View.GONE);
                             userInfoLayout.setVisibility(View.VISIBLE);
 
+                            String messageText = "";
                             if(message.length() > 0) {
-                                String messageText = "<b>Message</b>: " + message;
+                                messageText = "<b>Message</b>: " + message;
                                 extvMessage.setText(fromHtml(messageText));
                             }
 
                             getDriverUserId();
-                            reason = getReason();
+                            getReason();
+                            getRemarks();
+
+                            String reasonText = messageText;
                             if((status.equals("Request") || status.equals("Passed")) &&
+                                    reason != null && reason.length() > 0 &&
                                     taskDriverUserId.equals(driverUserId)) {
-                                String reasonText = "<b>Your Reason</b>: " + reason;
+                                reasonText += "<br><br><b>Your Reason</b>: " + reason;
                                 extvMessage.setText(fromHtml(reasonText));
+                            }
+
+                            String remarksText = reasonText;
+                            if((status.equals("Cancelled") || status.equals("Failed")) &&
+                                    remarks != null && remarks.length() > 0) {
+                                remarksText += "<br><br><b>Your Remarks</b>: " + remarks;
+                                extvMessage.setText(fromHtml(remarksText));
                             }
 
                             getUserInfo();
@@ -745,17 +757,32 @@ public class RouteActivity extends AppCompatActivity implements
         });
     }
 
-    private String getReason() {
+    private void getReason() {
         for(User user : users) {
             if(user.getId().equals(driverUserId)) {
                 List<Booking> taskList = user.getTaskList();
                 for(Booking task : taskList) {
-                    if(task.getId().equals(bookingId))
-                        return task.getReason();
+                    if(task.getId().equals(bookingId)) {
+                        reason = task.getReason();
+                        return;
+                    }
                 }
             }
         }
-        return null;
+    }
+
+    private void getRemarks() {
+        for(User user : users) {
+            if(user.getId().equals(driverUserId)) {
+                List<Booking> taskList = user.getTaskList();
+                for(Booking task : taskList) {
+                    if(task.getId().equals(bookingId)) {
+                        remarks = task.getRemarks();
+                        return;
+                    }
+                }
+            }
+        }
     }
 
     private void openChat() {

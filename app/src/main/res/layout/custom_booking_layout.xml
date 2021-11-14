@@ -161,6 +161,7 @@
                 android:id="@+id/expandable_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:ellipsize="end"
                 android:fontFamily="@font/ubuntu"
                 android:textColor="@color/initial" />
 

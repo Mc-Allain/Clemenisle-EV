@@ -247,6 +247,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
         String dropOffTime = booking.getDropOffTime();
 
         String reason = booking.getReason();
+        String remarks = booking.getRemarks();
 
         int rating = booking.getRating();
 
@@ -412,7 +413,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                 profileImage, tvViewQR, viewQRImage, tvChat, chatImage, tvDriver, driverImage,
                 tvPass, passImage, tvStop, stopImage, tvCheck, checkImage, tvRemarks, remarksImage,
                 tvDriverFullName, driverProfileImage, tvPassenger, tvPlateNumber,
-                previousDriverUserId, reason, thumbnail);
+                previousDriverUserId, reason, remarks, thumbnail);
 
         int top = dpToPx(4), bottom = dpToPx(4);
 
@@ -716,7 +717,8 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
             TextView tvStop, ImageView stopImage, TextView tvCheck, ImageView checkImage,
             TextView tvRemarks, ImageView remarksImage,
             TextView tvDriverFullName, ImageView driverProfileImage, TextView tvPassenger,
-            TextView tvPlateNumber, String previousDriverUserId, String reason, ImageView thumbnail
+            TextView tvPlateNumber, String previousDriverUserId, String reason, String remarks,
+            ImageView thumbnail
     ) {
         usersRef.addValueEventListener(new ValueEventListener() {
             @Override
@@ -737,15 +739,25 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
 
                     getThumbnail(thumbnail, bookingId);
 
+                    String messageText = "";
                     if(message.length() > 0) {
-                        String messageText = "<b>Message</b>: " + message;
+                        messageText = "<b>Message</b>: " + message;
                         extvMessage.setText(fromHtml(messageText));
                     }
 
-                    if((status.equals("Request") || status.equals("Passed")) &&
+                    String reasonText = messageText;
+                    if((status.equals("Request") || status.equals("Passed") &&
+                            reason != null && reason.length() > 0) &&
                             taskDriverUserId != null && taskDriverUserId.equals(userId)) {
-                        String reasonText = "<b>Your Reason</b>: " + reason;
+                        reasonText += "<br><br><b>Your Reason</b>: " + reason;
                         extvMessage.setText(fromHtml(reasonText));
+                    }
+
+                    String remarksText = reasonText;
+                    if((status.equals("Cancelled") || status.equals("Failed")) &&
+                            remarks != null && remarks.length() > 0) {
+                        remarksText += "<br><br><b>Your Remarks</b>: " + remarks;
+                        extvMessage.setText(fromHtml(remarksText));
                     }
 
                     getUserInfo(bookingId, status, tvUserFullName, profileImage, tvChat, chatImage,
