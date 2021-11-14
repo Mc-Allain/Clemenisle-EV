@@ -6,8 +6,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -43,6 +41,7 @@ import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -299,7 +298,7 @@ public class IWalletActivity extends AppCompatActivity {
 
         dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
-        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+        dialog.getWindow().setBackgroundDrawable(AppCompatResources.getDrawable(myContext, R.drawable.corner_top_white_layout));
         dialog.getWindow().getAttributes().windowAnimations = R.style.animBottomSlide;
         dialog.getWindow().setGravity(Gravity.BOTTOM);
     }
@@ -461,7 +460,7 @@ public class IWalletActivity extends AppCompatActivity {
 
         transferDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
-        transferDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+        transferDialog.getWindow().setBackgroundDrawable(AppCompatResources.getDrawable(myContext, R.drawable.corner_top_white_layout));
         transferDialog.getWindow().getAttributes().windowAnimations = R.style.animBottomSlide;
         transferDialog.getWindow().setGravity(Gravity.BOTTOM);
     }
@@ -477,12 +476,14 @@ public class IWalletActivity extends AppCompatActivity {
     }
 
     private void setDialogScreenEnabled(boolean value) {
-        transferDialog.setCanceledOnTouchOutside(false);
+        transferDialog.setCanceledOnTouchOutside(value);
+        transferDialog.setCancelable(value);
         tlMobileNumber.setEnabled(value);
         tlAmount.setEnabled(value);
         submitButton.setEnabled(value);
 
-        dialog.setCanceledOnTouchOutside(false);
+        dialog.setCanceledOnTouchOutside(value);
+        dialog.setCancelable(value);
         etReferenceNumber.setEnabled(value);
         tlReferenceNumber.setEnabled(value);
         submitButton2.setEnabled(value);

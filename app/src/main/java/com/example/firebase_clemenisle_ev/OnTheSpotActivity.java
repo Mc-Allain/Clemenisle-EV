@@ -8,8 +8,6 @@ import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -72,6 +70,7 @@ import java.util.Locale;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.fragment.app.FragmentManager;
@@ -87,10 +86,10 @@ public class OnTheSpotActivity extends AppCompatActivity {
     private final static int MAP_SETTINGS_REQUEST = 1;
 
     ImageView profileImage, driverProfileImage, thumbnail, moreImage, locateImage, locateDestinationImage, viewQRImage,
-            chatImage, driverImage, passImage, stopImage, checkImage, rateImage, reloadImage;
+            chatImage, driverImage, passImage, stopImage, checkImage, rateImage, remarksImage, reloadImage;
     TextView tvUserFullName, tvPassenger, tvDriverFullName, tvPlateNumber, tvPickUpTime, tvDropOffTime,
             tvBookingId, tvSchedule, tvTypeName, tvPrice, tvOriginLocation2, tvDestinationSpot2,
-            tvLocate, tvLocateDestination, tvViewQR, tvChat, tvDriver, tvPass, tvStop, tvCheck, tvRate, tvLog;
+            tvLocate, tvLocateDestination, tvViewQR, tvChat, tvDriver, tvPass, tvStop, tvCheck, tvRate, tvRemarks, tvLog;
     ExpandableTextView extvMessage;
     ConstraintLayout buttonLayout, buttonLayout2, bookingInfoLayout, bookingInfoButtonLayout,
             userInfoLayout, driverInfoLayout, timeInfoLayout;
@@ -245,6 +244,8 @@ public class OnTheSpotActivity extends AppCompatActivity {
         checkImage = findViewById(R.id.checkImage);
         tvRate = findViewById(R.id.tvRate);
         rateImage = findViewById(R.id.rateImage);
+        tvRemarks = findViewById(R.id.tvRemarks);
+        remarksImage = findViewById(R.id.remarksImage);
 
         reloadImage = findViewById(R.id.reloadImage);
         mapLayout = findViewById(R.id.mapLayout);
@@ -396,7 +397,7 @@ public class OnTheSpotActivity extends AppCompatActivity {
         getUsers();
     }
 
-    private void openRateTheDriverDialog(String bookingId) {
+    private void openRateTheDriverDialog() {
         etRemarks.setText(null);
         clickStar(0);
 
@@ -467,7 +468,7 @@ public class OnTheSpotActivity extends AppCompatActivity {
 
         dialog3.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
-        dialog3.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+        dialog3.getWindow().setBackgroundDrawable(AppCompatResources.getDrawable(myContext, R.drawable.corner_top_white_layout));
         dialog3.getWindow().getAttributes().windowAnimations = R.style.animBottomSlide;
         dialog3.getWindow().setGravity(Gravity.BOTTOM);
     }
@@ -542,10 +543,13 @@ public class OnTheSpotActivity extends AppCompatActivity {
     }
 
     private void setDialogScreenEnabled(boolean value) {
-        dialog.setCanceledOnTouchOutside(false);
+        dialog.setCanceledOnTouchOutside(value);
+        dialog.setCancelable(value);
         tlReason.setEnabled(value);
         dialogSubmitButton.setEnabled(value);
-        dialog2.setCanceledOnTouchOutside(false);
+
+        dialog2.setCanceledOnTouchOutside(value);
+        dialog2.setCancelable(value);
         tlRemarks.setEnabled(value);
         dialogSubmitButton2.setEnabled(value);
 
@@ -622,7 +626,7 @@ public class OnTheSpotActivity extends AppCompatActivity {
 
         dialog2.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
-        dialog2.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+        dialog2.getWindow().setBackgroundDrawable(AppCompatResources.getDrawable(myContext, R.drawable.corner_top_white_layout));
         dialog2.getWindow().getAttributes().windowAnimations = R.style.animBottomSlide;
         dialog2.getWindow().setGravity(Gravity.BOTTOM);
     }
@@ -690,7 +694,10 @@ public class OnTheSpotActivity extends AppCompatActivity {
                             driverInfoLayout.setVisibility(View.GONE);
                             userInfoLayout.setVisibility(View.VISIBLE);
 
-                            extvMessage.setText(message);
+                            if(message.length() > 0) {
+                                String messageText = "<b>Message</b>: " + message;
+                                extvMessage.setText(fromHtml(messageText));
+                            }
 
                             getDriverUserId();
                             reason = getReason();
@@ -1327,7 +1334,7 @@ public class OnTheSpotActivity extends AppCompatActivity {
 
         dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
-        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+        dialog.getWindow().setBackgroundDrawable(AppCompatResources.getDrawable(myContext, R.drawable.corner_top_white_layout));
         dialog.getWindow().getAttributes().windowAnimations = R.style.animBottomSlide;
         dialog.getWindow().setGravity(Gravity.BOTTOM);
         dialog.setCanceledOnTouchOutside(false);
@@ -1350,7 +1357,7 @@ public class OnTheSpotActivity extends AppCompatActivity {
 
         qrCodeDialog.getWindow().setLayout(ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
-        qrCodeDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+        qrCodeDialog.getWindow().setBackgroundDrawable(AppCompatResources.getDrawable(myContext, R.drawable.corner_white_layout));
     }
 
     private void updateInfo() {
@@ -1421,16 +1428,21 @@ public class OnTheSpotActivity extends AppCompatActivity {
         fragmentManager.beginTransaction().replace(mapLayout.getId(), mapFragment).commit();
         mapFragment.setCurrentLocation(originLocation);
 
-        if(status.equals("Booked")) {
+        tvChat.setVisibility(View.GONE);
+        chatImage.setVisibility(View.GONE);
+        tvRemarks.setVisibility(View.GONE);
+        remarksImage.setVisibility(View.GONE);
+
+        if(status.equals("Booked") || status.equals("Request")) {
             tvChat.setVisibility(View.VISIBLE);
             chatImage.setVisibility(View.VISIBLE);
 
             tvChat.setOnClickListener(view -> openChat());
             chatImage.setOnClickListener(view -> openChat());
         }
-        else if(!status.equals("Request")) {
-            tvChat.setVisibility(View.GONE);
-            chatImage.setVisibility(View.GONE);
+        else if(status.equals("Cancelled") || status.equals("Failed")) {
+            tvRemarks.setVisibility(View.VISIBLE);
+            remarksImage.setVisibility(View.VISIBLE);
         }
 
         timeInfoLayout.setVisibility(View.GONE);
@@ -1546,8 +1558,8 @@ public class OnTheSpotActivity extends AppCompatActivity {
                         tvRate.setVisibility(View.VISIBLE);
                         rateImage.setVisibility(View.VISIBLE);
 
-                        tvRate.setOnClickListener(view -> openRateTheDriverDialog(bookingId));
-                        rateImage.setOnClickListener(view -> openRateTheDriverDialog(bookingId));
+                        tvRate.setOnClickListener(view -> openRateTheDriverDialog());
+                        rateImage.setOnClickListener(view -> openRateTheDriverDialog());
                     }
 
                     if(!inDriverModule) startTimer(booking);

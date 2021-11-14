@@ -65,6 +65,7 @@ import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
@@ -617,6 +618,7 @@ public class LoggedInUserProfileFragment extends Fragment {
 
     private void setProfileImageDialogScreenEnabled(boolean value) {
         profileImageDialog.setCanceledOnTouchOutside(value);
+        profileImageDialog.setCancelable(value);
         profileImageDialogCloseImage.setEnabled(value);
         chooseImageButton.setEnabled(value);
         removeButton.setEnabled(value);
@@ -744,7 +746,7 @@ public class LoggedInUserProfileFragment extends Fragment {
 
         fullNameDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
-        fullNameDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+        fullNameDialog.getWindow().setBackgroundDrawable(AppCompatResources.getDrawable(myContext, R.drawable.corner_top_white_layout));
         fullNameDialog.getWindow().getAttributes().windowAnimations = R.style.animBottomSlide;
         fullNameDialog.getWindow().setGravity(Gravity.BOTTOM);
     }
@@ -827,6 +829,7 @@ public class LoggedInUserProfileFragment extends Fragment {
 
     private void setFullNameDialogScreenEnabled(boolean value) {
         fullNameDialog.setCanceledOnTouchOutside(value);
+        fullNameDialog.setCancelable(value);
         fullNameDialogCloseImage.setEnabled(value);
         fullNameUpdateButton.setEnabled(value);
         tlLastName.setEnabled(value);
@@ -945,13 +948,14 @@ public class LoggedInUserProfileFragment extends Fragment {
 
         emailAddressDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
-        emailAddressDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+        emailAddressDialog.getWindow().setBackgroundDrawable(AppCompatResources.getDrawable(myContext, R.drawable.corner_top_white_layout));
         emailAddressDialog.getWindow().getAttributes().windowAnimations = R.style.animBottomSlide;
         emailAddressDialog.getWindow().setGravity(Gravity.BOTTOM);
     }
 
     private void setEmailAddressDialogScreenEnabled(boolean value) {
         emailAddressDialog.setCanceledOnTouchOutside(value);
+        emailAddressDialog.setCancelable(value);
         emailAddressDialogCloseImage.setEnabled(value);
         emailAddressUpdateButton.setEnabled(value);
         tlEmailAddress.setEnabled(value);
@@ -1163,7 +1167,7 @@ public class LoggedInUserProfileFragment extends Fragment {
 
         passwordDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
-        passwordDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+        passwordDialog.getWindow().setBackgroundDrawable(AppCompatResources.getDrawable(myContext, R.drawable.corner_top_white_layout));
         passwordDialog.getWindow().getAttributes().windowAnimations = R.style.animBottomSlide;
         passwordDialog.getWindow().setGravity(Gravity.BOTTOM);
     }
@@ -1336,13 +1340,14 @@ public class LoggedInUserProfileFragment extends Fragment {
 
         reLoginDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
-        reLoginDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+        reLoginDialog.getWindow().setBackgroundDrawable(AppCompatResources.getDrawable(myContext, R.drawable.corner_top_white_layout));
         reLoginDialog.getWindow().getAttributes().windowAnimations = R.style.animBottomSlide;
         reLoginDialog.getWindow().setGravity(Gravity.BOTTOM);
     }
 
     private void setPasswordDialogScreenEnabled(boolean value) {
         passwordDialog.setCanceledOnTouchOutside(value);
+        passwordDialog.setCancelable(value);
         passwordDialogCloseImage.setEnabled(value);
         passwordUpdateButton.setEnabled(value);
         tlPassword.setEnabled(value);

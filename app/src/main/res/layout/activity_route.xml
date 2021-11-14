@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:background="@color/white"
-        android:visibility="visible"
+        android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/buttonLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
@@ -477,13 +477,25 @@
             app:layout_constraintTop_toBottomOf="parent">
 
             <ImageView
-                android:id="@+id/rateImage"
+                android:id="@+id/remarksImage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="4dp"
                 android:padding="4dp"
                 android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/locateImage"
+                app:srcCompat="@drawable/ic_baseline_mode_comment_24"
+                app:tint="@color/blue" />
+
+            <ImageView
+                android:id="@+id/rateImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                android:padding="4dp"
+                android:visibility="gone"
+                app:layout_constraintBottom_toTopOf="@+id/remarksImage"
                 app:layout_constraintStart_toStartOf="@+id/locateImage"
                 app:srcCompat="@drawable/ic_baseline_star_24"
                 app:tint="@color/blue" />
@@ -583,6 +595,21 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_baseline_location_searching_24"
                 app:tint="@color/blue" />
+
+            <TextView
+                android:id="@+id/tvRemarks"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:fontFamily="@font/ubuntu"
+                android:gravity="center_vertical"
+                android:text="Remarks"
+                android:textColor="@color/blue"
+                android:textStyle="bold"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@+id/remarksImage"
+                app:layout_constraintEnd_toEndOf="@+id/tvLocateEnd"
+                app:layout_constraintStart_toEndOf="@+id/remarksImage"
+                app:layout_constraintTop_toTopOf="@+id/remarksImage" />
 
             <TextView
                 android:id="@+id/tvRate"
@@ -728,7 +755,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:background="@color/white"
-        android:visibility="visible"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">

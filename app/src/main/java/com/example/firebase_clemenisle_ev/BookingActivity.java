@@ -10,8 +10,6 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
@@ -85,6 +83,7 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.core.app.ActivityCompat;
@@ -1695,7 +1694,7 @@ public class BookingActivity extends AppCompatActivity implements
 
         dialog3.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
-        dialog3.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+        dialog3.getWindow().setBackgroundDrawable(AppCompatResources.getDrawable(myContext, R.drawable.corner_top_white_layout));
         dialog3.getWindow().getAttributes().windowAnimations = R.style.animBottomSlide;
         dialog3.getWindow().setGravity(Gravity.BOTTOM);
     }
@@ -1788,7 +1787,7 @@ public class BookingActivity extends AppCompatActivity implements
 
         dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
-        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+        dialog.getWindow().setBackgroundDrawable(AppCompatResources.getDrawable(myContext, R.drawable.corner_top_white_layout));
         dialog.getWindow().getAttributes().windowAnimations = R.style.animBottomSlide;
         dialog.getWindow().setGravity(Gravity.BOTTOM);
     }
@@ -1978,10 +1977,13 @@ public class BookingActivity extends AppCompatActivity implements
 
     private void setDialogScreenEnabled(boolean value) {
         dialog.setCanceledOnTouchOutside(value);
+        dialog.setCancelable(value);
         dialogCloseImage.setEnabled(value);
-        dialog3.setCanceledOnTouchOutside(value);
-        dialog3CloseImage.setEnabled(value);
         submitButton.setEnabled(value);
+
+        dialog3.setCanceledOnTouchOutside(value);
+        dialog3.setCancelable(value);
+        dialog3CloseImage.setEnabled(value);
         submitButton2.setEnabled(value);
 
         if(value) {
@@ -2083,7 +2085,7 @@ public class BookingActivity extends AppCompatActivity implements
 
         dialog2.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
-        dialog2.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+        dialog2.getWindow().setBackgroundDrawable(AppCompatResources.getDrawable(myContext, R.drawable.corner_top_white_layout));
         dialog2.getWindow().getAttributes().windowAnimations = R.style.animBottomSlide;
         dialog2.getWindow().setGravity(Gravity.BOTTOM);
     }

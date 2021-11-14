@@ -152,7 +152,6 @@
         android:layout_marginStart="24dp"
         android:layout_marginTop="24dp"
         android:layout_marginEnd="24dp"
-        android:hint="Reason"
         app:counterEnabled="true"
         app:counterMaxLength="256"
         app:hintEnabled="false"

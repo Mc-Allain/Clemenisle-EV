@@ -6,8 +6,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -45,6 +43,7 @@ import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -240,11 +239,13 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
 
     private void setDialogScreenEnabled(boolean value) {
         dialog.setCanceledOnTouchOutside(value);
+        dialog.setCancelable(value);
         tlReferenceNumber.setEnabled(value);
         submitButton.setEnabled(value);
         dialogCloseImage.setEnabled(value);
 
         dialog2.setCanceledOnTouchOutside(value);
+        dialog2.setCancelable(value);
         tlAmount.setEnabled(value);
         submitButton2.setEnabled(value);
         dialogCloseImage2.setEnabled(value);
@@ -319,7 +320,7 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
 
         dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
-        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+        dialog.getWindow().setBackgroundDrawable(AppCompatResources.getDrawable(myContext, R.drawable.corner_top_white_layout));
         dialog.getWindow().getAttributes().windowAnimations = R.style.animBottomSlide;
         dialog.getWindow().setGravity(Gravity.BOTTOM);
     }
@@ -504,7 +505,7 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
 
         dialog2.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
-        dialog2.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+        dialog2.getWindow().setBackgroundDrawable(AppCompatResources.getDrawable(myContext, R.drawable.corner_top_white_layout));
         dialog2.getWindow().getAttributes().windowAnimations = R.style.animBottomSlide;
         dialog2.getWindow().setGravity(Gravity.BOTTOM);
     }

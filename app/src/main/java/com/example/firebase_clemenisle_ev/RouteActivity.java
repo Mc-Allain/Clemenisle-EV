@@ -8,8 +8,6 @@ import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -66,6 +64,7 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -81,10 +80,10 @@ public class RouteActivity extends AppCompatActivity implements
     FirebaseUser firebaseUser;
 
     ImageView profileImage, driverProfileImage, thumbnail, moreImage, locateImage, locateEndImage, viewQRImage,
-            chatImage, driverImage, passImage, stopImage, checkImage, rateImage, reloadImage, paidImage;
+            chatImage, driverImage, passImage, stopImage, checkImage, rateImage, remarksImage, reloadImage, paidImage;
     TextView tvUserFullName, tvPassenger, tvDriverFullName, tvPlateNumber, tvPickUpTime, tvDropOffTime,
             tvBookingId, tvSchedule, tvTypeName, tvPrice, tvStartStation2, tvEndStation2, tvLocate,
-            tvLocateEnd, tvViewQR, tvChat, tvDriver, tvPass, tvStop, tvCheck, tvRate, tvLog;
+            tvLocateEnd, tvViewQR, tvChat, tvDriver, tvPass, tvStop, tvCheck, tvRate, tvRemarks, tvLog;
     ExpandableTextView extvMessage;
     RecyclerView routeView;
     ConstraintLayout buttonLayout, buttonLayout2, bookingInfoLayout, bookingInfoButtonLayout,
@@ -233,6 +232,8 @@ public class RouteActivity extends AppCompatActivity implements
         checkImage = findViewById(R.id.checkImage);
         tvRate = findViewById(R.id.tvRate);
         rateImage = findViewById(R.id.rateImage);
+        tvRemarks = findViewById(R.id.tvRemarks);
+        remarksImage = findViewById(R.id.remarksImage);
 
         reloadImage = findViewById(R.id.reloadImage);
         paidImage = findViewById(R.id.paidImage);
@@ -385,7 +386,7 @@ public class RouteActivity extends AppCompatActivity implements
         getUsers();
     }
 
-    private void openRateTheDriverDialog(String bookingId) {
+    private void openRateTheDriverDialog() {
         etRemarks.setText(null);
         clickStar(0);
 
@@ -456,7 +457,7 @@ public class RouteActivity extends AppCompatActivity implements
 
         dialog3.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
-        dialog3.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+        dialog3.getWindow().setBackgroundDrawable(AppCompatResources.getDrawable(myContext, R.drawable.corner_top_white_layout));
         dialog3.getWindow().getAttributes().windowAnimations = R.style.animBottomSlide;
         dialog3.getWindow().setGravity(Gravity.BOTTOM);
     }
@@ -531,10 +532,13 @@ public class RouteActivity extends AppCompatActivity implements
     }
 
     private void setDialogScreenEnabled(boolean value) {
-        dialog.setCanceledOnTouchOutside(false);
+        dialog.setCanceledOnTouchOutside(value);
+        dialog.setCancelable(value);
         tlReason.setEnabled(value);
         dialogSubmitButton.setEnabled(value);
-        dialog2.setCanceledOnTouchOutside(false);
+
+        dialog2.setCanceledOnTouchOutside(value);
+        dialog2.setCancelable(value);
         tlRemarks.setEnabled(value);
         dialogSubmitButton2.setEnabled(value);
 
@@ -611,7 +615,7 @@ public class RouteActivity extends AppCompatActivity implements
 
         dialog2.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
-        dialog2.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+        dialog2.getWindow().setBackgroundDrawable(AppCompatResources.getDrawable(myContext, R.drawable.corner_top_white_layout));
         dialog2.getWindow().getAttributes().windowAnimations = R.style.animBottomSlide;
         dialog2.getWindow().setGravity(Gravity.BOTTOM);
     }
@@ -685,7 +689,10 @@ public class RouteActivity extends AppCompatActivity implements
                             driverInfoLayout.setVisibility(View.GONE);
                             userInfoLayout.setVisibility(View.VISIBLE);
 
-                            extvMessage.setText(message);
+                            if(message.length() > 0) {
+                                String messageText = "<b>Message</b>: " + message;
+                                extvMessage.setText(fromHtml(messageText));
+                            }
 
                             getDriverUserId();
                             reason = getReason();
@@ -1159,7 +1166,7 @@ public class RouteActivity extends AppCompatActivity implements
 
         dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
-        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+        dialog.getWindow().setBackgroundDrawable(AppCompatResources.getDrawable(myContext, R.drawable.corner_top_white_layout));
         dialog.getWindow().getAttributes().windowAnimations = R.style.animBottomSlide;
         dialog.getWindow().setGravity(Gravity.BOTTOM);
         dialog.setCanceledOnTouchOutside(false);
@@ -1258,7 +1265,7 @@ public class RouteActivity extends AppCompatActivity implements
 
         qrCodeDialog.getWindow().setLayout(ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
-        qrCodeDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+        qrCodeDialog.getWindow().setBackgroundDrawable(AppCompatResources.getDrawable(myContext, R.drawable.corner_white_layout));
     }
 
     private void updateInfo() {
@@ -1317,16 +1324,21 @@ public class RouteActivity extends AppCompatActivity implements
 
         paidImage.getDrawable().setTint(color);
 
-        if(status.equals("Booked")) {
+        tvChat.setVisibility(View.GONE);
+        chatImage.setVisibility(View.GONE);
+        tvRemarks.setVisibility(View.GONE);
+        remarksImage.setVisibility(View.GONE);
+
+        if(status.equals("Booked") || status.equals("Request")) {
             tvChat.setVisibility(View.VISIBLE);
             chatImage.setVisibility(View.VISIBLE);
 
             tvChat.setOnClickListener(view -> openChat());
             chatImage.setOnClickListener(view -> openChat());
         }
-        else if(!status.equals("Request")) {
-            tvChat.setVisibility(View.GONE);
-            chatImage.setVisibility(View.GONE);
+        else if(status.equals("Cancelled") || status.equals("Failed")) {
+            tvRemarks.setVisibility(View.VISIBLE);
+            remarksImage.setVisibility(View.VISIBLE);
         }
 
         timeInfoLayout.setVisibility(View.GONE);
@@ -1483,8 +1495,8 @@ public class RouteActivity extends AppCompatActivity implements
                         tvRate.setVisibility(View.VISIBLE);
                         rateImage.setVisibility(View.VISIBLE);
 
-                        tvRate.setOnClickListener(view -> openRateTheDriverDialog(bookingId));
-                        rateImage.setOnClickListener(view -> openRateTheDriverDialog(bookingId));
+                        tvRate.setOnClickListener(view -> openRateTheDriverDialog());
+                        rateImage.setOnClickListener(view -> openRateTheDriverDialog());
                     }
                 }
                 if(routeList.size() > 0) finishLoading();

@@ -7,8 +7,6 @@ import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Handler;
 import android.text.Editable;
@@ -66,6 +64,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.recyclerview.widget.RecyclerView;
@@ -183,7 +182,8 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                 locateEndImage = holder.locateEndImage, onlinePaymentImage = holder.onlinePaymentImage,
                 viewQRImage = holder.viewQRImage, chatImage = holder.chatImage,
                 driverImage = holder.driverImage, passImage = holder.passImage, stopImage = holder.stopImage,
-                checkImage = holder.checkImage, rateImage = holder.rateImage, paidImage = holder.paidImage;
+                checkImage = holder.checkImage, rateImage = holder.rateImage, remarksImage = holder.remarksImage,
+                paidImage = holder.paidImage;
         TextView tvUserFullName = holder.tvUserFullName, tvPassenger = holder.tvPassenger,
                 tvDriverFullName = holder.tvDriverFullName, tvPlateNumber = holder.tvPlateNumber,
                 tvPickUpTime = holder.tvPickUpTime, tvDropOffTime = holder.tvDropOffTime,
@@ -194,7 +194,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                 tvLocate = holder.tvLocate, tvLocateEnd = holder.tvLocateEnd,
                 tvChat = holder.tvChat, tvOnlinePayment = holder.tvOnlinePayment,
                 tvViewQR = holder.tvViewQR, tvDriver = holder.tvDriver, tvPass = holder.tvPass,
-                tvStop = holder.tvStop, tvCheck = holder.tvCheck, tvRate = holder.tvRate;
+                tvStop = holder.tvStop, tvCheck = holder.tvCheck, tvRate = holder.tvRate, tvRemarks = holder.tvRemarks;
         ExpandableTextView extvMessage = holder.extvMessage;
         ConstraintLayout backgroundLayout = holder.backgroundLayout, buttonLayout = holder.buttonLayout,
                 userInfoLayout = holder.userInfoLayout, driverInfoLayout = holder.driverInfoLayout,
@@ -410,7 +410,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
 
         getUsers(driverInfoLayout, userInfoLayout, extvMessage, message, bookingId, status, tvUserFullName,
                 profileImage, tvViewQR, viewQRImage, tvChat, chatImage, tvDriver, driverImage,
-                tvPass, passImage, tvStop, stopImage, tvCheck, checkImage,
+                tvPass, passImage, tvStop, stopImage, tvCheck, checkImage, tvRemarks, remarksImage,
                 tvDriverFullName, driverProfileImage, tvPassenger, tvPlateNumber,
                 previousDriverUserId, reason, thumbnail);
 
@@ -542,7 +542,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
 
         dialog2.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
-        dialog2.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+        dialog2.getWindow().setBackgroundDrawable(AppCompatResources.getDrawable(myContext, R.drawable.corner_top_white_layout));
         dialog2.getWindow().getAttributes().windowAnimations = R.style.animBottomSlide;
         dialog2.getWindow().setGravity(Gravity.BOTTOM);
     }
@@ -617,10 +617,13 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
     }
 
     private void setDialogScreenEnabled(boolean value) {
-        dialog.setCanceledOnTouchOutside(false);
+        dialog.setCanceledOnTouchOutside(value);
+        dialog.setCancelable(value);
         tlReason.setEnabled(value);
         dialogSubmitButton.setEnabled(value);
-        dialog2.setCanceledOnTouchOutside(false);
+
+        dialog2.setCanceledOnTouchOutside(value);
+        dialog2.setCancelable(value);
         tlRemarks.setEnabled(value);
         dialogSubmitButton2.setEnabled(value);
 
@@ -699,7 +702,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
 
         dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
-        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+        dialog.getWindow().setBackgroundDrawable(AppCompatResources.getDrawable(myContext, R.drawable.corner_top_white_layout));
         dialog.getWindow().getAttributes().windowAnimations = R.style.animBottomSlide;
         dialog.getWindow().setGravity(Gravity.BOTTOM);
     }
@@ -711,6 +714,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
             TextView tvViewQR, ImageView viewQRImage, TextView tvChat, ImageView chatImage,
             TextView tvDriver, ImageView driverImage, TextView tvPass, ImageView passImage,
             TextView tvStop, ImageView stopImage, TextView tvCheck, ImageView checkImage,
+            TextView tvRemarks, ImageView remarksImage,
             TextView tvDriverFullName, ImageView driverProfileImage, TextView tvPassenger,
             TextView tvPlateNumber, String previousDriverUserId, String reason, ImageView thumbnail
     ) {
@@ -733,7 +737,11 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
 
                     getThumbnail(thumbnail, bookingId);
 
-                    extvMessage.setText(message);
+                    if(message.length() > 0) {
+                        String messageText = "<b>Message</b>: " + message;
+                        extvMessage.setText(fromHtml(messageText));
+                    }
+
                     if((status.equals("Request") || status.equals("Passed")) &&
                             taskDriverUserId != null && taskDriverUserId.equals(userId)) {
                         String reasonText = "<b>Your Reason</b>: " + reason;
@@ -742,7 +750,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
 
                     getUserInfo(bookingId, status, tvUserFullName, profileImage, tvChat, chatImage,
                             tvDriver, driverImage, tvPass, passImage, tvStop, stopImage,
-                            tvCheck, checkImage, tvPassenger, reason);
+                            tvCheck, checkImage, tvRemarks, remarksImage, tvPassenger, reason);
                     if(inDriverModule && (status.equals("Passed") ||
                             previousDriverUserId != null && previousDriverUserId.length() > 0 ||
                             status.equals("Request") && taskDriverUserId != null  && !taskDriverUserId.equals(userId)))
@@ -759,6 +767,11 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                     tvViewQR.setOnClickListener(view -> viewQRCode(bookingId));
                     viewQRImage.setOnClickListener(view -> viewQRCode(bookingId));
 
+                    tvChat.setVisibility(View.GONE);
+                    chatImage.setVisibility(View.GONE);
+                    tvRemarks.setVisibility(View.GONE);
+                    remarksImage.setVisibility(View.GONE);
+
                     if(status.equals("Booked")) {
                         tvChat.setVisibility(View.VISIBLE);
                         chatImage.setVisibility(View.VISIBLE);
@@ -768,9 +781,9 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                         chatImage.setOnClickListener(view ->
                                 openChat(false, bookingId, taskDriverUserId));
                     }
-                    else {
-                        tvChat.setVisibility(View.GONE);
-                        chatImage.setVisibility(View.GONE);
+                    else if(status.equals("Cancelled") || status.equals("Failed")) {
+                        tvRemarks.setVisibility(View.VISIBLE);
+                        remarksImage.setVisibility(View.VISIBLE);
                     }
 
                     extvMessage.setText(null);
@@ -904,7 +917,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
 
         qrCodeDialog.getWindow().setLayout(ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
-        qrCodeDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+        qrCodeDialog.getWindow().setBackgroundDrawable(AppCompatResources.getDrawable(myContext, R.drawable.corner_white_layout));
     }
 
     private void openMap(Station startStation) {
@@ -984,6 +997,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                              TextView tvPass, ImageView passImage,
                              TextView tvStop, ImageView stopImage,
                              TextView tvCheck, ImageView checkImage,
+                             TextView tvRemarks, ImageView remarksImage,
                              TextView tvPassenger, String reason) {
         for(User user : users) {
             List<Booking> bookingList = user.getBookingList();
@@ -1054,6 +1068,8 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                             stopImage.setVisibility(View.GONE);
                             tvCheck.setVisibility(View.GONE);
                             checkImage.setVisibility(View.GONE);
+                            tvRemarks.setVisibility(View.GONE);
+                            remarksImage.setVisibility(View.GONE);
                             break;
                         case "Booked":
                             tvChat.setVisibility(View.VISIBLE);
@@ -1080,6 +1096,9 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
 
                             tvCheck.setOnClickListener(view -> openItem(booking, true));
                             checkImage.setOnClickListener(view -> openItem(booking, true));
+
+                            tvRemarks.setVisibility(View.GONE);
+                            remarksImage.setVisibility(View.GONE);
                             break;
                         case "Request":
                             if(userId.equals(taskDriverUserId) || ongoingTaskList.size() > 0) {
@@ -1126,6 +1145,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
 
                                 tvCheck.setOnClickListener(view -> openItem(booking, true));
                                 checkImage.setOnClickListener(view -> openItem(booking, true));
+
                             }
                             else {
                                 tvChat.setVisibility(View.GONE);
@@ -1150,6 +1170,8 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                                 tvCheck.setVisibility(View.GONE);
                                 checkImage.setVisibility(View.GONE);
                             }
+                            tvRemarks.setVisibility(View.GONE);
+                            remarksImage.setVisibility(View.GONE);
                             break;
                         case "Ongoing":
                             tvChat.setVisibility(View.GONE);
@@ -1167,6 +1189,9 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
 
                             tvCheck.setOnClickListener(view -> completeTask(booking));
                             checkImage.setOnClickListener(view -> completeTask(booking));
+
+                            tvRemarks.setVisibility(View.GONE);
+                            remarksImage.setVisibility(View.GONE);
                             break;
                         default:
                             tvChat.setVisibility(View.GONE);
@@ -1179,6 +1204,8 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                             stopImage.setVisibility(View.GONE);
                             tvCheck.setVisibility(View.GONE);
                             checkImage.setVisibility(View.GONE);
+                            tvRemarks.setVisibility(View.VISIBLE);
+                            remarksImage.setVisibility(View.VISIBLE);
                             break;
                     }
 
@@ -1400,11 +1427,11 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
     public static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView profileImage, driverProfileImage, thumbnail, moreImage,
                 openImage, locateImage, locateEndImage, onlinePaymentImage, viewQRImage, chatImage,
-                driverImage, passImage, stopImage, checkImage, rateImage, paidImage;
+                driverImage, passImage, stopImage, checkImage, rateImage, remarksImage, paidImage;
         TextView tvUserFullName, tvPassenger, tvDriverFullName, tvPlateNumber, tvPickUpTime, tvDropOffTime,
                 tvBookingId, tvSchedule, tvTypeName, tvPrice, tvStartStation, tvStartStation2, tvEndStation,
                 tvEndStation2, tvOption, tvOpen, tvLocate, tvLocateEnd, tvOnlinePayment, tvViewQR,
-                tvChat, tvDriver, tvPass, tvStop, tvCheck, tvRate;
+                tvChat, tvDriver, tvPass, tvStop, tvCheck, tvRate, tvRemarks;
         ExpandableTextView extvMessage;
         ConstraintLayout backgroundLayout, buttonLayout, userInfoLayout, driverInfoLayout, timeInfoLayout;
 
@@ -1465,6 +1492,8 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
             checkImage = itemView.findViewById(R.id.checkImage);
             tvRate = itemView.findViewById(R.id.tvRate);
             rateImage = itemView.findViewById(R.id.rateImage);
+            tvRemarks = itemView.findViewById(R.id.tvRemarks);
+            remarksImage = itemView.findViewById(R.id.remarksImage);
 
             setIsRecyclable(false);
         }

@@ -12,8 +12,6 @@ import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -61,6 +59,7 @@ import java.util.Locale;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.app.NotificationCompat;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
@@ -146,7 +145,6 @@ public class MainActivity extends AppCompatActivity {
     Dialog reLoginDialog;
     ImageView reLoginDialogCloseImage;
 
-    int transactionListCount;
     double iWallet;
     boolean isRefunded = true;
 
@@ -249,7 +247,6 @@ public class MainActivity extends AppCompatActivity {
         usersRef.child(userId).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                transactionListCount = 0;
                 iWallet = 0;
 
                 transactionList.clear();
@@ -257,9 +254,6 @@ public class MainActivity extends AppCompatActivity {
                     User user = new User(snapshot);
                     transactionList.addAll(user.getTransactionList());
                     iWallet = user.getIWallet();
-
-                    DataSnapshot dataSnapshot = snapshot.child("iWalletTransactionList");
-                    transactionListCount = (int) dataSnapshot.getChildrenCount();
                 }
 
                 new Handler().postDelayed(() -> getReferenceNumber(), 3000);
@@ -505,7 +499,7 @@ public class MainActivity extends AppCompatActivity {
 
         dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
-        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+        dialog.getWindow().setBackgroundDrawable(AppCompatResources.getDrawable(myContext, R.drawable.corner_top_white_layout));
         dialog.getWindow().getAttributes().windowAnimations = R.style.animBottomSlide;
         dialog.getWindow().setGravity(Gravity.BOTTOM);
     }
@@ -528,7 +522,7 @@ public class MainActivity extends AppCompatActivity {
 
         appVersionInfoDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
-        appVersionInfoDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+        appVersionInfoDialog.getWindow().setBackgroundDrawable(AppCompatResources.getDrawable(myContext, R.drawable.corner_top_white_layout));
         appVersionInfoDialog.getWindow().getAttributes().windowAnimations = R.style.animBottomSlide;
         appVersionInfoDialog.getWindow().setGravity(Gravity.BOTTOM);
     }
@@ -648,8 +642,9 @@ public class MainActivity extends AppCompatActivity {
             setOnTheSpotBookingStatusToFailed(booking, hrDifference, minDifference);
 
             if(booking.getStatus().equals("Booked") || booking.getStatus().equals("Request")) {
-                initNotificationInHours(booking, hourArray, hrDifference + 1, minArray, minDifference, sec);
-                initNotificationInMinutes(booking, hrDifference, minArray, minDifference, sec);
+                initNotificationInHours(booking, hourArray, minArray,
+                        hrDifference + 1, minDifference, sec, inDriverModule);
+                initNotificationInMinutes(booking, minArray, hrDifference, minDifference, sec, inDriverModule);
             }
         }
         else if(booking.getStatus().equals("Booked") || booking.getStatus().equals("Request")) {
@@ -665,7 +660,8 @@ public class MainActivity extends AppCompatActivity {
                 else minDifference = 0;
             }
 
-            initNotificationInHours(booking, hourArray, hrDifference + 1, minArray, minDifference, sec);
+            initNotificationInHours(booking, hourArray, minArray,
+                    hrDifference + 1, minDifference, sec, inDriverModule);
         }
 
         if(booking.getStatus().equals("Booked") || booking.getStatus().equals("Request"))
@@ -794,32 +790,48 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void initNotificationInHours(Booking booking, List<Integer> hourArray, int hrDifference,
-                                         List<Integer> minArray, int minDifference, int sec) {
+    private void initNotificationInHours(Booking booking, List<Integer> hourArray, List<Integer> minArray,
+                                         int hrDifference, int minDifference, int sec, boolean inDriverModule) {
         if(!booking.getBookingType().getId().equals("BT99")) {
             if(hourArray.contains(hrDifference) &&
                     (minArray.contains(minDifference) || minDifference == 0) && sec < 5) {
-                showUpcomingBookingNotification(booking, hrDifference, "hours");
+                if(inDriverModule) showUpcomingTaskNotification(booking, hrDifference, "hours");
+                else showUpcomingBookingNotification(booking, hrDifference, "hours");
             }
             else if(hrDifference % 24 == 0) {
                 if((minArray.contains(minDifference) || minDifference == 0) && sec < 5) {
                     int day = hrDifference/24;
-                    if(day == 1) showUpcomingBookingNotification(booking, day, "day");
-                    else showUpcomingBookingNotification(booking, day, "days");
+                    if(day == 1) {
+                        if(inDriverModule) showUpcomingTaskNotification(booking, day, "day");
+                        else showUpcomingBookingNotification(booking, day, "day");
+                    }
+                    else {
+                        if(inDriverModule) showUpcomingTaskNotification(booking, day, "days");
+                        else showUpcomingBookingNotification(booking, day, "days");
+                    }
                 }
             }
         }
     }
 
-    private void initNotificationInMinutes(Booking booking, int hrDifference,
-                                           List<Integer> minArray, int minDifference, int sec) {
+    private void initNotificationInMinutes(Booking booking, List<Integer> minArray,
+                                           int hrDifference, int minDifference, int sec,
+                                           boolean inDriverModule) {
         if(!booking.getBookingType().getId().equals("BT99")) {
             if(hrDifference == 0 && minArray.contains(minDifference) && sec < 5) {
-                if(minDifference == 1) showUpcomingBookingNotification(booking, minDifference, "minute");
-                else showUpcomingBookingNotification(booking, minDifference, "minutes");
+                if(minDifference == 1) {
+                    if(inDriverModule) showUpcomingTaskNotification(booking, minDifference, "minute");
+                    else showUpcomingBookingNotification(booking, minDifference, "minute");
+                }
+                else {
+                    if(inDriverModule) showUpcomingTaskNotification(booking, minDifference, "minutes");
+                    else showUpcomingBookingNotification(booking, minDifference, "minutes");
+                }
             }
-            else if(hrDifference == 1 && minDifference == 0 && sec < 5)
-                showUpcomingBookingNotification(booking, hrDifference, "hour");
+            else if(hrDifference == 1 && minDifference == 0 && sec < 5) {
+                if(inDriverModule) showUpcomingTaskNotification(booking, hrDifference, "hour");
+                else showUpcomingBookingNotification(booking, hrDifference, "hour");
+            }
         }
     }
 
@@ -888,6 +900,39 @@ public class MainActivity extends AppCompatActivity {
         Intent notificationIntent = new Intent(myContext, RouteActivity.class);
         notificationIntent.putExtra("bookingId", booking.getId());
         notificationIntent.putExtra("inDriverModule", false);
+
+        PendingIntent pendingIntent = PendingIntent.getActivity(
+                myContext, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT
+        );
+        builder.setContentIntent(pendingIntent);
+        builder.setFullScreenIntent(pendingIntent, true);
+        notificationManager.notify(1, builder.build());
+    }
+
+    private void showUpcomingTaskNotification(Booking task, int value, String unit) {
+        NotificationManager notificationManager = getNotificationManager(task.getId());
+        Bitmap icon = BitmapFactory.decodeResource(myResources, R.drawable.front_icon);
+
+        NotificationCompat.Builder builder =
+                new NotificationCompat.Builder(myContext, task.getId())
+                        .setSmallIcon(R.drawable.front_icon).setLargeIcon(icon)
+                        .setContentTitle("Clemenisle-EV Task Reminder")
+                        .setContentText("You only have less than " + value + " " + unit +
+                                " before the schedule of your Task (ID: " + task.getId() +").")
+                        .setCategory(NotificationCompat.CATEGORY_REMINDER)
+                        .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                        .setDefaults(NotificationCompat.DEFAULT_ALL)
+                        .setAutoCancel(false);
+
+        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
+            builder.setPriority(Notification.PRIORITY_HIGH);
+
+        Intent notificationIntent = new Intent(myContext, RouteActivity.class);
+        notificationIntent.putExtra("bookingId", task.getId());
+        notificationIntent.putExtra("inDriverModule", true);
+        notificationIntent.putExtra("status", task.getStatus());
+        notificationIntent.putExtra("previousDriverUserId", task.getPreviousDriverUserId());
+        notificationIntent.putExtra("userId", getPassengerUserId(task.getId()));
 
         PendingIntent pendingIntent = PendingIntent.getActivity(
                 myContext, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT
@@ -1093,6 +1138,18 @@ public class MainActivity extends AppCompatActivity {
                 child("notified").setValue(true);
     }
 
+    private String getPassengerUserId(String bookingId) {
+        for(User user : users) {
+            List<Booking> bookingList = user.getBookingList();
+            for(Booking booking : bookingList) {
+                if(booking.getId().equals(bookingId)) {
+                    return user.getId();
+                }
+            }
+        }
+        return null;
+    }
+
     private String getDriverUserId(String bookingId) {
         for(User user : users) {
             List<Booking> taskList = user.getTaskList();
@@ -1278,7 +1335,7 @@ public class MainActivity extends AppCompatActivity {
 
         passwordDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
-        passwordDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+        passwordDialog.getWindow().setBackgroundDrawable(AppCompatResources.getDrawable(myContext, R.drawable.corner_top_white_layout));
         passwordDialog.getWindow().getAttributes().windowAnimations = R.style.animBottomSlide;
         passwordDialog.getWindow().setGravity(Gravity.BOTTOM);
     }
@@ -1451,7 +1508,7 @@ public class MainActivity extends AppCompatActivity {
 
         reLoginDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
-        reLoginDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+        reLoginDialog.getWindow().setBackgroundDrawable(AppCompatResources.getDrawable(myContext, R.drawable.corner_top_white_layout));
         reLoginDialog.getWindow().getAttributes().windowAnimations = R.style.animBottomSlide;
         reLoginDialog.getWindow().setGravity(Gravity.BOTTOM);
     }

@@ -6,6 +6,7 @@
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/drawable/border_corner_layout.xml" value="0.2111111111111111" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/drawable/border_layout.xml" value="0.2638888888888889" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/drawable/corner_layout.xml" value="0.25833333333333336" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/drawable/corner_upper_white_layout.xml" value="0.3398148148148148" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/drawable/custom_blue_ripple_effect.xml" value="0.23425925925925925" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/drawable/custom_fade_background.xml" value="0.24444444444444444" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/drawable/custom_green_ripple_effect.xml" value="0.23425925925925925" />
@@ -32,6 +33,7 @@
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/drawable/ic_baseline_more_horiz_24.xml" value="0.23703703703703705" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/drawable/ic_baseline_place_24.xml" value="0.2574074074074074" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/drawable/ic_baseline_search_24.xml" value="0.1984375" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/drawable/white_corner_layout.xml" value="0.3398148148148148" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/font/.xml" value="0.2462962962962963" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/font/fredoka_one.xml" value="0.20833333333333334" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/activity_about.xml" value="0.33" />
@@ -98,6 +100,7 @@
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/dialog_input_pass_task_reason_layout.xml" value="0.33" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/dialog_input_rate_layout.xml" value="0.5" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/dialog_input_reference_number_layout.xml" value="0.3375" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/dialog_input_remarks_layout.xml" value="0.5" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/dialog_map_setting_layout.xml" value="0.20555555555555555" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/dialog_map_settings_layout.xml" value="0.33" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/dialog_on_the_spot_booking_alert_layout.xml" value="0.3375" />
