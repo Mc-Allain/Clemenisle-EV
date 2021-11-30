@@ -896,9 +896,6 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                     if(hasRemarks) {
                         tvViewRemarks.setVisibility(View.VISIBLE);
                         tvViewRemarks.setOnClickListener(view -> {
-                            StringBuilder star = new StringBuilder();
-                            for(int i = 0; i < rating; i ++) star.append("★");
-
                             tvDialogTitle.setText("Remarks");
                             tvMessage.setText(remarks);
                             dialogMessage.show();
@@ -929,7 +926,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                     tvRemarks.setVisibility(View.GONE);
                     remarksImage.setVisibility(View.GONE);
 
-                    if(status.equals("Booked")) {
+                    if(status.equals("Booked") || status.equals("Request") && userId.equals(taskDriverUserId)) {
                         tvChat.setVisibility(View.VISIBLE);
                         chatImage.setVisibility(View.VISIBLE);
 
@@ -1377,13 +1374,13 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                             tvCheck.setVisibility(View.GONE);
                             checkImage.setVisibility(View.GONE);
 
-                            if(remarks == null || remarks.length() == 0) {
+                            if((remarks == null || remarks.length() == 0) && !status.equals("Passed")) {
                                 tvRemarks.setVisibility(View.VISIBLE);
                                 remarksImage.setVisibility(View.VISIBLE);
-                            }
 
-                            tvRemarks.setOnClickListener(view -> openRemarksDialog(bookingId, remarks));
-                            remarksImage.setOnClickListener(view -> openRemarksDialog(bookingId, remarks));
+                                tvRemarks.setOnClickListener(view -> openRemarksDialog(bookingId, remarks));
+                                remarksImage.setOnClickListener(view -> openRemarksDialog(bookingId, remarks));
+                            }
                             break;
                     }
 
@@ -1679,7 +1676,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
         }
     }
 
-    public void setOnGoingTaskList(List<Booking> ongoingTaskList) {
+    public void setOngoingTaskList(List<Booking> ongoingTaskList) {
         this.ongoingTaskList.clear();
         this.ongoingTaskList.addAll(ongoingTaskList);
         notifyDataSetChanged();

@@ -147,7 +147,7 @@ public class PendingListFragment extends Fragment implements BookingAdapter.OnAc
                         taskList3.add(task);
                     }
                 }
-                bookingAdapter.setOnGoingTaskList(taskList3);
+                bookingAdapter.setOngoingTaskList(taskList3);
             }
 
             @Override
@@ -159,7 +159,7 @@ public class PendingListFragment extends Fragment implements BookingAdapter.OnAc
                 ).show();
 
                 taskList3.clear();
-                bookingAdapter.setOnGoingTaskList(taskList3);
+                bookingAdapter.setOngoingTaskList(taskList3);
             }
         });
 

@@ -181,7 +181,7 @@ public class DriverTaskListFragment extends Fragment implements BookingAdapter.O
         adapter2 = new BookingAdapter(myContext, taskList2);
         requestView.setAdapter(adapter2);
         adapter2.setOnLikeClickListener(this);
-        adapter2.setOnGoingTaskList(taskList3);
+        adapter2.setOngoingTaskList(taskList3);
 
         LinearLayoutManager linearLayout3 = new LinearLayoutManager(myContext, LinearLayoutManager.VERTICAL, false);
         ongoingView.setLayoutManager(linearLayout3);

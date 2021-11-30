@@ -33,6 +33,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.firebase_clemenisle_ev.Adapters.RouteAdapter;
 import com.example.firebase_clemenisle_ev.Classes.Booking;
+import com.example.firebase_clemenisle_ev.Classes.BookingType;
 import com.example.firebase_clemenisle_ev.Classes.Capture;
 import com.example.firebase_clemenisle_ev.Classes.DateTimeToString;
 import com.example.firebase_clemenisle_ev.Classes.FirebaseURL;
@@ -55,7 +56,6 @@ import com.google.zxing.common.BitMatrix;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
-import com.ms.square.android.expandabletextview.ExpandableTextView;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -83,8 +83,8 @@ public class RouteActivity extends AppCompatActivity implements
             chatImage, driverImage, passImage, stopImage, checkImage, rateImage, remarksImage, reloadImage, paidImage;
     TextView tvUserFullName, tvPassenger, tvDriverFullName, tvPlateNumber, tvPickUpTime, tvDropOffTime,
             tvBookingId, tvSchedule, tvTypeName, tvPrice, tvStartStation2, tvEndStation2, tvLocate,
-            tvLocateEnd, tvViewQR, tvChat, tvDriver, tvPass, tvStop, tvCheck, tvRate, tvRemarks, tvLog;
-    ExpandableTextView extvMessage;
+            tvLocateEnd, tvViewQR, tvChat, tvDriver, tvPass, tvStop, tvCheck, tvRate, tvRemarks, tvLog,
+            tvViewMessage, tvViewRemarks, tvViewReason;
     RecyclerView routeView;
     ConstraintLayout buttonLayout, buttonLayout2, bookingInfoLayout, bookingInfoButtonLayout,
             userInfoLayout, driverInfoLayout, timeInfoLayout;
@@ -146,7 +146,7 @@ public class RouteActivity extends AppCompatActivity implements
 
     String defaultPassengerText = "Passenger", requestText = "Your Task on Request";
 
-    List<Booking> taskList3 = new ArrayList<>();
+    List<Booking> ongoingTaskList = new ArrayList<>();
 
     String pickUpTimeText = "<b>Pick-up Time</b>: ", dropOffTimeText = "<b>Drop-off Time</b>: ";
 
@@ -177,6 +177,10 @@ public class RouteActivity extends AppCompatActivity implements
     EditText etRemarks2;
     TextInputLayout tlRemarks2;
     String remarksValue2;
+
+    Dialog dialogMessage;
+    ImageView dialogMessageCloseImage;
+    TextView tvDialogTitle, tvMessageDialog;
 
     private void initSharedPreferences() {
         SharedPreferences sharedPreferences = myContext
@@ -216,7 +220,10 @@ public class RouteActivity extends AppCompatActivity implements
         tvLocate = findViewById(R.id.tvLocate);
         tvLocateEnd = findViewById(R.id.tvLocateEnd);
         tvLog = findViewById(R.id.tvLog);
-        extvMessage = findViewById(R.id.extvMessage);
+
+        tvViewMessage = findViewById(R.id.tvViewMessage);
+        tvViewRemarks = findViewById(R.id.tvViewRemarks);
+        tvViewReason = findViewById(R.id.tvViewReason);
 
         routeView = findViewById(R.id.routeView);
         buttonLayout = findViewById(R.id.buttonLayout);
@@ -271,6 +278,7 @@ public class RouteActivity extends AppCompatActivity implements
         initReasonDialog();
         initRateTheDriverDialog();
         initRemarksDialog();
+        initMessageDialog();
 
         Intent intent = getIntent();
         bookingId = intent.getStringExtra("bookingId");
@@ -725,6 +733,24 @@ public class RouteActivity extends AppCompatActivity implements
                 });
     }
 
+    private void initMessageDialog() {
+        dialogMessage = new Dialog(myContext);
+        dialogMessage.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialogMessage.setContentView(R.layout.dialog_message);
+
+        dialogMessageCloseImage = dialogMessage.findViewById(R.id.dialogCloseImage);
+        tvDialogTitle = dialogMessage.findViewById(R.id.tvDialogTitle);
+        tvMessageDialog = dialogMessage.findViewById(R.id.tvMessage);
+
+        dialogMessageCloseImage.setOnClickListener(view -> dialogMessage.dismiss());
+
+        dialogMessage.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT);
+        dialogMessage.getWindow().setBackgroundDrawable(AppCompatResources.getDrawable(myContext, R.drawable.corner_top_white_layout));
+        dialogMessage.getWindow().getAttributes().windowAnimations = R.style.animBottomSlide;
+        dialogMessage.getWindow().setGravity(Gravity.BOTTOM);
+    }
+
     private void openOnlinePayment() {
         Intent intent = new Intent(myContext, OnlinePaymentActivity.class);
         intent.putExtra("bookingId", bookingId);
@@ -775,48 +801,65 @@ public class RouteActivity extends AppCompatActivity implements
                     }
                 }
 
+                getDriverUserId();
+
+                tvViewMessage.setVisibility(View.GONE);
+                tvViewReason.setVisibility(View.GONE);
+                tvViewRemarks.setVisibility(View.GONE);
+
+                if(message.length() > 0) {
+                    tvViewMessage.setVisibility(View.VISIBLE);
+                    tvViewMessage.setOnClickListener(view -> {
+                        tvDialogTitle.setText("Message");
+                        tvMessageDialog.setText(message);
+                        dialogMessage.show();
+                    });
+                }
+
+                getRemarks();
+                boolean hasRemarks = (status.equals("Completed") || status.equals("Cancelled") || status.equals("Failed")) &&
+                        remarks != null && remarks.length() > 0;
+
                 if(inDriverModule) {
-                    Query task3Query = usersRef.child(driverUserId).child("taskList").
+                    Query ongoingTaskQuery = usersRef.child(driverUserId).child("taskList").
                             orderByChild("status").equalTo("Ongoing");
 
-                    task3Query.addValueEventListener(new ValueEventListener() {
+                    ongoingTaskQuery.addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            taskList3.clear();
+                            ongoingTaskList.clear();
 
                             if(snapshot.exists()) {
                                 for(DataSnapshot dataSnapshot : snapshot.getChildren()) {
                                     Booking task = new Booking(dataSnapshot);
-                                    taskList3.add(task);
+                                    ongoingTaskList.add(task);
                                 }
                             }
 
                             driverInfoLayout.setVisibility(View.GONE);
                             userInfoLayout.setVisibility(View.VISIBLE);
 
-                            String messageText = "";
-                            if(message.length() > 0) {
-                                messageText = "<b>Message</b>: " + message;
-                                extvMessage.setText(fromHtml(messageText));
-                            }
-
-                            getDriverUserId();
                             getReason();
-                            getRemarks();
 
-                            String reasonText = messageText;
-                            if((status.equals("Request") || status.equals("Passed")) &&
-                                    reason != null && reason.length() > 0 &&
-                                    taskDriverUserId.equals(driverUserId)) {
-                                reasonText += "<br><br><b>Your Reason</b>: " + reason;
-                                extvMessage.setText(fromHtml(reasonText));
+                            if((status.equals("Request") || status.equals("Passed") &&
+                                    reason != null && reason.length() > 0) &&
+                                    taskDriverUserId != null && taskDriverUserId.equals(userId)) {
+
+                                tvViewReason.setVisibility(View.VISIBLE);
+                                tvViewReason.setOnClickListener(view -> {
+                                    tvDialogTitle.setText("Reason");
+                                    tvMessageDialog.setText(reason);
+                                    dialogMessage.show();
+                                });
                             }
 
-                            String remarksText = reasonText;
-                            if((status.equals("Completed") || status.equals("Cancelled") || status.equals("Failed")) &&
-                                    remarks != null && remarks.length() > 0) {
-                                remarksText += "<br><br><b>Your Remarks</b>: " + remarks;
-                                extvMessage.setText(fromHtml(remarksText));
+                            if(hasRemarks) {
+                                tvViewRemarks.setVisibility(View.VISIBLE);
+                                tvViewRemarks.setOnClickListener(view -> {
+                                    tvDialogTitle.setText("Remarks");
+                                    tvMessageDialog.setText(remarks);
+                                    dialogMessage.show();
+                                });
                             }
 
                             getUserInfo();
@@ -834,7 +877,7 @@ public class RouteActivity extends AppCompatActivity implements
                                     Toast.LENGTH_LONG
                             ).show();
 
-                            taskList3.clear();
+                            ongoingTaskList.clear();
                         }
                     });
                 }
@@ -850,6 +893,41 @@ public class RouteActivity extends AppCompatActivity implements
 
                     tvViewQR.setOnClickListener(view -> viewQRCode());
                     viewQRImage.setOnClickListener(view -> viewQRCode());
+
+                    tvChat.setVisibility(View.GONE);
+                    chatImage.setVisibility(View.GONE);
+                    tvRemarks.setVisibility(View.GONE);
+                    remarksImage.setVisibility(View.GONE);
+
+                    getRemarks();
+
+                    if(status.equals("Booked") || status.equals("Request") && userId.equals(taskDriverUserId)) {
+                        tvChat.setVisibility(View.VISIBLE);
+                        chatImage.setVisibility(View.VISIBLE);
+
+                        tvChat.setOnClickListener(view -> openChat());
+                        chatImage.setOnClickListener(view -> openChat());
+                    }
+                    else if((status.equals("Cancelled") || status.equals("Failed")) &&
+                            (remarks == null || remarks.length() == 0)) {
+                        tvRemarks.setVisibility(View.VISIBLE);
+                        remarksImage.setVisibility(View.VISIBLE);
+
+                        tvRemarks.setOnClickListener(view -> openRemarksDialog());
+                        remarksImage.setOnClickListener(view -> openRemarksDialog());
+                    }
+
+                    if(hasRemarks) {
+                        tvViewRemarks.setVisibility(View.VISIBLE);
+                        tvViewRemarks.setOnClickListener(view -> {
+                            StringBuilder star = new StringBuilder();
+                            for(int i = 0; i < rating; i ++) star.append("★");
+
+                            tvDialogTitle.setText("Remarks");
+                            tvMessageDialog.setText(star + " (" + rating + ") " + remarks);
+                            dialogMessage.show();
+                        });
+                    }
 
                     getDriverInfo();
                 }
@@ -1030,8 +1108,8 @@ public class RouteActivity extends AppCompatActivity implements
                             tvChat.setVisibility(View.GONE);
                             chatImage.setVisibility(View.GONE);
 
-                            if (driverUserId.equals(user.getId()) || taskList3.size() > 0) {
-                                if(taskList3.size() > 0) {
+                            if (driverUserId.equals(user.getId()) || ongoingTaskList.size() > 0) {
+                                if(ongoingTaskList.size() > 0) {
                                     takeTask = "Currently Unavailable";
                                     tvDriver.setText(takeTask);
 
@@ -1063,6 +1141,8 @@ public class RouteActivity extends AppCompatActivity implements
                             stopImage.setVisibility(View.GONE);
                             tvCheck.setVisibility(View.GONE);
                             checkImage.setVisibility(View.GONE);
+                            tvRemarks.setVisibility(View.GONE);
+                            remarksImage.setVisibility(View.GONE);
                             break;
                         case "Booked":
                             tvChat.setVisibility(View.VISIBLE);
@@ -1086,11 +1166,14 @@ public class RouteActivity extends AppCompatActivity implements
 
                             tvCheck.setOnClickListener(view -> scanQRCode());
                             checkImage.setOnClickListener(view -> scanQRCode());
+
+                            tvRemarks.setVisibility(View.GONE);
+                            remarksImage.setVisibility(View.GONE);
                             break;
                         case "Request":
                             tvPassenger.setVisibility(View.VISIBLE);
 
-                            if(driverUserId.equals(taskDriverUserId) || taskList3.size() > 0) {
+                            if(driverUserId.equals(taskDriverUserId) || ongoingTaskList.size() > 0) {
                                 tvPassenger.setText(requestText);
                                 tvPassenger.setTextColor(colorGreen);
 
@@ -1100,7 +1183,7 @@ public class RouteActivity extends AppCompatActivity implements
                                 tvChat.setOnClickListener(view -> openChat());
                                 chatImage.setOnClickListener(view -> openChat());
 
-                                if(taskList3.size() > 0) {
+                                if(ongoingTaskList.size() > 0) {
                                     takeTask = "Currently Unavailable";
                                     tvDriver.setText(takeTask);
 
@@ -1155,6 +1238,8 @@ public class RouteActivity extends AppCompatActivity implements
                                 tvCheck.setVisibility(View.GONE);
                                 checkImage.setVisibility(View.GONE);
                             }
+                            tvRemarks.setVisibility(View.GONE);
+                            remarksImage.setVisibility(View.GONE);
                             break;
                         default:
                             tvChat.setVisibility(View.GONE);
@@ -1167,6 +1252,14 @@ public class RouteActivity extends AppCompatActivity implements
                             stopImage.setVisibility(View.GONE);
                             tvCheck.setVisibility(View.GONE);
                             checkImage.setVisibility(View.GONE);
+
+                            if((remarks == null || remarks.length() == 0) && !status.equals("Passed")) {
+                                tvRemarks.setVisibility(View.VISIBLE);
+                                remarksImage.setVisibility(View.VISIBLE);
+
+                                tvRemarks.setOnClickListener(view -> openRemarksDialog());
+                                remarksImage.setOnClickListener(view -> openRemarksDialog());
+                            }
                             break;
                     }
 
@@ -1423,27 +1516,6 @@ public class RouteActivity extends AppCompatActivity implements
         tvTypeName.setText(typeName);
         tvPrice.setText(price);
 
-        String messageText = "";
-        if(message.length() > 0) {
-            messageText = "<b>Message</b>: " + message;
-            extvMessage.setText(fromHtml(messageText));
-        }
-
-        String remarksText = messageText;
-        if((status.equals("Completed") || status.equals("Cancelled") || status.equals("Failed")) &&
-                (remarks != null && remarks.length() > 0 || rating > 0)) {
-            if(remarksText.length() > 0) remarksText += "<br><br>";
-
-            StringBuilder star = new StringBuilder();
-            for(int i = 0; i < rating; i ++) star.append("★");
-
-            if(rating == 0) remarksText += "<b>Your Remarks</b>: ";
-            else remarksText += "<b>Your Rating</b>: " + star + " (" + rating + ") ";
-
-            remarksText += remarks;
-            extvMessage.setText(fromHtml(remarksText));
-        }
-
         int color = 0;
 
         buttonLayout.setVisibility(View.VISIBLE);
@@ -1484,27 +1556,6 @@ public class RouteActivity extends AppCompatActivity implements
         else paidImage.setVisibility(View.GONE);
 
         paidImage.getDrawable().setTint(color);
-
-        tvChat.setVisibility(View.GONE);
-        chatImage.setVisibility(View.GONE);
-        tvRemarks.setVisibility(View.GONE);
-        remarksImage.setVisibility(View.GONE);
-
-        if(status.equals("Booked") || status.equals("Request")) {
-            tvChat.setVisibility(View.VISIBLE);
-            chatImage.setVisibility(View.VISIBLE);
-
-            tvChat.setOnClickListener(view -> openChat());
-            chatImage.setOnClickListener(view -> openChat());
-        }
-        else if((inDriverModule && status.equals("Completed")) ||
-                status.equals("Cancelled") || status.equals("Failed")) {
-            tvRemarks.setVisibility(View.VISIBLE);
-            remarksImage.setVisibility(View.VISIBLE);
-
-            tvRemarks.setOnClickListener(view -> openRemarksDialog());
-            remarksImage.setOnClickListener(view -> openRemarksDialog());
-        }
 
         timeInfoLayout.setVisibility(View.GONE);
 
@@ -1639,15 +1690,15 @@ public class RouteActivity extends AppCompatActivity implements
                         status = currentStatus;
                     }
 
-                    typeName = booking.getBookingType().getName();
-                    price = String.valueOf(booking.getBookingType().getPrice());
+                    BookingType bookingType = booking.getBookingType();
+                    typeName = bookingType.getName();
+                    price = "₱" + bookingType.getPrice();
                     if(price.split("\\.")[1].length() == 1) price += 0;
 
                     for(Route route : booking.getRouteList())
                         if(!route.isDeactivated()) routeList.add(route);
 
                     message = booking.getMessage();
-                    remarks = booking.getRemarks();
                     isPaid = booking.isPaid();
 
                     pickUpTime = booking.getPickUpTime();
