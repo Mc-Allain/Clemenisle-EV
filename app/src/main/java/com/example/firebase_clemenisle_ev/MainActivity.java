@@ -840,6 +840,34 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getBooking() {
+        /*usersRef.child(userId).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                bookingList1.clear();
+                bookingList2.clear();
+                taskList.clear();
+
+                if(snapshot.exists()) {
+                    User user = new User(snapshot);
+                    List<Booking> bookingList = user.getBookingList();
+                    for(Booking booking : bookingList) {
+                        if(booking.getStatus().equals("Pending"))
+                            bookingList1.add(booking);
+                        if(booking.getStatus().equals("Booked"))
+                            bookingList2.add(booking);
+                    }
+                    taskList.addAll(user.getTaskList());
+                }
+
+                startTimer();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });*/
+
         bookingList1.clear();
         bookingList2.clear();
         taskList.clear();

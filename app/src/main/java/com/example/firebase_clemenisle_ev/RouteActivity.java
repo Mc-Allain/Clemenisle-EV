@@ -841,9 +841,9 @@ public class RouteActivity extends AppCompatActivity implements
 
                             getReason();
 
-                            if((status.equals("Request") || status.equals("Passed") &&
-                                    reason != null && reason.length() > 0) &&
-                                    taskDriverUserId != null && taskDriverUserId.equals(userId)) {
+                            if(((status.equals("Request") && taskDriverUserId != null &&
+                                    taskDriverUserId.equals(userId)) || status.equals("Passed")) &&
+                                    reason != null && reason.length() > 0) {
 
                                 tvViewReason.setVisibility(View.VISIBLE);
                                 tvViewReason.setOnClickListener(view -> {
@@ -1685,7 +1685,8 @@ public class RouteActivity extends AppCompatActivity implements
                     schedule = booking.getSchedule();
 
                     String currentStatus = booking.getStatus();
-                    if(!inDriverModule || (status != null && !status.equals("Request") && !status.equals("Ongoing")) ||
+                    if(!inDriverModule || (status != null && !status.equals("Request") &&
+                            !status.equals("Ongoing") && !status.equals("Passed")) ||
                             !currentStatus.equals("Booked") && !currentStatus.equals("Completed")) {
                         status = currentStatus;
                     }

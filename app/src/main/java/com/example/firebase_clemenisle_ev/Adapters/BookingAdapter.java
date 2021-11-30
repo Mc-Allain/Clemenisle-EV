@@ -872,18 +872,6 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                     });
                 }
 
-                if((status.equals("Request") || status.equals("Passed") &&
-                        reason != null && reason.length() > 0) &&
-                        taskDriverUserId != null && taskDriverUserId.equals(userId)) {
-
-                    tvViewReason.setVisibility(View.VISIBLE);
-                    tvViewReason.setOnClickListener(view -> {
-                        tvDialogTitle.setText("Reason");
-                        tvMessage.setText(reason);
-                        dialogMessage.show();
-                    });
-                }
-
                 boolean hasRemarks = (status.equals("Completed") || status.equals("Cancelled") || status.equals("Failed")) &&
                         remarks != null && remarks.length() > 0;
 
@@ -892,6 +880,18 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                     userInfoLayout.setVisibility(View.VISIBLE);
 
                     getThumbnail(thumbnail, bookingId);
+
+                    if(((status.equals("Request") && taskDriverUserId != null &&
+                            taskDriverUserId.equals(userId)) || status.equals("Passed")) &&
+                            reason != null && reason.length() > 0) {
+
+                        tvViewReason.setVisibility(View.VISIBLE);
+                        tvViewReason.setOnClickListener(view -> {
+                            tvDialogTitle.setText("Reason");
+                            tvMessage.setText(reason);
+                            dialogMessage.show();
+                        });
+                    }
 
                     if(hasRemarks) {
                         tvViewRemarks.setVisibility(View.VISIBLE);

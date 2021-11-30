@@ -565,6 +565,8 @@ public class DriverActivity extends AppCompatActivity {
     }
 
     private void getPendingList() {
+        bookingList1.clear();
+        bookingList2.clear();
         pendingList.clear();
         driverTaskList.clear();
         taskList.clear();
@@ -1222,6 +1224,7 @@ public class DriverActivity extends AppCompatActivity {
                         users.add(user);
                     }
                 }
+
                 getPendingList();
                 getBookingList();
             }
