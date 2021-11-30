@@ -15,9 +15,207 @@
         android:background="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/thumbnail"
+            android:layout_width="128dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="8dp"
+            android:scaleType="centerCrop"
+            app:layout_constraintBottom_toBottomOf="@+id/tvPrice"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvBookingId"
+            app:srcCompat="@drawable/image_loading_placeholder" />
+
+        <ImageView
+            android:id="@+id/paidImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/tvPrice"
+            app:layout_constraintStart_toEndOf="@+id/tvPrice"
+            app:layout_constraintTop_toTopOf="@+id/tvPrice"
+            app:srcCompat="@drawable/ic_baseline_credit_score_24"
+            app:tint="@color/blue" />
+
+        <ImageView
+            android:id="@+id/moreImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:padding="4dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:srcCompat="@drawable/ic_baseline_more_horiz_24"
+            app:tint="@color/black" />
+
+        <TextView
+            android:id="@+id/tvStartStation2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:fontFamily="@font/ubuntu"
+            android:text="Start Station"
+            android:textColor="@color/black"
+            app:layout_constraintEnd_toStartOf="@+id/moreImage"
+            app:layout_constraintStart_toStartOf="@+id/tvStartStation"
+            app:layout_constraintTop_toBottomOf="@+id/tvStartStation" />
+
+        <TextView
+            android:id="@+id/tvEndStation2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/ubuntu"
+            android:text="End Station"
+            android:textColor="@color/black"
+            app:layout_constraintEnd_toEndOf="@+id/tvStartStation2"
+            app:layout_constraintStart_toStartOf="@+id/tvStartStation2"
+            app:layout_constraintTop_toBottomOf="@+id/tvEndStation" />
+
+        <TextView
+            android:id="@+id/tvStartStation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:fontFamily="@font/ubuntu"
+            android:text="Start Station"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="@+id/tvSchedule"
+            app:layout_constraintTop_toBottomOf="@+id/tvSchedule" />
+
+        <TextView
+            android:id="@+id/tvEndStation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:fontFamily="@font/ubuntu"
+            android:text="End Station"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="@+id/tvStartStation"
+            app:layout_constraintTop_toBottomOf="@+id/tvStartStation2" />
+
+        <TextView
+            android:id="@+id/tvBookingId"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:background="@color/blue"
+            android:fontFamily="@font/ubuntu"
+            android:padding="4dp"
+            android:text="B21-0101-00"
+            android:textAlignment="center"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="@+id/thumbnail"
+            app:layout_constraintStart_toStartOf="@+id/thumbnail"
+            app:layout_constraintTop_toBottomOf="@+id/timeInfoLayout" />
+
+        <TextView
+            android:id="@+id/tvTypeName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:fontFamily="@font/ubuntu"
+            android:text="Type Name"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/thumbnail"
+            app:layout_constraintTop_toTopOf="@+id/tvBookingId" />
+
+        <TextView
+            android:id="@+id/tvSchedule"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:fontFamily="@font/ubuntu"
+            android:text="Schedule"
+            android:textColor="@color/black"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/tvTypeName"
+            app:layout_constraintTop_toBottomOf="@+id/tvTypeName" />
+
+        <TextView
+            android:id="@+id/tvPrice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="8dp"
+            android:fontFamily="@font/ubuntu"
+            android:gravity="bottom"
+            android:text="₱0"
+            android:textColor="@color/blue"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/tvViewMessage"
+            app:layout_constraintStart_toStartOf="@+id/tvSchedule"
+            app:layout_constraintTop_toBottomOf="@+id/tvEndStation2" />
+
+        <TextView
+            android:id="@+id/tvOption"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/ubuntu"
+            android:text="false"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tvViewMessage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginBottom="8dp"
+            android:fontFamily="@font/ubuntu"
+            android:text="View Message"
+            android:textColor="@color/blue"
+            android:textStyle="bold"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/thumbnail" />
+
+        <TextView
+            android:id="@+id/tvViewRemarks"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:fontFamily="@font/ubuntu"
+            android:text="View Remarks"
+            android:textColor="@color/blue"
+            android:textStyle="bold"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/tvViewMessage"
+            app:layout_constraintTop_toBottomOf="@+id/tvPrice" />
+
+        <TextView
+            android:id="@+id/tvViewReason"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:fontFamily="@font/ubuntu"
+            android:text="View Reason"
+            android:textColor="@color/blue"
+            android:textStyle="bold"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/moreImage"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toEndOf="@+id/tvViewRemarks"
+            app:layout_constraintTop_toBottomOf="@+id/tvPrice" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/timeInfoLayout"
@@ -36,6 +234,7 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
                 android:padding="4dp"
+                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -142,40 +341,6 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <com.ms.square.android.expandabletextview.ExpandableTextView
-            android:id="@+id/extvMessage"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginBottom="8dp"
-            app:animAlphaStart="1"
-            app:animDuration="200"
-            app:collapseDrawable="@drawable/ic_baseline_expand_less_24"
-            app:expandDrawable="@drawable/ic_baseline_expand_more_24"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@id/tvEndStation2"
-            app:layout_constraintStart_toStartOf="@id/thumbnail"
-            app:maxCollapsedLines="3">
-
-            <TextView
-                android:id="@+id/expandable_text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ellipsize="end"
-                android:fontFamily="@font/ubuntu"
-                android:textColor="@color/initial" />
-
-            <ImageButton
-                android:id="@id/expand_collapse"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="right|bottom"
-                android:background="@android:color/transparent"
-                android:paddingEnd="8dp"
-                app:tint="@color/black" />
-
-        </com.ms.square.android.expandabletextview.ExpandableTextView>
-
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/userInfoLayout"
             android:layout_width="match_parent"
@@ -235,156 +400,6 @@
                 app:srcCompat="@drawable/image_loading_placeholder" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <ImageView
-            android:id="@+id/thumbnail"
-            android:layout_width="128dp"
-            android:layout_height="0dp"
-            android:layout_marginStart="8dp"
-            android:scaleType="centerCrop"
-            app:layout_constraintBottom_toBottomOf="@+id/tvPrice"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvBookingId"
-            app:srcCompat="@drawable/image_loading_placeholder" />
-
-        <TextView
-            android:id="@+id/tvStartStation2"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:fontFamily="@font/ubuntu"
-            android:text="Start Station"
-            android:textColor="@color/black"
-            app:layout_constraintEnd_toStartOf="@+id/moreImage"
-            app:layout_constraintStart_toStartOf="@+id/tvStartStation"
-            app:layout_constraintTop_toBottomOf="@+id/tvStartStation" />
-
-        <TextView
-            android:id="@+id/tvEndStation2"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/ubuntu"
-            android:text="End Station"
-            android:textColor="@color/black"
-            app:layout_constraintEnd_toEndOf="@+id/tvStartStation2"
-            app:layout_constraintStart_toStartOf="@+id/tvStartStation2"
-            app:layout_constraintTop_toBottomOf="@+id/tvEndStation" />
-
-        <TextView
-            android:id="@+id/tvStartStation"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:fontFamily="@font/ubuntu"
-            android:text="Start Station"
-            android:textColor="@color/black"
-            android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="@+id/tvSchedule"
-            app:layout_constraintTop_toBottomOf="@+id/tvSchedule" />
-
-        <TextView
-            android:id="@+id/tvEndStation"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:fontFamily="@font/ubuntu"
-            android:text="End Station"
-            android:textColor="@color/black"
-            android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="@+id/tvStartStation"
-            app:layout_constraintTop_toBottomOf="@+id/tvStartStation2" />
-
-        <TextView
-            android:id="@+id/tvBookingId"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:background="@color/blue"
-            android:fontFamily="@font/ubuntu"
-            android:padding="4dp"
-            android:text="B21-0101-00"
-            android:textAlignment="center"
-            android:textColor="@color/white"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="@+id/thumbnail"
-            app:layout_constraintStart_toStartOf="@+id/thumbnail"
-            app:layout_constraintTop_toBottomOf="@+id/timeInfoLayout" />
-
-        <TextView
-            android:id="@+id/tvTypeName"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:fontFamily="@font/ubuntu"
-            android:text="Type Name"
-            android:textColor="@color/black"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/thumbnail"
-            app:layout_constraintTop_toTopOf="@+id/tvBookingId" />
-
-        <TextView
-            android:id="@+id/tvSchedule"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:fontFamily="@font/ubuntu"
-            android:text="Schedule"
-            android:textColor="@color/black"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/tvTypeName"
-            app:layout_constraintTop_toBottomOf="@+id/tvTypeName" />
-
-        <TextView
-            android:id="@+id/tvPrice"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="8dp"
-            android:fontFamily="@font/ubuntu"
-            android:gravity="bottom"
-            android:text="₱0"
-            android:textColor="@color/blue"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toTopOf="@id/extvMessage"
-            app:layout_constraintStart_toStartOf="@+id/tvSchedule"
-            app:layout_constraintTop_toBottomOf="@+id/tvEndStation2" />
-
-        <ImageView
-            android:id="@+id/paidImage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="@+id/tvPrice"
-            app:layout_constraintStart_toEndOf="@+id/tvPrice"
-            app:layout_constraintTop_toTopOf="@+id/tvPrice"
-            app:srcCompat="@drawable/ic_baseline_credit_score_24"
-            app:tint="@color/blue" />
-
-        <TextView
-            android:id="@+id/tvOption"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/ubuntu"
-            android:text="false"
-            android:visibility="gone"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <ImageView
-            android:id="@+id/moreImage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:padding="4dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:srcCompat="@drawable/ic_baseline_more_horiz_24"
-            app:tint="@color/black" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/buttonLayout"
