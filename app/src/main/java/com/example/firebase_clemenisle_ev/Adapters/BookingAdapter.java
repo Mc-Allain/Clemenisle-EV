@@ -951,7 +951,8 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                             for(int i = 0; i < rating; i ++) star.append("★");
 
                             tvDialogTitle.setText("Remarks");
-                            tvMessage.setText(star + " (" + rating + ") " + remarks);
+                            String ratingText = rating > 0 ? star + " (" + rating + ") " + remarks : remarks;
+                            tvMessage.setText(ratingText);
                             dialogMessage.show();
                         });
                     }

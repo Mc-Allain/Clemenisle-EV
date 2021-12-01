@@ -19,6 +19,7 @@ public class User {
     private String plateNumber;
     private double iWallet;
     private final List<IWalletTransaction> transactionList = new ArrayList<>();
+    private double amountToRemit = 0, amountToClaim = 0;
 
     public User() {
     }
@@ -143,6 +144,11 @@ public class User {
                 }
             }
         }
+
+        if(dataSnapshot.child("amountToRemit").exists())
+            amountToRemit = dataSnapshot.child("amountToRemit").getValue(Double.class);
+        if(dataSnapshot.child("amountToClaim").exists())
+            amountToClaim = dataSnapshot.child("amountToClaim").getValue(Double.class);
     }
 
     public User(String firstName, String id, String lastName, String middleName) {
@@ -222,5 +228,13 @@ public class User {
 
     public List<IWalletTransaction> getTransactionList() {
         return transactionList;
+    }
+
+    public double getAmountToRemit() {
+        return amountToRemit;
+    }
+
+    public double getAmountToClaim() {
+        return amountToClaim;
     }
 }

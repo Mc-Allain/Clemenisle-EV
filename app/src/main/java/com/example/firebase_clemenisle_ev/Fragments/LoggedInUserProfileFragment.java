@@ -102,7 +102,8 @@ public class LoggedInUserProfileFragment extends Fragment {
     ImageView viewIWalletImage;
 
     ConstraintLayout incomeLayout;
-    TextView tvIncomeToday2, tvIncomeThisWeek2, tvIncomeThisMonth2, tvIncomeThisYear2;
+    TextView tvIncomeToday2, tvIncomeThisWeek2, tvIncomeThisMonth2, tvIncomeThisYear2,
+            tvTotalIncome2, tvAmountToRemit2, tvAmountToClaim2;
     ImageView viewIncomeImage;
 
     TextView tvLikedSpotBadge;
@@ -226,6 +227,9 @@ public class LoggedInUserProfileFragment extends Fragment {
         tvIncomeThisWeek2 = view.findViewById(R.id.tvIncomeThisWeek2);
         tvIncomeThisMonth2 = view.findViewById(R.id.tvIncomeThisMonth2);
         tvIncomeThisYear2 = view.findViewById(R.id.tvIncomeThisYear2);
+        tvTotalIncome2 = view.findViewById(R.id.tvTotalIncome2);
+        tvAmountToRemit2 = view.findViewById(R.id.tvAmountToRemit2);
+        tvAmountToClaim2 = view.findViewById(R.id.tvAmountToClaim2);
         viewIncomeImage = view.findViewById(R.id.viewIncomeImage);
 
         tvLikedSpotBadge = view.findViewById(R.id.tvLikedSpotBadge);
@@ -1414,7 +1418,8 @@ public class LoggedInUserProfileFragment extends Fragment {
         incomeLayout.setVisibility(View.GONE);
         if(isDriver) {
             incomeLayout.setVisibility(View.VISIBLE);
-            double incomeToday = 0, incomeThisWeek = 0, incomeThisMonth = 0, incomeThisYear = 0;
+            double incomeToday = 0, incomeThisWeek = 0, incomeThisMonth = 0, incomeThisYear = 0,
+                    totalIncome = 0, amountToRemit = user.getAmountToRemit(), amountToClaim = user.getAmountToClaim();
 
             for(Booking task : taskList) {
                 if(task.getStatus().equals("Completed")) {
@@ -1425,14 +1430,15 @@ public class LoggedInUserProfileFragment extends Fragment {
 
                     if(yearDifference == 0) {
                         if(monthDifference == 0) {
-                            if(dayDifference <= 6) {
-                                if(dayDifference == 0) incomeToday += task.getBookingType().getPrice();
-                                incomeThisWeek += task.getBookingType().getPrice();
-                            }
+                            if(dayDifference < 7) incomeThisWeek += task.getBookingType().getPrice();
+                            if(dayDifference == 0) incomeToday += task.getBookingType().getPrice();
                             incomeThisMonth += task.getBookingType().getPrice();
                         }
                         incomeThisYear += task.getBookingType().getPrice();
                     }
+                    else if(monthDifference == 1 && dayDifference < 7)
+                        incomeThisWeek += task.getBookingType().getPrice();
+                    totalIncome += task.getBookingType().getPrice();
                 }
             }
 
@@ -1451,6 +1457,18 @@ public class LoggedInUserProfileFragment extends Fragment {
             String incomeThisYearText = "₱" + incomeThisYear;
             if(incomeThisYearText.split("\\.")[1].length() == 1) incomeThisYearText += 0;
             tvIncomeThisYear2.setText(incomeThisYearText);
+
+            String totalIncomeText = "₱" + totalIncome;
+            if(totalIncomeText.split("\\.")[1].length() == 1) totalIncomeText += 0;
+            tvTotalIncome2.setText(totalIncomeText);
+
+            String amountToRemitText = "₱" + amountToRemit;
+            if(amountToRemitText.split("\\.")[1].length() == 1) amountToRemitText += 0;
+            tvAmountToRemit2.setText(amountToRemitText);
+
+            String amountToClaimText = "₱" + amountToClaim;
+            if(amountToClaimText.split("\\.")[1].length() == 1) amountToClaimText += 0;
+            tvAmountToClaim2.setText(amountToClaimText);
         }
 
         likedSpots.clear();

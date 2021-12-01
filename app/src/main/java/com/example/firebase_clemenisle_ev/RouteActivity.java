@@ -899,8 +899,6 @@ public class RouteActivity extends AppCompatActivity implements
                     tvRemarks.setVisibility(View.GONE);
                     remarksImage.setVisibility(View.GONE);
 
-                    getRemarks();
-
                     if(status.equals("Booked") || status.equals("Request") && userId.equals(taskDriverUserId)) {
                         tvChat.setVisibility(View.VISIBLE);
                         chatImage.setVisibility(View.VISIBLE);
@@ -924,7 +922,8 @@ public class RouteActivity extends AppCompatActivity implements
                             for(int i = 0; i < rating; i ++) star.append("★");
 
                             tvDialogTitle.setText("Remarks");
-                            tvMessageDialog.setText(star + " (" + rating + ") " + remarks);
+                            String ratingText = rating > 0 ? star + " (" + rating + ") " + remarks : remarks;
+                            tvMessageDialog.setText(ratingText);
                             dialogMessage.show();
                         });
                     }

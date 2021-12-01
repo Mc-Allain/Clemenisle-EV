@@ -927,7 +927,8 @@ public class OnTheSpotActivity extends AppCompatActivity {
                             for(int i = 0; i < rating; i ++) star.append("★");
 
                             tvDialogTitle.setText("Remarks");
-                            tvMessageDialog.setText(star + " (" + rating + ") " + remarks);
+                            String ratingText = rating > 0 ? star + " (" + rating + ") " + remarks : remarks;
+                            tvMessageDialog.setText(ratingText);
                             dialogMessage.show();
                         });
                     }
