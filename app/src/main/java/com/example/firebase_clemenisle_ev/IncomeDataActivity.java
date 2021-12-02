@@ -8,6 +8,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.firebase_clemenisle_ev.Adapters.IncomeYearAdapter;
 import com.example.firebase_clemenisle_ev.Classes.Booking;
 import com.example.firebase_clemenisle_ev.Classes.DateTimeDifference;
 import com.example.firebase_clemenisle_ev.Classes.FirebaseURL;
@@ -23,6 +24,8 @@ import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 public class IncomeDataActivity extends AppCompatActivity {
 
@@ -32,6 +35,7 @@ public class IncomeDataActivity extends AppCompatActivity {
 
     TextView tvIncomeToday2, tvIncomeThisWeek2, tvIncomeThisMonth2, tvIncomeThisYear2,
             tvTotalIncome2, tvAmountToRemit2, tvAmountToClaim2;
+    RecyclerView yearIncomeView;
     ProgressBar progressBar;
 
     User user;
@@ -41,6 +45,8 @@ public class IncomeDataActivity extends AppCompatActivity {
     List<Booking> taskList = new ArrayList<>();
 
     Context myContext;
+
+    IncomeYearAdapter incomeYearAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +61,8 @@ public class IncomeDataActivity extends AppCompatActivity {
         tvAmountToRemit2 = findViewById(R.id.tvAmountToRemit2);
         tvAmountToClaim2 = findViewById(R.id.tvAmountToClaim2);
 
+        yearIncomeView = findViewById(R.id.yearIncomeView);
+
         progressBar = findViewById(R.id.progressBar);
 
         myContext = IncomeDataActivity.this;
@@ -63,6 +71,12 @@ public class IncomeDataActivity extends AppCompatActivity {
         userId  = intent.getStringExtra("userId");
 
         usersRef = firebaseDatabase.getReference("users").child(userId);
+
+        LinearLayoutManager linearLayout =
+                new LinearLayoutManager(myContext, LinearLayoutManager.VERTICAL, false);
+        yearIncomeView.setLayoutManager(linearLayout);
+        incomeYearAdapter = new IncomeYearAdapter(myContext, 2025, taskList);
+        yearIncomeView.setAdapter(incomeYearAdapter);
 
         getCurrentUser();
     }
@@ -97,6 +111,8 @@ public class IncomeDataActivity extends AppCompatActivity {
     }
 
     private void finishLoading() {
+        incomeYearAdapter.notifyDataSetChanged();
+
         double incomeToday = 0, incomeThisWeek = 0, incomeThisMonth = 0, incomeThisYear = 0,
                 totalIncome = 0, amountToRemit = user.getAmountToRemit(), amountToClaim = user.getAmountToClaim();
 
