@@ -45,6 +45,7 @@ import com.example.firebase_clemenisle_ev.Classes.Route;
 import com.example.firebase_clemenisle_ev.Classes.SimpleTouristSpot;
 import com.example.firebase_clemenisle_ev.Classes.User;
 import com.example.firebase_clemenisle_ev.IWalletActivity;
+import com.example.firebase_clemenisle_ev.IncomeDataActivity;
 import com.example.firebase_clemenisle_ev.MainActivity;
 import com.example.firebase_clemenisle_ev.R;
 import com.google.android.material.textfield.TextInputLayout;
@@ -106,12 +107,15 @@ public class LoggedInUserProfileFragment extends Fragment {
             tvTotalIncome2, tvAmountToRemit2, tvAmountToClaim2;
     ImageView viewIncomeImage;
 
+    ConstraintLayout likedSpotLayout;
     TextView tvLikedSpotBadge;
     RecyclerView likedSpotView;
 
+    ConstraintLayout bookedSpotLayout;
     TextView tvBookedSpotBadge;
     RecyclerView bookedSpotView;
 
+    ConstraintLayout visitedSpotLayout;
     TextView tvVisitedSpotBadge;
     RecyclerView visitedSpotView;
 
@@ -232,12 +236,15 @@ public class LoggedInUserProfileFragment extends Fragment {
         tvAmountToClaim2 = view.findViewById(R.id.tvAmountToClaim2);
         viewIncomeImage = view.findViewById(R.id.viewIncomeImage);
 
+        likedSpotLayout = view.findViewById(R.id.likedSpotLayout);
         tvLikedSpotBadge = view.findViewById(R.id.tvLikedSpotBadge);
         likedSpotView = view.findViewById(R.id.likedSpotView);
 
+        bookedSpotLayout = view.findViewById(R.id.bookedSpotLayout);
         tvBookedSpotBadge = view.findViewById(R.id.tvBookedSpotBadge);
         bookedSpotView = view.findViewById(R.id.bookedSpotView);
 
+        visitedSpotLayout = view.findViewById(R.id.visitedSpotLayout);
         tvVisitedSpotBadge = view.findViewById(R.id.tvVisitedSpotBadge);
         visitedSpotView = view.findViewById(R.id.visitedSpotView);
 
@@ -313,8 +320,14 @@ public class LoggedInUserProfileFragment extends Fragment {
         visitedSpotAdapter = new SpotWithCounterAdapter(myContext, visitedSpots, 1);
         visitedSpotView.setAdapter(visitedSpotAdapter);
 
-        viewIWalletImage.setOnClickListener(view12 -> {
+        viewIWalletImage.setOnClickListener(view1 -> {
             Intent intent = new Intent(myContext, IWalletActivity.class);
+            startActivity(intent);
+        });
+
+        viewIncomeImage.setOnClickListener(view1 -> {
+            Intent intent = new Intent(myContext, IncomeDataActivity.class);
+            intent.putExtra("userId", userId);
             startActivity(intent);
         });
 
@@ -1386,6 +1399,11 @@ public class LoggedInUserProfileFragment extends Fragment {
         progressBar.setVisibility(View.VISIBLE);
         fullNameLayout.setVisibility(View.GONE);
         accountDetailsLayout.setVisibility(View.GONE);
+        iWalletLayout.setVisibility(View.GONE);
+        incomeLayout.setVisibility(View.GONE);
+        likedSpotLayout.setVisibility(View.GONE);
+        bookedSpotLayout.setVisibility(View.GONE);
+        visitedSpotLayout.setVisibility(View.GONE);
 
         usersRef.addValueEventListener(new ValueEventListener() {
             @Override
@@ -1411,11 +1429,11 @@ public class LoggedInUserProfileFragment extends Fragment {
         showFullName();
         showAccountDetails();
 
+        iWalletLayout.setVisibility(View.VISIBLE);
         String iWallet = "₱" + user.getIWallet();
         if(iWallet.split("\\.")[1].length() == 1) iWallet += 0;
         tvIWallet.setText(iWallet);
 
-        incomeLayout.setVisibility(View.GONE);
         if(isDriver) {
             incomeLayout.setVisibility(View.VISIBLE);
             double incomeToday = 0, incomeThisWeek = 0, incomeThisMonth = 0, incomeThisYear = 0,
@@ -1474,6 +1492,7 @@ public class LoggedInUserProfileFragment extends Fragment {
         likedSpots.clear();
         likedSpots.addAll(user.getLikedSpots());
         likedSpotAdapter.notifyDataSetChanged();
+        likedSpotLayout.setVisibility(View.VISIBLE);
         if(likedSpots.size() > 0) likedSpotView.setVisibility(View.VISIBLE);
         else likedSpotView.setVisibility(View.GONE);
         tvLikedSpotBadge.setText(String.valueOf(likedSpots.size()));
@@ -1506,11 +1525,13 @@ public class LoggedInUserProfileFragment extends Fragment {
         sortByStats();
 
         bookedSpotAdapter.notifyDataSetChanged();
+        bookedSpotLayout.setVisibility(View.VISIBLE);
         if(bookedSpots.size() > 0) bookedSpotView.setVisibility(View.VISIBLE);
         else bookedSpotView.setVisibility(View.GONE);
         tvBookedSpotBadge.setText(String.valueOf(bookedSpots.size()));
 
         visitedSpotAdapter.notifyDataSetChanged();
+        visitedSpotLayout.setVisibility(View.VISIBLE);
         if(visitedSpots.size() > 0) visitedSpotView.setVisibility(View.VISIBLE);
         else visitedSpotView.setVisibility(View.GONE);
         tvVisitedSpotBadge.setText(String.valueOf(visitedSpots.size()));

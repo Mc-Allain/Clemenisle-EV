@@ -38,17 +38,29 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/AmountToRemitLayout">
 
+                    <ImageView
+                        android:id="@+id/viewClaimHistoryImage"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:padding="4dp"
+                        android:src="@drawable/ic_baseline_arrow_forward_24"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:tint="@color/blue" />
+
                     <TextView
                         android:id="@+id/tvAmountToClaim2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="16dp"
+                        android:layout_marginEnd="8dp"
                         android:fontFamily="@font/ubuntu"
                         android:text="Amount to Claim"
                         android:textColor="@color/blue"
                         android:textStyle="bold"
                         app:layout_constraintBottom_toBottomOf="@+id/tvAmountToClaim"
-                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/viewClaimHistoryImage"
                         app:layout_constraintTop_toTopOf="@+id/tvAmountToClaim" />
 
                     <TextView
@@ -76,17 +88,29 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/totalIncomeLayout">
 
+                    <ImageView
+                        android:id="@+id/viewRemittanceHistoryImage"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:padding="4dp"
+                        android:src="@drawable/ic_baseline_arrow_forward_24"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:tint="@color/blue" />
+
                     <TextView
                         android:id="@+id/tvAmountToRemit2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="16dp"
+                        android:layout_marginEnd="8dp"
                         android:fontFamily="@font/ubuntu"
                         android:text="Amount to Remit"
                         android:textColor="@color/blue"
                         android:textStyle="bold"
                         app:layout_constraintBottom_toBottomOf="@+id/tvAmountToRemit"
-                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/viewRemittanceHistoryImage"
                         app:layout_constraintTop_toTopOf="@+id/tvAmountToRemit" />
 
                     <TextView
@@ -368,7 +392,7 @@
                         android:layout_marginTop="8dp"
                         android:layout_marginBottom="8dp"
                         android:fontFamily="@font/ubuntu"
-                        android:text="Income"
+                        android:text="Income Summary"
                         android:textColor="@color/black"
                         android:textSize="16sp"
                         android:textStyle="bold"

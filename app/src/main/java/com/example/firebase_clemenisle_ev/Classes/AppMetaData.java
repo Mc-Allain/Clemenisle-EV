@@ -2,13 +2,9 @@ package com.example.firebase_clemenisle_ev.Classes;
 
 public class AppMetaData {
 
-    String newlyAddedFeatures = "● Chat List Added\n" +
-            "● Online Payment Added\n" +
-            "● iWallet(Digital Wallet) Added\n" +
-            "● Driver Rating System Added\n" +
-            "● Income Data Added";
-    double currentVersion = 0.31;
-    boolean isDeveloper = false;
+    String newlyAddedFeatures =  "● Income Data Added";
+    double currentVersion = 0.32;
+    boolean isDeveloper = true;
 
     public AppMetaData() {
     }

@@ -3,20 +3,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.firebase_clemenisle_ev">
 
-    <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-
     <application
         android:allowBackup="true"
+        android:fullBackupContent="@xml/backup_descriptor"
         android:icon="@mipmap/ic_launcher"
         android:label="iBooking"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.FirebaseClemenisleEV"
-        android:fullBackupContent="@xml/backup_descriptor">
+        android:theme="@style/Theme.FirebaseClemenisleEV">
+        <activity
+            android:name=".IncomeDataActivity"
+            android:exported="true" />
         <activity
             android:name=".IWalletActivity"
             android:exported="true"
@@ -41,9 +38,9 @@
             android:name=".Classes.Capture"
             android:exported="true"
             android:screenOrientation="portrait"
-            tools:ignore="LockedOrientationActivity"
             android:stateNotNeeded="true"
-            android:theme="@style/zxing_CaptureTheme" />
+            android:theme="@style/zxing_CaptureTheme"
+            tools:ignore="LockedOrientationActivity" />
         <activity
             android:name=".DriverActivity"
             android:exported="true"
@@ -134,4 +131,11 @@
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
     </application>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
+    <uses-permission android:name="android.permission.CAMERA" />
+
 </manifest>
