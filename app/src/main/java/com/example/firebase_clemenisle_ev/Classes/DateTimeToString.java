@@ -2,6 +2,7 @@ package com.example.firebase_clemenisle_ev.Classes;
 
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -119,6 +120,15 @@ public class DateTimeToString {
     public String getDay() {
         if(dateSplit.length == 3) return dateSplit[2];
         return "Invalid Date";
+    }
+
+    public String getDayOfWeek() {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("E", Locale.getDefault());
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Integer.parseInt(getYear()), Integer.parseInt(getMonthNo()), Integer.parseInt(getDay()));
+
+        return simpleDateFormat.format(calendar.getTime());
     }
 
     public int getMaximumDaysInMonthOfYear() {

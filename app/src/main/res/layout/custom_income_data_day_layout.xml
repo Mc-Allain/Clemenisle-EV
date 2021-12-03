@@ -6,7 +6,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/backgroundLayout"
-        android:layout_width="132dp"
+        android:layout_width="108dp"
         android:layout_height="match_parent"
         android:layout_marginStart="1dp"
         android:layout_marginTop="1dp"
@@ -27,6 +27,7 @@
             android:fontFamily="@font/ubuntu"
             android:text="Day"
             android:textColor="@color/black"
+            android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 

@@ -100,9 +100,9 @@ public class IncomeMonthAdapter extends RecyclerView.Adapter<IncomeMonthAdapter.
                 monthIncome += task.getBookingType().getPrice();
         }
 
-        String yearIncomeText = "₱" + monthIncome;
-        if(yearIncomeText.split("\\.")[1].length() == 1) yearIncomeText += 0;
-        tvMonthIncome.setText(yearIncomeText);
+        String monthIncomeText = "₱" + monthIncome;
+        if(monthIncomeText.split("\\.")[1].length() == 1) monthIncomeText += 0;
+        tvMonthIncome.setText(monthIncomeText);
     }
 
     @Override
@@ -110,7 +110,7 @@ public class IncomeMonthAdapter extends RecyclerView.Adapter<IncomeMonthAdapter.
         return monthList.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
         ConstraintLayout backgroundLayout;
         TextView tvMonth, tvMonthIncome;
         ImageView viewTaskHistory;
@@ -122,6 +122,8 @@ public class IncomeMonthAdapter extends RecyclerView.Adapter<IncomeMonthAdapter.
             tvMonth = itemView.findViewById(R.id.tvMonth);
             tvMonthIncome = itemView.findViewById(R.id.tvMonthIncome);
             viewTaskHistory = itemView.findViewById(R.id.viewTaskHistory);
+
+            setIsRecyclable(false);
         }
     }
 }
