@@ -1,13 +1,16 @@
 package com.example.firebase_clemenisle_ev.Adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.firebase_clemenisle_ev.Classes.Booking;
+import com.example.firebase_clemenisle_ev.IncomeFromTaskActivity;
 import com.example.firebase_clemenisle_ev.R;
 
 import java.util.List;
@@ -21,15 +24,18 @@ public class IncomeMonthAdapter extends RecyclerView.Adapter<IncomeMonthAdapter.
     List<String> monthList;
     String itemYear;
     List<Booking> taskList;
+    String userId;
     LayoutInflater inflater;
 
     Context myContext;
     Resources myResources;
 
-    public IncomeMonthAdapter(Context context, List<String> monthList, String itemYear, List<Booking> taskList) {
+    public IncomeMonthAdapter(Context context, List<String> monthList, String itemYear,
+                              List<Booking> taskList, String userId) {
         this.monthList = monthList;
         this.itemYear = itemYear;
         this.taskList = taskList;
+        this.userId = userId;
         this.inflater = LayoutInflater.from(context);
     }
 
@@ -44,13 +50,16 @@ public class IncomeMonthAdapter extends RecyclerView.Adapter<IncomeMonthAdapter.
     public void onBindViewHolder(@NonNull IncomeMonthAdapter.ViewHolder holder, int position) {
         ConstraintLayout backgroundLayout = holder.backgroundLayout;
         TextView tvMonth = holder.tvMonth, tvMonthIncome = holder.tvMonthIncome;
+        ImageView viewTaskHistory = holder.viewTaskHistory;
 
         myContext = inflater.getContext();
         myResources = myContext.getResources();
 
-        tvMonth.setText(monthList.get(position));
+        String itemMonth = monthList.get(position);
 
-        getMonthIncome(tvMonthIncome, monthList.get(position));
+        tvMonth.setText(itemMonth);
+
+        getMonthIncome(tvMonthIncome, itemMonth);
 
         int start = dpToPx(1), end = dpToPx(1);
 
@@ -70,6 +79,13 @@ public class IncomeMonthAdapter extends RecyclerView.Adapter<IncomeMonthAdapter.
         layoutParams.setMarginStart(start);
         layoutParams.setMarginEnd(end);
         backgroundLayout.setLayoutParams(layoutParams);
+
+        viewTaskHistory.setOnClickListener(view -> {
+            Intent intent = new Intent(myContext, IncomeFromTaskActivity.class);
+            intent.putExtra("userId", userId);
+            intent.putExtra("monthYear", itemMonth + " " + itemYear);
+            myContext.startActivity(intent);
+        });
     }
 
     private int dpToPx(int dp) {
@@ -97,6 +113,7 @@ public class IncomeMonthAdapter extends RecyclerView.Adapter<IncomeMonthAdapter.
     public class ViewHolder extends RecyclerView.ViewHolder {
         ConstraintLayout backgroundLayout;
         TextView tvMonth, tvMonthIncome;
+        ImageView viewTaskHistory;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -104,6 +121,7 @@ public class IncomeMonthAdapter extends RecyclerView.Adapter<IncomeMonthAdapter.
             backgroundLayout = itemView.findViewById(R.id.backgroundLayout);
             tvMonth = itemView.findViewById(R.id.tvMonth);
             tvMonthIncome = itemView.findViewById(R.id.tvMonthIncome);
+            viewTaskHistory = itemView.findViewById(R.id.viewTaskHistory);
         }
     }
 }

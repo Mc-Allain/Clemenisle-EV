@@ -11,6 +11,7 @@ import android.widget.Toast;
 import com.example.firebase_clemenisle_ev.Adapters.IncomeYearAdapter;
 import com.example.firebase_clemenisle_ev.Classes.Booking;
 import com.example.firebase_clemenisle_ev.Classes.DateTimeDifference;
+import com.example.firebase_clemenisle_ev.Classes.DateTimeToString;
 import com.example.firebase_clemenisle_ev.Classes.FirebaseURL;
 import com.example.firebase_clemenisle_ev.Classes.User;
 import com.google.firebase.database.DataSnapshot;
@@ -38,13 +39,13 @@ public class IncomeDataActivity extends AppCompatActivity {
     RecyclerView yearIncomeView;
     ProgressBar progressBar;
 
+    Context myContext;
+
     User user;
 
     String userId;
 
     List<Booking> taskList = new ArrayList<>();
-
-    Context myContext;
 
     IncomeYearAdapter incomeYearAdapter;
 
@@ -72,10 +73,13 @@ public class IncomeDataActivity extends AppCompatActivity {
 
         usersRef = firebaseDatabase.getReference("users").child(userId);
 
+        int currentYear = Integer.parseInt(new DateTimeToString().getYear());
+        currentYear = Math.max(currentYear, 2022);
+
         LinearLayoutManager linearLayout =
                 new LinearLayoutManager(myContext, LinearLayoutManager.VERTICAL, false);
         yearIncomeView.setLayoutManager(linearLayout);
-        incomeYearAdapter = new IncomeYearAdapter(myContext, 2025, taskList);
+        incomeYearAdapter = new IncomeYearAdapter(myContext, currentYear, taskList, userId);
         yearIncomeView.setAdapter(incomeYearAdapter);
 
         getCurrentUser();

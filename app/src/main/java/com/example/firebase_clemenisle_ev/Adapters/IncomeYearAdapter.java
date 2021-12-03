@@ -22,6 +22,7 @@ public class IncomeYearAdapter extends RecyclerView.Adapter<IncomeYearAdapter.Vi
 
     int startingYear = 2021, currentYear;
     List<Booking> taskList;
+    String userId;
     LayoutInflater inflater;
 
     Context myContext;
@@ -34,9 +35,10 @@ public class IncomeYearAdapter extends RecyclerView.Adapter<IncomeYearAdapter.Vi
 
     IncomeMonthAdapter incomeMonthAdapter;
 
-    public IncomeYearAdapter(Context context, int currentYear, List<Booking> taskList) {
+    public IncomeYearAdapter(Context context, int currentYear, List<Booking> taskList, String userId) {
         this.currentYear = currentYear;
         this.taskList = taskList;
+        this.userId = userId;
         this.inflater = LayoutInflater.from(context);
     }
 
@@ -81,7 +83,7 @@ public class IncomeYearAdapter extends RecyclerView.Adapter<IncomeYearAdapter.Vi
         GridLayoutManager gridLayoutManager =
                 new GridLayoutManager(myContext, columnCount, GridLayoutManager.HORIZONTAL, false);
         monthIncomeView.setLayoutManager(gridLayoutManager);
-        incomeMonthAdapter = new IncomeMonthAdapter(myContext, monthList, itemYear, taskList);
+        incomeMonthAdapter = new IncomeMonthAdapter(myContext, monthList, itemYear, taskList, userId);
         monthIncomeView.setAdapter(incomeMonthAdapter);
     }
 
