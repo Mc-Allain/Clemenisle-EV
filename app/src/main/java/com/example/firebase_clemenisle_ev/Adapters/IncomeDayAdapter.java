@@ -31,6 +31,8 @@ public class IncomeDayAdapter extends RecyclerView.Adapter<IncomeDayAdapter.View
 
     int selectedDay = 1;
 
+    OnItemClickListener onItemClickListener;
+
     public IncomeDayAdapter(Context context, int itemCount, String monthYear, List<Booking> taskList) {
         this.itemCount = itemCount;
         this.monthYear = monthYear;
@@ -110,6 +112,7 @@ public class IncomeDayAdapter extends RecyclerView.Adapter<IncomeDayAdapter.View
 
         backgroundLayout.setOnClickListener(view -> {
             selectedDay = day;
+            onItemClickListener.sendQuery(day + " " + monthYear);
             notifyDataSetChanged();
         });
     }
@@ -117,6 +120,14 @@ public class IncomeDayAdapter extends RecyclerView.Adapter<IncomeDayAdapter.View
     private int dpToPx(int dp) {
         float px = dp * myResources.getDisplayMetrics().density;
         return (int) px;
+    }
+
+    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
+        this.onItemClickListener = onItemClickListener;
+    }
+
+    public interface OnItemClickListener {
+        void sendQuery(String query);
     }
 
     private void getDayIncome(TextView tvDayIncome, String query) {

@@ -145,11 +145,11 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
     ImageView dialogMessageCloseImage;
     TextView tvDialogTitle, tvMessage;
 
-    public void setOnLikeClickListener(OnActionClickListener onActionClickListener) {
+    public void setOnActionClickListener(OnActionClickListener onActionClickListener) {
         this.onActionClickListener = onActionClickListener;
     }
 
-    public interface OnActionClickListener{
+    public interface OnActionClickListener {
         void setProgressBarToVisible(boolean value);
     }
 

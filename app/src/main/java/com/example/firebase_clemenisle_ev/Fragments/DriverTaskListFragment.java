@@ -174,38 +174,38 @@ public class DriverTaskListFragment extends Fragment implements BookingAdapter.O
         upcomingView.setLayoutManager(linearLayout1);
         adapter1 = new BookingAdapter(myContext, taskList1);
         upcomingView.setAdapter(adapter1);
-        adapter1.setOnLikeClickListener(this);
+        adapter1.setOnActionClickListener(this);
 
         LinearLayoutManager linearLayout2 = new LinearLayoutManager(myContext, LinearLayoutManager.VERTICAL, false);
         requestView.setLayoutManager(linearLayout2);
         adapter2 = new BookingAdapter(myContext, taskList2);
         requestView.setAdapter(adapter2);
-        adapter2.setOnLikeClickListener(this);
+        adapter2.setOnActionClickListener(this);
         adapter2.setOngoingTaskList(taskList3);
 
         LinearLayoutManager linearLayout3 = new LinearLayoutManager(myContext, LinearLayoutManager.VERTICAL, false);
         ongoingView.setLayoutManager(linearLayout3);
         adapter3 = new BookingAdapter(myContext, taskList3);
         ongoingView.setAdapter(adapter3);
-        adapter3.setOnLikeClickListener(this);
+        adapter3.setOnActionClickListener(this);
 
         LinearLayoutManager linearLayout4 = new LinearLayoutManager(myContext, LinearLayoutManager.VERTICAL, false);
         completedView.setLayoutManager(linearLayout4);
         adapter4 = new BookingAdapter(myContext, taskList4);
         completedView.setAdapter(adapter4);
-        adapter4.setOnLikeClickListener(this);
+        adapter4.setOnActionClickListener(this);
 
         LinearLayoutManager linearLayout5 = new LinearLayoutManager(myContext, LinearLayoutManager.VERTICAL, false);
         passedView.setLayoutManager(linearLayout5);
         adapter5 = new BookingAdapter(myContext, taskList5);
         passedView.setAdapter(adapter5);
-        adapter5.setOnLikeClickListener(this);
+        adapter5.setOnActionClickListener(this);
 
         LinearLayoutManager linearLayout6 = new LinearLayoutManager(myContext, LinearLayoutManager.VERTICAL, false);
         failedView.setLayoutManager(linearLayout6);
         adapter6 = new BookingAdapter(myContext, taskList6);
         failedView.setAdapter(adapter6);
-        adapter6.setOnLikeClickListener(this);
+        adapter6.setOnActionClickListener(this);
 
         getBookings();
 

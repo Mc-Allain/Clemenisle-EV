@@ -4,10 +4,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.example.firebase_clemenisle_ev.Adapters.BookingAdapter;
 import com.example.firebase_clemenisle_ev.Adapters.IncomeDayAdapter;
 import com.example.firebase_clemenisle_ev.Classes.Booking;
 import com.example.firebase_clemenisle_ev.Classes.DateTimeToString;
@@ -27,25 +30,28 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class IncomeFromTaskActivity extends AppCompatActivity {
+public class IncomeFromTaskActivity extends AppCompatActivity implements
+        IncomeDayAdapter.OnItemClickListener, BookingAdapter.OnActionClickListener {
 
     private final static String firebaseURL = FirebaseURL.getFirebaseURL();
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance(firebaseURL);
     DatabaseReference usersRef;
 
-    TextView tvMonthYear, tvMonthIncome;
-    RecyclerView incomeDayView;
+    TextView tvMonthYear, tvMonthIncome, tvLog;
+    RecyclerView incomeDayView, taskView;
+    ImageView reloadImage;
     ProgressBar progressBar;
 
     Context myContext;
 
     User user;
 
-    String userId, monthYear;
+    String userId, monthYear, query;
 
-    List<Booking> taskList = new ArrayList<>();
+    List<Booking> taskList = new ArrayList<>(), dayTaskList = new ArrayList<>();
 
     IncomeDayAdapter incomeDayAdapter;
+    BookingAdapter bookingAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,13 +61,23 @@ public class IncomeFromTaskActivity extends AppCompatActivity {
         tvMonthYear = findViewById(R.id.tvMonthYear);
         tvMonthIncome = findViewById(R.id.tvMonthIncome);
         incomeDayView = findViewById(R.id.incomeDayView);
+        taskView = findViewById(R.id.taskView);
+
+        tvLog = findViewById(R.id.tvLog);
+        reloadImage = findViewById(R.id.reloadImage);
         progressBar = findViewById(R.id.progressBar);
 
         myContext = IncomeFromTaskActivity.this;
 
+        try {
+            Glide.with(myContext).load(R.drawable.magnify_4s_256px).into(reloadImage);
+        }
+        catch (Exception ignored) {}
+
         Intent intent = getIntent();
         userId  = intent.getStringExtra("userId");
         monthYear  = intent.getStringExtra("monthYear");
+        query = 1 + " " + monthYear;
 
         tvMonthYear.setText(monthYear);
 
@@ -78,6 +94,13 @@ public class IncomeFromTaskActivity extends AppCompatActivity {
         incomeDayView.setLayoutManager(linearLayout);
         incomeDayAdapter = new IncomeDayAdapter(myContext, itemCount, monthYear, taskList);
         incomeDayView.setAdapter(incomeDayAdapter);
+        incomeDayAdapter.setOnItemClickListener(this);
+
+        LinearLayoutManager linearLayout2 = new LinearLayoutManager(myContext, LinearLayoutManager.VERTICAL, false);
+        taskView.setLayoutManager(linearLayout2);
+        bookingAdapter = new BookingAdapter(myContext, dayTaskList);
+        taskView.setAdapter(bookingAdapter);
+        bookingAdapter.setOnActionClickListener(this);
     }
 
     private void getCurrentUser() {
@@ -122,6 +145,41 @@ public class IncomeFromTaskActivity extends AppCompatActivity {
         if(monthIncomeText.split("\\.")[1].length() == 1) monthIncomeText += 0;
         tvMonthIncome.setText(monthIncomeText);
 
+        getTaskList();
+
         progressBar.setVisibility(View.GONE);
+    }
+
+    private void getTaskList() {
+        dayTaskList.clear();
+
+        for(Booking task : taskList) {
+            String scheduleDate = task.getSchedule().split("\\|")[0].trim();
+            if(scheduleDate.equals(query) && task.getStatus().equals("Completed"))
+                dayTaskList.add(task);
+        }
+
+        bookingAdapter.setInDriverMode(true);
+
+        if(dayTaskList.size() == 0) {
+            tvLog.setVisibility(View.VISIBLE);
+            reloadImage.setVisibility(View.VISIBLE);
+        }
+        else {
+            tvLog.setVisibility(View.GONE);
+            reloadImage.setVisibility(View.GONE);
+        }
+    }
+
+    @Override
+    public void sendQuery(String query) {
+        this.query = query;
+        getTaskList();
+    }
+
+    @Override
+    public void setProgressBarToVisible(boolean value) {
+        if(value) progressBar.setVisibility(View.VISIBLE);
+        else progressBar.setVisibility(View.GONE);
     }
 }

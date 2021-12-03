@@ -121,7 +121,7 @@ public class PendingListFragment extends Fragment implements BookingAdapter.OnAc
         bookingView.setLayoutManager(linearLayout1);
         bookingAdapter = new BookingAdapter(myContext, pendingBookingList);
         bookingView.setAdapter(bookingAdapter);
-        bookingAdapter.setOnLikeClickListener(this);
+        bookingAdapter.setOnActionClickListener(this);
 
         getPendingBooking();
 
@@ -238,7 +238,13 @@ public class PendingListFragment extends Fragment implements BookingAdapter.OnAc
 
     @Override
     public void setProgressBarToVisible(boolean value) {
-        if(value) progressBar.setVisibility(View.VISIBLE);
-        else progressBar.setVisibility(View.GONE);
+        if(value) {
+            progressBar.setVisibility(View.VISIBLE);
+            bookingView.setVisibility(View.GONE);
+        }
+        else {
+            progressBar.setVisibility(View.GONE);
+            bookingView.setVisibility(View.VISIBLE);
+        }
     }
 }
