@@ -10,10 +10,12 @@ import android.widget.TextView;
 import com.example.firebase_clemenisle_ev.Classes.Booking;
 import com.example.firebase_clemenisle_ev.R;
 
+import java.util.Arrays;
 import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class IncomeYearAdapter extends RecyclerView.Adapter<IncomeYearAdapter.ViewHolder> {
@@ -24,6 +26,13 @@ public class IncomeYearAdapter extends RecyclerView.Adapter<IncomeYearAdapter.Vi
 
     Context myContext;
     Resources myResources;
+
+    List<String> monthList = Arrays.asList("January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December");
+
+    int columnCount = 3;
+
+    IncomeMonthAdapter incomeMonthAdapter;
 
     public IncomeYearAdapter(Context context, int currentYear, List<Booking> taskList) {
         this.currentYear = currentYear;
@@ -42,6 +51,7 @@ public class IncomeYearAdapter extends RecyclerView.Adapter<IncomeYearAdapter.Vi
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         ConstraintLayout backgroundLayout = holder.backgroundLayout;
         TextView tvYear = holder.tvYear, tvYearIncome = holder.tvYearIncome;
+        RecyclerView monthIncomeView = holder.monthIncomeView;
 
         myContext = inflater.getContext();
         myResources = myContext.getResources();
@@ -52,7 +62,7 @@ public class IncomeYearAdapter extends RecyclerView.Adapter<IncomeYearAdapter.Vi
 
         getYearIncome(itemYear, tvYearIncome);
 
-        int top = dpToPx(1), bottom = dpToPx(1);
+        int top = dpToPx(2), bottom = dpToPx(2);
 
         boolean isFirstItem = position + 1 == 1, isLastItem = position + 1 == getItemCount();
 
@@ -67,6 +77,12 @@ public class IncomeYearAdapter extends RecyclerView.Adapter<IncomeYearAdapter.Vi
                 (ConstraintLayout.LayoutParams) backgroundLayout.getLayoutParams();
         layoutParams.setMargins(layoutParams.leftMargin, top, layoutParams.rightMargin, bottom);
         backgroundLayout.setLayoutParams(layoutParams);
+
+        GridLayoutManager gridLayoutManager =
+                new GridLayoutManager(myContext, columnCount, GridLayoutManager.HORIZONTAL, false);
+        monthIncomeView.setLayoutManager(gridLayoutManager);
+        incomeMonthAdapter = new IncomeMonthAdapter(myContext, monthList, itemYear, taskList);
+        monthIncomeView.setAdapter(incomeMonthAdapter);
     }
 
     private int dpToPx(int dp) {
@@ -94,6 +110,7 @@ public class IncomeYearAdapter extends RecyclerView.Adapter<IncomeYearAdapter.Vi
     public static class ViewHolder extends RecyclerView.ViewHolder {
         ConstraintLayout backgroundLayout;
         TextView tvYear, tvYearIncome;
+        RecyclerView monthIncomeView;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -101,6 +118,7 @@ public class IncomeYearAdapter extends RecyclerView.Adapter<IncomeYearAdapter.Vi
             backgroundLayout = itemView.findViewById(R.id.backgroundLayout);
             tvYear = itemView.findViewById(R.id.tvYear);
             tvYearIncome = itemView.findViewById(R.id.tvYearIncome);
+            monthIncomeView = itemView.findViewById(R.id.monthIncomeView);
 
             setIsRecyclable(false);
         }

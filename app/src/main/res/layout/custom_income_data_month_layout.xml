@@ -6,12 +6,12 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/backgroundLayout"
-        android:layout_width="256dp"
+        android:layout_width="160dp"
         android:layout_height="match_parent"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginStart="1dp"
+        android:layout_marginTop="1dp"
+        android:layout_marginEnd="1dp"
+        android:layout_marginBottom="1dp"
         android:background="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -40,7 +40,6 @@
             android:fontFamily="@font/ubuntu"
             android:text="Month"
             android:textColor="@color/black"
-            android:textSize="18sp"
             app:layout_constraintEnd_toStartOf="@+id/viewTaskHistory"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -54,7 +53,6 @@
             android:fontFamily="@font/ubuntu"
             android:text="Month Income"
             android:textColor="@color/blue"
-            android:textSize="16sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@+id/tvMonth"
