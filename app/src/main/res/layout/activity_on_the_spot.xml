@@ -229,183 +229,474 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/headerLayout">
 
-        <ImageView
-            android:id="@+id/thumbnail"
-            android:layout_width="128dp"
-            android:layout_height="0dp"
-            android:layout_marginStart="8dp"
-            android:scaleType="centerCrop"
-            app:layout_constraintBottom_toBottomOf="@+id/tvPrice"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/contentLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvBookingId"
-            app:srcCompat="@drawable/image_loading_placeholder" />
+            app:layout_constraintTop_toBottomOf="@+id/timeInfoLayout">
 
-        <ImageView
-            android:id="@+id/moreImage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:padding="4dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:srcCompat="@drawable/ic_baseline_more_horiz_24"
-            app:tint="@color/black" />
+            <ImageView
+                android:id="@+id/thumbnail"
+                android:layout_width="128dp"
+                android:layout_height="0dp"
+                android:layout_marginStart="8dp"
+                android:scaleType="centerCrop"
+                app:layout_constraintBottom_toBottomOf="@+id/tvPrice"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvBookingId"
+                app:srcCompat="@drawable/image_loading_placeholder" />
 
-        <TextView
-            android:id="@+id/tvViewMessage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginBottom="8dp"
-            android:fontFamily="@font/ubuntu"
-            android:text="View Message"
-            android:textColor="@color/blue"
-            android:textStyle="bold"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/thumbnail" />
+            <ImageView
+                android:id="@+id/moreImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:padding="4dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:srcCompat="@drawable/ic_baseline_more_horiz_24"
+                app:tint="@color/black" />
 
-        <TextView
-            android:id="@+id/tvViewRemarks"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            android:fontFamily="@font/ubuntu"
-            android:text="View Remarks"
-            android:textColor="@color/blue"
-            android:textStyle="bold"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/tvViewMessage"
-            app:layout_constraintTop_toBottomOf="@+id/tvPrice" />
+            <TextView
+                android:id="@+id/tvViewMessage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginBottom="8dp"
+                android:fontFamily="@font/ubuntu"
+                android:text="View Message"
+                android:textColor="@color/blue"
+                android:textStyle="bold"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/thumbnail" />
 
-        <TextView
-            android:id="@+id/tvViewReason"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp"
-            android:fontFamily="@font/ubuntu"
-            android:text="View Reason"
-            android:textColor="@color/blue"
-            android:textStyle="bold"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/moreImage"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toEndOf="@+id/tvViewRemarks"
-            app:layout_constraintTop_toBottomOf="@+id/tvPrice" />
+            <TextView
+                android:id="@+id/tvViewRemarks"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:fontFamily="@font/ubuntu"
+                android:text="View Remarks"
+                android:textColor="@color/blue"
+                android:textStyle="bold"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/tvViewMessage"
+                app:layout_constraintTop_toBottomOf="@+id/tvPrice" />
 
-        <TextView
-            android:id="@+id/tvOriginLocation2"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:fontFamily="@font/ubuntu"
-            android:text="Origin Location"
-            android:textColor="@color/black"
-            app:layout_constraintEnd_toStartOf="@+id/moreImage"
-            app:layout_constraintStart_toEndOf="@+id/tvOriginLocation"
-            app:layout_constraintStart_toStartOf="@+id/tvOriginLocation"
-            app:layout_constraintTop_toBottomOf="@+id/tvOriginLocation" />
+            <TextView
+                android:id="@+id/tvViewReason"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="8dp"
+                android:fontFamily="@font/ubuntu"
+                android:text="View Reason"
+                android:textColor="@color/blue"
+                android:textStyle="bold"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/moreImage"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toEndOf="@+id/tvViewRemarks"
+                app:layout_constraintTop_toBottomOf="@+id/tvPrice" />
 
-        <TextView
-            android:id="@+id/tvDestinationSpot2"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/ubuntu"
-            android:text="Destination Spot"
-            android:textColor="@color/black"
-            app:layout_constraintEnd_toEndOf="@+id/tvOriginLocation2"
-            app:layout_constraintStart_toStartOf="@+id/tvOriginLocation2"
-            app:layout_constraintTop_toBottomOf="@+id/tvDestinationSpot" />
+            <TextView
+                android:id="@+id/tvOriginLocation2"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:fontFamily="@font/ubuntu"
+                android:text="Origin Location"
+                android:textColor="@color/black"
+                app:layout_constraintEnd_toStartOf="@+id/moreImage"
+                app:layout_constraintStart_toEndOf="@+id/tvOriginLocation"
+                app:layout_constraintStart_toStartOf="@+id/tvOriginLocation"
+                app:layout_constraintTop_toBottomOf="@+id/tvOriginLocation" />
 
-        <TextView
-            android:id="@+id/tvOriginLocation"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:fontFamily="@font/ubuntu"
-            android:text="Origin Location"
-            android:textColor="@color/black"
-            android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="@+id/tvSchedule"
-            app:layout_constraintTop_toBottomOf="@+id/tvSchedule" />
+            <TextView
+                android:id="@+id/tvDestinationSpot2"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/ubuntu"
+                android:text="Destination Spot"
+                android:textColor="@color/black"
+                app:layout_constraintEnd_toEndOf="@+id/tvOriginLocation2"
+                app:layout_constraintStart_toStartOf="@+id/tvOriginLocation2"
+                app:layout_constraintTop_toBottomOf="@+id/tvDestinationSpot" />
 
-        <TextView
-            android:id="@+id/tvDestinationSpot"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:fontFamily="@font/ubuntu"
-            android:text="Destination Spot"
-            android:textColor="@color/black"
-            android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="@+id/tvOriginLocation"
-            app:layout_constraintTop_toBottomOf="@+id/tvOriginLocation2" />
+            <TextView
+                android:id="@+id/tvOriginLocation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:fontFamily="@font/ubuntu"
+                android:text="Origin Location"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="@+id/tvSchedule"
+                app:layout_constraintTop_toBottomOf="@+id/tvSchedule" />
 
-        <TextView
-            android:id="@+id/tvBookingId"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:background="@color/blue"
-            android:fontFamily="@font/ubuntu"
-            android:padding="4dp"
-            android:text="B21-0101-00"
-            android:textAlignment="center"
-            android:textColor="@color/white"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="@+id/thumbnail"
-            app:layout_constraintStart_toStartOf="@+id/thumbnail"
-            app:layout_constraintTop_toBottomOf="@+id/timeInfoLayout" />
+            <TextView
+                android:id="@+id/tvDestinationSpot"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:fontFamily="@font/ubuntu"
+                android:text="Destination Spot"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="@+id/tvOriginLocation"
+                app:layout_constraintTop_toBottomOf="@+id/tvOriginLocation2" />
 
-        <TextView
-            android:id="@+id/tvTypeName"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:fontFamily="@font/ubuntu"
-            android:text="Type Name"
-            android:textColor="@color/black"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/thumbnail"
-            app:layout_constraintTop_toTopOf="@+id/tvBookingId" />
+            <TextView
+                android:id="@+id/tvBookingId"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@color/blue"
+                android:fontFamily="@font/ubuntu"
+                android:padding="4dp"
+                android:text="B21-0101-00"
+                android:textAlignment="center"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="@+id/thumbnail"
+                app:layout_constraintStart_toStartOf="@+id/thumbnail"
+                app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/tvSchedule"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:fontFamily="@font/ubuntu"
-            android:text="Schedule"
-            android:textColor="@color/black"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/tvTypeName"
-            app:layout_constraintTop_toBottomOf="@+id/tvTypeName" />
+            <TextView
+                android:id="@+id/tvTypeName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:fontFamily="@font/ubuntu"
+                android:text="Type Name"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/thumbnail"
+                app:layout_constraintTop_toTopOf="@+id/tvBookingId" />
 
-        <TextView
-            android:id="@+id/tvPrice"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="8dp"
-            android:fontFamily="@font/ubuntu"
-            android:gravity="bottom"
-            android:text="₱0"
-            android:textColor="@color/blue"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toTopOf="@+id/tvViewMessage"
-            app:layout_constraintStart_toStartOf="@+id/tvSchedule"
-            app:layout_constraintTop_toBottomOf="@+id/tvDestinationSpot2" />
+            <TextView
+                android:id="@+id/tvSchedule"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:fontFamily="@font/ubuntu"
+                android:text="Schedule"
+                android:textColor="@color/black"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/tvTypeName"
+                app:layout_constraintTop_toBottomOf="@+id/tvTypeName" />
+
+            <TextView
+                android:id="@+id/tvPrice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="8dp"
+                android:fontFamily="@font/ubuntu"
+                android:gravity="bottom"
+                android:text="₱0"
+                android:textColor="@color/blue"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toTopOf="@+id/tvViewMessage"
+                app:layout_constraintStart_toStartOf="@+id/tvSchedule"
+                app:layout_constraintTop_toBottomOf="@+id/tvDestinationSpot2" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/bookingInfoButtonLayout"
+                android:layout_width="208dp"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/border_layout"
+                app:layout_constraintEnd_toStartOf="@+id/moreImage"
+                app:layout_constraintTop_toBottomOf="parent">
+
+                <ImageView
+                    android:id="@+id/remarksImage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"
+                    android:padding="4dp"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="@+id/locateImage"
+                    app:srcCompat="@drawable/ic_baseline_mode_comment_24"
+                    app:tint="@color/blue" />
+
+                <ImageView
+                    android:id="@+id/rateImage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"
+                    android:padding="4dp"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toTopOf="@+id/remarksImage"
+                    app:layout_constraintStart_toStartOf="@+id/locateImage"
+                    app:srcCompat="@drawable/ic_baseline_star_24"
+                    app:tint="@color/blue" />
+
+                <ImageView
+                    android:id="@+id/checkImage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"
+                    android:padding="4dp"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toTopOf="@+id/rateImage"
+                    app:layout_constraintStart_toStartOf="@+id/locateImage"
+                    app:srcCompat="@drawable/ic_baseline_check_24"
+                    app:tint="@color/green" />
+
+                <ImageView
+                    android:id="@+id/stopImage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"
+                    android:padding="4dp"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toTopOf="@+id/checkImage"
+                    app:layout_constraintStart_toStartOf="@+id/locateImage"
+                    app:srcCompat="@drawable/ic_baseline_stop_24"
+                    app:tint="@color/red" />
+
+                <ImageView
+                    android:id="@+id/passImage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"
+                    android:padding="4dp"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toTopOf="@+id/stopImage"
+                    app:layout_constraintStart_toStartOf="@+id/locateImage"
+                    app:srcCompat="@drawable/ic_baseline_electric_rickshaw_24"
+                    app:tint="@color/blue" />
+
+                <ImageView
+                    android:id="@+id/driverImage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"
+                    android:padding="4dp"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toTopOf="@+id/passImage"
+                    app:layout_constraintStart_toStartOf="@+id/locateImage"
+                    app:srcCompat="@drawable/ic_baseline_electric_rickshaw_24"
+                    app:tint="@color/blue" />
+
+                <ImageView
+                    android:id="@+id/chatImage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"
+                    android:padding="4dp"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toTopOf="@+id/driverImage"
+                    app:layout_constraintStart_toStartOf="@+id/locateImage"
+                    app:srcCompat="@drawable/ic_baseline_chat_24"
+                    app:tint="@color/blue" />
+
+                <ImageView
+                    android:id="@+id/viewQRImage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"
+                    android:padding="4dp"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toTopOf="@+id/chatImage"
+                    app:layout_constraintStart_toStartOf="@+id/locateImage"
+                    app:srcCompat="@drawable/ic_baseline_qr_code_2_24"
+                    app:tint="@color/blue" />
+
+                <ImageView
+                    android:id="@+id/locateDestinationImage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="4dp"
+                    android:padding="4dp"
+                    app:layout_constraintBottom_toTopOf="@+id/viewQRImage"
+                    app:layout_constraintStart_toStartOf="@+id/locateImage"
+                    app:layout_constraintTop_toBottomOf="@+id/locateImage"
+                    app:srcCompat="@drawable/ic_baseline_location_searching_24"
+                    app:tint="@color/blue" />
+
+                <ImageView
+                    android:id="@+id/locateImage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:padding="4dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/ic_baseline_location_searching_24"
+                    app:tint="@color/blue" />
+
+                <TextView
+                    android:id="@+id/tvRemarks"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:fontFamily="@font/ubuntu"
+                    android:gravity="center_vertical"
+                    android:text="Remarks"
+                    android:textColor="@color/blue"
+                    android:textStyle="bold"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="@+id/remarksImage"
+                    app:layout_constraintEnd_toEndOf="@+id/tvLocateDestination"
+                    app:layout_constraintStart_toEndOf="@+id/remarksImage"
+                    app:layout_constraintTop_toTopOf="@+id/remarksImage" />
+
+                <TextView
+                    android:id="@+id/tvRate"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:fontFamily="@font/ubuntu"
+                    android:gravity="center_vertical"
+                    android:text="Rate the Driver"
+                    android:textColor="@color/blue"
+                    android:textStyle="bold"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="@+id/rateImage"
+                    app:layout_constraintEnd_toEndOf="@+id/tvLocateDestination"
+                    app:layout_constraintStart_toEndOf="@+id/rateImage"
+                    app:layout_constraintTop_toTopOf="@+id/rateImage" />
+
+                <TextView
+                    android:id="@+id/tvCheck"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:fontFamily="@font/ubuntu"
+                    android:gravity="center_vertical"
+                    android:text="Initiate Service"
+                    android:textColor="@color/green"
+                    android:textStyle="bold"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="@+id/checkImage"
+                    app:layout_constraintEnd_toEndOf="@+id/tvLocateDestination"
+                    app:layout_constraintStart_toEndOf="@+id/checkImage"
+                    app:layout_constraintTop_toTopOf="@+id/checkImage" />
+
+                <TextView
+                    android:id="@+id/tvStop"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:fontFamily="@font/ubuntu"
+                    android:gravity="center_vertical"
+                    android:text="Stop Request"
+                    android:textColor="@color/red"
+                    android:textStyle="bold"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="@+id/stopImage"
+                    app:layout_constraintEnd_toEndOf="@+id/tvLocateDestination"
+                    app:layout_constraintStart_toEndOf="@+id/stopImage"
+                    app:layout_constraintTop_toTopOf="@+id/stopImage" />
+
+                <TextView
+                    android:id="@+id/tvPass"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:fontFamily="@font/ubuntu"
+                    android:gravity="center_vertical"
+                    android:text="Pass Task"
+                    android:textColor="@color/blue"
+                    android:textStyle="bold"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="@+id/passImage"
+                    app:layout_constraintEnd_toEndOf="@+id/tvLocateDestination"
+                    app:layout_constraintStart_toEndOf="@+id/passImage"
+                    app:layout_constraintTop_toTopOf="@+id/passImage" />
+
+                <TextView
+                    android:id="@+id/tvDriver"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:fontFamily="@font/ubuntu"
+                    android:gravity="center_vertical"
+                    android:text="Take Task"
+                    android:textColor="@color/blue"
+                    android:textStyle="bold"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="@+id/driverImage"
+                    app:layout_constraintEnd_toEndOf="@+id/tvLocateDestination"
+                    app:layout_constraintStart_toEndOf="@+id/driverImage"
+                    app:layout_constraintTop_toTopOf="@+id/driverImage" />
+
+                <TextView
+                    android:id="@+id/tvChat"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:fontFamily="@font/ubuntu"
+                    android:gravity="center_vertical"
+                    android:text="Chat"
+                    android:textColor="@color/blue"
+                    android:textStyle="bold"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="@+id/chatImage"
+                    app:layout_constraintEnd_toEndOf="@+id/tvLocateDestination"
+                    app:layout_constraintStart_toEndOf="@+id/chatImage"
+                    app:layout_constraintTop_toTopOf="@+id/chatImage" />
+
+                <TextView
+                    android:id="@+id/tvViewQR"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_marginStart="1dp"
+                    android:fontFamily="@font/ubuntu"
+                    android:gravity="center_vertical"
+                    android:text="View QR Code"
+                    android:textColor="@color/blue"
+                    android:textStyle="bold"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="@+id/viewQRImage"
+                    app:layout_constraintEnd_toEndOf="@+id/tvLocateDestination"
+                    app:layout_constraintStart_toEndOf="@+id/viewQRImage"
+                    app:layout_constraintTop_toTopOf="@+id/viewQRImage" />
+
+                <TextView
+                    android:id="@+id/tvLocateDestination"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:fontFamily="@font/ubuntu"
+                    android:gravity="center_vertical"
+                    android:text="Locate Destination Spot"
+                    android:textColor="@color/blue"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="@+id/locateDestinationImage"
+                    app:layout_constraintEnd_toEndOf="@+id/tvLocate"
+                    app:layout_constraintStart_toEndOf="@+id/locateDestinationImage"
+                    app:layout_constraintTop_toTopOf="@+id/locateDestinationImage" />
+
+                <TextView
+                    android:id="@+id/tvLocate"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_marginEnd="8dp"
+                    android:fontFamily="@font/ubuntu"
+                    android:gravity="center_vertical"
+                    android:text="Locate Origin Location"
+                    android:textColor="@color/blue"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="@+id/locateImage"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/locateImage"
+                    app:layout_constraintTop_toTopOf="@+id/locateImage" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <View
             android:id="@+id/viewLine"
@@ -414,7 +705,8 @@
             android:layout_height="1dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/contentLayout" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/timeInfoLayout"
@@ -488,6 +780,18 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/userInfoLayout">
 
+            <ImageView
+                android:id="@+id/driverArrowImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:src="@drawable/ic_baseline_expand_less_24"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@+id/tvPlateNumber"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/tvDriverFullName"
+                app:tint="@color/black" />
+
             <TextView
                 android:id="@+id/tvDriverFullName"
                 android:layout_width="0dp"
@@ -498,7 +802,7 @@
                 android:text="Driver's Full Name"
                 android:textColor="@color/black"
                 app:layout_constraintBottom_toTopOf="@+id/tvPlateNumber"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/driverArrowImage"
                 app:layout_constraintStart_toEndOf="@+id/driverProfileImage"
                 app:layout_constraintTop_toTopOf="@+id/driverProfileImage" />
 
@@ -507,12 +811,11 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:layout_marginEnd="8dp"
                 android:fontFamily="@font/ubuntu"
                 android:text="Plate Number:"
                 android:textColor="@color/initial"
                 app:layout_constraintBottom_toBottomOf="@+id/driverProfileImage"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/tvDriverFullName"
                 app:layout_constraintStart_toEndOf="@+id/driverProfileImage"
                 app:layout_constraintTop_toBottomOf="@+id/tvDriverFullName" />
 
@@ -548,6 +851,18 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
+            <ImageView
+                android:id="@+id/userArrowImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:src="@drawable/ic_baseline_expand_less_24"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@+id/tvPassenger"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/tvUserFullName"
+                app:tint="@color/black" />
+
             <TextView
                 android:id="@+id/tvUserFullName"
                 android:layout_width="0dp"
@@ -558,7 +873,7 @@
                 android:text="User's Full Name"
                 android:textColor="@color/black"
                 app:layout_constraintBottom_toTopOf="@+id/tvPassenger"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/userArrowImage"
                 app:layout_constraintStart_toEndOf="@+id/profileImage"
                 app:layout_constraintTop_toTopOf="@+id/profileImage" />
 
@@ -567,12 +882,11 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:layout_marginEnd="8dp"
                 android:fontFamily="@font/ubuntu"
                 android:text="Passenger"
                 android:textColor="@color/initial"
                 app:layout_constraintBottom_toBottomOf="@+id/profileImage"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/tvUserFullName"
                 app:layout_constraintStart_toEndOf="@+id/profileImage"
                 app:layout_constraintTop_toBottomOf="@+id/tvUserFullName" />
 
@@ -596,287 +910,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/image_loading_placeholder" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/bookingInfoButtonLayout"
-            android:layout_width="208dp"
-            android:layout_height="match_parent"
-            android:layout_marginEnd="8dp"
-            android:background="@drawable/border_layout"
-            app:layout_constraintEnd_toStartOf="@+id/moreImage"
-            app:layout_constraintTop_toBottomOf="parent">
-
-            <ImageView
-                android:id="@+id/remarksImage"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="4dp"
-                android:padding="4dp"
-                android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="@+id/locateImage"
-                app:srcCompat="@drawable/ic_baseline_mode_comment_24"
-                app:tint="@color/blue" />
-
-            <ImageView
-                android:id="@+id/rateImage"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="4dp"
-                android:padding="4dp"
-                android:visibility="gone"
-                app:layout_constraintBottom_toTopOf="@+id/remarksImage"
-                app:layout_constraintStart_toStartOf="@+id/locateImage"
-                app:srcCompat="@drawable/ic_baseline_star_24"
-                app:tint="@color/blue" />
-
-            <ImageView
-                android:id="@+id/checkImage"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="4dp"
-                android:padding="4dp"
-                android:visibility="gone"
-                app:layout_constraintBottom_toTopOf="@+id/rateImage"
-                app:layout_constraintStart_toStartOf="@+id/locateImage"
-                app:srcCompat="@drawable/ic_baseline_check_24"
-                app:tint="@color/green" />
-
-            <ImageView
-                android:id="@+id/stopImage"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="4dp"
-                android:padding="4dp"
-                android:visibility="gone"
-                app:layout_constraintBottom_toTopOf="@+id/checkImage"
-                app:layout_constraintStart_toStartOf="@+id/locateImage"
-                app:srcCompat="@drawable/ic_baseline_stop_24"
-                app:tint="@color/red" />
-
-            <ImageView
-                android:id="@+id/passImage"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="4dp"
-                android:padding="4dp"
-                android:visibility="gone"
-                app:layout_constraintBottom_toTopOf="@+id/stopImage"
-                app:layout_constraintStart_toStartOf="@+id/locateImage"
-                app:srcCompat="@drawable/ic_baseline_electric_rickshaw_24"
-                app:tint="@color/blue" />
-
-            <ImageView
-                android:id="@+id/driverImage"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="4dp"
-                android:padding="4dp"
-                android:visibility="gone"
-                app:layout_constraintBottom_toTopOf="@+id/passImage"
-                app:layout_constraintStart_toStartOf="@+id/locateImage"
-                app:srcCompat="@drawable/ic_baseline_electric_rickshaw_24"
-                app:tint="@color/blue" />
-
-            <ImageView
-                android:id="@+id/chatImage"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="4dp"
-                android:padding="4dp"
-                android:visibility="gone"
-                app:layout_constraintBottom_toTopOf="@+id/driverImage"
-                app:layout_constraintStart_toStartOf="@+id/locateImage"
-                app:srcCompat="@drawable/ic_baseline_chat_24"
-                app:tint="@color/blue" />
-
-            <ImageView
-                android:id="@+id/viewQRImage"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="4dp"
-                android:padding="4dp"
-                android:visibility="gone"
-                app:layout_constraintBottom_toTopOf="@+id/chatImage"
-                app:layout_constraintStart_toStartOf="@+id/locateImage"
-                app:srcCompat="@drawable/ic_baseline_qr_code_2_24"
-                app:tint="@color/blue" />
-
-            <ImageView
-                android:id="@+id/locateDestinationImage"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:layout_marginBottom="4dp"
-                android:padding="4dp"
-                app:layout_constraintBottom_toTopOf="@+id/viewQRImage"
-                app:layout_constraintStart_toStartOf="@+id/locateImage"
-                app:layout_constraintTop_toBottomOf="@+id/locateImage"
-                app:srcCompat="@drawable/ic_baseline_location_searching_24"
-                app:tint="@color/blue" />
-
-            <ImageView
-                android:id="@+id/locateImage"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:padding="4dp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_baseline_location_searching_24"
-                app:tint="@color/blue" />
-
-            <TextView
-                android:id="@+id/tvRemarks"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:fontFamily="@font/ubuntu"
-                android:gravity="center_vertical"
-                android:text="Remarks"
-                android:textColor="@color/blue"
-                android:textStyle="bold"
-                android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="@+id/remarksImage"
-                app:layout_constraintEnd_toEndOf="@+id/tvLocateDestination"
-                app:layout_constraintStart_toEndOf="@+id/remarksImage"
-                app:layout_constraintTop_toTopOf="@+id/remarksImage" />
-
-            <TextView
-                android:id="@+id/tvRate"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:fontFamily="@font/ubuntu"
-                android:gravity="center_vertical"
-                android:text="Rate the Driver"
-                android:textColor="@color/blue"
-                android:textStyle="bold"
-                android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="@+id/rateImage"
-                app:layout_constraintEnd_toEndOf="@+id/tvLocateDestination"
-                app:layout_constraintStart_toEndOf="@+id/rateImage"
-                app:layout_constraintTop_toTopOf="@+id/rateImage" />
-
-            <TextView
-                android:id="@+id/tvCheck"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:fontFamily="@font/ubuntu"
-                android:gravity="center_vertical"
-                android:text="Initiate Service"
-                android:textColor="@color/green"
-                android:textStyle="bold"
-                android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="@+id/checkImage"
-                app:layout_constraintEnd_toEndOf="@+id/tvLocateDestination"
-                app:layout_constraintStart_toEndOf="@+id/checkImage"
-                app:layout_constraintTop_toTopOf="@+id/checkImage" />
-
-            <TextView
-                android:id="@+id/tvStop"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:fontFamily="@font/ubuntu"
-                android:gravity="center_vertical"
-                android:text="Stop Request"
-                android:textColor="@color/red"
-                android:textStyle="bold"
-                android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="@+id/stopImage"
-                app:layout_constraintEnd_toEndOf="@+id/tvLocateDestination"
-                app:layout_constraintStart_toEndOf="@+id/stopImage"
-                app:layout_constraintTop_toTopOf="@+id/stopImage" />
-
-            <TextView
-                android:id="@+id/tvPass"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:fontFamily="@font/ubuntu"
-                android:gravity="center_vertical"
-                android:text="Pass Task"
-                android:textColor="@color/blue"
-                android:textStyle="bold"
-                android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="@+id/passImage"
-                app:layout_constraintEnd_toEndOf="@+id/tvLocateDestination"
-                app:layout_constraintStart_toEndOf="@+id/passImage"
-                app:layout_constraintTop_toTopOf="@+id/passImage" />
-
-            <TextView
-                android:id="@+id/tvDriver"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:fontFamily="@font/ubuntu"
-                android:gravity="center_vertical"
-                android:text="Take Task"
-                android:textColor="@color/blue"
-                android:textStyle="bold"
-                android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="@+id/driverImage"
-                app:layout_constraintEnd_toEndOf="@+id/tvLocateDestination"
-                app:layout_constraintStart_toEndOf="@+id/driverImage"
-                app:layout_constraintTop_toTopOf="@+id/driverImage" />
-
-            <TextView
-                android:id="@+id/tvChat"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:fontFamily="@font/ubuntu"
-                android:gravity="center_vertical"
-                android:text="Chat"
-                android:textColor="@color/blue"
-                android:textStyle="bold"
-                android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="@+id/chatImage"
-                app:layout_constraintEnd_toEndOf="@+id/tvLocateDestination"
-                app:layout_constraintStart_toEndOf="@+id/chatImage"
-                app:layout_constraintTop_toTopOf="@+id/chatImage" />
-
-            <TextView
-                android:id="@+id/tvViewQR"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_marginStart="1dp"
-                android:fontFamily="@font/ubuntu"
-                android:gravity="center_vertical"
-                android:text="View QR Code"
-                android:textColor="@color/blue"
-                android:textStyle="bold"
-                android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="@+id/viewQRImage"
-                app:layout_constraintEnd_toEndOf="@+id/tvLocateDestination"
-                app:layout_constraintStart_toEndOf="@+id/viewQRImage"
-                app:layout_constraintTop_toTopOf="@+id/viewQRImage" />
-
-            <TextView
-                android:id="@+id/tvLocateDestination"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:fontFamily="@font/ubuntu"
-                android:gravity="center_vertical"
-                android:text="Locate Destination Spot"
-                android:textColor="@color/blue"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="@+id/locateDestinationImage"
-                app:layout_constraintEnd_toEndOf="@+id/tvLocate"
-                app:layout_constraintStart_toEndOf="@+id/locateDestinationImage"
-                app:layout_constraintTop_toTopOf="@+id/locateDestinationImage" />
-
-            <TextView
-                android:id="@+id/tvLocate"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_marginEnd="8dp"
-                android:fontFamily="@font/ubuntu"
-                android:gravity="center_vertical"
-                android:text="Locate Origin Location"
-                android:textColor="@color/blue"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="@+id/locateImage"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/locateImage"
-                app:layout_constraintTop_toTopOf="@+id/locateImage" />
-
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

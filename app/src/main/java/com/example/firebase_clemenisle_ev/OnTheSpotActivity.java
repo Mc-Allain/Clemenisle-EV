@@ -86,13 +86,14 @@ public class OnTheSpotActivity extends AppCompatActivity {
     private final static int MAP_SETTINGS_REQUEST = 1;
 
     ImageView profileImage, driverProfileImage, thumbnail, moreImage, locateImage, locateDestinationImage, viewQRImage,
-            chatImage, driverImage, passImage, stopImage, checkImage, rateImage, remarksImage, reloadImage;
+            chatImage, driverImage, passImage, stopImage, checkImage, rateImage, remarksImage, reloadImage,
+            driverArrowImage, userArrowImage;
     TextView tvUserFullName, tvPassenger, tvDriverFullName, tvPlateNumber, tvPickUpTime, tvDropOffTime,
             tvBookingId, tvSchedule, tvTypeName, tvPrice, tvOriginLocation2, tvDestinationSpot2,
             tvLocate, tvLocateDestination, tvViewQR, tvChat, tvDriver, tvPass, tvStop, tvCheck, tvRate, tvRemarks, tvLog,
             tvViewMessage, tvViewRemarks, tvViewReason;
     ConstraintLayout buttonLayout, buttonLayout2, bookingInfoLayout, bookingInfoButtonLayout,
-            userInfoLayout, driverInfoLayout, timeInfoLayout;
+            userInfoLayout, driverInfoLayout, timeInfoLayout, contentLayout;
     Button cancelButton, dropOffButton;
     FrameLayout mapLayout;
     ProgressBar progressBar;
@@ -196,6 +197,8 @@ public class OnTheSpotActivity extends AppCompatActivity {
     ImageView dialogMessageCloseImage;
     TextView tvDialogTitle, tvMessageDialog;
 
+    boolean isContentShown = true;
+
     private void initSharedPreferences() {
         SharedPreferences sharedPreferences = myContext
                 .getSharedPreferences("login", Context.MODE_PRIVATE);
@@ -214,16 +217,19 @@ public class OnTheSpotActivity extends AppCompatActivity {
         tvUserFullName = findViewById(R.id.tvUserFullName);
         tvPassenger = findViewById(R.id.tvPassenger);
         profileImage = findViewById(R.id.profileImage);
+        userArrowImage = findViewById(R.id.userArrowImage);
 
         driverInfoLayout = findViewById(R.id.driverInfoLayout);
         tvDriverFullName = findViewById(R.id.tvDriverFullName);
         tvPlateNumber = findViewById(R.id.tvPlateNumber);
         driverProfileImage = findViewById(R.id.driverProfileImage);
+        driverArrowImage = findViewById(R.id.driverArrowImage);
 
         timeInfoLayout = findViewById(R.id.timeInfoLayout);
         tvPickUpTime = findViewById(R.id.tvPickUpTime);
         tvDropOffTime = findViewById(R.id.tvDropOffTime);
 
+        contentLayout = findViewById(R.id.contentLayout);
         thumbnail = findViewById(R.id.thumbnail);
         tvBookingId = findViewById(R.id.tvBookingId);
         tvSchedule = findViewById(R.id.tvSchedule);
@@ -843,6 +849,10 @@ public class OnTheSpotActivity extends AppCompatActivity {
 
                             driverInfoLayout.setVisibility(View.GONE);
                             userInfoLayout.setVisibility(View.VISIBLE);
+                            userArrowImage.setVisibility(View.VISIBLE);
+                            userArrowImage.setOnClickListener(view -> showContentLayout());
+
+                            driverArrowImage.setVisibility(View.GONE);
 
                             getReason();
 
@@ -1010,6 +1020,7 @@ public class OnTheSpotActivity extends AppCompatActivity {
                 catch (Exception ignored) {}
 
                 driverInfoLayout.setVisibility(View.VISIBLE);
+                showDriverArrow();
 
                 return;
             }
@@ -1035,12 +1046,36 @@ public class OnTheSpotActivity extends AppCompatActivity {
 
                         driverUserId = user.getId();
                         driverInfoLayout.setVisibility(View.VISIBLE);
+                        showDriverArrow();
 
                         return;
                     }
                 }
             }
         }
+    }
+
+    private void showDriverArrow() {
+        if(userInfoLayout.getVisibility() == View.GONE) {
+            driverArrowImage.setVisibility(View.VISIBLE);
+            driverArrowImage.setOnClickListener(view -> showContentLayout());
+
+            userArrowImage.setVisibility(View.GONE);
+        }
+    }
+
+    private void showContentLayout() {
+        if(isContentShown) {
+            contentLayout.setVisibility(View.GONE);
+            userArrowImage.setImageResource(R.drawable.ic_baseline_expand_more_24);
+            driverArrowImage.setImageResource(R.drawable.ic_baseline_expand_more_24);
+        }
+        else {
+            contentLayout.setVisibility(View.VISIBLE);
+            userArrowImage.setImageResource(R.drawable.ic_baseline_expand_less_24);
+            driverArrowImage.setImageResource(R.drawable.ic_baseline_expand_less_24);
+        }
+        isContentShown = !isContentShown;
     }
 
     private void getDriverUserId() {
@@ -1687,14 +1722,14 @@ public class OnTheSpotActivity extends AppCompatActivity {
         optionHandler.removeCallbacks(optionRunnable);
 
         ConstraintSet constraintSet = new ConstraintSet();
-        constraintSet.clone(bookingInfoLayout);
+        constraintSet.clone(contentLayout);
 
         constraintSet.clear(bookingInfoButtonLayout.getId(), ConstraintSet.TOP);
         constraintSet.connect(bookingInfoButtonLayout.getId(), ConstraintSet.BOTTOM,
                 moreImage.getId(), ConstraintSet.BOTTOM);
 
         setTransition(bookingInfoButtonLayout);
-        constraintSet.applyTo(bookingInfoLayout);
+        constraintSet.applyTo(contentLayout);
 
         isOptionShown = true;
         moreImage.setEnabled(true);
@@ -1708,14 +1743,14 @@ public class OnTheSpotActivity extends AppCompatActivity {
         moreImage.setEnabled(false);
 
         ConstraintSet constraintSet = new ConstraintSet();
-        constraintSet.clone(bookingInfoLayout);
+        constraintSet.clone(contentLayout);
 
         constraintSet.clear(bookingInfoButtonLayout.getId(), ConstraintSet.BOTTOM);
         constraintSet.connect(bookingInfoButtonLayout.getId(), ConstraintSet.TOP,
-                bookingInfoLayout.getId(), ConstraintSet.BOTTOM);
+                contentLayout.getId(), ConstraintSet.BOTTOM);
 
         setTransition(bookingInfoButtonLayout);
-        constraintSet.applyTo(bookingInfoLayout);
+        constraintSet.applyTo(contentLayout);
 
         isOptionShown = false;
         moreImage.setEnabled(true);
