@@ -53,7 +53,7 @@ public class IWalletTransactionAdapter extends RecyclerView.Adapter<IWalletTrans
         ConstraintLayout backgroundLayout = holder.backgroundLayout;
         TextView tvTransactionId = holder.tvTransactionId, tvCategory = holder.tvCategory,
                 tvTimestamp = holder.tvTimestamp, tvPendingReferenceNumber = holder.tvPendingReferenceNumber,
-                tvValue = holder.tvValue, tvTransactionStatus = holder.tvTransactionStatus;
+                tvValueType = holder.tvValueType, tvValue = holder.tvValue, tvTransactionStatus = holder.tvTransactionStatus;
 
         myContext = inflater.getContext();
         myResources = myContext.getResources();
@@ -91,6 +91,9 @@ public class IWalletTransactionAdapter extends RecyclerView.Adapter<IWalletTrans
         tvTransactionStatus.setVisibility(View.GONE);
 
         if(category.equals("Top-up")) {
+            tvValueType.setText("+");
+            tvValueType.setTextColor(colorGreen);
+
             if(referenceNumber != null) {
                 referenceNumber = "#" + referenceNumber;
 
@@ -112,6 +115,9 @@ public class IWalletTransactionAdapter extends RecyclerView.Adapter<IWalletTrans
         }
 
         if(category.equals("Transfer")) {
+            tvValueType.setText("-");
+            tvValueType.setTextColor(colorRed);
+
             if(mobileNumber != null) {
                 tvPendingReferenceNumber.setVisibility(View.VISIBLE);
                 tvPendingReferenceNumber.setText(mobileNumber);
@@ -139,6 +145,15 @@ public class IWalletTransactionAdapter extends RecyclerView.Adapter<IWalletTrans
         }
 
         if(category.equals("Refund") || category.equals("Payment")) {
+            if (category.equals("Refund")) {
+                tvValueType.setText("+");
+                tvValueType.setTextColor(colorGreen);
+            }
+            else if (category.equals("Payment")) {
+                tvValueType.setText("-");
+                tvValueType.setTextColor(colorRed);
+            }
+
             if(bookingId != null) {
                 tvTransactionStatus.setVisibility(View.VISIBLE);
                 tvTransactionStatus.setTextColor(colorBlue);
@@ -187,7 +202,8 @@ public class IWalletTransactionAdapter extends RecyclerView.Adapter<IWalletTrans
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         ConstraintLayout backgroundLayout;
-        TextView tvTransactionId, tvCategory, tvTimestamp, tvPendingReferenceNumber, tvValue, tvTransactionStatus;
+        TextView tvTransactionId, tvCategory, tvTimestamp, tvPendingReferenceNumber,
+                tvValueType, tvValue, tvTransactionStatus;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -197,6 +213,7 @@ public class IWalletTransactionAdapter extends RecyclerView.Adapter<IWalletTrans
             tvCategory = itemView.findViewById(R.id.tvCategory);
             tvTimestamp = itemView.findViewById(R.id.tvTimestamp);
             tvPendingReferenceNumber = itemView.findViewById(R.id.tvPendingReferenceNumber);
+            tvValueType = itemView.findViewById(R.id.tvValueType);
             tvValue = itemView.findViewById(R.id.tvValue);
             tvTransactionStatus = itemView.findViewById(R.id.tvTransactionStatus);
 

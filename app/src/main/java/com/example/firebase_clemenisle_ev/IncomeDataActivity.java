@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,6 +26,7 @@ import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -34,8 +36,10 @@ public class IncomeDataActivity extends AppCompatActivity {
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance(firebaseURL);
     DatabaseReference usersRef;
 
+    ConstraintLayout contentLayout;
     TextView tvIncomeToday2, tvIncomeThisWeek2, tvIncomeThisMonth2, tvIncomeThisYear2,
             tvTotalIncome2, tvAmountToRemit2, tvAmountToClaim2;
+    ImageView incomeSummaryArrowImage;
     RecyclerView yearIncomeView;
     ProgressBar progressBar;
 
@@ -49,10 +53,14 @@ public class IncomeDataActivity extends AppCompatActivity {
 
     IncomeYearAdapter incomeYearAdapter;
 
+    boolean isContentShown = true;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_income_data);
+
+        contentLayout = findViewById(R.id.contentLayout);
 
         tvIncomeToday2 = findViewById(R.id.tvIncomeToday2);
         tvIncomeThisWeek2 = findViewById(R.id.tvIncomeThisWeek2);
@@ -61,6 +69,8 @@ public class IncomeDataActivity extends AppCompatActivity {
         tvTotalIncome2 = findViewById(R.id.tvTotalIncome2);
         tvAmountToRemit2 = findViewById(R.id.tvAmountToRemit2);
         tvAmountToClaim2 = findViewById(R.id.tvAmountToClaim2);
+
+        incomeSummaryArrowImage = findViewById(R.id.incomeSummaryArrowImage);
 
         yearIncomeView = findViewById(R.id.yearIncomeView);
 
@@ -73,6 +83,8 @@ public class IncomeDataActivity extends AppCompatActivity {
 
         usersRef = firebaseDatabase.getReference("users").child(userId);
 
+        incomeSummaryArrowImage.setOnClickListener(view -> showContentLayout());
+
         int currentYear = Integer.parseInt(new DateTimeToString().getYear());
         currentYear = Math.max(currentYear, 2022);
 
@@ -83,6 +95,18 @@ public class IncomeDataActivity extends AppCompatActivity {
         yearIncomeView.setAdapter(incomeYearAdapter);
 
         getCurrentUser();
+    }
+
+    private void showContentLayout() {
+        if(isContentShown) {
+            contentLayout.setVisibility(View.GONE);
+            incomeSummaryArrowImage.setImageResource(R.drawable.ic_baseline_expand_more_24);
+        }
+        else {
+            contentLayout.setVisibility(View.VISIBLE);
+            incomeSummaryArrowImage.setImageResource(R.drawable.ic_baseline_expand_less_24);
+        }
+        isContentShown = !isContentShown;
     }
 
     private void getCurrentUser() {

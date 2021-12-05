@@ -88,6 +88,20 @@
             app:layout_constraintTop_toBottomOf="@+id/constraintLayout" />
 
         <TextView
+            android:id="@+id/tvValueType"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="1dp"
+            android:fontFamily="@font/ubuntu"
+            android:text="+"
+            android:textColor="@color/green"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@+id/tvTimestamp"
+            app:layout_constraintEnd_toStartOf="@+id/tvValue"
+            app:layout_constraintTop_toTopOf="@+id/tvCategory" />
+
+        <TextView
             android:id="@+id/tvValue"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -123,7 +137,7 @@
             android:fontFamily="@font/ubuntu"
             android:text="Pending Reference Number"
             android:textColor="@color/black"
-            app:layout_constraintEnd_toStartOf="@+id/tvValue"
+            app:layout_constraintEnd_toStartOf="@+id/tvValueType"
             app:layout_constraintStart_toEndOf="@+id/tvCategory"
             app:layout_constraintTop_toTopOf="@+id/tvCategory" />
 
