@@ -37,6 +37,8 @@
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/font/.xml" value="0.2462962962962963" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/font/fredoka_one.xml" value="0.20833333333333334" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/activity_about.xml" value="0.33" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/activity_amount_to_claim.xml" value="0.2490740740740741" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/activity_amount_to_remit.xml" value="0.3375" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/activity_app_status.xml" value="0.5" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/activity_booking.xml" value="0.33" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/activity_chat.xml" value="0.33" />
@@ -77,6 +79,7 @@
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/custom_income_data_layout.xml" value="0.29814814814814816" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/custom_income_data_month_layout.xml" value="0.29814814814814816" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/custom_income_data_year_layout.xml" value="0.29814814814814816" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/custom_income_transaction_layout.xml" value="0.33" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/custom_iwallet_list_layout.xml" value="0.5" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/custom_iwallet_transaction_list_layout.xml" value="0.5" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/custom_liked_spot_layout.xml" value="0.2916666666666667" />

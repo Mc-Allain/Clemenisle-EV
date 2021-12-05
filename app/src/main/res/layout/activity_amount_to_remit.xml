@@ -5,70 +5,18 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/gainsboro"
-    tools:context=".IWalletActivity">
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/buttonLayout"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:background="@color/white"
-        android:visibility="visible"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
-
-        <Button
-            android:id="@+id/topUpButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp"
-            android:fontFamily="@font/ubuntu"
-            android:text="Top-up"
-            android:textAllCaps="false"
-            app:cornerRadius="20dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/transferButton"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <Button
-            android:id="@+id/transferButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="8dp"
-            android:fontFamily="@font/ubuntu"
-            android:text="Transfer"
-            android:textAllCaps="false"
-            app:cornerRadius="20dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/topUpButton"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <View
-            style="@style/line_color"
-            android:layout_width="0dp"
-            android:layout_height="1dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    tools:context=".AmountToRemitActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/transactionLayout"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/buttonLayout"
-        app:layout_constraintEnd_toEndOf="@+id/iWalletLayout"
-        app:layout_constraintStart_toStartOf="@+id/iWalletLayout"
-        app:layout_constraintTop_toBottomOf="@+id/iWalletLayout">
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/amountToRemitLayout"
+        app:layout_constraintStart_toStartOf="@+id/amountToRemitLayout"
+        app:layout_constraintTop_toBottomOf="@+id/amountToRemitLayout">
 
         <ImageView
             android:id="@+id/reloadImage"
@@ -169,7 +117,7 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/iWalletLayout"
+        android:id="@+id/amountToRemitLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -181,23 +129,23 @@
         app:layout_constraintTop_toBottomOf="@+id/headerLayout">
 
         <TextView
-            android:id="@+id/tvIWallet"
+            android:id="@+id/tvAmountToRemit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
             android:fontFamily="@font/ubuntu"
-            android:text="iWallet"
+            android:text="Amount to Remit"
             android:textColor="@color/blue"
             android:textSize="18sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/iWalletTitleLayout" />
+            app:layout_constraintTop_toBottomOf="@+id/amountToRemitTitleLayout" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/iWalletTitleLayout"
+            android:id="@+id/amountToRemitTitleLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -205,14 +153,14 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <TextView
-                android:id="@+id/tvIWalletTitle"
+                android:id="@+id/tvAmountToRemitTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
                 android:fontFamily="@font/ubuntu"
-                android:text="iWallet"
+                android:text="Amount to Remit"
                 android:textColor="@color/black"
                 android:textSize="16sp"
                 android:textStyle="bold"
@@ -260,7 +208,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
             android:fontFamily="@font/fredoka_one"
-            android:text="iWallet"
+            android:text="Income"
             android:textColor="@color/black"
             android:textSize="20sp"
             app:layout_constraintBottom_toBottomOf="@+id/imageView"

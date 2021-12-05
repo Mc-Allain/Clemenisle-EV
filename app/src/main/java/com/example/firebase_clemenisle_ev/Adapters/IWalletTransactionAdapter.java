@@ -44,7 +44,7 @@ public class IWalletTransactionAdapter extends RecyclerView.Adapter<IWalletTrans
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = inflater.inflate(R.layout.custom_iwallet_transaction_list_layout, parent, false);
+        View view = inflater.inflate(R.layout.custom_iwallet_transaction_layout, parent, false);
         return new ViewHolder(view);
     }
 

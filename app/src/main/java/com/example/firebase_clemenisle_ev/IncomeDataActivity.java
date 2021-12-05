@@ -39,7 +39,7 @@ public class IncomeDataActivity extends AppCompatActivity {
     ConstraintLayout contentLayout;
     TextView tvIncomeToday2, tvIncomeThisWeek2, tvIncomeThisMonth2, tvIncomeThisYear2,
             tvTotalIncome2, tvAmountToRemit2, tvAmountToClaim2;
-    ImageView incomeSummaryArrowImage;
+    ImageView viewRemittanceHistoryImage, viewClaimHistoryImage, incomeSummaryArrowImage;
     RecyclerView yearIncomeView;
     ProgressBar progressBar;
 
@@ -70,6 +70,8 @@ public class IncomeDataActivity extends AppCompatActivity {
         tvAmountToRemit2 = findViewById(R.id.tvAmountToRemit2);
         tvAmountToClaim2 = findViewById(R.id.tvAmountToClaim2);
 
+        viewRemittanceHistoryImage = findViewById(R.id.viewRemittanceHistoryImage);
+        viewClaimHistoryImage = findViewById(R.id.viewClaimHistoryImage);
         incomeSummaryArrowImage = findViewById(R.id.incomeSummaryArrowImage);
 
         yearIncomeView = findViewById(R.id.yearIncomeView);
@@ -93,6 +95,18 @@ public class IncomeDataActivity extends AppCompatActivity {
         yearIncomeView.setLayoutManager(linearLayout);
         incomeYearAdapter = new IncomeYearAdapter(myContext, currentYear, taskList, userId);
         yearIncomeView.setAdapter(incomeYearAdapter);
+
+        viewRemittanceHistoryImage.setOnClickListener(view -> {
+            Intent intent1 = new Intent(myContext, AmountToRemitActivity.class);
+            intent1.putExtra("userId", userId);
+            startActivity(intent1);
+        });
+
+        viewClaimHistoryImage.setOnClickListener(view -> {
+            Intent intent1 = new Intent(myContext, AmountToClaimActivity.class);
+            intent1.putExtra("userId", userId);
+            startActivity(intent1);
+        });
 
         getCurrentUser();
     }

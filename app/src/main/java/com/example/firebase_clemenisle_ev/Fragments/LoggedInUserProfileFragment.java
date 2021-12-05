@@ -37,6 +37,8 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.firebase_clemenisle_ev.Adapters.LikedSpotAdapter;
 import com.example.firebase_clemenisle_ev.Adapters.SpotWithCounterAdapter;
+import com.example.firebase_clemenisle_ev.AmountToClaimActivity;
+import com.example.firebase_clemenisle_ev.AmountToRemitActivity;
 import com.example.firebase_clemenisle_ev.Classes.Booking;
 import com.example.firebase_clemenisle_ev.Classes.Credentials;
 import com.example.firebase_clemenisle_ev.Classes.DateTimeDifference;
@@ -79,6 +81,7 @@ public class LoggedInUserProfileFragment extends Fragment {
 
     private final static String firebaseURL = FirebaseURL.getFirebaseURL();
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance(firebaseURL);
+    DatabaseReference usersRef;
     FirebaseAuth firebaseAuth;
     FirebaseUser firebaseUser;
     FirebaseStorage firebaseStorage = FirebaseStorage.getInstance();
@@ -105,7 +108,7 @@ public class LoggedInUserProfileFragment extends Fragment {
     ConstraintLayout incomeLayout;
     TextView tvIncomeToday2, tvIncomeThisWeek2, tvIncomeThisMonth2, tvIncomeThisYear2,
             tvTotalIncome2, tvAmountToRemit2, tvAmountToClaim2;
-    ImageView viewIncomeImage;
+    ImageView viewIncomeImage, viewRemittanceHistoryImage, viewClaimHistoryImage;
 
     ConstraintLayout likedSpotLayout;
     TextView tvLikedSpotBadge;
@@ -149,8 +152,6 @@ public class LoggedInUserProfileFragment extends Fragment {
     ImageView passwordDialogCloseImage;
     Button passwordUpdateButton;
     ProgressBar passwordDialogProgressBar, roundProgressBar;
-
-    DatabaseReference usersRef;
 
     EditText etLastName, etFirstName, etMiddleName, etPassword, etConfirmPassword, etEmailAddress;
     TextInputLayout tlLastName, tlFirstName, tlMiddleName, tlPassword, tlConfirmPassword, tlEmailAddress;
@@ -235,6 +236,9 @@ public class LoggedInUserProfileFragment extends Fragment {
         tvAmountToRemit2 = view.findViewById(R.id.tvAmountToRemit2);
         tvAmountToClaim2 = view.findViewById(R.id.tvAmountToClaim2);
         viewIncomeImage = view.findViewById(R.id.viewIncomeImage);
+
+        viewRemittanceHistoryImage =  view.findViewById(R.id.viewRemittanceHistoryImage);
+        viewClaimHistoryImage =  view.findViewById(R.id.viewClaimHistoryImage);
 
         likedSpotLayout = view.findViewById(R.id.likedSpotLayout);
         tvLikedSpotBadge = view.findViewById(R.id.tvLikedSpotBadge);
@@ -327,6 +331,18 @@ public class LoggedInUserProfileFragment extends Fragment {
 
         viewIncomeImage.setOnClickListener(view1 -> {
             Intent intent = new Intent(myContext, IncomeDataActivity.class);
+            intent.putExtra("userId", userId);
+            startActivity(intent);
+        });
+
+        viewRemittanceHistoryImage.setOnClickListener(view1 -> {
+            Intent intent = new Intent(myContext, AmountToRemitActivity.class);
+            intent.putExtra("userId", userId);
+            startActivity(intent);
+        });
+
+        viewClaimHistoryImage.setOnClickListener(view1 -> {
+            Intent intent = new Intent(myContext, AmountToClaimActivity.class);
             intent.putExtra("userId", userId);
             startActivity(intent);
         });

@@ -20,6 +20,8 @@ public class User {
     private double iWallet;
     private final List<IWalletTransaction> transactionList = new ArrayList<>();
     private double amountToRemit = 0, amountToClaim = 0;
+    private final List<IncomeTransaction> amountToRemitTransactionList = new ArrayList<>();
+    private final List<IncomeTransaction> amountToClaimTransactionList = new ArrayList<>();
 
     public User() {
     }
@@ -149,6 +151,28 @@ public class User {
             amountToRemit = dataSnapshot.child("amountToRemit").getValue(Double.class);
         if(dataSnapshot.child("amountToClaim").exists())
             amountToClaim = dataSnapshot.child("amountToClaim").getValue(Double.class);
+
+        amountToRemitTransactionList.clear();
+        DataSnapshot amountToRemitTransactionListRef = dataSnapshot.child("amountToRemitTransactionList");
+        if(amountToRemitTransactionListRef.exists()) {
+            for(DataSnapshot dataSnapshot1 : amountToRemitTransactionListRef.getChildren()) {
+                if(dataSnapshot1.hasChildren()) {
+                    IncomeTransaction transaction = dataSnapshot1.getValue(IncomeTransaction.class);
+                    amountToRemitTransactionList.add(transaction);
+                }
+            }
+        }
+
+        amountToClaimTransactionList.clear();
+        DataSnapshot amountToClaimTransactionListRef = dataSnapshot.child("amountToClaimTransactionList");
+        if(amountToClaimTransactionListRef.exists()) {
+            for(DataSnapshot dataSnapshot1 : amountToClaimTransactionListRef.getChildren()) {
+                if(dataSnapshot1.hasChildren()) {
+                    IncomeTransaction transaction = dataSnapshot1.getValue(IncomeTransaction.class);
+                    amountToClaimTransactionList.add(transaction);
+                }
+            }
+        }
     }
 
     public User(String firstName, String id, String lastName, String middleName) {
@@ -236,5 +260,13 @@ public class User {
 
     public double getAmountToClaim() {
         return amountToClaim;
+    }
+
+    public List<IncomeTransaction> getAmountToRemitTransactionList() {
+        return amountToRemitTransactionList;
+    }
+
+    public List<IncomeTransaction> getAmountToClaimTransactionList() {
+        return amountToClaimTransactionList;
     }
 }
