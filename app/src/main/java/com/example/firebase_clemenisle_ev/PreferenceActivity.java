@@ -11,7 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class PreferenceActivity extends AppCompatActivity {
 
-    SwitchMaterial swBookingAlert, swAppVersionInfo;
+    SwitchMaterial swBookingAlert, swAppVersionInfo, swBookingOptionDialog;
 
     Context myContext;
     Resources myResources;
@@ -19,7 +19,7 @@ public class PreferenceActivity extends AppCompatActivity {
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;
 
-    boolean isShowAppVersionInfoEnabled, isShowBookingAlertEnabled;
+    boolean isShowAppVersionInfoEnabled, isShowBookingAlertEnabled, isBookingOptionDialogEnabled;
 
     private void initSharedPreferences() {
         sharedPreferences = myContext.getSharedPreferences(
@@ -29,6 +29,7 @@ public class PreferenceActivity extends AppCompatActivity {
         getSharedPreferences("preferences", Context.MODE_PRIVATE);
         isShowBookingAlertEnabled = sharedPreferences.getBoolean("isShowBookingAlertEnabled", true);
         isShowAppVersionInfoEnabled = sharedPreferences.getBoolean("isShowAppVersionInfoEnabled", true);
+        isBookingOptionDialogEnabled = sharedPreferences.getBoolean("isBookingOptionDialogEnabled", true);
     }
     private void sendIsShowBookingAlertEnabledPreferences(boolean value) {
         editor.putBoolean("isShowBookingAlertEnabled", value);
@@ -40,6 +41,11 @@ public class PreferenceActivity extends AppCompatActivity {
         editor.apply();
     }
 
+    private void sendIsBookingOptionDialogEnabledPreferences(boolean value) {
+        editor.putBoolean("isBookingOptionDialogEnabled", value);
+        editor.apply();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,6 +53,7 @@ public class PreferenceActivity extends AppCompatActivity {
 
         swBookingAlert = findViewById(R.id.swBookingAlert);
         swAppVersionInfo = findViewById(R.id.swAppVersionInfo);
+        swBookingOptionDialog = findViewById(R.id.swBookingOptionDialog);
 
         myContext = PreferenceActivity.this;
         myResources = myContext.getResources();
@@ -55,8 +62,10 @@ public class PreferenceActivity extends AppCompatActivity {
 
         swBookingAlert.setChecked(isShowBookingAlertEnabled);
         swAppVersionInfo.setChecked(isShowAppVersionInfoEnabled);
+        swBookingOptionDialog.setChecked(isBookingOptionDialogEnabled);
 
         swBookingAlert.setOnClickListener(view -> sendIsShowBookingAlertEnabledPreferences(swBookingAlert.isChecked()));
         swAppVersionInfo.setOnClickListener(view -> sendIsShowAppVersionInfoEnabledPreferences(swAppVersionInfo.isChecked()));
+        swBookingOptionDialog.setOnClickListener(view -> sendIsBookingOptionDialogEnabledPreferences(swBookingOptionDialog.isChecked()));
     }
 }

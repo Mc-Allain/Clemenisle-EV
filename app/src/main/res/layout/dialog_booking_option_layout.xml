@@ -1,0 +1,383 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/dialogCloseImage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:padding="4dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_baseline_close_24"
+        app:tint="@color/red" />
+
+    <TextView
+        android:id="@+id/tvDialogCaption"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:fontFamily="@font/ubuntu"
+        android:text="Please choose an option."
+        android:textColor="@color/black"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/tvDialogTitle"
+        app:layout_constraintTop_toBottomOf="@+id/tvDialogTitle" />
+
+    <TextView
+        android:id="@+id/tvDialogTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="24dp"
+        android:fontFamily="@font/ubuntu"
+        android:text="Options for B21-0101-00"
+        android:textColor="@color/black"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/buttonLayout"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvDialogCaption">
+
+        <ImageView
+            android:id="@+id/remarksImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:padding="4dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/locateImage"
+            app:srcCompat="@drawable/ic_baseline_mode_comment_24"
+            app:tint="@color/blue" />
+
+        <ImageView
+            android:id="@+id/rateImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:padding="4dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@+id/remarksImage"
+            app:layout_constraintStart_toStartOf="@+id/locateImage"
+            app:srcCompat="@drawable/ic_baseline_star_24"
+            app:tint="@color/blue" />
+
+        <ImageView
+            android:id="@+id/checkImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:padding="4dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@+id/rateImage"
+            app:layout_constraintStart_toStartOf="@+id/locateImage"
+            app:srcCompat="@drawable/ic_baseline_check_24"
+            app:tint="@color/green" />
+
+        <ImageView
+            android:id="@+id/stopImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:padding="4dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@+id/checkImage"
+            app:layout_constraintStart_toStartOf="@+id/locateImage"
+            app:srcCompat="@drawable/ic_baseline_stop_24"
+            app:tint="@color/red" />
+
+        <ImageView
+            android:id="@+id/passImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:padding="4dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@+id/stopImage"
+            app:layout_constraintStart_toStartOf="@+id/locateImage"
+            app:srcCompat="@drawable/ic_baseline_electric_rickshaw_24"
+            app:tint="@color/blue" />
+
+        <ImageView
+            android:id="@+id/driverImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:padding="4dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@+id/passImage"
+            app:layout_constraintStart_toStartOf="@+id/locateImage"
+            app:srcCompat="@drawable/ic_baseline_electric_rickshaw_24"
+            app:tint="@color/blue" />
+
+        <ImageView
+            android:id="@+id/chatImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:padding="4dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@+id/driverImage"
+            app:layout_constraintStart_toStartOf="@+id/locateImage"
+            app:srcCompat="@drawable/ic_baseline_chat_24"
+            app:tint="@color/blue" />
+
+        <ImageView
+            android:id="@+id/viewQRImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:padding="4dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@+id/chatImage"
+            app:layout_constraintStart_toStartOf="@+id/locateImage"
+            app:srcCompat="@drawable/ic_baseline_qr_code_2_24"
+            app:tint="@color/blue" />
+
+        <ImageView
+            android:id="@+id/onlinePaymentImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:padding="4dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@+id/viewQRImage"
+            app:layout_constraintStart_toStartOf="@+id/locateImage"
+            app:srcCompat="@drawable/ic_baseline_credit_card_24"
+            app:tint="@color/blue" />
+
+        <ImageView
+            android:id="@+id/locateEndImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"
+            android:padding="4dp"
+            app:layout_constraintBottom_toTopOf="@+id/onlinePaymentImage"
+            app:layout_constraintStart_toStartOf="@+id/locateImage"
+            app:layout_constraintTop_toBottomOf="@+id/locateImage"
+            app:srcCompat="@drawable/ic_baseline_location_searching_24"
+            app:tint="@color/blue" />
+
+        <ImageView
+            android:id="@+id/openImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="4dp"
+            android:padding="4dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_baseline_library_books_24"
+            app:tint="@color/blue" />
+
+        <ImageView
+            android:id="@+id/locateImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:padding="4dp"
+            app:layout_constraintStart_toStartOf="@+id/openImage"
+            app:layout_constraintTop_toBottomOf="@+id/openImage"
+            app:srcCompat="@drawable/ic_baseline_location_searching_24"
+            app:tint="@color/blue" />
+
+        <TextView
+            android:id="@+id/tvRemarks"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:fontFamily="@font/ubuntu"
+            android:gravity="center_vertical"
+            android:text="Remarks"
+            android:textColor="@color/blue"
+            android:textStyle="bold"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/remarksImage"
+            app:layout_constraintEnd_toEndOf="@+id/tvLocateEnd"
+            app:layout_constraintStart_toEndOf="@+id/remarksImage"
+            app:layout_constraintTop_toTopOf="@+id/remarksImage" />
+
+        <TextView
+            android:id="@+id/tvRate"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:fontFamily="@font/ubuntu"
+            android:gravity="center_vertical"
+            android:text="Rate the Driver"
+            android:textColor="@color/blue"
+            android:textStyle="bold"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/rateImage"
+            app:layout_constraintEnd_toEndOf="@+id/tvLocateEnd"
+            app:layout_constraintStart_toEndOf="@+id/rateImage"
+            app:layout_constraintTop_toTopOf="@+id/rateImage" />
+
+        <TextView
+            android:id="@+id/tvCheck"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:fontFamily="@font/ubuntu"
+            android:gravity="center_vertical"
+            android:text="Initiate Service"
+            android:textColor="@color/green"
+            android:textStyle="bold"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/checkImage"
+            app:layout_constraintEnd_toEndOf="@+id/tvLocateEnd"
+            app:layout_constraintStart_toEndOf="@+id/checkImage"
+            app:layout_constraintTop_toTopOf="@+id/checkImage" />
+
+        <TextView
+            android:id="@+id/tvStop"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:fontFamily="@font/ubuntu"
+            android:gravity="center_vertical"
+            android:text="Stop Request"
+            android:textColor="@color/red"
+            android:textStyle="bold"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/stopImage"
+            app:layout_constraintEnd_toEndOf="@+id/tvLocateEnd"
+            app:layout_constraintStart_toEndOf="@+id/stopImage"
+            app:layout_constraintTop_toTopOf="@+id/stopImage" />
+
+        <TextView
+            android:id="@+id/tvPass"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:fontFamily="@font/ubuntu"
+            android:gravity="center_vertical"
+            android:text="Pass Task"
+            android:textColor="@color/blue"
+            android:textStyle="bold"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/passImage"
+            app:layout_constraintEnd_toEndOf="@+id/tvLocateEnd"
+            app:layout_constraintStart_toEndOf="@+id/passImage"
+            app:layout_constraintTop_toTopOf="@+id/passImage" />
+
+        <TextView
+            android:id="@+id/tvDriver"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:fontFamily="@font/ubuntu"
+            android:gravity="center_vertical"
+            android:text="Take Task"
+            android:textColor="@color/blue"
+            android:textStyle="bold"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/driverImage"
+            app:layout_constraintEnd_toEndOf="@+id/tvLocateEnd"
+            app:layout_constraintStart_toEndOf="@+id/driverImage"
+            app:layout_constraintTop_toTopOf="@+id/driverImage" />
+
+        <TextView
+            android:id="@+id/tvChat"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:fontFamily="@font/ubuntu"
+            android:gravity="center_vertical"
+            android:text="Chat"
+            android:textColor="@color/blue"
+            android:textStyle="bold"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/chatImage"
+            app:layout_constraintEnd_toEndOf="@+id/tvLocateEnd"
+            app:layout_constraintStart_toEndOf="@+id/chatImage"
+            app:layout_constraintTop_toTopOf="@+id/chatImage" />
+
+        <TextView
+            android:id="@+id/tvViewQR"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:fontFamily="@font/ubuntu"
+            android:gravity="center_vertical"
+            android:text="View QR Code"
+            android:textColor="@color/blue"
+            android:textStyle="bold"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/viewQRImage"
+            app:layout_constraintEnd_toEndOf="@+id/tvLocateEnd"
+            app:layout_constraintStart_toEndOf="@+id/viewQRImage"
+            app:layout_constraintTop_toTopOf="@+id/viewQRImage" />
+
+        <TextView
+            android:id="@+id/tvOnlinePayment"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:fontFamily="@font/ubuntu"
+            android:gravity="center_vertical"
+            android:text="Online Payment"
+            android:textColor="@color/blue"
+            android:textStyle="bold"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/onlinePaymentImage"
+            app:layout_constraintEnd_toEndOf="@+id/tvLocateEnd"
+            app:layout_constraintStart_toEndOf="@+id/onlinePaymentImage"
+            app:layout_constraintTop_toTopOf="@+id/onlinePaymentImage" />
+
+        <TextView
+            android:id="@+id/tvLocateEnd"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:fontFamily="@font/ubuntu"
+            android:gravity="center_vertical"
+            android:text="Locate End Station"
+            android:textColor="@color/blue"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@+id/locateEndImage"
+            app:layout_constraintEnd_toEndOf="@+id/tvLocate"
+            app:layout_constraintStart_toEndOf="@+id/locateEndImage"
+            app:layout_constraintTop_toTopOf="@+id/locateEndImage" />
+
+        <TextView
+            android:id="@+id/tvOpen"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginEnd="8dp"
+            android:fontFamily="@font/ubuntu"
+            android:gravity="center_vertical"
+            android:text="Open"
+            android:textColor="@color/blue"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@+id/openImage"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/openImage"
+            app:layout_constraintTop_toTopOf="@+id/openImage" />
+
+        <TextView
+            android:id="@+id/tvLocate"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:fontFamily="@font/ubuntu"
+            android:gravity="center_vertical"
+            android:text="Locate Start Station"
+            android:textColor="@color/blue"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@+id/locateImage"
+            app:layout_constraintEnd_toEndOf="@+id/tvOpen"
+            app:layout_constraintStart_toEndOf="@+id/locateImage"
+            app:layout_constraintTop_toTopOf="@+id/locateImage" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

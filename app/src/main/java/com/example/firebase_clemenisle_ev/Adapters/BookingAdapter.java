@@ -145,6 +145,8 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
     ImageView dialogMessageCloseImage;
     TextView tvDialogTitle, tvMessage;
 
+    boolean isBookingOptionDialogEnabled;
+
     public void setOnActionClickListener(OnActionClickListener onActionClickListener) {
         this.onActionClickListener = onActionClickListener;
     }
@@ -162,6 +164,9 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
         SharedPreferences sharedPreferences = myContext
                 .getSharedPreferences("login", Context.MODE_PRIVATE);
         isLoggedIn = sharedPreferences.getBoolean("isLoggedIn", false);
+
+        sharedPreferences = myContext.getSharedPreferences("preferences", Context.MODE_PRIVATE);
+        isBookingOptionDialogEnabled = sharedPreferences.getBoolean("isBookingOptionDialogEnabled", true);
     }
 
     private void sendLoginPreferences() {
@@ -224,7 +229,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
         cslBlue = ColorStateList.valueOf(myResources.getColor(R.color.blue));
 
         initSharedPreferences();
-        initQRCodeDialog();
+        if(qrCodeDialog == null) initQRCodeDialog();
         if(dialog == null) initReasonDialog();
         if(dialog2 == null)  initRateTheDriverDialog();
         if(dialog3 == null)  initRemarksDialog();
@@ -271,6 +276,57 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
         int rating = booking.getRating();
 
         String previousDriverUserId = booking.getPreviousDriverUserId();
+        if(isBookingOptionDialogEnabled) {
+            Dialog dialogOption;
+            ImageView dialogOptionCloseImage;
+            TextView tvDialogOptionTitle;
+
+            dialogOption = new Dialog(myContext);
+            dialogOption.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            dialogOption.setContentView(R.layout.dialog_booking_option_layout);
+
+            dialogOptionCloseImage = dialogOption.findViewById(R.id.dialogCloseImage);
+            tvDialogOptionTitle = dialogOption.findViewById(R.id.tvDialogTitle);
+
+            tvOpen = dialogOption.findViewById(R.id.tvOpen);
+            tvLocate = dialogOption.findViewById(R.id.tvLocate);
+            tvLocateEnd = dialogOption.findViewById(R.id.tvLocateEnd);
+            tvChat = dialogOption.findViewById(R.id.tvChat);
+            tvOnlinePayment = dialogOption.findViewById(R.id.tvOnlinePayment);
+            tvViewQR = dialogOption.findViewById(R.id.tvViewQR);
+            tvDriver = dialogOption.findViewById(R.id.tvDriver);
+            tvPass = dialogOption.findViewById(R.id.tvPass);
+            tvStop = dialogOption.findViewById(R.id.tvStop);
+            tvCheck = dialogOption.findViewById(R.id.tvCheck);
+            tvRate = dialogOption.findViewById(R.id.tvRate);
+            tvRemarks = dialogOption.findViewById(R.id.tvRemarks);
+
+            openImage = dialogOption.findViewById(R.id.openImage);
+            locateImage = dialogOption.findViewById(R.id.locateImage);
+            locateEndImage = dialogOption.findViewById(R.id.locateEndImage);
+            chatImage = dialogOption.findViewById(R.id.chatImage);
+            onlinePaymentImage = dialogOption.findViewById(R.id.onlinePaymentImage);
+            viewQRImage = dialogOption.findViewById(R.id.viewQRImage);
+            driverImage = dialogOption.findViewById(R.id.driverImage);
+            passImage = dialogOption.findViewById(R.id.passImage);
+            stopImage = dialogOption.findViewById(R.id.stopImage);
+            checkImage = dialogOption.findViewById(R.id.checkImage);
+            rateImage = dialogOption.findViewById(R.id.rateImage);
+            remarksImage = dialogOption.findViewById(R.id.remarksImage);
+
+            dialogOptionCloseImage.setOnClickListener(view -> dialogOption.dismiss());
+
+            dialogOption.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT);
+            dialogOption.getWindow().setBackgroundDrawable(AppCompatResources.getDrawable(myContext, R.drawable.corner_top_white_layout));
+            dialogOption.getWindow().getAttributes().windowAnimations = R.style.animBottomSlide;
+            dialogOption.getWindow().setGravity(Gravity.BOTTOM);
+
+            moreImage.setOnClickListener(view -> {
+                tvDialogOptionTitle.setText("Options for " + bookingId);
+                dialogOption.show();
+            });
+        }
 
         tvBookingId.setText(bookingId);
         tvSchedule.setText(schedule);
@@ -409,15 +465,17 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
             rateImage.setOnClickListener(view -> openRateTheDriverDialog(bookingId));
         }
 
-        moreImage.setOnClickListener(view -> {
-            if(tvOption.getText().equals("false")) {
-                openOption(buttonLayout, backgroundLayout, moreImage,
-                        optionHandler, optionRunnable, tvOption);
-            }
-            else {
-                closeOption(buttonLayout, backgroundLayout, moreImage, tvOption);
-            }
-        });
+        if(!isBookingOptionDialogEnabled) {
+            moreImage.setOnClickListener(view -> {
+                if(tvOption.getText().equals("false")) {
+                    openOption(buttonLayout, backgroundLayout, moreImage,
+                            optionHandler, optionRunnable, tvOption);
+                }
+                else {
+                    closeOption(buttonLayout, backgroundLayout, moreImage, tvOption);
+                }
+            });
+        }
 
         tvOpen.setOnClickListener(view -> openItem(booking, false));
         openImage.setOnClickListener(view -> openItem(booking, false));
@@ -815,10 +873,16 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                 });
     }
 
+    private void openMessageDialog(String title, String content) {
+        tvDialogTitle.setText(title);
+        tvMessage.setText(content);
+        dialogMessage.show();
+    }
+
     private void initMessageDialog() {
         dialogMessage = new Dialog(myContext);
         dialogMessage.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialogMessage.setContentView(R.layout.dialog_message);
+        dialogMessage.setContentView(R.layout.dialog_message_layout);
 
         dialogMessageCloseImage = dialogMessage.findViewById(R.id.dialogCloseImage);
         tvDialogTitle = dialogMessage.findViewById(R.id.tvDialogTitle);
@@ -865,11 +929,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
 
                 if(message.length() > 0) {
                     tvViewMessage.setVisibility(View.VISIBLE);
-                    tvViewMessage.setOnClickListener(view -> {
-                        tvDialogTitle.setText("Message");
-                        tvMessage.setText(message);
-                        dialogMessage.show();
-                    });
+                    tvViewMessage.setOnClickListener(view -> openMessageDialog("Message", message));
                 }
 
                 boolean hasRemarks = (status.equals("Completed") || status.equals("Cancelled") || status.equals("Failed")) &&
@@ -886,20 +946,12 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                             reason != null && reason.length() > 0) {
 
                         tvViewReason.setVisibility(View.VISIBLE);
-                        tvViewReason.setOnClickListener(view -> {
-                            tvDialogTitle.setText("Reason");
-                            tvMessage.setText(reason);
-                            dialogMessage.show();
-                        });
+                        tvViewReason.setOnClickListener(view -> openMessageDialog("Reason", reason));
                     }
 
                     if(hasRemarks) {
                         tvViewRemarks.setVisibility(View.VISIBLE);
-                        tvViewRemarks.setOnClickListener(view -> {
-                            tvDialogTitle.setText("Remarks");
-                            tvMessage.setText(remarks);
-                            dialogMessage.show();
-                        });
+                        tvViewRemarks.setOnClickListener(view -> openMessageDialog("Remarks", remarks));
                     }
 
                     getUserInfo(bookingId, status, tvUserFullName, profileImage, tvChat, chatImage,
@@ -949,11 +1001,8 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                         tvViewRemarks.setOnClickListener(view -> {
                             StringBuilder star = new StringBuilder();
                             for(int i = 0; i < rating; i ++) star.append("★");
-
-                            tvDialogTitle.setText("Remarks");
                             String ratingText = rating > 0 ? star + " (" + rating + ") " + remarks : remarks;
-                            tvMessage.setText(ratingText);
-                            dialogMessage.show();
+                            openMessageDialog("Rating & Remarks", ratingText);
                         });
                     }
 

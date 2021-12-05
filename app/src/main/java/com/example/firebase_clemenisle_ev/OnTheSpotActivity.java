@@ -199,6 +199,15 @@ public class OnTheSpotActivity extends AppCompatActivity {
 
     boolean isContentShown = true;
 
+    Dialog dialogOption;
+    ImageView dialogOptionCloseImage;
+    TextView tvDialogOptionTitle;
+
+    TextView tvOpen, tvOnlinePayment;
+    ImageView openImage, onlinePaymentImage;
+
+    boolean isBookingOptionDialogEnabled;
+
     private void initSharedPreferences() {
         SharedPreferences sharedPreferences = myContext
                 .getSharedPreferences("login", Context.MODE_PRIVATE);
@@ -206,6 +215,7 @@ public class OnTheSpotActivity extends AppCompatActivity {
 
         sharedPreferences = getSharedPreferences("preferences", Context.MODE_PRIVATE);
         isShowBookingAlertEnabled = sharedPreferences.getBoolean("isShowBookingAlertEnabled", true);
+        isBookingOptionDialogEnabled = sharedPreferences.getBoolean("isBookingOptionDialogEnabled", true);
     }
 
     @Override
@@ -304,6 +314,7 @@ public class OnTheSpotActivity extends AppCompatActivity {
         initRateTheDriverDialog();
         initRemarksDialog();
         initMessageDialog();
+        if(isBookingOptionDialogEnabled) initOptionDialog();
 
         Intent intent = getIntent();
         bookingId = intent.getStringExtra("bookingId");
@@ -377,11 +388,14 @@ public class OnTheSpotActivity extends AppCompatActivity {
         });
 
         moreImage.setOnClickListener(view -> {
-            if(!isOptionShown) {
-                openOption();
-            }
+            if(isBookingOptionDialogEnabled) openOptionDialog();
             else {
-                closeOption();
+                if(!isOptionShown) {
+                    openOption();
+                }
+                else {
+                    closeOption();
+                }
             }
         });
 
@@ -750,10 +764,16 @@ public class OnTheSpotActivity extends AppCompatActivity {
                 });
     }
 
+    private void openMessageDialog(String title, String content) {
+        tvDialogTitle.setText(title);
+        tvMessage.setText(content);
+        dialogMessage.show();
+    }
+
     private void initMessageDialog() {
         dialogMessage = new Dialog(myContext);
         dialogMessage.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialogMessage.setContentView(R.layout.dialog_message);
+        dialogMessage.setContentView(R.layout.dialog_message_layout);
 
         dialogMessageCloseImage = dialogMessage.findViewById(R.id.dialogCloseImage);
         tvDialogTitle = dialogMessage.findViewById(R.id.tvDialogTitle);
@@ -766,6 +786,59 @@ public class OnTheSpotActivity extends AppCompatActivity {
         dialogMessage.getWindow().setBackgroundDrawable(AppCompatResources.getDrawable(myContext, R.drawable.corner_top_white_layout));
         dialogMessage.getWindow().getAttributes().windowAnimations = R.style.animBottomSlide;
         dialogMessage.getWindow().setGravity(Gravity.BOTTOM);
+    }
+
+    private void openOptionDialog() {
+        tvDialogOptionTitle.setText("Options for " + bookingId);
+        dialogOption.show();
+    }
+
+    private void initOptionDialog() {
+        dialogOption = new Dialog(myContext);
+        dialogOption.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialogOption.setContentView(R.layout.dialog_booking_option_layout);
+
+        dialogOptionCloseImage = dialogOption.findViewById(R.id.dialogCloseImage);
+        tvDialogOptionTitle = dialogOption.findViewById(R.id.tvDialogTitle);
+
+        tvOpen = dialogOption.findViewById(R.id.tvOpen);
+        tvLocate = dialogOption.findViewById(R.id.tvLocate);
+        tvLocateDestination = dialogOption.findViewById(R.id.tvLocateEnd);
+        tvChat = dialogOption.findViewById(R.id.tvChat);
+        tvOnlinePayment = dialogOption.findViewById(R.id.tvOnlinePayment);
+        tvViewQR = dialogOption.findViewById(R.id.tvViewQR);
+        tvDriver = dialogOption.findViewById(R.id.tvDriver);
+        tvPass = dialogOption.findViewById(R.id.tvPass);
+        tvStop = dialogOption.findViewById(R.id.tvStop);
+        tvCheck = dialogOption.findViewById(R.id.tvCheck);
+        tvRate = dialogOption.findViewById(R.id.tvRate);
+        tvRemarks = dialogOption.findViewById(R.id.tvRemarks);
+
+        openImage = dialogOption.findViewById(R.id.openImage);
+        locateImage = dialogOption.findViewById(R.id.locateImage);
+        locateDestinationImage = dialogOption.findViewById(R.id.locateEndImage);
+        chatImage = dialogOption.findViewById(R.id.chatImage);
+        onlinePaymentImage = dialogOption.findViewById(R.id.onlinePaymentImage);
+        viewQRImage = dialogOption.findViewById(R.id.viewQRImage);
+        driverImage = dialogOption.findViewById(R.id.driverImage);
+        passImage = dialogOption.findViewById(R.id.passImage);
+        stopImage = dialogOption.findViewById(R.id.stopImage);
+        checkImage = dialogOption.findViewById(R.id.checkImage);
+        rateImage = dialogOption.findViewById(R.id.rateImage);
+        remarksImage = dialogOption.findViewById(R.id.remarksImage);
+
+        tvOpen.setVisibility(View.GONE);
+        openImage.setVisibility(View.GONE);
+        tvOnlinePayment.setVisibility(View.GONE);
+        onlinePaymentImage.setVisibility(View.GONE);
+
+        dialogOptionCloseImage.setOnClickListener(view -> dialogOption.dismiss());
+
+        dialogOption.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT);
+        dialogOption.getWindow().setBackgroundDrawable(AppCompatResources.getDrawable(myContext, R.drawable.corner_top_white_layout));
+        dialogOption.getWindow().getAttributes().windowAnimations = R.style.animBottomSlide;
+        dialogOption.getWindow().setGravity(Gravity.BOTTOM);
     }
 
     private void completeTask() {
@@ -820,11 +893,7 @@ public class OnTheSpotActivity extends AppCompatActivity {
 
                 if(message.length() > 0) {
                     tvViewMessage.setVisibility(View.VISIBLE);
-                    tvViewMessage.setOnClickListener(view -> {
-                        tvDialogTitle.setText("Message");
-                        tvMessageDialog.setText(message);
-                        dialogMessage.show();
-                    });
+                    tvViewMessage.setOnClickListener(view -> openMessageDialog("Message", message));
                 }
 
                 getRemarks();
@@ -861,20 +930,12 @@ public class OnTheSpotActivity extends AppCompatActivity {
                                     reason != null && reason.length() > 0) {
 
                                 tvViewReason.setVisibility(View.VISIBLE);
-                                tvViewReason.setOnClickListener(view -> {
-                                    tvDialogTitle.setText("Reason");
-                                    tvMessageDialog.setText(reason);
-                                    dialogMessage.show();
-                                });
+                                tvViewReason.setOnClickListener(view -> openMessageDialog("Reason", reason));
                             }
 
                             if(hasRemarks) {
                                 tvViewRemarks.setVisibility(View.VISIBLE);
-                                tvViewRemarks.setOnClickListener(view -> {
-                                    tvDialogTitle.setText("Remarks");
-                                    tvMessageDialog.setText(remarks);
-                                    dialogMessage.show();
-                                });
+                                tvViewRemarks.setOnClickListener(view -> openMessageDialog("Remarks", remarks));
                             }
 
                             getUserInfo();
@@ -935,11 +996,8 @@ public class OnTheSpotActivity extends AppCompatActivity {
                         tvViewRemarks.setOnClickListener(view -> {
                             StringBuilder star = new StringBuilder();
                             for(int i = 0; i < rating; i ++) star.append("★");
-
-                            tvDialogTitle.setText("Remarks");
                             String ratingText = rating > 0 ? star + " (" + rating + ") " + remarks : remarks;
-                            tvMessageDialog.setText(ratingText);
-                            dialogMessage.show();
+                            openMessageDialog("Rating & Remarks", ratingText);
                         });
                     }
 
@@ -1786,7 +1844,8 @@ public class OnTheSpotActivity extends AppCompatActivity {
                     String currentStatus = booking.getStatus();
                     if(!inDriverModule || (status != null && !status.equals("Request") &&
                             !status.equals("Ongoing") && !status.equals("Passed")) ||
-                            !currentStatus.equals("Booked") && !currentStatus.equals("Completed")) {
+                            !currentStatus.equals("Booked") && !currentStatus.equals("Completed")
+                                    && !currentStatus.equals("Failed")) {
                         status = currentStatus;
                     }
 
