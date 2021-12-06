@@ -107,7 +107,7 @@ public class LoggedInUserProfileFragment extends Fragment {
 
     ConstraintLayout incomeLayout;
     TextView tvIncomeToday2, tvIncomeThisWeek2, tvIncomeThisMonth2, tvIncomeThisYear2,
-            tvTotalIncome2, tvAmountToRemit2, tvAmountToClaim2;
+            tvTotalIncome2, tvAmountToRemit2, tvAmountToClaim2, tvIncomeShare;
     ImageView viewIncomeImage, viewRemittanceHistoryImage, viewClaimHistoryImage;
 
     ConstraintLayout likedSpotLayout;
@@ -235,6 +235,7 @@ public class LoggedInUserProfileFragment extends Fragment {
         tvTotalIncome2 = view.findViewById(R.id.tvTotalIncome2);
         tvAmountToRemit2 = view.findViewById(R.id.tvAmountToRemit2);
         tvAmountToClaim2 = view.findViewById(R.id.tvAmountToClaim2);
+        tvIncomeShare = view.findViewById(R.id.tvIncomeShare);
         viewIncomeImage = view.findViewById(R.id.viewIncomeImage);
 
         viewRemittanceHistoryImage =  view.findViewById(R.id.viewRemittanceHistoryImage);
@@ -345,6 +346,15 @@ public class LoggedInUserProfileFragment extends Fragment {
             Intent intent = new Intent(myContext, AmountToClaimActivity.class);
             intent.putExtra("userId", userId);
             startActivity(intent);
+        });
+
+        tvIncomeShare.setOnLongClickListener(view1 -> {
+            Toast.makeText(
+                    myContext,
+                    "Income Share",
+                    Toast.LENGTH_SHORT
+            ).show();
+            return false;
         });
 
         return view;
@@ -1503,6 +1513,9 @@ public class LoggedInUserProfileFragment extends Fragment {
             String amountToClaimText = "₱" + amountToClaim;
             if(amountToClaimText.split("\\.")[1].length() == 1) amountToClaimText += 0;
             tvAmountToClaim2.setText(amountToClaimText);
+
+            double incomeShare = user.getIncomeShare() * 100;
+            tvIncomeShare.setText("(" + incomeShare + "%)");
         }
 
         likedSpots.clear();

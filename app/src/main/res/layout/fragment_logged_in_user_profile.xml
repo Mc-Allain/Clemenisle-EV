@@ -77,6 +77,19 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
+                    <TextView
+                        android:id="@+id/tvIncomeShare"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="4dp"
+                        android:fontFamily="@font/ubuntu"
+                        android:text="(50%)"
+                        android:textColor="@color/blue"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toBottomOf="@+id/tvAmountToClaim"
+                        app:layout_constraintStart_toEndOf="@+id/tvAmountToClaim"
+                        app:layout_constraintTop_toTopOf="@+id/tvAmountToClaim" />
+
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <androidx.constraintlayout.widget.ConstraintLayout

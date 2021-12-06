@@ -38,7 +38,7 @@ public class IncomeDataActivity extends AppCompatActivity {
 
     ConstraintLayout contentLayout;
     TextView tvIncomeToday2, tvIncomeThisWeek2, tvIncomeThisMonth2, tvIncomeThisYear2,
-            tvTotalIncome2, tvAmountToRemit2, tvAmountToClaim2;
+            tvTotalIncome2, tvAmountToRemit2, tvAmountToClaim2, tvIncomeShare;
     ImageView viewRemittanceHistoryImage, viewClaimHistoryImage, incomeSummaryArrowImage;
     RecyclerView yearIncomeView;
     ProgressBar progressBar;
@@ -69,6 +69,7 @@ public class IncomeDataActivity extends AppCompatActivity {
         tvTotalIncome2 = findViewById(R.id.tvTotalIncome2);
         tvAmountToRemit2 = findViewById(R.id.tvAmountToRemit2);
         tvAmountToClaim2 = findViewById(R.id.tvAmountToClaim2);
+        tvIncomeShare = findViewById(R.id.tvIncomeShare);
 
         viewRemittanceHistoryImage = findViewById(R.id.viewRemittanceHistoryImage);
         viewClaimHistoryImage = findViewById(R.id.viewClaimHistoryImage);
@@ -106,6 +107,15 @@ public class IncomeDataActivity extends AppCompatActivity {
             Intent intent1 = new Intent(myContext, AmountToClaimActivity.class);
             intent1.putExtra("userId", userId);
             startActivity(intent1);
+        });
+
+        tvIncomeShare.setOnLongClickListener(view -> {
+            Toast.makeText(
+                    myContext,
+                    "Income Share",
+                    Toast.LENGTH_SHORT
+            ).show();
+            return false;
         });
 
         getCurrentUser();
@@ -206,6 +216,9 @@ public class IncomeDataActivity extends AppCompatActivity {
         String amountToClaimText = "₱" + amountToClaim;
         if(amountToClaimText.split("\\.")[1].length() == 1) amountToClaimText += 0;
         tvAmountToClaim2.setText(amountToClaimText);
+
+        double incomeShare = user.getIncomeShare() * 100;
+        tvIncomeShare.setText("(" + incomeShare + "%)");
 
         progressBar.setVisibility(View.GONE);
     }

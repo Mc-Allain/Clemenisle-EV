@@ -37,6 +37,7 @@ import com.example.firebase_clemenisle_ev.Classes.BookingType;
 import com.example.firebase_clemenisle_ev.Classes.Capture;
 import com.example.firebase_clemenisle_ev.Classes.DateTimeToString;
 import com.example.firebase_clemenisle_ev.Classes.FirebaseURL;
+import com.example.firebase_clemenisle_ev.Classes.ReferenceNumber;
 import com.example.firebase_clemenisle_ev.Classes.Route;
 import com.example.firebase_clemenisle_ev.Classes.Station;
 import com.example.firebase_clemenisle_ev.Classes.User;
@@ -75,7 +76,8 @@ public class RouteActivity extends AppCompatActivity implements
 
     private final static String firebaseURL = FirebaseURL.getFirebaseURL();
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance(firebaseURL);
-    DatabaseReference usersRef = firebaseDatabase.getReference("users");
+    DatabaseReference usersRef = firebaseDatabase.getReference("users"),
+            bookingListRef, driverUserRef;
     FirebaseAuth firebaseAuth;
     FirebaseUser firebaseUser;
 
@@ -107,8 +109,6 @@ public class RouteActivity extends AppCompatActivity implements
     String userId, driverUserId, taskDriverUserId;
 
     boolean isLoggedIn = false, inDriverModule = false, isScanning = false;
-
-    DatabaseReference bookingListRef;
 
     String bookingId, schedule, typeName, price, startStationName, endStationName, status,
             message, previousDriverUserId;
@@ -193,6 +193,10 @@ public class RouteActivity extends AppCompatActivity implements
     ImageView openImage, onlinePaymentImage;
 
     boolean isBookingOptionDialogEnabled;
+
+    double amountToRemit = 0, amountToClaim = 0, incomeShare = 0,
+            creditedAmount = 0, refundedAmount = 0, balance = 0,
+            newAmountToRemit = 0, newAmountToClaim = 0;
 
     private void initSharedPreferences() {
         SharedPreferences sharedPreferences = myContext
@@ -323,6 +327,9 @@ public class RouteActivity extends AppCompatActivity implements
                     userId = intent.getStringExtra("userId");
                     isScanning = intent.getBooleanExtra("isScanning", false);
 
+                    driverUserRef = usersRef.child(driverUserId);
+                    getIncomeData();
+
                     if(isScanning) scanQRCode();
                 }
                 else userId = firebaseUser.getUid();
@@ -425,6 +432,35 @@ public class RouteActivity extends AppCompatActivity implements
         getUsers();
     }
 
+    private void getIncomeData() {
+        driverUserRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(snapshot.exists()) {
+                    User user = new User(snapshot);
+                    amountToRemit = user.getAmountToRemit();
+                    amountToClaim = user.getAmountToClaim();
+                    incomeShare = user.getIncomeShare();
+                }
+
+                /*Toast.makeText(
+                        myContext,
+                        amountToRemit + " " + amountToClaim + " " + incomeShare,
+                        Toast.LENGTH_LONG
+                ).show();*/
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(
+                        myContext,
+                        "Failed to get income data.",
+                        Toast.LENGTH_LONG
+                ).show();
+            }
+        });
+    }
+
     private void setDialogScreenEnabled(boolean value) {
         dialog.setCanceledOnTouchOutside(value);
         dialog.setCancelable(value);
@@ -520,8 +556,7 @@ public class RouteActivity extends AppCompatActivity implements
     private void submitReason(Booking booking) {
         dialogProgressBar.setVisibility(View.VISIBLE);
         setDialogScreenEnabled(false);
-        usersRef.child(driverUserId).child("taskList").
-                child(booking.getId()).child("reason").setValue(reasonValue)
+        driverUserRef.child("taskList").child(booking.getId()).child("reason").setValue(reasonValue)
                 .addOnCompleteListener(task -> {
                     if(task.isSuccessful()) passTask(booking);
                     else {
@@ -729,7 +764,7 @@ public class RouteActivity extends AppCompatActivity implements
         tlRemarks2.setStartIconTintList(cslInitial);
 
         DatabaseReference reference = inDriverModule ?
-                usersRef.child(driverUserId).child("taskList") : usersRef.child(driverUserId).child("bookingList");
+                driverUserRef.child("taskList") : driverUserRef.child("bookingList");
 
         reference.child(bookingId).child("remarks").setValue(remarksValue2)
                 .addOnCompleteListener(task -> {
@@ -841,10 +876,8 @@ public class RouteActivity extends AppCompatActivity implements
                 child(bookingId).child("dropOffTime").
                 setValue(new DateTimeToString().getDateAndTime());
 
-        usersRef.child(driverUserId).child("taskList").
-                child(bookingId).child("status").setValue("Completed");
-        usersRef.child(driverUserId).child("taskList").
-                child(bookingId).child("dropOffTime").
+        driverUserRef.child("taskList").child(bookingId).child("status").setValue("Completed");
+        driverUserRef.child("taskList").child(bookingId).child("dropOffTime").
                 setValue(new DateTimeToString().getDateAndTime()).
         addOnCompleteListener(task -> {
             if(task.isSuccessful()) {
@@ -896,7 +929,7 @@ public class RouteActivity extends AppCompatActivity implements
                         remarks != null && remarks.length() > 0;
 
                 if(inDriverModule) {
-                    Query ongoingTaskQuery = usersRef.child(driverUserId).child("taskList").
+                    Query ongoingTaskQuery = driverUserRef.child("taskList").
                             orderByChild("status").equalTo("Ongoing");
 
                     ongoingTaskQuery.addValueEventListener(new ValueEventListener() {
@@ -1363,8 +1396,7 @@ public class RouteActivity extends AppCompatActivity implements
 
     private void stopRequest(Booking booking) {
         progressBar.setVisibility(View.VISIBLE);
-        usersRef.child(driverUserId).child("taskList").
-                child(booking.getId()).child("status").setValue("Booked")
+        driverUserRef.child("taskList").child(booking.getId()).child("status").setValue("Booked")
                 .addOnCompleteListener(task -> {
                     if(task.isSuccessful()) {
                         Toast.makeText(
@@ -1388,8 +1420,7 @@ public class RouteActivity extends AppCompatActivity implements
     }
 
     private void passTask(Booking booking) {
-        usersRef.child(driverUserId).child("taskList").
-                child(booking.getId()).child("status").setValue("Request")
+        driverUserRef.child("taskList").child(booking.getId()).child("status").setValue("Request")
                 .addOnCompleteListener(task -> {
                     if(task.isSuccessful()) {
                         Toast.makeText(
@@ -1427,8 +1458,7 @@ public class RouteActivity extends AppCompatActivity implements
                     child(driverTask.getId()).child("status").setValue("Passed");
         }
 
-        DatabaseReference taskListRef = usersRef.child(driverUserId).child("taskList").
-                child(booking.getId());
+        DatabaseReference taskListRef = driverUserRef.child("taskList").child(booking.getId());
         taskListRef.setValue(driverTask).addOnCompleteListener(task -> {
             if(task.isSuccessful()) {
                 bookingListRef.child("notified").setValue(false);
@@ -1536,10 +1566,11 @@ public class RouteActivity extends AppCompatActivity implements
                         child(bookingId).child("pickUpTime").
                         setValue(new DateTimeToString().getDateAndTime());
 
-                usersRef.child(driverUserId).child("taskList").
+                driverUserRef.child("taskList").
                         child(bookingId).child("status").setValue("Ongoing");
-                usersRef.child(driverUserId).child("taskList").
-                        child(bookingId).child("pickUpTime").
+                driverUserRef.child("amountToRemit").setValue(newAmountToRemit);
+                driverUserRef.child("amountToClaim").setValue(newAmountToClaim);
+                driverUserRef.child("taskList").child(bookingId).child("pickUpTime").
                         setValue(new DateTimeToString().getDateAndTime())
                 .addOnCompleteListener(task -> {
                     if(task.isSuccessful()) {
@@ -1808,6 +1839,34 @@ public class RouteActivity extends AppCompatActivity implements
 
                         tvRate.setOnClickListener(view -> openRateTheDriverDialog());
                         rateImage.setOnClickListener(view -> openRateTheDriverDialog());
+                    }
+
+                    if(inDriverModule) {
+                        List<ReferenceNumber> referenceNumberList = booking.getReferenceNumberList();
+
+                        for(ReferenceNumber referenceNumber : referenceNumberList) {
+                            if(referenceNumber != null) creditedAmount += referenceNumber.getValue();
+                        }
+
+                        refundedAmount = booking.getRefundedAmount();
+
+                        balance = bookingType.getPrice() - creditedAmount;
+                        if(balance <= 0) balance = 0;
+
+                        /*Toast.makeText(
+                                myContext,
+                                creditedAmount + " " + refundedAmount + " " + balance,
+                                Toast.LENGTH_LONG
+                        ).show();*/
+
+                        newAmountToRemit = amountToRemit + balance;
+                        newAmountToClaim = amountToClaim + (bookingType.getPrice() * incomeShare);
+
+                        /*Toast.makeText(
+                                myContext,
+                                newAmountToRemit + " " + newAmountToClaim,
+                                Toast.LENGTH_LONG
+                        ).show();*/
                     }
                 }
                 if(routeList.size() > 0) finishLoading();

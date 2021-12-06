@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.firebase_clemenisle_ev.Adapters.IncomeTransactionAdapter;
@@ -34,7 +35,7 @@ public class AmountToClaimActivity extends AppCompatActivity {
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance(firebaseURL);
     DatabaseReference usersRef;
 
-    TextView tvAmountToClaim, tvLog, tvBadge;
+    TextView tvIncomeShare, tvAmountToClaim, tvLog, tvBadge;
     ImageView reloadImage;
     RecyclerView transactionView;
     ProgressBar progressBar;
@@ -55,6 +56,7 @@ public class AmountToClaimActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_amount_to_claim);
 
+        tvIncomeShare = findViewById(R.id.tvIncomeShare);
         tvAmountToClaim = findViewById(R.id.tvAmountToClaim);
         tvLog = findViewById(R.id.tvLog);
         tvBadge = findViewById(R.id.tvBadge);
@@ -80,6 +82,15 @@ public class AmountToClaimActivity extends AppCompatActivity {
         transactionView.setLayoutManager(linearLayout);
         incomeTransactionAdapter = new IncomeTransactionAdapter(myContext, transactionList);
         transactionView.setAdapter(incomeTransactionAdapter);
+
+        tvIncomeShare.setOnLongClickListener(view -> {
+            Toast.makeText(
+                    myContext,
+                    "Income Share",
+                    Toast.LENGTH_SHORT
+            ).show();
+            return false;
+        });
 
         getCurrentUser();
     }
@@ -112,6 +123,9 @@ public class AmountToClaimActivity extends AppCompatActivity {
 
     private void finishLoading() {
         incomeTransactionAdapter.notifyDataSetChanged();
+
+        double incomeShare = user.getIncomeShare() * 100;
+        tvIncomeShare.setText("(" + incomeShare + "%)");
 
         String valueText = "₱" + user.getAmountToClaim();
         if(valueText.split("\\.")[1].length() == 1) valueText += 0;

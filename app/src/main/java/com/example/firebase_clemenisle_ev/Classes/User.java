@@ -19,7 +19,7 @@ public class User {
     private String plateNumber;
     private double iWallet;
     private final List<IWalletTransaction> transactionList = new ArrayList<>();
-    private double amountToRemit = 0, amountToClaim = 0;
+    private double amountToRemit = 0, amountToClaim = 0, incomeShare = 0;
     private final List<IncomeTransaction> amountToRemitTransactionList = new ArrayList<>();
     private final List<IncomeTransaction> amountToClaimTransactionList = new ArrayList<>();
 
@@ -151,6 +151,8 @@ public class User {
             amountToRemit = dataSnapshot.child("amountToRemit").getValue(Double.class);
         if(dataSnapshot.child("amountToClaim").exists())
             amountToClaim = dataSnapshot.child("amountToClaim").getValue(Double.class);
+        if(dataSnapshot.child("incomeShare").exists())
+            incomeShare = dataSnapshot.child("incomeShare").getValue(Double.class);
 
         amountToRemitTransactionList.clear();
         DataSnapshot amountToRemitTransactionListRef = dataSnapshot.child("amountToRemitTransactionList");
@@ -260,6 +262,10 @@ public class User {
 
     public double getAmountToClaim() {
         return amountToClaim;
+    }
+
+    public double getIncomeShare() {
+        return incomeShare;
     }
 
     public List<IncomeTransaction> getAmountToRemitTransactionList() {
