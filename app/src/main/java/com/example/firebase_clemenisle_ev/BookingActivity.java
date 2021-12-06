@@ -3033,7 +3033,7 @@ public class BookingActivity extends AppCompatActivity implements
 
     private void finishLoading4p2() {
         endStation = endStations.get(0);
-        endStationText = endStationsText.get(0);
+        endStationText = bookingTypeRoute.getEndStation().getName();
         acEndStation.setText(endStationText);
         tvEndStation2.setText(endStationText);
 
