@@ -124,8 +124,9 @@ public class AmountToClaimActivity extends AppCompatActivity {
     private void finishLoading() {
         incomeTransactionAdapter.notifyDataSetChanged();
 
-        double incomeShare = user.getIncomeShare() * 100;
-        tvIncomeShare.setText("(" + incomeShare + "%)");
+        double incomeShare = Math.round(user.getIncomeShare() * 100);
+        String incomeShareText = "(" + String.valueOf(incomeShare).split("\\.")[0] + "%)";
+        tvIncomeShare.setText(incomeShareText);
 
         String valueText = "₱" + user.getAmountToClaim();
         if(valueText.split("\\.")[1].length() == 1) valueText += 0;

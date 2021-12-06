@@ -217,8 +217,9 @@ public class IncomeDataActivity extends AppCompatActivity {
         if(amountToClaimText.split("\\.")[1].length() == 1) amountToClaimText += 0;
         tvAmountToClaim2.setText(amountToClaimText);
 
-        double incomeShare = user.getIncomeShare() * 100;
-        tvIncomeShare.setText("(" + incomeShare + "%)");
+        double incomeShare = Math.round(user.getIncomeShare() * 100);
+        String incomeShareText = "(" + String.valueOf(incomeShare).split("\\.")[0] + "%)";
+        tvIncomeShare.setText(incomeShareText);
 
         progressBar.setVisibility(View.GONE);
     }
