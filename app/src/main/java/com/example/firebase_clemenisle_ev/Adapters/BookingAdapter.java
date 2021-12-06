@@ -145,6 +145,11 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
     ImageView dialogMessageCloseImage;
     TextView tvDialogTitle, tvMessage;
 
+    Dialog selectedDialogOption;
+    ImageView dialogOptionCloseImage;
+    ConstraintLayout selectedDialogOptionButtonLayout;
+    ProgressBar dialogProgressBar4;
+
     boolean isBookingOptionDialogEnabled;
 
     public void setOnActionClickListener(OnActionClickListener onActionClickListener) {
@@ -278,8 +283,8 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
         String previousDriverUserId = booking.getPreviousDriverUserId();
         if(isBookingOptionDialogEnabled) {
             Dialog dialogOption;
-            ImageView dialogOptionCloseImage;
             TextView tvDialogOptionTitle;
+            ConstraintLayout dialogOptionButtonLayout;
 
             dialogOption = new Dialog(myContext);
             dialogOption.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -287,6 +292,8 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
 
             dialogOptionCloseImage = dialogOption.findViewById(R.id.dialogCloseImage);
             tvDialogOptionTitle = dialogOption.findViewById(R.id.tvDialogTitle);
+            dialogOptionButtonLayout = dialogOption.findViewById(R.id.buttonLayout);
+            dialogProgressBar4 = dialogOption.findViewById(R.id.progressBar);
 
             tvOpen = dialogOption.findViewById(R.id.tvOpen);
             tvLocate = dialogOption.findViewById(R.id.tvLocate);
@@ -324,6 +331,8 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
 
             moreImage.setOnClickListener(view -> {
                 tvDialogOptionTitle.setText("Options for " + bookingId);
+                selectedDialogOption = dialogOption;
+                selectedDialogOptionButtonLayout = dialogOptionButtonLayout;
                 dialogOption.show();
             });
         }
@@ -929,7 +938,8 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
 
                 if(message.length() > 0) {
                     tvViewMessage.setVisibility(View.VISIBLE);
-                    tvViewMessage.setOnClickListener(view -> openMessageDialog("Message", message));
+                    String messageDialogTitle = inDriverModule ? "Passenger's Message" : "Your Message";
+                    tvViewMessage.setOnClickListener(view -> openMessageDialog(messageDialogTitle, message));
                 }
 
                 boolean hasRemarks = (status.equals("Completed") || status.equals("Cancelled") || status.equals("Failed")) &&
@@ -946,12 +956,12 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                             reason != null && reason.length() > 0) {
 
                         tvViewReason.setVisibility(View.VISIBLE);
-                        tvViewReason.setOnClickListener(view -> openMessageDialog("Reason", reason));
+                        tvViewReason.setOnClickListener(view -> openMessageDialog("Your Reason", reason));
                     }
 
                     if(hasRemarks) {
                         tvViewRemarks.setVisibility(View.VISIBLE);
-                        tvViewRemarks.setOnClickListener(view -> openMessageDialog("Remarks", remarks));
+                        tvViewRemarks.setOnClickListener(view -> openMessageDialog("Your Remarks", remarks));
                     }
 
                     getUserInfo(bookingId, status, tvUserFullName, profileImage, tvChat, chatImage,
@@ -1002,7 +1012,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                             StringBuilder star = new StringBuilder();
                             for(int i = 0; i < rating; i ++) star.append("★");
                             String ratingText = rating > 0 ? star + " (" + rating + ") " + remarks : remarks;
-                            openMessageDialog("Rating & Remarks", ratingText);
+                            openMessageDialog("Your Rating & Remarks", ratingText);
                         });
                     }
 
@@ -1170,6 +1180,8 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
     }
 
     private void openItem(Booking booking, boolean isScanning) {
+        if(isBookingOptionDialogEnabled) selectedDialogOption.dismiss();
+
         boolean isOnTheSpot = booking.getBookingType().getId().equals("BT99");
 
         Intent intent;
@@ -1441,6 +1453,10 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
     }
 
     private void completeTask(Booking booking) {
+        if(onActionClickListener != null && !isBookingOptionDialogEnabled)
+            onActionClickListener.setProgressBarToVisible(true);
+        else setOptionDialogProgressBarToVisible(true);
+
         String taskDriverUserId = getDriverUserId(booking.getId());
         String passengerId = getPassengerUserId(booking.getId());
 
@@ -1453,13 +1469,30 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                     child(booking.getId()).child("status").setValue("Completed");
             usersRef.child(taskDriverUserId).child("taskList").
                     child(booking.getId()).child("dropOffTime").
-                    setValue(new DateTimeToString().getDateAndTime());
+                    setValue(new DateTimeToString().getDateAndTime()).
+            addOnCompleteListener(task -> {
+                if(task.isSuccessful()) {
 
-            Toast.makeText(
-                    myContext,
-                    "The Task is now Completed",
-                    Toast.LENGTH_SHORT
-            ).show();
+                    Toast.makeText(
+                            myContext,
+                            "The Task is now Completed",
+                            Toast.LENGTH_SHORT
+                    ).show();
+
+                    if(isBookingOptionDialogEnabled) selectedDialogOption.dismiss();
+                }
+                else {
+                    Toast.makeText(
+                            myContext,
+                            "Failed to complete the task",
+                            Toast.LENGTH_LONG
+                    ).show();
+                }
+
+                if(onActionClickListener != null && !isBookingOptionDialogEnabled)
+                    onActionClickListener.setProgressBarToVisible(false);
+                else setOptionDialogProgressBarToVisible(false);
+            });
         }
         else {
             Toast.makeText(
@@ -1467,12 +1500,18 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                     "Failed to complete the task",
                     Toast.LENGTH_LONG
             ).show();
+
+            if(onActionClickListener != null && !isBookingOptionDialogEnabled)
+                onActionClickListener.setProgressBarToVisible(false);
+            else setOptionDialogProgressBarToVisible(false);
         }
     }
 
     private void stopRequest(Booking booking) {
-        if(onActionClickListener != null)
+        if(onActionClickListener != null && !isBookingOptionDialogEnabled)
             onActionClickListener.setProgressBarToVisible(true);
+        else setOptionDialogProgressBarToVisible(true);
+
         usersRef.child(userId).child("taskList").
                 child(booking.getId()).child("status").setValue("Booked")
                 .addOnCompleteListener(task -> {
@@ -1482,6 +1521,8 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                                 "You stopped your task's request",
                                 Toast.LENGTH_LONG
                         ).show();
+
+                        if(isBookingOptionDialogEnabled) selectedDialogOption.dismiss();
                     }
                     else {
                         Toast.makeText(
@@ -1490,8 +1531,9 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                                 Toast.LENGTH_LONG
                         ).show();
                     }
-                    if(onActionClickListener != null)
+                    if(onActionClickListener != null && !isBookingOptionDialogEnabled)
                         onActionClickListener.setProgressBarToVisible(false);
+                    else setOptionDialogProgressBarToVisible(false);
                 });
     }
 
@@ -1515,13 +1557,16 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                         ).show();
                     }
                     dialogProgressBar.setVisibility(View.GONE);
+                    selectedDialogOption.dismiss();
                     setDialogScreenEnabled(true);
                 });
     }
 
     private void takeTask(Booking booking, String passengerUserId, boolean fromRequest) {
-        if(onActionClickListener != null)
+        if(onActionClickListener != null && !isBookingOptionDialogEnabled)
             onActionClickListener.setProgressBarToVisible(true);
+        else setOptionDialogProgressBarToVisible(true);
+
         String status = "Booked";
         booking.setTimestamp(new DateTimeToString().getDateAndTime());
         Booking driverTask = new Booking(booking);
@@ -1554,8 +1599,12 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                                         Toast.LENGTH_SHORT
                                 ).show();
 
-                                if(onActionClickListener != null)
+                                if(onActionClickListener != null && !isBookingOptionDialogEnabled)
                                     onActionClickListener.setProgressBarToVisible(false);
+                                else {
+                                    setOptionDialogProgressBarToVisible(false);
+                                    selectedDialogOption.dismiss();
+                                }
                             }
                             else errorTask();
                         });
@@ -1571,8 +1620,24 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                 Toast.LENGTH_LONG
         ).show();
 
-        if(onActionClickListener != null)
+        if(onActionClickListener != null && !isBookingOptionDialogEnabled)
             onActionClickListener.setProgressBarToVisible(false);
+        else setOptionDialogProgressBarToVisible(false);
+    }
+
+    private void setOptionDialogProgressBarToVisible(boolean value) {
+        if(value) {
+            dialogProgressBar4.setVisibility(View.VISIBLE);
+            dialogOptionCloseImage.getDrawable().setTint(colorInitial);
+            dialogOptionCloseImage.setEnabled(false);
+            selectedDialogOptionButtonLayout.setVisibility(View.INVISIBLE);
+        }
+        else {
+            dialogProgressBar4.setVisibility(View.GONE);
+            dialogOptionCloseImage.getDrawable().setTint(colorRed);
+            dialogOptionCloseImage.setEnabled(true);
+            selectedDialogOptionButtonLayout.setVisibility(View.VISIBLE);
+        }
     }
 
     @SuppressWarnings("deprecation")

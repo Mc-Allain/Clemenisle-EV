@@ -95,7 +95,7 @@ public class IncomeYearAdapter extends RecyclerView.Adapter<IncomeYearAdapter.Vi
     private void getYearIncome(String itemYear, TextView tvYearIncome) {
         double yearIncome = 0;
         for(Booking task : taskList) {
-            if(task.getSchedule().contains(itemYear) && task.getStatus().equals("Completed"))
+            if(task.getSchedule().contains(itemYear) && (task.getStatus().equals("Completed") || task.getStatus().equals("Ongoing")))
                 yearIncome += task.getBookingType().getPrice();
         }
 

@@ -96,7 +96,8 @@ public class IncomeMonthAdapter extends RecyclerView.Adapter<IncomeMonthAdapter.
     private void getMonthIncome(TextView tvMonthIncome, String itemMonth) {
         double monthIncome = 0;
         for(Booking task : taskList) {
-            if(task.getSchedule().contains(itemMonth + " " + itemYear) && task.getStatus().equals("Completed"))
+            if(task.getSchedule().contains(itemMonth + " " + itemYear) &&
+                    (task.getStatus().equals("Completed") || task.getStatus().equals("Ongoing")))
                 monthIncome += task.getBookingType().getPrice();
         }
 

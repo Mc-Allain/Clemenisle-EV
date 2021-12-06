@@ -202,6 +202,8 @@ public class OnTheSpotActivity extends AppCompatActivity {
     Dialog dialogOption;
     ImageView dialogOptionCloseImage;
     TextView tvDialogOptionTitle;
+    ConstraintLayout dialogOptionButtonLayout;
+    ProgressBar dialogProgressBar4;
 
     TextView tvOpen, tvOnlinePayment;
     ImageView openImage, onlinePaymentImage;
@@ -801,7 +803,7 @@ public class OnTheSpotActivity extends AppCompatActivity {
 
     private void openMessageDialog(String title, String content) {
         tvDialogTitle.setText(title);
-        tvMessage.setText(content);
+        tvMessageDialog.setText(content);
         dialogMessage.show();
     }
 
@@ -835,6 +837,8 @@ public class OnTheSpotActivity extends AppCompatActivity {
 
         dialogOptionCloseImage = dialogOption.findViewById(R.id.dialogCloseImage);
         tvDialogOptionTitle = dialogOption.findViewById(R.id.tvDialogTitle);
+        dialogOptionButtonLayout = dialogOption.findViewById(R.id.buttonLayout);
+        dialogProgressBar4 = dialogOption.findViewById(R.id.progressBar);
 
         tvOpen = dialogOption.findViewById(R.id.tvOpen);
         tvLocate = dialogOption.findViewById(R.id.tvLocate);
@@ -877,6 +881,8 @@ public class OnTheSpotActivity extends AppCompatActivity {
     }
 
     private void completeTask() {
+        progressBar.setVisibility(View.VISIBLE);
+
         usersRef.child(userId).child("bookingList").
                 child(bookingId).child("dropOffTime").
                 setValue(new DateTimeToString().getDateAndTime());
@@ -903,6 +909,8 @@ public class OnTheSpotActivity extends AppCompatActivity {
                         Toast.LENGTH_LONG
                 ).show();
             }
+
+            progressBar.setVisibility(View.GONE);
         });
     }
 
@@ -926,7 +934,8 @@ public class OnTheSpotActivity extends AppCompatActivity {
 
                 if(message.length() > 0) {
                     tvViewMessage.setVisibility(View.VISIBLE);
-                    tvViewMessage.setOnClickListener(view -> openMessageDialog("Message", message));
+                    String messageDialogTitle = inDriverModule ? "Passenger's Message" : "Your Message";
+                    tvViewMessage.setOnClickListener(view -> openMessageDialog(messageDialogTitle, message));
                 }
 
                 getRemarks();
@@ -963,12 +972,12 @@ public class OnTheSpotActivity extends AppCompatActivity {
                                     reason != null && reason.length() > 0) {
 
                                 tvViewReason.setVisibility(View.VISIBLE);
-                                tvViewReason.setOnClickListener(view -> openMessageDialog("Reason", reason));
+                                tvViewReason.setOnClickListener(view -> openMessageDialog("Your Reason", reason));
                             }
 
                             if(hasRemarks) {
                                 tvViewRemarks.setVisibility(View.VISIBLE);
-                                tvViewRemarks.setOnClickListener(view -> openMessageDialog("Remarks", remarks));
+                                tvViewRemarks.setOnClickListener(view -> openMessageDialog("Your Remarks", remarks));
                             }
 
                             getUserInfo();
@@ -1030,7 +1039,7 @@ public class OnTheSpotActivity extends AppCompatActivity {
                             StringBuilder star = new StringBuilder();
                             for(int i = 0; i < rating; i ++) star.append("★");
                             String ratingText = rating > 0 ? star + " (" + rating + ") " + remarks : remarks;
-                            openMessageDialog("Rating & Remarks", ratingText);
+                            openMessageDialog("Your Rating & Remarks", ratingText);
                         });
                     }
 
@@ -1452,7 +1461,6 @@ public class OnTheSpotActivity extends AppCompatActivity {
                             }
                             break;
                     }
-
                     break;
                 }
             }
@@ -1460,7 +1468,9 @@ public class OnTheSpotActivity extends AppCompatActivity {
     }
 
     private void stopRequest(Booking booking) {
-        progressBar.setVisibility(View.VISIBLE);
+        if(!isBookingOptionDialogEnabled) progressBar.setVisibility(View.VISIBLE);
+        else setOptionDialogProgressBarToVisible(true);
+
         driverUserRef.child("taskList").child(booking.getId()).child("status").setValue("Booked")
                 .addOnCompleteListener(task -> {
                     if(task.isSuccessful()) {
@@ -1480,7 +1490,8 @@ public class OnTheSpotActivity extends AppCompatActivity {
                                 Toast.LENGTH_LONG
                         ).show();
                     }
-                    progressBar.setVisibility(View.GONE);
+                    if(!isBookingOptionDialogEnabled) progressBar.setVisibility(View.GONE);
+                    else setOptionDialogProgressBarToVisible(false);
                 });
     }
 
@@ -1511,7 +1522,9 @@ public class OnTheSpotActivity extends AppCompatActivity {
     }
 
     private void takeTask(Booking booking, boolean fromRequest) {
-        progressBar.setVisibility(View.VISIBLE);
+        if(!isBookingOptionDialogEnabled) progressBar.setVisibility(View.VISIBLE);
+        else setOptionDialogProgressBarToVisible(true);
+
         String status = "Booked";
         booking.setTimestamp(new DateTimeToString().getDateAndTime());
         Booking driverTask = new Booking(booking);
@@ -1540,11 +1553,11 @@ public class OnTheSpotActivity extends AppCompatActivity {
                                         Toast.LENGTH_SHORT
                                 ).show();
 
-                                progressBar.setVisibility(View.GONE);
+                                if(!isBookingOptionDialogEnabled) progressBar.setVisibility(View.GONE);
+                                else setOptionDialogProgressBarToVisible(false);
                             }
                             else errorTask();
                         });
-                progressBar.setVisibility(View.GONE);
             }
             else errorTask();
         });
@@ -1557,7 +1570,23 @@ public class OnTheSpotActivity extends AppCompatActivity {
                 Toast.LENGTH_LONG
         ).show();
 
-        progressBar.setVisibility(View.GONE);
+        if(!isBookingOptionDialogEnabled) progressBar.setVisibility(View.GONE);
+        else setOptionDialogProgressBarToVisible(false);
+    }
+
+    private void setOptionDialogProgressBarToVisible(boolean value) {
+        if(value) {
+            dialogProgressBar4.setVisibility(View.VISIBLE);
+            dialogOptionCloseImage.getDrawable().setTint(colorInitial);
+            dialogOptionCloseImage.setEnabled(false);
+            dialogOptionButtonLayout.setVisibility(View.INVISIBLE);
+        }
+        else {
+            dialogProgressBar4.setVisibility(View.GONE);
+            dialogOptionCloseImage.getDrawable().setTint(colorRed);
+            dialogOptionCloseImage.setEnabled(true);
+            dialogOptionButtonLayout.setVisibility(View.VISIBLE);
+        }
     }
 
     @SuppressWarnings("deprecation")

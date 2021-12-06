@@ -134,7 +134,7 @@ public class IncomeDayAdapter extends RecyclerView.Adapter<IncomeDayAdapter.View
         double dayIncome = 0;
         for(Booking task : taskList) {
             String scheduleDate = task.getSchedule().split("\\|")[0].trim();
-            if(scheduleDate.equals(query) && task.getStatus().equals("Completed"))
+            if(scheduleDate.equals(query) && (task.getStatus().equals("Completed") || task.getStatus().equals("Ongoing")))
                 dayIncome += task.getBookingType().getPrice();
         }
 
