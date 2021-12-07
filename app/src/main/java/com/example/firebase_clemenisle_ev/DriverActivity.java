@@ -598,45 +598,61 @@ public class DriverActivity extends AppCompatActivity {
         startTimer();
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if(notificationTimer != null) notificationTimer.cancel();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(notificationTimer != null) notificationTimer.start();
+    }
+
     private void startTimer() {
         if(notificationTimer != null) notificationTimer.cancel();
-        notificationTimer = new CountDownTimer(5000, 1000) {
+        notificationTimer = new CountDownTimer(28000, 28000) {
             @Override
             public void onTick(long l) {}
 
             @Override
             public void onFinish() {
-                if(userId != null) {
-                    for(Booking booking : pendingList)
-                        checkBooking(booking, false, true);
-
-                    for(Booking booking : bookingList1)
-                        checkBooking(booking, true, false);
-
-                    for(Booking booking : bookingList2)
-                        checkBooking(booking, true, false);
-
-                    for(Booking task : driverTaskList) {
-                        if(task.getStatus().equals("Booked") || task.getStatus().equals("Request"))
-                            checkBooking(task, true, true);
-                    }
-
-                    for(Booking task : taskList) {
-                        if(task.getStatus().equals("Booked") || task.getStatus().equals("Request"))
-                            checkBooking(task, false, true);
-                    }
-
-                    for(IWalletTransaction transaction : transactionList) {
-                        boolean isNotified = transaction.isNotified();
-                        if(!isNotified) {
-                            showSuccessfulTransactionNotification(transaction);
-                        }
-                    }
-                }
-
+                notificationTimerFunction();
                 start();
             }
         }.start();
+        notificationTimerFunction();
+    }
+
+    private void notificationTimerFunction() {
+        if(userId != null) {
+            for(Booking booking : pendingList)
+                checkBooking(booking, false, true);
+
+            for(Booking booking : bookingList1)
+                checkBooking(booking, true, false);
+
+            for(Booking booking : bookingList2)
+                checkBooking(booking, true, false);
+
+            for(Booking task : driverTaskList) {
+                if(task.getStatus().equals("Booked") || task.getStatus().equals("Request"))
+                    checkBooking(task, true, true);
+            }
+
+            for(Booking task : taskList) {
+                if(task.getStatus().equals("Booked") || task.getStatus().equals("Request"))
+                    checkBooking(task, false, true);
+            }
+
+            for(IWalletTransaction transaction : transactionList) {
+                boolean isNotified = transaction.isNotified();
+                if(!isNotified) {
+                    showSuccessfulTransactionNotification(transaction);
+                }
+            }
+        }
     }
 
     private void setBookingStatusToFailed(Booking targetBooking) {

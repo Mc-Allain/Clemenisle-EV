@@ -818,11 +818,11 @@ public class OnTheSpotActivity extends AppCompatActivity {
 
         dialogMessageCloseImage.setOnClickListener(view -> dialogMessage.dismiss());
 
-        dialogMessage.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
+        dialogMessage.getWindow().setLayout(ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
-        dialogMessage.getWindow().setBackgroundDrawable(AppCompatResources.getDrawable(myContext, R.drawable.corner_top_white_layout));
-        dialogMessage.getWindow().getAttributes().windowAnimations = R.style.animBottomSlide;
-        dialogMessage.getWindow().setGravity(Gravity.BOTTOM);
+        dialogMessage.getWindow().setBackgroundDrawable(AppCompatResources.getDrawable(myContext, R.drawable.corner_white_layout));
+        /*dialogMessage.getWindow().getAttributes().windowAnimations = R.style.animBottomSlide;
+        dialogMessage.getWindow().setGravity(Gravity.BOTTOM);*/
     }
 
     private void openOptionDialog() {
@@ -1190,21 +1190,37 @@ public class OnTheSpotActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if(statusTimer != null) statusTimer.cancel();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(statusTimer != null) statusTimer.start();
+    }
+
     private void startTimer(Booking booking) {
         if(statusTimer != null) statusTimer.cancel();
-        statusTimer = new CountDownTimer(5000, 1000) {
+        statusTimer = new CountDownTimer(28000, 28000) {
             @Override
             public void onTick(long l) {}
 
             @Override
             public void onFinish() {
-                if(userId != null) {
-                    checkBooking(booking);
-                }
-
+                statusTimerFunction(booking);
                 start();
             }
         }.start();
+        statusTimerFunction(booking);
+    }
+
+    private void statusTimerFunction(Booking booking) {
+        if(userId != null) {
+            checkBooking(booking);
+        }
     }
 
     private void checkBooking(Booking booking) {

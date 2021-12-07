@@ -397,7 +397,7 @@ public class PostRegisterActivity extends AppCompatActivity {
 
         loginTime = getMSec(min, sec);
 
-        autoLoginTimer = new CountDownTimer(loginTime, 1000) {
+        autoLoginTimer = new CountDownTimer(loginTime, 500) {
             @Override
             public void onTick(long l) {
                 autoLogin();
@@ -482,7 +482,7 @@ public class PostRegisterActivity extends AppCompatActivity {
         if(remainingTime > 0) currentTime = remainingTime;
         else currentTime = startTime;
 
-        countDownTimer = new CountDownTimer(currentTime, 1000) {
+        countDownTimer = new CountDownTimer(currentTime, 500) {
             @Override
             public void onTick(long l) {
                 currentTime = l;

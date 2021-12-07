@@ -899,11 +899,11 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
 
         dialogMessageCloseImage.setOnClickListener(view -> dialogMessage.dismiss());
 
-        dialogMessage.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
+        dialogMessage.getWindow().setLayout(ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
-        dialogMessage.getWindow().setBackgroundDrawable(AppCompatResources.getDrawable(myContext, R.drawable.corner_top_white_layout));
-        dialogMessage.getWindow().getAttributes().windowAnimations = R.style.animBottomSlide;
-        dialogMessage.getWindow().setGravity(Gravity.BOTTOM);
+        dialogMessage.getWindow().setBackgroundDrawable(AppCompatResources.getDrawable(myContext, R.drawable.corner_white_layout));
+        /*dialogMessage.getWindow().getAttributes().windowAnimations = R.style.animBottomSlide;
+        dialogMessage.getWindow().setGravity(Gravity.BOTTOM);*/
     }
 
     private void getUsers(
