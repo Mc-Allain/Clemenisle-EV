@@ -1,12 +1,17 @@
 package com.example.firebase_clemenisle_ev.Adapters;
 
+import android.app.Dialog;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,6 +25,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.util.List;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -37,6 +43,21 @@ public class LikedSpotAdapter extends RecyclerView.Adapter<LikedSpotAdapter.View
 
     long unlikePressedTime;
     Toast unlikeToast;
+
+    Dialog confirmationDialog;
+    ImageView confirmationDialogCloseImage;
+    TextView tvDialogTitleConfirmation, tvDialogCaptionConfirmation;
+    Button confirmationDialogConfirmButton, confirmationDialogCancelButton;
+    ProgressBar confirmationDialogProgressBar;
+
+    boolean isConfirmationDialogEnabled;
+
+    int colorRed, colorInitial;
+
+    private void initSharedPreferences() {
+        SharedPreferences sharedPreferences = myContext.getSharedPreferences("preferences", Context.MODE_PRIVATE);
+        isConfirmationDialogEnabled = sharedPreferences.getBoolean("isConfirmationDialogEnabled", true);
+    }
 
     public LikedSpotAdapter(Context context, List<SimpleTouristSpot> likedSpots, String userId) {
         this.likedSpots = likedSpots;
@@ -60,6 +81,11 @@ public class LikedSpotAdapter extends RecyclerView.Adapter<LikedSpotAdapter.View
 
         myContext = inflater.getContext();
         myResources = myContext.getResources();
+
+        colorRed = myResources.getColor(R.color.red);
+        colorInitial = myResources.getColor(R.color.initial);
+
+        initSharedPreferences();
 
         SimpleTouristSpot likedSpot = likedSpots.get(position);
 
@@ -95,23 +121,58 @@ public class LikedSpotAdapter extends RecyclerView.Adapter<LikedSpotAdapter.View
         backgroundLayout.setLayoutParams(layoutParams);
 
         unlikeButton.setOnClickListener(view -> {
-            if(unlikePressedTime + 2500 > System.currentTimeMillis() &&
-                    tvUnliked.getText().toString().equals("true")) {
-                unlikeToast.cancel();
+            if(isConfirmationDialogEnabled) {
+                initConfirmationDialog();
+                openConfirmationDialog("Unlike Tourist Spot", "Do you want to unlike the tourist spot?");
 
-                 firebaseDatabase.getReference("users").child(userId).
-                         child("likedSpots").child(id).removeValue();
+                confirmationDialogConfirmButton.setOnClickListener(view1 -> {
+                    confirmationDialogProgressBar.setVisibility(View.VISIBLE);
+                    setConfirmationDialogScreenEnabled(false);
 
-                tvUnliked.setText("false");
+                    firebaseDatabase.getReference("users").child(userId).
+                            child("likedSpots").child(id).removeValue().addOnCompleteListener(task -> {
+                        if(task.isSuccessful()) confirmationDialog.dismiss();
+                        else {
+                            Toast.makeText(
+                                    myContext,
+                                    "Failed to unlike the tourist spot",
+                                    Toast.LENGTH_LONG
+                            ).show();
+                        }
+                        confirmationDialogProgressBar.setVisibility(View.GONE);
+                        setConfirmationDialogScreenEnabled(true);
+                    });
+
+                });
             }
             else {
-                unlikeToast = Toast.makeText(myContext,
-                        "Press again to unlike", Toast.LENGTH_SHORT);
-                unlikeToast.show();
+                if(unlikeToast != null) unlikeToast.cancel();
 
-                unlikePressedTime = System.currentTimeMillis();
+                if(unlikePressedTime + 2500 > System.currentTimeMillis() &&
+                        tvUnliked.getText().toString().equals("true")) {
 
-                tvUnliked.setText("true");
+                    firebaseDatabase.getReference("users").child(userId).
+                            child("likedSpots").child(id).removeValue().addOnCompleteListener(task -> {
+                                if(!task.isSuccessful()) {
+                                    unlikeToast = Toast.makeText(
+                                            myContext,
+                                            "Failed to unlike the tourist spot",
+                                            Toast.LENGTH_LONG
+                                    );
+                                    unlikeToast.show();
+                                }
+                                tvUnliked.setText("false");
+                            });
+                }
+                else {
+                    unlikeToast = Toast.makeText(myContext,
+                            "Press again to unlike", Toast.LENGTH_SHORT);
+                    unlikeToast.show();
+
+                    unlikePressedTime = System.currentTimeMillis();
+
+                    tvUnliked.setText("true");
+                }
             }
         });
     }
@@ -119,6 +180,45 @@ public class LikedSpotAdapter extends RecyclerView.Adapter<LikedSpotAdapter.View
     private int dpToPx(int dp) {
         float px = dp * myResources.getDisplayMetrics().density;
         return (int) px;
+    }
+
+    private void openConfirmationDialog(String title, String caption) {
+        tvDialogTitleConfirmation.setText(title);
+        tvDialogCaptionConfirmation.setText(caption);
+        confirmationDialog.show();
+    }
+
+    private void initConfirmationDialog() {
+        confirmationDialog = new Dialog(myContext);
+        confirmationDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        confirmationDialog.setContentView(R.layout.dialog_confirmation_layout);
+
+        confirmationDialogCloseImage = confirmationDialog.findViewById(R.id.dialogCloseImage);
+        tvDialogTitleConfirmation = confirmationDialog.findViewById(R.id.tvDialogTitle);
+        tvDialogCaptionConfirmation = confirmationDialog.findViewById(R.id.tvDialogCaption);
+        confirmationDialogConfirmButton = confirmationDialog.findViewById(R.id.confirmButton);
+        confirmationDialogCancelButton = confirmationDialog.findViewById(R.id.cancelButton);
+        confirmationDialogProgressBar = confirmationDialog.findViewById(R.id.dialogProgressBar);
+
+        confirmationDialogCloseImage.setOnClickListener(view -> confirmationDialog.dismiss());
+
+        confirmationDialogCancelButton.setOnClickListener(view -> confirmationDialog.dismiss());
+
+        confirmationDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT);
+        confirmationDialog.getWindow().setBackgroundDrawable(AppCompatResources.getDrawable(myContext, R.drawable.corner_top_white_layout));
+        confirmationDialog.getWindow().getAttributes().windowAnimations = R.style.animBottomSlide;
+        confirmationDialog.getWindow().setGravity(Gravity.BOTTOM);
+    }
+
+    private void setConfirmationDialogScreenEnabled(boolean value) {
+        confirmationDialog.setCanceledOnTouchOutside(value);
+        confirmationDialog.setCancelable(value);
+        confirmationDialogConfirmButton.setEnabled(value);
+        confirmationDialogCancelButton.setEnabled(value);
+
+        if(value) confirmationDialogCloseImage.getDrawable().setTint(colorRed);
+        else confirmationDialogCloseImage.getDrawable().setTint(colorInitial);
     }
 
     @Override

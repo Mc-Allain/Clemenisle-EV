@@ -1,14 +1,19 @@
 package com.example.firebase_clemenisle_ev.Adapters;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,6 +30,7 @@ import com.google.firebase.auth.FirebaseUser;
 import java.util.List;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -43,9 +49,20 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 
     boolean isLoggedIn = false;
 
+    Dialog confirmationDialog;
+    ImageView confirmationDialogCloseImage;
+    TextView tvDialogTitleConfirmation, tvDialogCaptionConfirmation;
+    Button confirmationDialogConfirmButton, confirmationDialogCancelButton;
+    ProgressBar confirmationDialogProgressBar;
+
+    boolean isConfirmationDialogEnabled;
+
     private void initSharedPreferences() {
         SharedPreferences sharedPreferences = myContext.getSharedPreferences("login", Context.MODE_PRIVATE);
         isLoggedIn = sharedPreferences.getBoolean("isLoggedIn", false);
+
+        sharedPreferences = myContext.getSharedPreferences("preferences", Context.MODE_PRIVATE);
+        isConfirmationDialogEnabled = sharedPreferences.getBoolean("isConfirmationDialogEnabled", true);
     }
 
     private void sendLoginPreferences() {
@@ -144,20 +161,23 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
         settingLayout.setOnClickListener(view -> {
             switch (settingName) {
                 case "Log out":
-                    if (logoutPressedTime + 2500 > System.currentTimeMillis()) {
-                        logoutToast.cancel();
-                        sendLoginPreferences();
-
-                        Intent intent = new Intent(myContext, MainActivity.class);
-                        myContext.startActivity(intent);
-                        ((Activity) myContext).finishAffinity();
-                    } else {
-                        logoutToast = Toast.makeText(myContext,
-                                "Press again to log out", Toast.LENGTH_SHORT);
-                        logoutToast.show();
+                    initSharedPreferences();
+                    if(isConfirmationDialogEnabled) {
+                        initConfirmationDialog();
+                        openConfirmationDialog("Log out","Do you want to log out?");
                     }
+                    else {
+                        if (logoutPressedTime + 2500 > System.currentTimeMillis()) {
+                            logoutToast.cancel();
+                            logOut();
+                        } else {
+                            logoutToast = Toast.makeText(myContext,
+                                    "Press again to log out", Toast.LENGTH_SHORT);
+                            logoutToast.show();
+                        }
 
-                    logoutPressedTime = System.currentTimeMillis();
+                        logoutPressedTime = System.currentTimeMillis();
+                    }
                     break;
                 case "About": {
                     Intent intent = new Intent(myContext, AboutActivity.class);
@@ -209,6 +229,45 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
     private int dpToPx(int dp) {
         float px = dp * myContext.getResources().getDisplayMetrics().density;
         return (int) px;
+    }
+
+    private void openConfirmationDialog(String title, String caption) {
+        tvDialogTitleConfirmation.setText(title);
+        tvDialogCaptionConfirmation.setText(caption);
+        confirmationDialog.show();
+    }
+
+    private void logOut() {
+        sendLoginPreferences();
+
+        Intent intent = new Intent(myContext, MainActivity.class);
+        myContext.startActivity(intent);
+        ((Activity) myContext).finishAffinity();
+    }
+
+    private void initConfirmationDialog() {
+        confirmationDialog = new Dialog(myContext);
+        confirmationDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        confirmationDialog.setContentView(R.layout.dialog_confirmation_layout);
+
+        confirmationDialogCloseImage = confirmationDialog.findViewById(R.id.dialogCloseImage);
+        tvDialogTitleConfirmation = confirmationDialog.findViewById(R.id.tvDialogTitle);
+        tvDialogCaptionConfirmation = confirmationDialog.findViewById(R.id.tvDialogCaption);
+        confirmationDialogConfirmButton = confirmationDialog.findViewById(R.id.confirmButton);
+        confirmationDialogCancelButton = confirmationDialog.findViewById(R.id.cancelButton);
+        confirmationDialogProgressBar = confirmationDialog.findViewById(R.id.dialogProgressBar);
+
+        confirmationDialogCloseImage.setOnClickListener(view -> confirmationDialog.dismiss());
+
+        confirmationDialogConfirmButton.setOnClickListener(view -> logOut());
+
+        confirmationDialogCancelButton.setOnClickListener(view -> confirmationDialog.dismiss());
+
+        confirmationDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT);
+        confirmationDialog.getWindow().setBackgroundDrawable(AppCompatResources.getDrawable(myContext, R.drawable.corner_top_white_layout));
+        confirmationDialog.getWindow().getAttributes().windowAnimations = R.style.animBottomSlide;
+        confirmationDialog.getWindow().setGravity(Gravity.BOTTOM);
     }
 
     @Override

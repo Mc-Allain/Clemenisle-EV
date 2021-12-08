@@ -662,7 +662,6 @@ public class LoggedInUserProfileFragment extends Fragment {
     private void setProfileImageDialogScreenEnabled(boolean value) {
         profileImageDialog.setCanceledOnTouchOutside(value);
         profileImageDialog.setCancelable(value);
-        profileImageDialogCloseImage.setEnabled(value);
         chooseImageButton.setEnabled(value);
         removeButton.setEnabled(value);
         uploadButton.setEnabled(value);
@@ -873,7 +872,6 @@ public class LoggedInUserProfileFragment extends Fragment {
     private void setFullNameDialogScreenEnabled(boolean value) {
         fullNameDialog.setCanceledOnTouchOutside(value);
         fullNameDialog.setCancelable(value);
-        fullNameDialogCloseImage.setEnabled(value);
         fullNameUpdateButton.setEnabled(value);
         tlLastName.setEnabled(value);
         tlFirstName.setEnabled(value);
@@ -999,7 +997,6 @@ public class LoggedInUserProfileFragment extends Fragment {
     private void setEmailAddressDialogScreenEnabled(boolean value) {
         emailAddressDialog.setCanceledOnTouchOutside(value);
         emailAddressDialog.setCancelable(value);
-        emailAddressDialogCloseImage.setEnabled(value);
         emailAddressUpdateButton.setEnabled(value);
         tlEmailAddress.setEnabled(value);
 
@@ -1391,7 +1388,6 @@ public class LoggedInUserProfileFragment extends Fragment {
     private void setPasswordDialogScreenEnabled(boolean value) {
         passwordDialog.setCanceledOnTouchOutside(value);
         passwordDialog.setCancelable(value);
-        passwordDialogCloseImage.setEnabled(value);
         passwordUpdateButton.setEnabled(value);
         tlPassword.setEnabled(value);
         tlConfirmPassword.setEnabled(value);

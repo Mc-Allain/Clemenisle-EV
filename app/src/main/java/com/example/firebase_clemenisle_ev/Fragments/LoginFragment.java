@@ -356,7 +356,6 @@ public class LoginFragment extends Fragment {
         dialog.setCancelable(value);
         tlDEmailAddress.setEnabled(value);
         submitButton.setEnabled(value);
-        dialogCloseImage.setEnabled(value);
 
         if(value) dialogCloseImage.getDrawable().setTint(colorRed);
         else dialogCloseImage.getDrawable().setTint(colorInitial);

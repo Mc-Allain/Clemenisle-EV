@@ -200,6 +200,14 @@ public class RouteActivity extends AppCompatActivity implements
             creditedAmount = 0, refundedAmount = 0, balance = 0,
             newAmountToRemit = 0, newAmountToClaim = 0;
 
+    Dialog confirmationDialog;
+    ImageView confirmationDialogCloseImage;
+    TextView tvDialogTitleConfirmation, tvDialogCaptionConfirmation;
+    Button confirmationDialogConfirmButton, confirmationDialogCancelButton;
+    ProgressBar confirmationDialogProgressBar;
+
+    boolean isConfirmationDialogEnabled;
+
     private void initSharedPreferences() {
         SharedPreferences sharedPreferences = myContext
                 .getSharedPreferences("login", Context.MODE_PRIVATE);
@@ -208,6 +216,7 @@ public class RouteActivity extends AppCompatActivity implements
         sharedPreferences = getSharedPreferences("preferences", Context.MODE_PRIVATE);
         isShowBookingAlertEnabled = sharedPreferences.getBoolean("isShowBookingAlertEnabled", true);
         isBookingOptionDialogEnabled = sharedPreferences.getBoolean("isBookingOptionDialogEnabled", true);
+        isConfirmationDialogEnabled = sharedPreferences.getBoolean("isConfirmationDialogEnabled", true);
     }
 
     @Override
@@ -302,6 +311,7 @@ public class RouteActivity extends AppCompatActivity implements
         initRemarksDialog();
         initMessageDialog();
         if(isBookingOptionDialogEnabled) initOptionDialog();
+        if(isConfirmationDialogEnabled) initConfirmationDialog();
 
         Intent intent = getIntent();
         bookingId = intent.getStringExtra("bookingId");
@@ -351,41 +361,45 @@ public class RouteActivity extends AppCompatActivity implements
         getRoute();
 
         cancelButton.setOnClickListener(view -> {
-            if(cancelToast != null) {
-                cancelToast.cancel();
+            if(isConfirmationDialogEnabled) {
+                openConfirmationDialog("Cancel Booking", "Do you want to cancel your booking?");
+                confirmationDialogConfirmButton.setOnClickListener(view12 -> cancelBooking());
             }
-
-            if(errorToast != null) {
-                errorToast.cancel();
-            }
-
-            if(lastPressSec + 3000 > System.currentTimeMillis()) {
-                pressCount++;
-
-                if(pressCount == 5) {
-                    progressBar.setVisibility(View.VISIBLE);
-
-                    routeView.setEnabled(false);
-                    cancelButton.setEnabled(false);
-                    cancelButton.setText(cancellingButtonText);
-                    cancelBooking();
+            else {
+                if(cancelToast != null) {
+                    cancelToast.cancel();
                 }
-            }
-            else {
-                pressCount = 1;
-            }
 
-            lastPressSec = System.currentTimeMillis();
+                if(errorToast != null) {
+                    errorToast.cancel();
+                }
 
-            cancelToast = Toast.makeText(myContext,
-                    "Press " + (5 - pressCount) +" more time(s) to cancel booking",
-                    Toast.LENGTH_SHORT);
+                if(lastPressSec + 3000 > System.currentTimeMillis()) {
+                    pressCount++;
 
-            if(pressCount < 5) {
-                cancelToast.show();
-            }
-            else {
-                pressCount = 0;
+                    if(pressCount == 5) {
+                        routeView.setEnabled(false);
+                        cancelButton.setEnabled(false);
+                        cancelButton.setText(cancellingButtonText);
+                        cancelBooking();
+                    }
+                }
+                else {
+                    pressCount = 1;
+                }
+
+                lastPressSec = System.currentTimeMillis();
+
+                cancelToast = Toast.makeText(myContext,
+                        "Press " + (5 - pressCount) +" more time(s) to cancel booking",
+                        Toast.LENGTH_SHORT);
+
+                if(pressCount < 5) {
+                    cancelToast.show();
+                }
+                else {
+                    pressCount = 0;
+                }
             }
         });
 
@@ -419,16 +433,24 @@ public class RouteActivity extends AppCompatActivity implements
         });
 
         dropOffButton.setOnClickListener(view -> {
-            if (dropOffPressedTime + 2500 > System.currentTimeMillis()) {
-                dropOffToast.cancel();
-                completeTask();
-            } else {
-                dropOffToast = Toast.makeText(myContext,
-                        "Press again to drop off", Toast.LENGTH_SHORT);
-                dropOffToast.show();
+            if(isConfirmationDialogEnabled) {
+                openConfirmationDialog("Drop Off", "Do you want to drop off?");
+                confirmationDialogConfirmButton.setOnClickListener(view1 -> completeTask());
             }
+            else {
+                if(errorToast != null) errorToast.cancel();
 
-            dropOffPressedTime = System.currentTimeMillis();
+                if (dropOffPressedTime + 2500 > System.currentTimeMillis()) {
+                    dropOffToast.cancel();
+                    completeTask();
+                } else {
+                    dropOffToast = Toast.makeText(myContext,
+                            "Press again to drop off", Toast.LENGTH_SHORT);
+                    dropOffToast.show();
+                }
+
+                dropOffPressedTime = System.currentTimeMillis();
+            }
         });
 
         getUsers();
@@ -479,15 +501,22 @@ public class RouteActivity extends AppCompatActivity implements
         tlRemarks2.setEnabled(value);
         dialogSubmitButton3.setEnabled(value);
 
+        confirmationDialog.setCanceledOnTouchOutside(value);
+        confirmationDialog.setCancelable(value);
+        confirmationDialogConfirmButton.setEnabled(value);
+        confirmationDialogCancelButton.setEnabled(value);
+
         if(value) {
             dialogCloseImage.getDrawable().setTint(colorRed);
             dialogCloseImage2.getDrawable().setTint(colorRed);
             dialogCloseImage4.getDrawable().setTint(colorRed);
+            confirmationDialogCloseImage.getDrawable().setTint(colorRed);
         }
         else {
             dialogCloseImage.getDrawable().setTint(colorInitial);
             dialogCloseImage2.getDrawable().setTint(colorInitial);
             dialogCloseImage4.getDrawable().setTint(colorInitial);
+            confirmationDialogCloseImage.getDrawable().setTint(colorInitial);
         }
     }
 
@@ -869,6 +898,35 @@ public class RouteActivity extends AppCompatActivity implements
         dialogOption.getWindow().setGravity(Gravity.BOTTOM);
     }
 
+    private void openConfirmationDialog(String title, String caption) {
+        tvDialogTitleConfirmation.setText(title);
+        tvDialogCaptionConfirmation.setText(caption);
+        confirmationDialog.show();
+    }
+
+    private void initConfirmationDialog() {
+        confirmationDialog = new Dialog(myContext);
+        confirmationDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        confirmationDialog.setContentView(R.layout.dialog_confirmation_layout);
+
+        confirmationDialogCloseImage = confirmationDialog.findViewById(R.id.dialogCloseImage);
+        tvDialogTitleConfirmation = confirmationDialog.findViewById(R.id.tvDialogTitle);
+        tvDialogCaptionConfirmation = confirmationDialog.findViewById(R.id.tvDialogCaption);
+        confirmationDialogConfirmButton = confirmationDialog.findViewById(R.id.confirmButton);
+        confirmationDialogCancelButton = confirmationDialog.findViewById(R.id.cancelButton);
+        confirmationDialogProgressBar = confirmationDialog.findViewById(R.id.dialogProgressBar);
+
+        confirmationDialogCloseImage.setOnClickListener(view -> confirmationDialog.dismiss());
+
+        confirmationDialogCancelButton.setOnClickListener(view -> confirmationDialog.dismiss());
+
+        confirmationDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT);
+        confirmationDialog.getWindow().setBackgroundDrawable(AppCompatResources.getDrawable(myContext, R.drawable.corner_top_white_layout));
+        confirmationDialog.getWindow().getAttributes().windowAnimations = R.style.animBottomSlide;
+        confirmationDialog.getWindow().setGravity(Gravity.BOTTOM);
+    }
+
     private void openOnlinePayment() {
         Intent intent = new Intent(myContext, OnlinePaymentActivity.class);
         intent.putExtra("bookingId", bookingId);
@@ -876,7 +934,11 @@ public class RouteActivity extends AppCompatActivity implements
     }
 
     private void completeTask() {
-        progressBar.setVisibility(View.VISIBLE);
+        if(isConfirmationDialogEnabled) {
+            confirmationDialogProgressBar.setVisibility(View.VISIBLE);
+            setDialogScreenEnabled(false);
+        }
+        else progressBar.setVisibility(View.VISIBLE);
 
         usersRef.child(userId).child("bookingList").
                 child(bookingId).child("dropOffTime").
@@ -896,16 +958,23 @@ public class RouteActivity extends AppCompatActivity implements
                 status = "Completed";
                 updateInfo();
                 getUsers();
+
+                confirmationDialog.dismiss();
             }
             else {
-                Toast.makeText(
+                errorToast = Toast.makeText(
                         myContext,
                         "Failed to complete the task",
                         Toast.LENGTH_LONG
-                ).show();
+                );
+                errorToast.show();
             }
 
-            progressBar.setVisibility(View.GONE);
+            if(isConfirmationDialogEnabled) {
+                confirmationDialogProgressBar.setVisibility(View.GONE);
+                setDialogScreenEnabled(true);
+            }
+            else progressBar.setVisibility(View.GONE);
         });
     }
 
@@ -1945,7 +2014,12 @@ public class RouteActivity extends AppCompatActivity implements
     }
 
     private void cancelBooking() {
-        progressBar.setVisibility(View.VISIBLE);
+        if(isConfirmationDialogEnabled) {
+            confirmationDialogProgressBar.setVisibility(View.VISIBLE);
+            setDialogScreenEnabled(false);
+        }
+        else progressBar.setVisibility(View.VISIBLE);
+
         bookingListRef.child("status").setValue("Cancelled")
                 .addOnCompleteListener(task -> {
                     if(task.isSuccessful()) {
@@ -1954,6 +2028,8 @@ public class RouteActivity extends AppCompatActivity implements
                                 "Successfully cancelled the booking",
                                 Toast.LENGTH_SHORT
                         ).show();
+
+                        confirmationDialog.dismiss();
                     }
                     else {
                         errorToast = Toast.makeText(myContext,
@@ -1965,7 +2041,12 @@ public class RouteActivity extends AppCompatActivity implements
                         cancelButton.setEnabled(true);
                         cancelButton.setText(cancelButtonText);
                     }
-                    progressBar.setVisibility(View.GONE);
+
+                    if(isConfirmationDialogEnabled) {
+                        confirmationDialogProgressBar.setVisibility(View.GONE);
+                        setDialogScreenEnabled(true);
+                    }
+                    else progressBar.setVisibility(View.GONE);
                 });
     }
 

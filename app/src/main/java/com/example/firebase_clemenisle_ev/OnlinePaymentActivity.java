@@ -242,13 +242,11 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
         dialog.setCancelable(value);
         tlReferenceNumber.setEnabled(value);
         submitButton.setEnabled(value);
-        dialogCloseImage.setEnabled(value);
 
         dialog2.setCanceledOnTouchOutside(value);
         dialog2.setCancelable(value);
         tlAmount.setEnabled(value);
         submitButton2.setEnabled(value);
-        dialogCloseImage2.setEnabled(value);
 
         if(value) {
             dialogCloseImage.getDrawable().setTint(colorRed);

@@ -1,5 +1,6 @@
 package com.example.firebase_clemenisle_ev;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -15,7 +16,10 @@ import android.text.TextWatcher;
 import android.transition.ChangeBounds;
 import android.transition.Transition;
 import android.transition.TransitionManager;
+import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -54,6 +58,7 @@ import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -159,6 +164,21 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
 
     boolean isUpdatingComments = false;
 
+    Toast errorToast;
+
+    Dialog confirmationDialog;
+    ImageView confirmationDialogCloseImage;
+    TextView tvDialogTitleConfirmation, tvDialogCaptionConfirmation;
+    Button confirmationDialogConfirmButton, confirmationDialogCancelButton;
+    ProgressBar confirmationDialogProgressBar;
+
+    boolean isConfirmationDialogEnabled;
+
+    private void initSharedPreferences() {
+        SharedPreferences sharedPreferences = myContext.getSharedPreferences("preferences", Context.MODE_PRIVATE);
+        isConfirmationDialogEnabled = sharedPreferences.getBoolean("isConfirmationDialogEnabled", true);
+    }
+
     private void sendLoginPreferences() {
         SharedPreferences sharedPreferences = myContext.getSharedPreferences(
                 "login", Context.MODE_PRIVATE);
@@ -241,6 +261,9 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
 
         myContext = SelectedSpotActivity.this;
         myResources = myContext.getResources();
+
+        initSharedPreferences();
+        if(isConfirmationDialogEnabled) initConfirmationDialog();
 
         colorBlue = myResources.getColor(R.color.blue);
         colorInitial = myResources.getColor(R.color.initial);
@@ -439,6 +462,45 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
         appealImage.setOnClickListener(view -> appealImageOnClick());
 
         deactivateImage.setOnClickListener(view -> deactivateImageOnClick());
+    }
+
+    private void openConfirmationDialog(String title, String caption) {
+        tvDialogTitleConfirmation.setText(title);
+        tvDialogCaptionConfirmation.setText(caption);
+        confirmationDialog.show();
+    }
+
+    private void initConfirmationDialog() {
+        confirmationDialog = new Dialog(myContext);
+        confirmationDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        confirmationDialog.setContentView(R.layout.dialog_confirmation_layout);
+
+        confirmationDialogCloseImage = confirmationDialog.findViewById(R.id.dialogCloseImage);
+        tvDialogTitleConfirmation = confirmationDialog.findViewById(R.id.tvDialogTitle);
+        tvDialogCaptionConfirmation = confirmationDialog.findViewById(R.id.tvDialogCaption);
+        confirmationDialogConfirmButton = confirmationDialog.findViewById(R.id.confirmButton);
+        confirmationDialogCancelButton = confirmationDialog.findViewById(R.id.cancelButton);
+        confirmationDialogProgressBar = confirmationDialog.findViewById(R.id.dialogProgressBar);
+
+        confirmationDialogCloseImage.setOnClickListener(view -> confirmationDialog.dismiss());
+
+        confirmationDialogCancelButton.setOnClickListener(view -> confirmationDialog.dismiss());
+
+        confirmationDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT);
+        confirmationDialog.getWindow().setBackgroundDrawable(AppCompatResources.getDrawable(myContext, R.drawable.corner_top_white_layout));
+        confirmationDialog.getWindow().getAttributes().windowAnimations = R.style.animBottomSlide;
+        confirmationDialog.getWindow().setGravity(Gravity.BOTTOM);
+    }
+
+    private void setConfirmationDialogScreenEnabled(boolean value) {
+        confirmationDialog.setCanceledOnTouchOutside(value);
+        confirmationDialog.setCancelable(value);
+        confirmationDialogConfirmButton.setEnabled(value);
+        confirmationDialogCancelButton.setEnabled(value);
+
+        if(value) confirmationDialogCloseImage.getDrawable().setTint(colorRed);
+        else confirmationDialogCloseImage.getDrawable().setTint(colorInitial);
     }
 
     private void showCommentLayout() {
@@ -787,32 +849,46 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
 
     @Override
     public void deactivateImageOnClick() {
-        if(deactivatePressedTime + 2500 > System.currentTimeMillis() && isDeactivateClicked) {
-            deactivateToast.cancel();
+        if(isConfirmationDialogEnabled) {
+            String activationMessage = "Deactivate";
+            if(currentDeactivateText.equals(activateText)) activationMessage = "Activate";
 
-            setDeactivatedComment();
-
-            isDeactivateClicked = false;
+            openConfirmationDialog(activationMessage + " Comment", "Do you want to " + activationMessage.toLowerCase() + " your comment?");
+            confirmationDialogConfirmButton.setOnClickListener(view -> setDeactivatedComment());
         }
         else {
-            String toastMessage = "Press again to ";
-            if(currentDeactivateText.equals(deactivateText)) toastMessage += "deactivate";
-            else if(currentDeactivateText.equals(activateText)) toastMessage += "activate";
-            toastMessage += " your comment";
+            if(deactivatePressedTime + 2500 > System.currentTimeMillis() && isDeactivateClicked) {
+                deactivateToast.cancel();
 
-            deactivateToast = Toast.makeText(myContext, toastMessage, Toast.LENGTH_SHORT);
-            deactivateToast.show();
+                setDeactivatedComment();
 
-            isDeactivateClicked = true;
+                isDeactivateClicked = false;
+            }
+            else {
+                String toastMessage = "Press again to ";
+                if(currentDeactivateText.equals(deactivateText)) toastMessage += "deactivate";
+                else if(currentDeactivateText.equals(activateText)) toastMessage += "activate";
+                toastMessage += " your comment";
+
+                deactivateToast = Toast.makeText(myContext, toastMessage, Toast.LENGTH_SHORT);
+                deactivateToast.show();
+
+                isDeactivateClicked = true;
+            }
+            deactivatePressedTime = System.currentTimeMillis();
         }
-        deactivatePressedTime = System.currentTimeMillis();
     }
 
     private void setDeactivatedComment() {
         if(!isUpdatingComments) {
+            if(isConfirmationDialogEnabled) {
+                confirmationDialogProgressBar.setVisibility(View.VISIBLE);
+                setConfirmationDialogScreenEnabled(false);
+            }
+            else commentProgressBar.setVisibility(View.VISIBLE);
+
             isUpdatingComments = true;
             setCommentOnScreenEnabled(false);
-            commentProgressBar.setVisibility(View.VISIBLE);
 
             boolean value = false;
             if(currentDeactivateText.equals(deactivateText)) value = true;
@@ -833,7 +909,12 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
                             }
                             isUpdatingComments = false;
                             updateCommentUI(currentUserComment);
-                            commentProgressBar.setVisibility(View.GONE);
+
+                            if(isConfirmationDialogEnabled) {
+                                confirmationDialogProgressBar.setVisibility(View.GONE);
+                                setConfirmationDialogScreenEnabled(true);
+                            }
+                            else commentProgressBar.setVisibility(View.GONE);
                         }
                     });
         }
@@ -841,28 +922,39 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
 
     @Override
     public void reportImageOnClick(String spotId, String senderUserId, Comment comment) {
-        if(reportPressedTime + 2500 > System.currentTimeMillis() && isReportClicked) {
-            reportToast.cancel();
-
-            setReportedComment(spotId, senderUserId, comment);
-
-            isReportClicked = false;
+        if(isConfirmationDialogEnabled) {
+            openConfirmationDialog("Report Comment", "Do you want to report the comment?");
+            confirmationDialogConfirmButton.setOnClickListener(view -> setReportedComment(spotId, senderUserId, comment));
         }
         else {
-            String toastMessage = "Press again to report the comment";
+            if(reportPressedTime + 2500 > System.currentTimeMillis() && isReportClicked) {
+                reportToast.cancel();
 
-            reportToast = Toast.makeText(myContext, toastMessage, Toast.LENGTH_SHORT);
-            reportToast.show();
+                setReportedComment(spotId, senderUserId, comment);
 
-            isReportClicked = true;
+                isReportClicked = false;
+            }
+            else {
+                String toastMessage = "Press again to report the comment";
+
+                reportToast = Toast.makeText(myContext, toastMessage, Toast.LENGTH_SHORT);
+                reportToast.show();
+
+                isReportClicked = true;
+            }
+            reportPressedTime = System.currentTimeMillis();
         }
-        reportPressedTime = System.currentTimeMillis();
     }
 
     private void setReportedComment(String spotId, String senderUserId, Comment comment) {
         if(!isUpdatingComments) {
+            if(isConfirmationDialogEnabled) {
+                confirmationDialogProgressBar.setVisibility(View.VISIBLE);
+                setConfirmationDialogScreenEnabled(false);
+            }
+            else commentProgressBar.setVisibility(View.VISIBLE);
+
             setCommentOnScreenEnabled(false);
-            commentProgressBar.setVisibility(View.VISIBLE);
             comment.setUserId(senderUserId);
 
             upVotedCommentsRef.child(spotId).child(senderUserId).removeValue();
@@ -876,6 +968,8 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
                             toastMessage,
                             Toast.LENGTH_SHORT
                     ).show();
+
+                    confirmationDialog.dismiss();
                 }
                 else {
                     if(task.getException() != null) {
@@ -888,7 +982,12 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
                     }
                 }
                 updateCommentUI(currentUserComment);
-                commentProgressBar.setVisibility(View.GONE);
+
+                if(isConfirmationDialogEnabled) {
+                    confirmationDialogProgressBar.setVisibility(View.GONE);
+                    setConfirmationDialogScreenEnabled(true);
+                }
+                else commentProgressBar.setVisibility(View.GONE);
             });
         }
     }
@@ -995,8 +1094,14 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
 
             if(users.get(users.size() - 1).getId().equals(user1.getId())) {
                 isUpdatingComments = false;
-                commentProgressBar.setVisibility(View.GONE);
                 commentAdapter.notifyDataSetChanged();
+
+                if(isConfirmationDialogEnabled) {
+                    confirmationDialogProgressBar.setVisibility(View.GONE);
+                    setConfirmationDialogScreenEnabled(true);
+                    confirmationDialog.dismiss();
+                }
+                commentProgressBar.setVisibility(View.GONE);
 
                 String toastMessage = null;
                 if (fromAppeal) toastMessage = "Your comment is now in appeal";

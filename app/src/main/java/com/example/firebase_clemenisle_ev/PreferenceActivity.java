@@ -11,7 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class PreferenceActivity extends AppCompatActivity {
 
-    SwitchMaterial swBookingAlert, swAppVersionInfo, swBookingOptionDialog;
+    SwitchMaterial swBookingAlert, swAppVersionInfo, swBookingOptionDialog, swConfirmationDialog;
 
     Context myContext;
     Resources myResources;
@@ -19,7 +19,7 @@ public class PreferenceActivity extends AppCompatActivity {
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;
 
-    boolean isShowAppVersionInfoEnabled, isShowBookingAlertEnabled, isBookingOptionDialogEnabled;
+    boolean isShowAppVersionInfoEnabled, isShowBookingAlertEnabled, isBookingOptionDialogEnabled, isConfirmationDialogEnabled;
 
     private void initSharedPreferences() {
         sharedPreferences = myContext.getSharedPreferences(
@@ -30,6 +30,7 @@ public class PreferenceActivity extends AppCompatActivity {
         isShowBookingAlertEnabled = sharedPreferences.getBoolean("isShowBookingAlertEnabled", true);
         isShowAppVersionInfoEnabled = sharedPreferences.getBoolean("isShowAppVersionInfoEnabled", true);
         isBookingOptionDialogEnabled = sharedPreferences.getBoolean("isBookingOptionDialogEnabled", true);
+        isConfirmationDialogEnabled = sharedPreferences.getBoolean("isConfirmationDialogEnabled", true);
     }
     private void sendIsShowBookingAlertEnabledPreferences(boolean value) {
         editor.putBoolean("isShowBookingAlertEnabled", value);
@@ -46,6 +47,11 @@ public class PreferenceActivity extends AppCompatActivity {
         editor.apply();
     }
 
+    private void sendIsConfirmationDialogEnabledPreferences(boolean value) {
+        editor.putBoolean("isConfirmationDialogEnabled", value);
+        editor.apply();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,6 +60,7 @@ public class PreferenceActivity extends AppCompatActivity {
         swBookingAlert = findViewById(R.id.swBookingAlert);
         swAppVersionInfo = findViewById(R.id.swAppVersionInfo);
         swBookingOptionDialog = findViewById(R.id.swBookingOptionDialog);
+        swConfirmationDialog = findViewById(R.id.swConfirmationDialog);
 
         myContext = PreferenceActivity.this;
         myResources = myContext.getResources();
@@ -63,9 +70,11 @@ public class PreferenceActivity extends AppCompatActivity {
         swBookingAlert.setChecked(isShowBookingAlertEnabled);
         swAppVersionInfo.setChecked(isShowAppVersionInfoEnabled);
         swBookingOptionDialog.setChecked(isBookingOptionDialogEnabled);
+        swConfirmationDialog.setChecked(isConfirmationDialogEnabled);
 
         swBookingAlert.setOnClickListener(view -> sendIsShowBookingAlertEnabledPreferences(swBookingAlert.isChecked()));
         swAppVersionInfo.setOnClickListener(view -> sendIsShowAppVersionInfoEnabledPreferences(swAppVersionInfo.isChecked()));
         swBookingOptionDialog.setOnClickListener(view -> sendIsBookingOptionDialogEnabledPreferences(swBookingOptionDialog.isChecked()));
+        swConfirmationDialog.setOnClickListener(view -> sendIsConfirmationDialogEnabledPreferences(swConfirmationDialog.isChecked()));
     }
 }
