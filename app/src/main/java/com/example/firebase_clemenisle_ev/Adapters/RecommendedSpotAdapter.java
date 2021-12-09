@@ -199,6 +199,8 @@ public class RecommendedSpotAdapter extends RecyclerView.Adapter<RecommendedSpot
             tvName = itemView.findViewById(R.id.tvName);
             addButton = itemView.findViewById(R.id.addButton);
             touristSpotLayout = itemView.findViewById(R.id.touristSpotLayout);
+
+            setIsRecyclable(false);
         }
     }
 

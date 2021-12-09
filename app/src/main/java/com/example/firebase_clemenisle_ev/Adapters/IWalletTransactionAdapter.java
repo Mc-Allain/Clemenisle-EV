@@ -158,6 +158,7 @@ public class IWalletTransactionAdapter extends RecyclerView.Adapter<IWalletTrans
                 tvTransactionStatus.setVisibility(View.VISIBLE);
                 tvTransactionStatus.setTextColor(colorBlue);
                 tvTransactionStatus.setText(bookingId);
+                tvTransactionStatus.setTypeface(tvTransactionStatus.getTypeface(), Typeface.NORMAL);
 
                 backgroundLayout.setOnClickListener(view -> {
                     if(bookingId.equals(selectedBookingId)) ((Activity) myContext).onBackPressed();

@@ -133,8 +133,9 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
 
             if(commentRecord != null) {
                 String commentValue = commentRecord.getValue();
-                boolean fouled = commentRecord.isFouled();
-                boolean appealed = commentRecord.isAppealed();
+                boolean isDeactivated = commentRecord.isDeactivated();
+                boolean isFouled = commentRecord.isFouled();
+                boolean isAppealed = commentRecord.isAppealed();
 
                 extvComment.setText(commentValue);
                 backgroundLayout.setVisibility(View.VISIBLE);
@@ -144,7 +145,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
                 timestamp = dateTimeDifference.getResult();
                 tvTimestamp.setText(timestamp);
 
-                if(fouled) {
+                if(isFouled) {
                     tvCommentStatus.setVisibility(View.VISIBLE);
                     tvCommentStatus.setText(defaultStatusText);
 
@@ -156,7 +157,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
                         appealImage.setVisibility(View.VISIBLE);
 
                         String status = defaultStatusText;
-                        if(appealed) {
+                        if(isAppealed) {
                             appealImage.setEnabled(false);
                             appealImage.getDrawable().setTint(colorInitial);
                             status = defaultStatusText + " " + appealedtext;
@@ -177,7 +178,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
 
                     appealImage.setVisibility(View.GONE);
 
-                    if(commentRecord.isDeactivated()) {
+                    if(isDeactivated) {
                         tvCommentStatus.setVisibility(View.VISIBLE);
                         tvCommentStatus.setText(notActiveText);
 
