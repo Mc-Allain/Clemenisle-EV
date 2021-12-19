@@ -930,6 +930,7 @@ public class RouteActivity extends AppCompatActivity implements
     private void openOnlinePayment() {
         Intent intent = new Intent(myContext, OnlinePaymentActivity.class);
         intent.putExtra("bookingId", bookingId);
+        intent.putExtra("inDriverModule", inDriverModule);
         myContext.startActivity(intent);
     }
 
@@ -1744,20 +1745,22 @@ public class RouteActivity extends AppCompatActivity implements
         buttonLayout2.setVisibility(View.GONE);
         cancelButton.setVisibility(View.GONE);
 
-        if(inDriverModule) buttonLayout.setVisibility(View.GONE);
+        if(inDriverModule) onlinePaymentButton.setText("Passenger's Online Payment");
 
         switch (status) {
             case "Pending":
                 color = myResources.getColor(R.color.orange);
 
-                cancelButton.setVisibility(View.VISIBLE);
-                if(!inDriverModule && isShowBookingAlertEnabled)dialog.show();
+                if(!inDriverModule) {
+                    cancelButton.setVisibility(View.VISIBLE);
+                    if(isShowBookingAlertEnabled) dialog.show();
+                }
                 break;
             case "Request":
             case "Booked":
                 color = myResources.getColor(R.color.green);
 
-                if(!inDriverModule && isShowBookingAlertEnabled)dialog.show();
+                if(!inDriverModule && isShowBookingAlertEnabled) dialog.show();
                 break;
             case "Ongoing":
                 if(inDriverModule) buttonLayout2.setVisibility(View.VISIBLE);

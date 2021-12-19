@@ -2,7 +2,7 @@ package com.example.firebase_clemenisle_ev.Classes;
 
 public class Comment {
     boolean appealed = false, deactivated = false, fouled = false;
-    String id, timestamp, userId, value;
+    String id, timestamp, userId  = null, value;
 
     public Comment() {
     }

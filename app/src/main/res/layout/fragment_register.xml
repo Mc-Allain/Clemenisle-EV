@@ -373,6 +373,33 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/secondConstraint">
 
+                    <TextView
+                        android:id="@+id/tvMessage1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:fontFamily="@font/ubuntu"
+                        android:text="By clicking Submit, you agree to our "
+                        android:textColor="@color/black"
+                        app:layout_constraintEnd_toEndOf="@+id/tlEmailAddress"
+                        app:layout_constraintStart_toStartOf="@+id/tlEmailAddress"
+                        app:layout_constraintTop_toBottomOf="@+id/tlEmailAddress" />
+
+                    <TextView
+                        android:id="@+id/tvMessage2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:layout_marginBottom="64dp"
+                        android:fontFamily="@font/ubuntu"
+                        android:text="Privacy Notice"
+                        android:textColor="@color/blue"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="@+id/tlEmailAddress"
+                        app:layout_constraintStart_toStartOf="@+id/tlEmailAddress"
+                        app:layout_constraintTop_toBottomOf="@+id/tvMessage1" />
+
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/tlEmailAddress"
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
@@ -380,7 +407,6 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="24dp"
                         android:layout_marginEnd="24dp"
-                        android:layout_marginBottom="64dp"
                         android:hint="Email Address"
                         app:counterEnabled="true"
                         app:counterMaxLength="64"
@@ -389,9 +415,9 @@
                         app:helperText="Required"
                         app:helperTextEnabled="true"
                         app:helperTextTextColor="@color/red"
-                        app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
                         app:startIconDrawable="@drawable/ic_baseline_email_24">
 
                         <com.google.android.material.textfield.TextInputEditText
@@ -399,10 +425,10 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/ubuntu"
+                            android:imeOptions="actionSend"
                             android:inputType="textEmailAddress"
                             android:maxLength="64"
-                            android:textColor="@color/black"
-                            android:imeOptions="actionSend" />
+                            android:textColor="@color/black" />
 
                     </com.google.android.material.textfield.TextInputLayout>
 

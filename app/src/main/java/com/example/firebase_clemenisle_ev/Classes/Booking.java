@@ -8,14 +8,15 @@ import java.util.List;
 public class Booking {
     private BookingType bookingType;
     private Station endStation;
-    private String id, message, schedule, timestamp;
+    private String id, message = null, schedule, timestamp;
     private boolean paid;
     private Station startStation;
     private String status;
     private final List<Route> routeList = new ArrayList<>();
 
     private SimpleTouristSpot destinationSpot;
-    private double originLat, originLng;
+    private double originLat = new MapCoordinates().getInitialLatLng().latitude,
+            originLng = new MapCoordinates().getInitialLatLng().longitude;
 
     boolean notified = true, read = false;
     private final List<Chat> chats = new ArrayList<>();
@@ -24,11 +25,11 @@ public class Booking {
     List<ReferenceNumber> referenceNumberList = new ArrayList<>();
     double refundedAmount;
 
-    String pickUpTime, dropOffTime;
+    String pickUpTime = null, dropOffTime = null;
 
-    String reason;
+    String reason = null;
 
-    String remarks;
+    String remarks = null;
     int rating = 0;
 
     public Booking() {

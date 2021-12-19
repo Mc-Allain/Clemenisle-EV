@@ -5,8 +5,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.Html;
+import android.text.SpannableString;
+import android.text.Spanned;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,6 +30,7 @@ import com.example.firebase_clemenisle_ev.Classes.User;
 import com.example.firebase_clemenisle_ev.MainActivity;
 import com.example.firebase_clemenisle_ev.PostRegisterActivity;
 import com.example.firebase_clemenisle_ev.R;
+import com.example.firebase_clemenisle_ev.WebViewActivity;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -52,6 +57,8 @@ public class RegisterFragment extends Fragment {
     ImageView pwLengthCheckImage, pwUpperCheckImage, pwLowerCheckImage, pwNumberCheckImage, pwSymbolCheckImage;
     TextView tvPWLength, tvPWUpper, tvPWLower, tvPWNumber, tvPWSymbol;
 
+    TextView tvMessage1, tvMessage2;
+
     ProgressBar progressBar;
 
     String lastName = "", firstName = "", middleName = "",
@@ -74,6 +81,8 @@ public class RegisterFragment extends Fragment {
     public int currentStep = 1, endStep = 3;
 
     boolean isRegistered = false, isAdded = false;
+
+    String message1Text = "By clicking <b>Submit</b>, you agree to our";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -117,6 +126,9 @@ public class RegisterFragment extends Fragment {
         continueButton = view.findViewById(R.id.continueButton);
         backButton = view.findViewById(R.id.backButton);
 
+        tvMessage1 = view.findViewById(R.id.tvMessage1);
+        tvMessage2 = view.findViewById(R.id.tvMessage2);
+
         progressBar = view.findViewById(R.id.progressBar);
 
         myContext = getContext();
@@ -131,6 +143,13 @@ public class RegisterFragment extends Fragment {
         cslRed = ColorStateList.valueOf(myResources.getColor(R.color.red));
 
         tvSteps.setText(getStepText());
+        tvMessage1.setText(fromHtml(message1Text));
+
+        tvMessage2.setOnClickListener(view1 -> {
+            Intent intent = new Intent(myContext, WebViewActivity.class);
+            intent.putExtra("toPrivacyNotice", true);
+            startActivity(intent);
+        });
 
         continueButton.setOnClickListener(view1 -> {
             if(currentStep == 1) {
@@ -777,5 +796,18 @@ public class RegisterFragment extends Fragment {
         }
 
         continueButton.setEnabled(vEA);
+    }
+
+    @SuppressWarnings("deprecation")
+    public static Spanned fromHtml(String html){
+        if(html == null) {
+            return new SpannableString("");
+        }
+        else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            return Html.fromHtml(html, Html.FROM_HTML_MODE_LEGACY);
+        }
+        else {
+            return Html.fromHtml(html);
+        }
     }
 }

@@ -488,6 +488,7 @@ public class MainActivity extends AppCompatActivity {
 
         updateAppButton.setOnClickListener(view -> {
             Intent newIntent = new Intent(myContext, WebViewActivity.class);
+            newIntent.putExtra("toUpdate", true);
             startActivity(newIntent);
         });
 

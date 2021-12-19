@@ -7,7 +7,7 @@ import java.util.List;
 
 public class User {
 
-    private String firstName, id, lastName, middleName, profileImage;
+    private String firstName, id, lastName, middleName = null, profileImage;
     private final List<SimpleTouristSpot> likedSpots = new ArrayList<>();
     private final List<Booking> bookingList = new ArrayList<>();
     private final List<Comment> comments = new ArrayList<>();
@@ -16,7 +16,7 @@ public class User {
     private final List<Comment> reportedComments = new ArrayList<>();
     private final List<Booking> taskList = new ArrayList<>();
     private boolean developer, admin, driver;
-    private String plateNumber;
+    private String plateNumber = null;
     private double iWallet;
     private final List<IWalletTransaction> transactionList = new ArrayList<>();
     private double amountToRemit = 0, amountToClaim = 0, incomeShare = 0;

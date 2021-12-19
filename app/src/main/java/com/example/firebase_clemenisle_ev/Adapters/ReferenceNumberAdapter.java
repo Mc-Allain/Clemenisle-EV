@@ -21,7 +21,7 @@ public class ReferenceNumberAdapter extends RecyclerView.Adapter<ReferenceNumber
 
     List<ReferenceNumber> referenceNumberList;
     String status;
-    boolean isCompletePayment = false;
+    boolean isCompletePayment = false, inDriverModule;
     LayoutInflater inflater;
 
     Context myContext;
@@ -29,8 +29,9 @@ public class ReferenceNumberAdapter extends RecyclerView.Adapter<ReferenceNumber
 
     OnInitiatePaymentListener onInitiatePaymentListener;
 
-    public ReferenceNumberAdapter(Context context, List<ReferenceNumber> referenceNumberList) {
+    public ReferenceNumberAdapter(Context context, List<ReferenceNumber> referenceNumberList, boolean inDriverModule) {
         this.referenceNumberList = referenceNumberList;
+        this.inDriverModule = inDriverModule;
         this.inflater = LayoutInflater.from(context);
     }
 
@@ -57,7 +58,7 @@ public class ReferenceNumberAdapter extends RecyclerView.Adapter<ReferenceNumber
         iWalletLayout.setVisibility(View.GONE);
 
         if(status != null && (status.equals("Pending") || status.equals("Booked")) &&
-                !isCompletePayment && (position == 0 || position == 1)) {
+                !isCompletePayment && (position == 0 || position == 1) && !inDriverModule) {
             if(position == 0) {
                 iWalletLayout.setVisibility(View.VISIBLE);
                 iWalletLayout.setOnClickListener(view -> onInitiatePaymentListener.useIWallet());

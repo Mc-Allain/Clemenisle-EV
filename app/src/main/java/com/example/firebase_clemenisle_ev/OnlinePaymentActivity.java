@@ -57,7 +57,7 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
     FirebaseUser firebaseUser;
 
     ConstraintLayout refundedAmountLayout;
-    TextView tvActivityCaption, tvActivityCaption2, tvActivityCaption3, tvHelp, tvView,
+    TextView tvActivityTitle, tvActivityCaption, tvActivityCaption2, tvActivityCaption3, tvHelp, tvView,
             tvPrice2, tvCreditedAmount2, tvBalance2, tvRefundedAmount2, tvLog;
     ImageView helpImage, reloadImage;
     RecyclerView referenceNumberView;
@@ -110,6 +110,8 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
 
     boolean isGeneratingTransactionId = false;
 
+    boolean inDriverModule;
+
     private void initSharedPreferences() {
         SharedPreferences sharedPreferences = myContext
                 .getSharedPreferences("login", Context.MODE_PRIVATE);
@@ -131,6 +133,8 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_online_payment);
 
+
+        tvActivityTitle = findViewById(R.id.tvActivityTitle);
         tvActivityCaption = findViewById(R.id.tvActivityCaption);
         tvActivityCaption2 = findViewById(R.id.tvActivityCaption2);
         tvActivityCaption3 = findViewById(R.id.tvActivityCaption3);
@@ -165,6 +169,7 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
         Intent intent = getIntent();
         bookingId = intent.getStringExtra("bookingId");
         fromIWallet = intent.getBooleanExtra("fromIWallet", false);
+        inDriverModule = intent.getBooleanExtra("inDriverModule", false);
 
         initSharedPreferences();
         initAddReferenceNumberDialog();
@@ -192,10 +197,12 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
         }
         catch (Exception ignored) {}
 
+        if(inDriverModule) tvActivityTitle.setText("Passenger's Online Payment");
+
         LinearLayoutManager linearLayout =
                 new LinearLayoutManager(myContext, LinearLayoutManager.VERTICAL, false);
         referenceNumberView.setLayoutManager(linearLayout);
-        referenceNumberAdapter = new ReferenceNumberAdapter(myContext, referenceNumberList);
+        referenceNumberAdapter = new ReferenceNumberAdapter(myContext, referenceNumberList, inDriverModule);
         referenceNumberView.setAdapter(referenceNumberAdapter);
         referenceNumberAdapter.setInitiatePaymentListener(this);
 
@@ -744,7 +751,7 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
                 ConstraintLayout.LayoutParams layoutParams =
                         (ConstraintLayout.LayoutParams) tvLog.getLayoutParams();
 
-                if(status.equals("Pending") || status.equals("Booked")) {
+                if((status.equals("Pending") || status.equals("Booked")) && !inDriverModule) {
                     setActivityCaptionVisibility(true);
                     layoutParams.setMargins(layoutParams.leftMargin, dpToPx(96),
                             layoutParams.rightMargin, layoutParams.bottomMargin);
