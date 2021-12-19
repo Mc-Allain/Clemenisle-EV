@@ -78,6 +78,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
                 reportImage = holder.reportImage,
                 upVoteImage = holder.upVoteImage,
                 downVoteImage = holder.downVoteImage,
+                ownerImage = holder.ownerImage,
                 developerImage = holder.developerImage,
                 adminImage = holder.adminImage,
                 driverImage = holder.driverImage,
@@ -208,11 +209,24 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
                 }
 
                 badgeLayout.setVisibility(View.GONE);
+                ownerImage.setVisibility(View.GONE);
                 developerImage.setVisibility(View.GONE);
                 adminImage.setVisibility(View.GONE);
                 driverImage.setVisibility(View.GONE);
                 likerImage.setVisibility(View.GONE);
 
+                if(user.isOwner()) {
+                    badgeLayout.setVisibility(View.VISIBLE);
+                    ownerImage.setVisibility(View.VISIBLE);
+                    ownerImage.setOnLongClickListener(view -> {
+                        Toast.makeText(
+                                myContext,
+                                "Owner",
+                                Toast.LENGTH_SHORT
+                        ).show();
+                        return false;
+                    });
+                }
                 if(user.isDeveloper()) {
                     badgeLayout.setVisibility(View.VISIBLE);
                     developerImage.setVisibility(View.VISIBLE);
@@ -542,7 +556,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
         TextView tvUserFullName, tvTimestamp, tvCommentStatus, tvUpVotes, tvDownVotes, tvLoadComment;
         ExpandableTextView extvComment;
         ImageView profileImage, editImage, appealImage, deactivateImage, reportImage,
-                upVoteImage, downVoteImage, developerImage, adminImage, driverImage, likerImage;
+                upVoteImage, downVoteImage, developerImage, adminImage, driverImage, likerImage, ownerImage;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -566,6 +580,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
             downVoteImage = itemView.findViewById(R.id.downVoteImage);
 
             badgeLayout = itemView.findViewById(R.id.badgeLayout);
+            ownerImage = itemView.findViewById(R.id.ownerImage);
             developerImage = itemView.findViewById(R.id.developerImage);
             adminImage = itemView.findViewById(R.id.adminImage);
             driverImage = itemView.findViewById(R.id.driverImage);

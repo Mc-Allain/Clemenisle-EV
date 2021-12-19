@@ -62,16 +62,28 @@
                 app:layout_constraintTop_toBottomOf="@+id/tvUserFullName">
 
                 <ImageView
-                    android:id="@+id/driverImage"
+                    android:id="@+id/ownerImage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="4dp"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/developerImage"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/ic_baseline_business_center_24"
+                    app:tint="@color/orange" />
+
+                <ImageView
+                    android:id="@+id/developerImage"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="4dp"
                     android:visibility="gone"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/likerImage"
+                    app:layout_constraintEnd_toStartOf="@+id/adminImage"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_baseline_electric_rickshaw_24"
+                    app:srcCompat="@drawable/ic_baseline_developer_mode_24"
                     app:tint="@color/orange" />
 
                 <ImageView
@@ -88,16 +100,16 @@
                     app:tint="@color/orange" />
 
                 <ImageView
-                    android:id="@+id/developerImage"
+                    android:id="@+id/driverImage"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="4dp"
                     android:visibility="gone"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/adminImage"
+                    app:layout_constraintEnd_toStartOf="@+id/likerImage"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_baseline_developer_mode_24"
+                    app:srcCompat="@drawable/ic_baseline_electric_rickshaw_24"
                     app:tint="@color/orange" />
 
                 <ImageView

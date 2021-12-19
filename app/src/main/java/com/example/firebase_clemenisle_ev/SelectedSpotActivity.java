@@ -97,7 +97,7 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
     TextView tvUserFullName, tvCommentStatus;
     ExpandableTextView extvComment;
     ImageView profileImage, editImage, appealImage, deactivateImage;
-    ImageView developerImage, adminImage, driverImage, likerImage;
+    ImageView developerImage, adminImage, driverImage, likerImage, ownerImage;
 
     RecyclerView commentView;
     ProgressBar commentProgressBar;
@@ -248,6 +248,7 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
         deactivateImage = findViewById(R.id.deactivateImage);
 
         badgeLayout = findViewById(R.id.badgeLayout);
+        ownerImage = findViewById(R.id.ownerImage);
         developerImage = findViewById(R.id.developerImage);
         adminImage = findViewById(R.id.adminImage);
         driverImage = findViewById(R.id.driverImage);
@@ -1182,10 +1183,23 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
             tvUserFullName.setText(fromHtml(fullName));
 
             badgeLayout.setVisibility(View.GONE);
+            ownerImage.setVisibility(View.GONE);
             developerImage.setVisibility(View.GONE);
             adminImage.setVisibility(View.GONE);
             driverImage.setVisibility(View.GONE);
 
+            if(user.isOwner()) {
+                badgeLayout.setVisibility(View.VISIBLE);
+                ownerImage.setVisibility(View.VISIBLE);
+                ownerImage.setOnLongClickListener(view -> {
+                    Toast.makeText(
+                            myContext,
+                            "Owner",
+                            Toast.LENGTH_SHORT
+                    ).show();
+                    return false;
+                });
+            }
             if(user.isDeveloper()) {
                 badgeLayout.setVisibility(View.VISIBLE);
                 developerImage.setVisibility(View.VISIBLE);

@@ -15,7 +15,7 @@ public class User {
     private final List<Comment> downVotedComments = new ArrayList<>();
     private final List<Comment> reportedComments = new ArrayList<>();
     private final List<Booking> taskList = new ArrayList<>();
-    private boolean developer, admin, driver;
+    private boolean developer, admin, driver, owner;
     private String plateNumber = null;
     private double iWallet;
     private final List<IWalletTransaction> transactionList = new ArrayList<>();
@@ -130,6 +130,8 @@ public class User {
             admin = dataSnapshot.child("admin").getValue(Boolean.class);
         if(dataSnapshot.child("driver").exists())
             driver = dataSnapshot.child("driver").getValue(Boolean.class);
+        if(dataSnapshot.child("owner").exists())
+            owner = dataSnapshot.child("owner").getValue(Boolean.class);
 
         plateNumber = dataSnapshot.child("plateNumber").getValue(String.class);
 
@@ -242,6 +244,10 @@ public class User {
 
     public boolean isDriver() {
         return driver;
+    }
+
+    public boolean isOwner() {
+        return owner;
     }
 
     public String getPlateNumber() {
