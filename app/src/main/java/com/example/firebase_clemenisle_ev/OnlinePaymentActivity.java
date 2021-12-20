@@ -189,7 +189,10 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
                         Toast.LENGTH_LONG
                 ).show();
             }
-            else userId = firebaseUser.getUid();
+            else {
+                if(inDriverModule) userId = intent.getStringExtra("passengerUserId");
+                else userId = firebaseUser.getUid();
+            }
         }
 
         try {
@@ -311,7 +314,7 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
             if (submitPressedTime + 2500 > System.currentTimeMillis()) {
                 submitToast.cancel();
 
-                submitReferenceNumber();
+                if(!inDriverModule) submitReferenceNumber();
             } else {
                 submitToast = Toast.makeText(myContext,
                         "Press again to submit", Toast.LENGTH_SHORT);
@@ -361,7 +364,7 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
                 new DateTimeToString().getDateAndTime(), 0);
         referenceNumber.setReferenceNumber(referenceNumberValue);
 
-        addReferenceNumberToDatabase(referenceNumber, rnId, 0);
+        if(!inDriverModule) addReferenceNumberToDatabase(referenceNumber, rnId, 0);
     }
 
     private String getRNID() {
@@ -496,7 +499,7 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
             if (submitPressedTime + 2500 > System.currentTimeMillis()) {
                 submitToast.cancel();
 
-                generateTransactionId();
+                if(!inDriverModule) generateTransactionId();
             } else {
                 submitToast = Toast.makeText(myContext,
                         "Press again to submit", Toast.LENGTH_SHORT);
@@ -589,8 +592,8 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
         referenceNumber.setiWalletUsed(true);
         referenceNumber.setNotified(false);
 
-        addReferenceNumberToDatabase(referenceNumber, rnId, 1);
-        addToTransactionList(transactionId);
+        if(!inDriverModule) addReferenceNumberToDatabase(referenceNumber, rnId, 1);
+        if(!inDriverModule) addToTransactionList(transactionId);
     }
 
     private void addToTransactionList(String wtId) {
@@ -715,13 +718,13 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
                     referenceNumberAdapter.setCompletePayment(true);
                     balance = 0;
 
-                    if(!isPaid) usersRef.child(userId).child("bookingList").child(bookingId).
+                    if(!isPaid && !inDriverModule) usersRef.child(userId).child("bookingList").child(bookingId).
                             child("paid").setValue(true);
                 }
                 else {
                     referenceNumberAdapter.setCompletePayment(false);
 
-                    if(isPaid) usersRef.child(userId).child("bookingList").child(bookingId).
+                    if(isPaid && !inDriverModule) usersRef.child(userId).child("bookingList").child(bookingId).
                             child("paid").setValue(false);
                 }
                 refundedAmountLayout.setVisibility(View.GONE);

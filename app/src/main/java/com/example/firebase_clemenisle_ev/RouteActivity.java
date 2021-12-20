@@ -931,7 +931,20 @@ public class RouteActivity extends AppCompatActivity implements
         Intent intent = new Intent(myContext, OnlinePaymentActivity.class);
         intent.putExtra("bookingId", bookingId);
         intent.putExtra("inDriverModule", inDriverModule);
+        if(inDriverModule) intent.putExtra("passengerUserId", getPassengerUserId());
         myContext.startActivity(intent);
+    }
+
+    private String getPassengerUserId() {
+        for(User user : users) {
+            List<Booking> bookingList = user.getBookingList();
+            for(Booking booking : bookingList) {
+                if(booking.getId().equals(bookingId)) {
+                    return user.getId();
+                }
+            }
+        }
+        return null;
     }
 
     private void completeTask() {
