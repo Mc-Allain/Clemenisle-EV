@@ -1755,6 +1755,8 @@ public class RouteActivity extends AppCompatActivity implements
                     cancelButton.setVisibility(View.VISIBLE);
                     if(isShowBookingAlertEnabled) dialog.show();
                 }
+                else buttonLayout.setVisibility(View.GONE);
+
                 break;
             case "Request":
             case "Booked":
