@@ -190,8 +190,14 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
                 ).show();
             }
             else {
-                if(inDriverModule) userId = intent.getStringExtra("passengerUserId");
-                else userId = firebaseUser.getUid();
+                if(inDriverModule) {
+                    tvView.setVisibility(View.GONE);
+                    userId = intent.getStringExtra("passengerUserId");
+                }
+                else {
+                    tvView.setVisibility(View.VISIBLE);
+                    userId = firebaseUser.getUid();
+                }
             }
         }
 

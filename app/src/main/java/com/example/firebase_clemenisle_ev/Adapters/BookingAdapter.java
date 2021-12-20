@@ -378,9 +378,6 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
         else dropOffTime = "Unset";
         tvDropOffTime.setText(fromHtml(dropOffTimeText + dropOffTime));
 
-        tvOnlinePayment.setVisibility(View.GONE);
-        onlinePaymentImage.setVisibility(View.GONE);
-
         if(!bookingType.getId().equals("BT99")) {
             Station startStation = booking.getStartStation();
             Station endStation = booking.getEndStation();
@@ -418,13 +415,11 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
             tvLocateEnd.setOnClickListener(view -> openMap(endStation));
             locateEndImage.setOnClickListener(view -> openMap(endStation));
 
-            if(!inDriverModule) {
-                tvOnlinePayment.setVisibility(View.VISIBLE);
-                onlinePaymentImage.setVisibility(View.VISIBLE);
+            tvOnlinePayment.setVisibility(View.VISIBLE);
+            onlinePaymentImage.setVisibility(View.VISIBLE);
 
-                tvOnlinePayment.setOnClickListener(view -> openOnlinePayment(bookingId));
-                onlinePaymentImage.setOnClickListener(view -> openOnlinePayment(bookingId));
-            }
+            tvOnlinePayment.setOnClickListener(view -> openOnlinePayment(bookingId));
+            onlinePaymentImage.setOnClickListener(view -> openOnlinePayment(bookingId));
 
             paidImage.setOnLongClickListener(view -> {
                 Toast.makeText(
@@ -1035,6 +1030,8 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
     private void openOnlinePayment(String bookingId) {
         Intent intent = new Intent(myContext, OnlinePaymentActivity.class);
         intent.putExtra("bookingId", bookingId);
+        intent.putExtra("inDriverModule", inDriverModule);
+        if(inDriverModule) intent.putExtra("passengerUserId", getPassengerUserId(bookingId));
         myContext.startActivity(intent);
     }
 
