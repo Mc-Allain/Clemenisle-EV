@@ -399,7 +399,7 @@ public class LoginFragment extends Fragment {
                         }
                         else {
                             firebaseAuth.signOut();
-                            loginFailed("Failed to get the current user");
+                            loginFailed("Failed to get the current user. Account logged out.");
                         }
                     }
                     else {
@@ -420,6 +420,9 @@ public class LoginFragment extends Fragment {
         }
         else if(error.toLowerCase().contains("internal error")) {
             caption = "Internal error. Please try again.";
+        }
+        else if(error.toLowerCase().contains("blocked all requests")) {
+            caption = "This device is blocked temporarily. Please try again next time.";
         }
         else {
             caption = error;

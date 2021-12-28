@@ -158,7 +158,7 @@ public class DriverTaskListFragment extends Fragment implements BookingAdapter.O
 
                 Toast.makeText(
                         myContext,
-                        "Failed to get the current user",
+                        "Failed to get the current user. Account logged out.",
                         Toast.LENGTH_LONG
                 ).show();
             }
@@ -526,7 +526,7 @@ public class DriverTaskListFragment extends Fragment implements BookingAdapter.O
                     }
                 }
 
-                Query driverQuery = firebaseDatabase.getReference("users").
+                Query driverQuery = firebaseDatabase.getReference("users").child("role").
                         orderByChild("driver").equalTo(true);
 
                 driverQuery.addValueEventListener(new ValueEventListener() {

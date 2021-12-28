@@ -208,7 +208,7 @@ public class MainActivity extends AppCompatActivity {
 
                 Toast.makeText(
                         myContext,
-                        "Failed to get the current user",
+                        "Failed to get the current user. Account logged out.",
                         Toast.LENGTH_LONG
                 ).show();
             }
@@ -382,7 +382,7 @@ public class MainActivity extends AppCompatActivity {
                 new DateTimeToString().getDateAndTime(), "Refund", refundAmount);
         transaction.setBookingId(bookingId);
 
-        usersRef.child(userId).child("iWallet").setValue(iWallet + refundAmount);
+        usersRef.child(userId).child("iwallet").setValue(iWallet + refundAmount);
         usersRef.child(userId).child("iWalletTransactionList").child(wtId).setValue(transaction);
         usersRef.child(userId).child("bookingList").child(bookingId).child("refundedAmount").
                 setValue(refundAmount + refundedAmount).addOnCompleteListener(task -> isRefunded = true);
@@ -1105,8 +1105,8 @@ public class MainActivity extends AppCompatActivity {
         if(value.split("\\.")[1].length() == 1) value += 0;
 
         String referenceNumberValue = referenceNumber.getReferenceNumber();
-        String content = value + " has been credited to #" + ".";
-        if(referenceNumberValue == null) content = "You pay " + value + " in your booking.";
+        String content = value + " has been credited to #" + referenceNumberValue + ".";
+        if(referenceNumberValue == null) content = "You paid " + value + " in your booking.";
 
         NotificationCompat.Builder builder =
                 new NotificationCompat.Builder(myContext, booking.getId())
@@ -1133,7 +1133,7 @@ public class MainActivity extends AppCompatActivity {
         notificationManager.notify(1, builder.build());
 
         usersRef.child(userId).child("bookingList").child(booking.getId()).
-                child("referenceNumberList").child(referenceNumber.getId()).
+                child("onlinePaymentList").child(referenceNumber.getId()).
                 child("notified").setValue(true);
     }
 
@@ -1218,7 +1218,7 @@ public class MainActivity extends AppCompatActivity {
 
                 Toast.makeText(
                         myContext,
-                        "Your account has been logged out",
+                        "Your account has been logged out. Account logged out.",
                         Toast.LENGTH_SHORT
                 ).show();
             }

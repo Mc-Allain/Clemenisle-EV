@@ -45,6 +45,7 @@ import com.example.firebase_clemenisle_ev.Classes.Comment;
 import com.example.firebase_clemenisle_ev.Classes.Credentials;
 import com.example.firebase_clemenisle_ev.Classes.DateTimeDifference;
 import com.example.firebase_clemenisle_ev.Classes.FirebaseURL;
+import com.example.firebase_clemenisle_ev.Classes.OtherComment;
 import com.example.firebase_clemenisle_ev.Classes.Route;
 import com.example.firebase_clemenisle_ev.Classes.SimpleTouristSpot;
 import com.example.firebase_clemenisle_ev.Classes.User;
@@ -124,22 +125,22 @@ public class LoggedInUserProfileFragment extends Fragment {
     TextView tvVisitedSpotBadge;
     RecyclerView visitedSpotView;
 
-    ConstraintLayout commentLayout;
+    ConstraintLayout commentLayout, commentTitleLayout;
     TextView tvCommentBadge;
     RecyclerView commentView;
     ImageView userCommentArrowImage;
 
-    ConstraintLayout upVotedCommentLayout;
+    ConstraintLayout upVotedCommentLayout, upVotedCommentTitleLayout;
     TextView tvUpVotedCommentBadge;
     RecyclerView upVotedCommentView;
     ImageView upVotedCommentArrowImage;
 
-    ConstraintLayout downVotedCommentLayout;
+    ConstraintLayout downVotedCommentLayout, downVotedCommentTitleLayout;
     TextView tvDownVotedCommentBadge;
     RecyclerView downVotedCommentView;
     ImageView downVotedCommentArrowImage;
 
-    ConstraintLayout reportedCommentLayout;
+    ConstraintLayout reportedCommentLayout, reportedCommentTitleLayout;
     TextView tvReportedCommentBadge;
     RecyclerView reportedCommentView;
     ImageView reportedCommentArrowImage;
@@ -201,13 +202,13 @@ public class LoggedInUserProfileFragment extends Fragment {
     List<Comment> userComments = new ArrayList<>();
 
     UserProfileCommentAdapter upVotedCommentAdapter;
-    List<Comment> upVotedComments = new ArrayList<>();
+    List<OtherComment> upVotedComments = new ArrayList<>();
 
     UserProfileCommentAdapter downVotedCommentAdapter;
-    List<Comment> downVotedComments = new ArrayList<>();
+    List<OtherComment> downVotedComments = new ArrayList<>();
 
     UserProfileCommentAdapter reportedCommentAdapter;
-    List<Comment> reportedComments = new ArrayList<>();
+    List<OtherComment> reportedComments = new ArrayList<>();
 
     List<Booking> taskList = new ArrayList<>();
 
@@ -288,26 +289,25 @@ public class LoggedInUserProfileFragment extends Fragment {
         visitedSpotView = view.findViewById(R.id.visitedSpotView);
 
         commentLayout = view.findViewById(R.id.commentLayout);
-        tvCommentBadge = view.findViewById(R.id.tvCommentBadge);
-        commentView = view.findViewById(R.id.commentView);
-        userCommentArrowImage = view.findViewById(R.id.userCommentArrowImage);
-
-        commentLayout = view.findViewById(R.id.commentLayout);
+        commentTitleLayout = view.findViewById(R.id.commentTitleLayout);
         tvCommentBadge = view.findViewById(R.id.tvCommentBadge);
         commentView = view.findViewById(R.id.commentView);
         userCommentArrowImage = view.findViewById(R.id.userCommentArrowImage);
 
         upVotedCommentLayout = view.findViewById(R.id.upVotedCommentLayout);
+        upVotedCommentTitleLayout = view.findViewById(R.id.upVotedCommentTitleLayout);
         tvUpVotedCommentBadge = view.findViewById(R.id.tvUpVotedCommentBadge);
         upVotedCommentView = view.findViewById(R.id.upVotedCommentView);
         upVotedCommentArrowImage = view.findViewById(R.id.upVotedCommentArrowImage);
 
         downVotedCommentLayout = view.findViewById(R.id.downVotedCommentLayout);
+        downVotedCommentTitleLayout = view.findViewById(R.id.downVotedCommentTitleLayout);
         tvDownVotedCommentBadge = view.findViewById(R.id.tvDownVotedCommentBadge);
         downVotedCommentView = view.findViewById(R.id.downVotedCommentView);
         downVotedCommentArrowImage = view.findViewById(R.id.downVotedCommentArrowImage);
 
         reportedCommentLayout = view.findViewById(R.id.reportedCommentLayout);
+        reportedCommentTitleLayout = view.findViewById(R.id.reportedCommentTitleLayout);
         tvReportedCommentBadge = view.findViewById(R.id.tvReportedCommentBadge);
         reportedCommentView = view.findViewById(R.id.reportedCommentView);
         reportedCommentArrowImage = view.findViewById(R.id.reportedCommentArrowImage);
@@ -339,7 +339,7 @@ public class LoggedInUserProfileFragment extends Fragment {
 
                 Toast.makeText(
                         myContext,
-                        "Failed to get the current user",
+                        "Failed to get the current user. Account logged out.",
                         Toast.LENGTH_LONG
                 ).show();
             }
@@ -387,25 +387,25 @@ public class LoggedInUserProfileFragment extends Fragment {
         LinearLayoutManager linearLayout4 =
                 new LinearLayoutManager(myContext, LinearLayoutManager.VERTICAL, false);
         commentView.setLayoutManager(linearLayout4);
-        userProfileCommentAdapter = new UserProfileCommentAdapter(myContext, userComments);
+        userProfileCommentAdapter = new UserProfileCommentAdapter(myContext, userComments, new ArrayList<>());
         commentView.setAdapter(userProfileCommentAdapter);
 
         LinearLayoutManager linearLayout5 =
                 new LinearLayoutManager(myContext, LinearLayoutManager.VERTICAL, false);
         upVotedCommentView.setLayoutManager(linearLayout5);
-        upVotedCommentAdapter = new UserProfileCommentAdapter(myContext, upVotedComments);
+        upVotedCommentAdapter = new UserProfileCommentAdapter(myContext, new ArrayList<>(), upVotedComments);
         upVotedCommentView.setAdapter(upVotedCommentAdapter);
 
         LinearLayoutManager linearLayout6 =
                 new LinearLayoutManager(myContext, LinearLayoutManager.VERTICAL, false);
         downVotedCommentView.setLayoutManager(linearLayout6);
-        downVotedCommentAdapter = new UserProfileCommentAdapter(myContext, downVotedComments);
+        downVotedCommentAdapter = new UserProfileCommentAdapter(myContext, new ArrayList<>(), downVotedComments);
         downVotedCommentView.setAdapter(downVotedCommentAdapter);
 
         LinearLayoutManager linearLayout7 =
                 new LinearLayoutManager(myContext, LinearLayoutManager.VERTICAL, false);
         reportedCommentView.setLayoutManager(linearLayout7);
-        reportedCommentAdapter = new UserProfileCommentAdapter(myContext, reportedComments);
+        reportedCommentAdapter = new UserProfileCommentAdapter(myContext, new ArrayList<>(), reportedComments);
         reportedCommentView.setAdapter(reportedCommentAdapter);
 
         viewIWalletImage.setOnClickListener(view1 -> {
@@ -440,103 +440,119 @@ public class LoggedInUserProfileFragment extends Fragment {
             return false;
         });
 
-        userCommentArrowImage.setOnClickListener(view1 -> {
-            if(commentView.getVisibility() == View.GONE) {
-                commentView.setVisibility(View.VISIBLE);
-                userCommentArrowImage.setImageResource(R.drawable.ic_baseline_expand_less_24);
-            }
-            else {
-                commentView.setVisibility(View.GONE);
-                userCommentArrowImage.setImageResource(R.drawable.ic_baseline_expand_more_24);
-            }
+        userCommentArrowImage.setOnClickListener(view1 -> commentLayoutOnClickListener());
 
-            if(upVotedCommentView.getVisibility() == View.VISIBLE) {
-                upVotedCommentView.setVisibility(View.GONE);
-                upVotedCommentArrowImage.setImageResource(R.drawable.ic_baseline_expand_more_24);
-            }
-            if(downVotedCommentView.getVisibility() == View.VISIBLE) {
-                downVotedCommentView.setVisibility(View.GONE);
-                downVotedCommentArrowImage.setImageResource(R.drawable.ic_baseline_expand_more_24);
-            }
-            if(reportedCommentView.getVisibility() == View.VISIBLE) {
-                reportedCommentView.setVisibility(View.GONE);
-                reportedCommentArrowImage.setImageResource(R.drawable.ic_baseline_expand_more_24);
-            }
-        });
+        upVotedCommentArrowImage.setOnClickListener(view1 -> upVotedCommentLayoutOnClickListener());
 
-        upVotedCommentArrowImage.setOnClickListener(view1 -> {
-            if(upVotedCommentView.getVisibility() == View.GONE) {
-                upVotedCommentView.setVisibility(View.VISIBLE);
-                upVotedCommentArrowImage.setImageResource(R.drawable.ic_baseline_expand_less_24);
-            }
-            else {
-                upVotedCommentView.setVisibility(View.GONE);
-                upVotedCommentArrowImage.setImageResource(R.drawable.ic_baseline_expand_more_24);
-            }
+        downVotedCommentArrowImage.setOnClickListener(view1 -> downVotedCommentLayoutOnClickListener());
 
-            if(commentView.getVisibility() == View.VISIBLE) {
-                commentView.setVisibility(View.GONE);
-                userCommentArrowImage.setImageResource(R.drawable.ic_baseline_expand_more_24);
-            }
-            if(downVotedCommentView.getVisibility() == View.VISIBLE) {
-                downVotedCommentView.setVisibility(View.GONE);
-                downVotedCommentArrowImage.setImageResource(R.drawable.ic_baseline_expand_more_24);
-            }
-            if(reportedCommentView.getVisibility() == View.VISIBLE) {
-                reportedCommentView.setVisibility(View.GONE);
-                reportedCommentArrowImage.setImageResource(R.drawable.ic_baseline_expand_more_24);
-            }
-        });
+        reportedCommentArrowImage.setOnClickListener(view1 -> reportedCommentLayoutOnClickListener());
 
-        downVotedCommentArrowImage.setOnClickListener(view1 -> {
-            if(downVotedCommentView.getVisibility() == View.GONE) {
-                downVotedCommentView.setVisibility(View.VISIBLE);
-                downVotedCommentArrowImage.setImageResource(R.drawable.ic_baseline_expand_less_24);
-            }
-            else {
-                downVotedCommentView.setVisibility(View.GONE);
-                downVotedCommentArrowImage.setImageResource(R.drawable.ic_baseline_expand_more_24);
-            }
+        commentTitleLayout.setOnClickListener(view1 -> commentLayoutOnClickListener());
 
-            if(commentView.getVisibility() == View.VISIBLE) {
-                commentView.setVisibility(View.GONE);
-                userCommentArrowImage.setImageResource(R.drawable.ic_baseline_expand_more_24);
-            }
-            if(upVotedCommentView.getVisibility() == View.VISIBLE) {
-                upVotedCommentView.setVisibility(View.GONE);
-                upVotedCommentArrowImage.setImageResource(R.drawable.ic_baseline_expand_more_24);
-            }
-            if(reportedCommentView.getVisibility() == View.VISIBLE) {
-                reportedCommentView.setVisibility(View.GONE);
-                reportedCommentArrowImage.setImageResource(R.drawable.ic_baseline_expand_more_24);
-            }
-        });
+        upVotedCommentTitleLayout.setOnClickListener(view1 -> upVotedCommentLayoutOnClickListener());
 
-        reportedCommentArrowImage.setOnClickListener(view1 -> {
-            if(reportedCommentView.getVisibility() == View.GONE) {
-                reportedCommentView.setVisibility(View.VISIBLE);
-                reportedCommentArrowImage.setImageResource(R.drawable.ic_baseline_expand_less_24);
-            }
-            else {
-                reportedCommentView.setVisibility(View.GONE);
-                reportedCommentArrowImage.setImageResource(R.drawable.ic_baseline_expand_more_24);
-            }
+        downVotedCommentTitleLayout.setOnClickListener(view1 -> downVotedCommentLayoutOnClickListener());
 
-            if(commentView.getVisibility() == View.VISIBLE) {
-                commentView.setVisibility(View.GONE);
-                userCommentArrowImage.setImageResource(R.drawable.ic_baseline_expand_more_24);
-            }
-            if(upVotedCommentView.getVisibility() == View.VISIBLE) {
-                upVotedCommentView.setVisibility(View.GONE);
-                upVotedCommentArrowImage.setImageResource(R.drawable.ic_baseline_expand_more_24);
-            }
-            if(downVotedCommentView.getVisibility() == View.VISIBLE) {
-                downVotedCommentView.setVisibility(View.GONE);
-                downVotedCommentArrowImage.setImageResource(R.drawable.ic_baseline_expand_more_24);
-            }
-        });
+        reportedCommentTitleLayout.setOnClickListener(view1 -> reportedCommentLayoutOnClickListener());
 
         return view;
+    }
+
+    private void commentLayoutOnClickListener() {
+        if(commentView.getVisibility() == View.GONE) {
+            commentView.setVisibility(View.VISIBLE);
+            userCommentArrowImage.setImageResource(R.drawable.ic_baseline_expand_less_24);
+        }
+        else {
+            commentView.setVisibility(View.GONE);
+            userCommentArrowImage.setImageResource(R.drawable.ic_baseline_expand_more_24);
+        }
+
+        if(upVotedCommentView.getVisibility() == View.VISIBLE) {
+            upVotedCommentView.setVisibility(View.GONE);
+            upVotedCommentArrowImage.setImageResource(R.drawable.ic_baseline_expand_more_24);
+        }
+        if(downVotedCommentView.getVisibility() == View.VISIBLE) {
+            downVotedCommentView.setVisibility(View.GONE);
+            downVotedCommentArrowImage.setImageResource(R.drawable.ic_baseline_expand_more_24);
+        }
+        if(reportedCommentView.getVisibility() == View.VISIBLE) {
+            reportedCommentView.setVisibility(View.GONE);
+            reportedCommentArrowImage.setImageResource(R.drawable.ic_baseline_expand_more_24);
+        }
+    }
+
+    private void upVotedCommentLayoutOnClickListener() {
+        if(upVotedCommentView.getVisibility() == View.GONE) {
+            upVotedCommentView.setVisibility(View.VISIBLE);
+            upVotedCommentArrowImage.setImageResource(R.drawable.ic_baseline_expand_less_24);
+        }
+        else {
+            upVotedCommentView.setVisibility(View.GONE);
+            upVotedCommentArrowImage.setImageResource(R.drawable.ic_baseline_expand_more_24);
+        }
+
+        if(commentView.getVisibility() == View.VISIBLE) {
+            commentView.setVisibility(View.GONE);
+            userCommentArrowImage.setImageResource(R.drawable.ic_baseline_expand_more_24);
+        }
+        if(downVotedCommentView.getVisibility() == View.VISIBLE) {
+            downVotedCommentView.setVisibility(View.GONE);
+            downVotedCommentArrowImage.setImageResource(R.drawable.ic_baseline_expand_more_24);
+        }
+        if(reportedCommentView.getVisibility() == View.VISIBLE) {
+            reportedCommentView.setVisibility(View.GONE);
+            reportedCommentArrowImage.setImageResource(R.drawable.ic_baseline_expand_more_24);
+        }
+    }
+
+    private void downVotedCommentLayoutOnClickListener() {
+        if(downVotedCommentView.getVisibility() == View.GONE) {
+            downVotedCommentView.setVisibility(View.VISIBLE);
+            downVotedCommentArrowImage.setImageResource(R.drawable.ic_baseline_expand_less_24);
+        }
+        else {
+            downVotedCommentView.setVisibility(View.GONE);
+            downVotedCommentArrowImage.setImageResource(R.drawable.ic_baseline_expand_more_24);
+        }
+
+        if(commentView.getVisibility() == View.VISIBLE) {
+            commentView.setVisibility(View.GONE);
+            userCommentArrowImage.setImageResource(R.drawable.ic_baseline_expand_more_24);
+        }
+        if(upVotedCommentView.getVisibility() == View.VISIBLE) {
+            upVotedCommentView.setVisibility(View.GONE);
+            upVotedCommentArrowImage.setImageResource(R.drawable.ic_baseline_expand_more_24);
+        }
+        if(reportedCommentView.getVisibility() == View.VISIBLE) {
+            reportedCommentView.setVisibility(View.GONE);
+            reportedCommentArrowImage.setImageResource(R.drawable.ic_baseline_expand_more_24);
+        }
+    }
+
+    private void reportedCommentLayoutOnClickListener() {
+        if(reportedCommentView.getVisibility() == View.GONE) {
+            reportedCommentView.setVisibility(View.VISIBLE);
+            reportedCommentArrowImage.setImageResource(R.drawable.ic_baseline_expand_less_24);
+        }
+        else {
+            reportedCommentView.setVisibility(View.GONE);
+            reportedCommentArrowImage.setImageResource(R.drawable.ic_baseline_expand_more_24);
+        }
+
+        if(commentView.getVisibility() == View.VISIBLE) {
+            commentView.setVisibility(View.GONE);
+            userCommentArrowImage.setImageResource(R.drawable.ic_baseline_expand_more_24);
+        }
+        if(upVotedCommentView.getVisibility() == View.VISIBLE) {
+            upVotedCommentView.setVisibility(View.GONE);
+            upVotedCommentArrowImage.setImageResource(R.drawable.ic_baseline_expand_more_24);
+        }
+        if(downVotedCommentView.getVisibility() == View.VISIBLE) {
+            downVotedCommentView.setVisibility(View.GONE);
+            downVotedCommentArrowImage.setImageResource(R.drawable.ic_baseline_expand_more_24);
+        }
     }
 
     private void showFullNameDialog() {
@@ -1794,26 +1810,50 @@ public class LoggedInUserProfileFragment extends Fragment {
 
         userProfileCommentAdapter.notifyDataSetChanged();
         commentLayout.setVisibility(View.VISIBLE);
-        if(userComments.size() > 0) userCommentArrowImage.setVisibility(View.VISIBLE);
-        else userCommentArrowImage.setVisibility(View.GONE);
+        if(userComments.size() > 0) {
+            userCommentArrowImage.setVisibility(View.VISIBLE);
+            commentTitleLayout.setClickable(true);
+        }
+        else {
+            userCommentArrowImage.setVisibility(View.GONE);
+            commentTitleLayout.setClickable(false);
+        }
         tvCommentBadge.setText(String.valueOf(userComments.size()));
 
         upVotedCommentAdapter.notifyDataSetChanged();
         upVotedCommentLayout.setVisibility(View.VISIBLE);
-        if(upVotedComments.size() > 0) upVotedCommentArrowImage.setVisibility(View.VISIBLE);
-        else upVotedCommentArrowImage.setVisibility(View.GONE);
+        if(upVotedComments.size() > 0) {
+            upVotedCommentArrowImage.setVisibility(View.VISIBLE);
+            upVotedCommentTitleLayout.setClickable(true);
+        }
+        else {
+            upVotedCommentArrowImage.setVisibility(View.GONE);
+            upVotedCommentTitleLayout.setClickable(false);
+        }
         tvUpVotedCommentBadge.setText(String.valueOf(upVotedComments.size()));
 
         downVotedCommentAdapter.notifyDataSetChanged();
         downVotedCommentLayout.setVisibility(View.VISIBLE);
-        if(downVotedComments.size() > 0) downVotedCommentArrowImage.setVisibility(View.VISIBLE);
-        else downVotedCommentArrowImage.setVisibility(View.GONE);
+        if(downVotedComments.size() > 0) {
+            downVotedCommentArrowImage.setVisibility(View.VISIBLE);
+            downVotedCommentTitleLayout.setClickable(true);
+        }
+        else {
+            downVotedCommentArrowImage.setVisibility(View.GONE);
+            downVotedCommentTitleLayout.setClickable(false);
+        }
         tvDownVotedCommentBadge.setText(String.valueOf(downVotedComments.size()));
 
         reportedCommentAdapter.notifyDataSetChanged();
         reportedCommentLayout.setVisibility(View.VISIBLE);
-        if(reportedComments.size() > 0) reportedCommentArrowImage.setVisibility(View.VISIBLE);
-        else reportedCommentArrowImage.setVisibility(View.GONE);
+        if(reportedComments.size() > 0) {
+            reportedCommentArrowImage.setVisibility(View.VISIBLE);
+            reportedCommentTitleLayout.setClickable(true);
+        }
+        else {
+            reportedCommentArrowImage.setVisibility(View.GONE);
+            reportedCommentTitleLayout.setClickable(false);
+        }
         tvReportedCommentBadge.setText(String.valueOf(reportedComments.size()));
 
         progressBar.setVisibility(View.GONE);
@@ -1948,7 +1988,7 @@ public class LoggedInUserProfileFragment extends Fragment {
 
     private void checkIfDriver() {
         progressBar.setVisibility(View.VISIBLE);
-        firebaseDatabase.getReference("users").child(userId).child("driver").
+        firebaseDatabase.getReference("users").child(userId).child("role").child("driver").
                 addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {

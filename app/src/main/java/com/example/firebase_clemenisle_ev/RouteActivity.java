@@ -363,7 +363,7 @@ public class RouteActivity extends AppCompatActivity implements
         cancelButton.setOnClickListener(view -> {
             if(isConfirmationDialogEnabled) {
                 openConfirmationDialog("Cancel Booking", "Do you want to cancel your booking?");
-                confirmationDialogConfirmButton.setOnClickListener(view12 -> cancelBooking());
+                confirmationDialogConfirmButton.setOnClickListener(view1 -> cancelBooking());
             }
             else {
                 if(cancelToast != null) {
@@ -806,6 +806,7 @@ public class RouteActivity extends AppCompatActivity implements
                                 Toast.LENGTH_LONG
                         ).show();
                         dialog4.dismiss();
+                        dialogOption.dismiss();
                     }
                     else {
                         Toast.makeText(
@@ -1038,10 +1039,15 @@ public class RouteActivity extends AppCompatActivity implements
 
                             driverInfoLayout.setVisibility(View.GONE);
                             userInfoLayout.setVisibility(View.VISIBLE);
+
                             userArrowImage.setVisibility(View.VISIBLE);
                             userArrowImage.setOnClickListener(view -> showContentLayout());
 
+                            userInfoLayout.setClickable(true);
+                            userInfoLayout.setOnClickListener(view -> showContentLayout());
+
                             driverArrowImage.setVisibility(View.GONE);
+                            driverInfoLayout.setClickable(false);
 
                             getReason();
 
@@ -1238,7 +1244,11 @@ public class RouteActivity extends AppCompatActivity implements
             driverArrowImage.setVisibility(View.VISIBLE);
             driverArrowImage.setOnClickListener(view -> showContentLayout());
 
+            driverInfoLayout.setClickable(true);
+            driverInfoLayout.setOnClickListener(view -> showContentLayout());
+
             userArrowImage.setVisibility(View.GONE);
+            userInfoLayout.setClickable(false);
         }
     }
 

@@ -123,7 +123,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 
                 Toast.makeText(
                         myContext,
-                        "Failed to get the current user",
+                        "Failed to get the current user. Account logged out.",
                         Toast.LENGTH_LONG
                 ).show();
             }
@@ -238,6 +238,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
     }
 
     private void logOut() {
+        firebaseAuth.signOut();
         sendLoginPreferences();
 
         Intent intent = new Intent(myContext, MainActivity.class);

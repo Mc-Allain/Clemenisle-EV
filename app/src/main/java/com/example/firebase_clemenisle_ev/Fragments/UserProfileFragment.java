@@ -98,7 +98,7 @@ public class UserProfileFragment extends Fragment {
 
                 Toast.makeText(
                         myContext,
-                        "Failed to get the current user",
+                        "Failed to get the current user. Account logged out.",
                         Toast.LENGTH_LONG
                 ).show();
             }

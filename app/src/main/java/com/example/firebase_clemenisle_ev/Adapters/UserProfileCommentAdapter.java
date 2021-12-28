@@ -12,11 +12,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.firebase_clemenisle_ev.Classes.Comment;
 import com.example.firebase_clemenisle_ev.Classes.DetailedTouristSpot;
 import com.example.firebase_clemenisle_ev.Classes.FirebaseURL;
+import com.example.firebase_clemenisle_ev.Classes.OtherComment;
+import com.example.firebase_clemenisle_ev.Classes.SimpleTouristSpot;
 import com.example.firebase_clemenisle_ev.Classes.User;
 import com.example.firebase_clemenisle_ev.R;
 import com.example.firebase_clemenisle_ev.SelectedSpotActivity;
@@ -41,6 +44,7 @@ public class UserProfileCommentAdapter extends RecyclerView.Adapter<UserProfileC
     DatabaseReference touristSpotsRef = firebaseDatabase.getReference("touristSpots");
 
     List<Comment> comments;
+    List<OtherComment> otherComments;
     LayoutInflater inflater;
 
     Context myContext;
@@ -49,8 +53,9 @@ public class UserProfileCommentAdapter extends RecyclerView.Adapter<UserProfileC
     String defaultStatusText = "Foul comment", appealedtext = "(Appealed)",
             notActiveText = "This comment is not active";
 
-    public UserProfileCommentAdapter(Context context, List<Comment> comments) {
+    public UserProfileCommentAdapter(Context context, List<Comment> comments, List<OtherComment> otherComments) {
         this.comments = comments;
+        this.otherComments = otherComments;
         this.inflater = LayoutInflater.from(context);
     }
 
@@ -64,65 +69,89 @@ public class UserProfileCommentAdapter extends RecyclerView.Adapter<UserProfileC
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         ConstraintLayout backgroundLayout = holder.backgroundLayout,
-                headerLayout = holder.headerLayout, commentLayout = holder.commentLayout;
+                headerLayout = holder.headerLayout, commentLayout = holder.commentLayout,
+                badgeLayout = holder.badgeLayout;
         TextView tvTouristSpot = holder.tvTouristSpot, tvUserFullName = holder.tvUserFullName,
                 tvTimestamp = holder.tvTimestamp, tvCommentStatus = holder.tvCommentStatus;
         ExpandableTextView extvComment = holder.extvComment;
-        ImageView profileImage = holder.profileImage;
+        ImageView profileImage = holder.profileImage, ownerImage = holder.ownerImage, developerImage = holder.developerImage,
+                adminImage = holder.adminImage, driverImage = holder.driverImage, likerImage = holder.likerImage;
 
         myContext = inflater.getContext();
         myResources = myContext.getResources();
 
-        Comment comment = comments.get(position);
-        String touristSpotId = comment.getId();
-        String userId = comment.getUserId();
-        String timestamp = comment.getTimestamp();
-        String commentValue = comment.getValue();
-        boolean isDeactivated = comment.isDeactivated();
-        boolean isFouled = comment.isFouled();
-        boolean isAppealed = comment.isAppealed();
+        if(comments.size() > 0) {
+            Comment comment = comments.get(position);
+            String spotId = comment.getId();
+            String timestamp = comment.getTimestamp();
+            String value = comment.getValue();
+            boolean isDeactivated = comment.isDeactivated();
+            boolean isFouled = comment.isFouled();
+            boolean isAppealed = comment.isAppealed();
 
-        if(userId != null && userId.length() > 0) {
-            profileImage.setVisibility(View.VISIBLE);
-            tvUserFullName.setVisibility(View.VISIBLE);
-
-            backgroundLayout.setPadding(0, 0, 0, dpToPx(12));
-        }
-        else {
             profileImage.setVisibility(View.GONE);
             tvUserFullName.setVisibility(View.GONE);
 
             backgroundLayout.setPadding(0, 0, 0, dpToPx(8));
-        }
 
-        tvTimestamp.setText(timestamp);
-        extvComment.setText(commentValue);
+            tvTimestamp.setText(timestamp);
+            extvComment.setText(value);
 
-        if(isFouled) {
-            tvCommentStatus.setVisibility(View.VISIBLE);
-            tvCommentStatus.setText(defaultStatusText);
+            getTouristSpot(spotId, tvTouristSpot);
 
-            extvComment.setVisibility(View.GONE);
-
-            String status = defaultStatusText;
-            if(isAppealed) status = defaultStatusText + " " + appealedtext;
-
-            tvCommentStatus.setText(status);
-        }
-        else {
-            tvCommentStatus.setVisibility(View.GONE);
-
-            if(isDeactivated) {
+            if(isFouled) {
                 tvCommentStatus.setVisibility(View.VISIBLE);
-                tvCommentStatus.setText(notActiveText);
+                tvCommentStatus.setText(defaultStatusText);
 
                 extvComment.setVisibility(View.GONE);
-            }
-            else extvComment.setVisibility(View.VISIBLE);
-        }
 
-        getTouristSpot(touristSpotId, tvTouristSpot);
-        getUser(userId, tvUserFullName, profileImage);
+                String status = defaultStatusText;
+                if(isAppealed) status = defaultStatusText + " " + appealedtext;
+
+                tvCommentStatus.setText(status);
+            }
+            else {
+                tvCommentStatus.setVisibility(View.GONE);
+
+                if(isDeactivated) {
+                    tvCommentStatus.setVisibility(View.VISIBLE);
+                    tvCommentStatus.setText(notActiveText);
+
+                    extvComment.setVisibility(View.GONE);
+                }
+                else extvComment.setVisibility(View.VISIBLE);
+            }
+
+            backgroundLayout.setOnClickListener(view -> {
+                Intent intent = new Intent(myContext, SelectedSpotActivity.class);
+                intent.putExtra("id", spotId);
+                intent.putExtra("isLoggedIn", true);
+                intent.putExtra("toComment", true);
+                myContext.startActivity(intent);
+            });
+        }
+        else if(otherComments.size() > 0) {
+            OtherComment otherComment = otherComments.get(position);
+            String spotId = otherComment.getSpotId();
+            String senderId = otherComment.getSenderUserId();
+
+            profileImage.setVisibility(View.VISIBLE);
+            tvUserFullName.setVisibility(View.VISIBLE);
+
+            backgroundLayout.setPadding(0, 0, 0, dpToPx(12));
+
+            getTouristSpot(spotId, tvTouristSpot);
+            getUser(senderId, tvUserFullName, profileImage, spotId, badgeLayout, ownerImage, developerImage,
+                    adminImage, driverImage, likerImage, tvTimestamp, extvComment, tvCommentStatus);
+
+            backgroundLayout.setOnClickListener(view -> {
+                Intent intent = new Intent(myContext, SelectedSpotActivity.class);
+                intent.putExtra("id", spotId);
+                intent.putExtra("isLoggedIn", true);
+                intent.putExtra("toComment", true);
+                myContext.startActivity(intent);
+            });
+        }
 
         int top = dpToPx(2), bottom = dpToPx(2);
 
@@ -139,14 +168,6 @@ public class UserProfileCommentAdapter extends RecyclerView.Adapter<UserProfileC
                 (ConstraintLayout.LayoutParams) backgroundLayout.getLayoutParams();
         layoutParams.setMargins(layoutParams.leftMargin, top, layoutParams.rightMargin, bottom);
         backgroundLayout.setLayoutParams(layoutParams);
-
-        backgroundLayout.setOnClickListener(view -> {
-            Intent intent = new Intent(myContext, SelectedSpotActivity.class);
-            intent.putExtra("id", touristSpotId);
-            intent.putExtra("isLoggedIn", true);
-            intent.putExtra("toComment", true);
-            myContext.startActivity(intent);
-        });
     }
 
     private int dpToPx(int dp) {
@@ -154,14 +175,14 @@ public class UserProfileCommentAdapter extends RecyclerView.Adapter<UserProfileC
         return (int) px;
     }
 
-    private void getTouristSpot(String touristSpotId, TextView tvTouristSpot) {
+    private void getTouristSpot(String spotId, TextView tvTouristSpot) {
         touristSpotsRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if(snapshot.exists()) {
                     for(DataSnapshot dataSnapshot : snapshot.getChildren()) {
                         DetailedTouristSpot touristSpot = new DetailedTouristSpot(dataSnapshot);
-                        if(touristSpot.getId().equals(touristSpotId)) {
+                        if(touristSpot.getId().equals(spotId)) {
                             tvTouristSpot.setText(touristSpot.getName());
                             break;
                         }
@@ -176,14 +197,18 @@ public class UserProfileCommentAdapter extends RecyclerView.Adapter<UserProfileC
         });
     }
 
-    private void getUser(String userId, TextView tvUserFullName, ImageView profileImage) {
+    private void getUser(String senderId, TextView tvUserFullName, ImageView profileImage,
+                         String spotId,  ConstraintLayout badgeLayout, ImageView ownerImage,
+                         ImageView developerImage, ImageView adminImage, ImageView driverImage,
+                         ImageView likerImage, TextView tvTimestamp, ExpandableTextView extvComment,
+                         TextView tvCommentStatus) {
         usersRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if(snapshot.exists()) {
                     for(DataSnapshot dataSnapshot : snapshot.getChildren()) {
                         User user = new User(dataSnapshot);
-                        if(user.getId().equals(userId)) {
+                        if(user.getId().equals(senderId)) {
 
                             try {
                                 Glide.with(myContext).load(user.getProfileImage())
@@ -196,7 +221,120 @@ public class UserProfileCommentAdapter extends RecyclerView.Adapter<UserProfileC
                             if(user.getMiddleName().length() > 0) fullName += " " + user.getMiddleName();
                             tvUserFullName.setText(fromHtml(fullName));
 
-                            break;
+                            badgeLayout.setVisibility(View.GONE);
+                            ownerImage.setVisibility(View.GONE);
+                            developerImage.setVisibility(View.GONE);
+                            adminImage.setVisibility(View.GONE);
+                            driverImage.setVisibility(View.GONE);
+                            likerImage.setVisibility(View.GONE);
+
+                            if(user.getRole().isOwner()) {
+                                badgeLayout.setVisibility(View.VISIBLE);
+                                ownerImage.setVisibility(View.VISIBLE);
+                                ownerImage.setOnLongClickListener(view -> {
+                                    Toast.makeText(
+                                            myContext,
+                                            "Owner",
+                                            Toast.LENGTH_SHORT
+                                    ).show();
+                                    return false;
+                                });
+                            }
+                            if(user.getRole().isDeveloper()) {
+                                badgeLayout.setVisibility(View.VISIBLE);
+                                developerImage.setVisibility(View.VISIBLE);
+                                developerImage.setOnLongClickListener(view -> {
+                                    Toast.makeText(
+                                            myContext,
+                                            "Developer",
+                                            Toast.LENGTH_SHORT
+                                    ).show();
+                                    return false;
+                                });
+                            }
+                            if(user.getRole().isAdmin()) {
+                                badgeLayout.setVisibility(View.VISIBLE);
+                                adminImage.setVisibility(View.VISIBLE);
+                                adminImage.setOnLongClickListener(view -> {
+                                    Toast.makeText(
+                                            myContext,
+                                            "Admin",
+                                            Toast.LENGTH_SHORT
+                                    ).show();
+                                    return false;
+                                });
+                            }
+                            if(user.getRole().isDriver()) {
+                                badgeLayout.setVisibility(View.VISIBLE);
+                                driverImage.setVisibility(View.VISIBLE);
+                                driverImage.setOnLongClickListener(view -> {
+                                    Toast.makeText(
+                                            myContext,
+                                            "Driver",
+                                            Toast.LENGTH_SHORT
+                                    ).show();
+                                    return false;
+                                });
+                            }
+
+                            List<SimpleTouristSpot> likedSpots = user.getLikedSpots();
+                            for(SimpleTouristSpot likedSpot : likedSpots) {
+                                if(likedSpot.getId().equals(spotId)) {
+                                    badgeLayout.setVisibility(View.VISIBLE);
+                                    likerImage.setVisibility(View.VISIBLE);
+                                    likerImage.setOnLongClickListener(view -> {
+                                        Toast.makeText(
+                                                myContext,
+                                                "Liker",
+                                                Toast.LENGTH_SHORT
+                                        ).show();
+                                        return false;
+                                    });
+                                    break;
+                                }
+                            }
+
+                            String value = null, timestamp = null;
+                            boolean isDeactivated = false, isFouled = false, isAppealed = false;
+
+                            for(Comment comment : user.getComments()) {
+                                if(comment.getId().equals(spotId)) {
+                                    isDeactivated = comment.isDeactivated();
+                                    isFouled = comment.isFouled();
+                                    isAppealed = comment.isAppealed();
+                                    timestamp = comment.getTimestamp();
+                                    value = comment.getValue();
+                                    break;
+                                }
+                            }
+
+                            tvTimestamp.setText(timestamp);
+                            extvComment.setText(value);
+
+                            if(isFouled) {
+                                tvCommentStatus.setVisibility(View.VISIBLE);
+                                tvCommentStatus.setText(defaultStatusText);
+
+                                extvComment.setVisibility(View.GONE);
+
+                                String status = defaultStatusText;
+                                if(isAppealed) status = defaultStatusText + " " + appealedtext;
+
+                                tvCommentStatus.setText(status);
+                            }
+                            else {
+                                tvCommentStatus.setVisibility(View.GONE);
+
+                                if(isDeactivated) {
+                                    tvCommentStatus.setVisibility(View.VISIBLE);
+                                    tvCommentStatus.setText(notActiveText);
+
+                                    extvComment.setVisibility(View.GONE);
+                                }
+                                else extvComment.setVisibility(View.VISIBLE);
+                            }
+
+                            return;
                         }
                     }
                 }
@@ -224,14 +362,14 @@ public class UserProfileCommentAdapter extends RecyclerView.Adapter<UserProfileC
 
     @Override
     public int getItemCount() {
-        return comments.size();
+        return Math.max(comments.size(), otherComments.size());
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        ConstraintLayout backgroundLayout, headerLayout, commentLayout;
+        ConstraintLayout backgroundLayout, headerLayout, commentLayout, badgeLayout;
         TextView tvTouristSpot, tvUserFullName, tvTimestamp, tvCommentStatus;
         ExpandableTextView extvComment;
-        ImageView profileImage;
+        ImageView profileImage, ownerImage, developerImage, adminImage, driverImage, likerImage;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -241,6 +379,12 @@ public class UserProfileCommentAdapter extends RecyclerView.Adapter<UserProfileC
             commentLayout = itemView.findViewById(R.id.backgroundLayout);
             tvTouristSpot = itemView.findViewById(R.id.tvTouristSpot);
             tvUserFullName = itemView.findViewById(R.id.tvUserFullName);
+            badgeLayout = itemView.findViewById(R.id.badgeLayout);
+            ownerImage = itemView.findViewById(R.id.ownerImage);
+            developerImage = itemView.findViewById(R.id.developerImage);
+            adminImage = itemView.findViewById(R.id.adminImage);
+            driverImage = itemView.findViewById(R.id.driverImage);
+            likerImage = itemView.findViewById(R.id.likerImage);
             tvTimestamp = itemView.findViewById(R.id.tvTimestamp);
             tvCommentStatus = itemView.findViewById(R.id.tvCommentStatus);
             extvComment = itemView.findViewById(R.id.extvComment);

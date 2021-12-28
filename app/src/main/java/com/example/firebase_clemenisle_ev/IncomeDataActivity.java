@@ -36,7 +36,7 @@ public class IncomeDataActivity extends AppCompatActivity {
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance(firebaseURL);
     DatabaseReference usersRef;
 
-    ConstraintLayout contentLayout;
+    ConstraintLayout contentLayout, incomeTitleLayout;
     TextView tvIncomeToday2, tvIncomeThisWeek2, tvIncomeThisMonth2, tvIncomeThisYear2,
             tvTotalIncome2, tvAmountToRemit2, tvAmountToClaim2, tvIncomeShare;
     ImageView viewRemittanceHistoryImage, viewClaimHistoryImage, incomeSummaryArrowImage;
@@ -61,6 +61,7 @@ public class IncomeDataActivity extends AppCompatActivity {
         setContentView(R.layout.activity_income_data);
 
         contentLayout = findViewById(R.id.contentLayout);
+        incomeTitleLayout = findViewById(R.id.incomeTitleLayout);
 
         tvIncomeToday2 = findViewById(R.id.tvIncomeToday2);
         tvIncomeThisWeek2 = findViewById(R.id.tvIncomeThisWeek2);
@@ -87,6 +88,7 @@ public class IncomeDataActivity extends AppCompatActivity {
         usersRef = firebaseDatabase.getReference("users").child(userId);
 
         incomeSummaryArrowImage.setOnClickListener(view -> showContentLayout());
+        incomeTitleLayout.setOnClickListener(view -> showContentLayout());
 
         int currentYear = Integer.parseInt(new DateTimeToString().getYear());
         currentYear = Math.max(currentYear, 2022);

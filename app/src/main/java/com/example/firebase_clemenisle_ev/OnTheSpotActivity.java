@@ -817,6 +817,7 @@ public class OnTheSpotActivity extends AppCompatActivity {
                                 Toast.LENGTH_LONG
                         ).show();
                         dialog4.dismiss();
+                        dialogOption.dismiss();
                     }
                     else {
                         Toast.makeText(
@@ -1029,10 +1030,15 @@ public class OnTheSpotActivity extends AppCompatActivity {
 
                             driverInfoLayout.setVisibility(View.GONE);
                             userInfoLayout.setVisibility(View.VISIBLE);
+
                             userArrowImage.setVisibility(View.VISIBLE);
                             userArrowImage.setOnClickListener(view -> showContentLayout());
 
+                            userInfoLayout.setClickable(true);
+                            userInfoLayout.setOnClickListener(view -> showContentLayout());
+
                             driverArrowImage.setVisibility(View.GONE);
+                            driverInfoLayout.setClickable(false);
 
                             getReason();
 
@@ -1229,7 +1235,11 @@ public class OnTheSpotActivity extends AppCompatActivity {
             driverArrowImage.setVisibility(View.VISIBLE);
             driverArrowImage.setOnClickListener(view -> showContentLayout());
 
+            driverInfoLayout.setClickable(true);
+            driverInfoLayout.setOnClickListener(view -> showContentLayout());
+
             userArrowImage.setVisibility(View.GONE);
+            userInfoLayout.setClickable(false);
         }
     }
 

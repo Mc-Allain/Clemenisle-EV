@@ -159,7 +159,6 @@
                 android:paddingBottom="4dp"
                 android:text="Comment Status"
                 android:textColor="@color/red"
-                android:textStyle="italic"
                 android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="@+id/actionLayout"
                 app:layout_constraintStart_toStartOf="@+id/tvTimestamp"

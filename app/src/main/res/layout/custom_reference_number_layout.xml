@@ -89,7 +89,6 @@
                 android:fontFamily="@font/ubuntu"
                 android:text="Invalid Reference Number"
                 android:textColor="@color/red"
-                android:textStyle="italic"
                 app:layout_constraintBottom_toBottomOf="@+id/tvTimestamp"
                 app:layout_constraintEnd_toStartOf="@+id/tvValue"
                 app:layout_constraintStart_toEndOf="@+id/tvTimestamp"

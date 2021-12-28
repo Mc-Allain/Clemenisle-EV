@@ -107,10 +107,21 @@ public class IWalletActivity extends AppCompatActivity {
 
     boolean isGeneratingTransactionId = false;
 
+    Dialog confirmationDialog;
+    ImageView confirmationDialogCloseImage;
+    TextView tvDialogTitleConfirmation, tvDialogCaptionConfirmation;
+    Button confirmationDialogConfirmButton, confirmationDialogCancelButton;
+    ProgressBar confirmationDialogProgressBar;
+
+    boolean isConfirmationDialogEnabled;
+
     private void initSharedPreferences() {
         SharedPreferences sharedPreferences = myContext
                 .getSharedPreferences("login", Context.MODE_PRIVATE);
         isLoggedIn = sharedPreferences.getBoolean("isLoggedIn", false);
+
+        sharedPreferences = getSharedPreferences("preferences", Context.MODE_PRIVATE);
+        isConfirmationDialogEnabled = sharedPreferences.getBoolean("isConfirmationDialogEnabled", true);
     }
 
     private void sendLoginPreferences() {
@@ -156,6 +167,7 @@ public class IWalletActivity extends AppCompatActivity {
         initSharedPreferences();
         initTransferDialog();
         initTopUpDialog();
+        initConfirmationDialog();
 
         firebaseAuth = FirebaseAuth.getInstance();
         if(isLoggedIn) {
@@ -167,7 +179,7 @@ public class IWalletActivity extends AppCompatActivity {
 
                 Toast.makeText(
                         myContext,
-                        "Failed to get the current user",
+                        "Failed to get the current user. Account logged out.",
                         Toast.LENGTH_LONG
                 ).show();
             }
@@ -281,17 +293,24 @@ public class IWalletActivity extends AppCompatActivity {
         });
 
         submitButton2.setOnClickListener(view -> {
-            if (submitPressedTime + 2500 > System.currentTimeMillis()) {
-                submitToast.cancel();
-                
-                generateTransactionId(1);
-            } else {
-                submitToast = Toast.makeText(myContext,
-                        "Press again to submit", Toast.LENGTH_SHORT);
-                submitToast.show();
+            if(isConfirmationDialogEnabled) {
+                openConfirmationDialog("Top-up",
+                        "Do you want to top-up with a Reference Number of " + referenceNumberValue + "?");
+                confirmationDialogConfirmButton.setOnClickListener(view1 -> generateTransactionId(1));
             }
+            else {
+                if (submitPressedTime + 2500 > System.currentTimeMillis()) {
+                    submitToast.cancel();
 
-            submitPressedTime = System.currentTimeMillis();
+                    generateTransactionId(1);
+                } else {
+                    submitToast = Toast.makeText(myContext,
+                            "Press again to submit", Toast.LENGTH_SHORT);
+                    submitToast.show();
+                }
+
+                submitPressedTime = System.currentTimeMillis();
+            }
         });
 
         dialogCloseImage2.setOnClickListener(view -> dialog.dismiss());
@@ -301,16 +320,6 @@ public class IWalletActivity extends AppCompatActivity {
         dialog.getWindow().setBackgroundDrawable(AppCompatResources.getDrawable(myContext, R.drawable.corner_top_white_layout));
         dialog.getWindow().getAttributes().windowAnimations = R.style.animBottomSlide;
         dialog.getWindow().setGravity(Gravity.BOTTOM);
-    }
-
-    private void submitReferenceNumber(String wtId) {
-        setDialogScreenEnabled(false);
-        tlReferenceNumber.setStartIconTintList(cslInitial);
-
-        IWalletTransaction transaction = new IWalletTransaction(wtId,
-                new DateTimeToString().getDateAndTime(), "Top-up", 0);
-        transaction.setReferenceNumber(referenceNumberValue);
-        addTransactionToDatabase(transaction, wtId);
     }
 
     private void initTransferDialog() {
@@ -443,17 +452,27 @@ public class IWalletActivity extends AppCompatActivity {
         });
 
         submitButton.setOnClickListener(view -> {
-            if (submitPressedTime + 2500 > System.currentTimeMillis()) {
-                submitToast.cancel();
+            if(isConfirmationDialogEnabled) {
+                String amountValue = "₱" + amount;
+                if(amountValue.split("\\.")[1].length() == 1) amountValue += 0;
 
-                generateTransactionId(0);
-            } else {
-                submitToast = Toast.makeText(myContext,
-                        "Press again to submit", Toast.LENGTH_SHORT);
-                submitToast.show();
+                openConfirmationDialog("Transfer to GCash",
+                        "Do you want to transfer " + amountValue + " to GCash?" );
+                confirmationDialogConfirmButton.setOnClickListener(view1 -> generateTransactionId(0));
             }
+            else {
+                if (submitPressedTime + 2500 > System.currentTimeMillis()) {
+                    submitToast.cancel();
 
-            submitPressedTime = System.currentTimeMillis();
+                    generateTransactionId(0);
+                } else {
+                    submitToast = Toast.makeText(myContext,
+                            "Press again to submit", Toast.LENGTH_SHORT);
+                    submitToast.show();
+                }
+
+                submitPressedTime = System.currentTimeMillis();
+            }
         });
 
         dialogCloseImage.setOnClickListener(view -> transferDialog.dismiss());
@@ -475,6 +494,35 @@ public class IWalletActivity extends AppCompatActivity {
         }
     }
 
+    private void openConfirmationDialog(String title, String caption) {
+        tvDialogTitleConfirmation.setText(title);
+        tvDialogCaptionConfirmation.setText(caption);
+        confirmationDialog.show();
+    }
+
+    private void initConfirmationDialog() {
+        confirmationDialog = new Dialog(myContext);
+        confirmationDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        confirmationDialog.setContentView(R.layout.dialog_confirmation_layout);
+
+        confirmationDialogCloseImage = confirmationDialog.findViewById(R.id.dialogCloseImage);
+        tvDialogTitleConfirmation = confirmationDialog.findViewById(R.id.tvDialogTitle);
+        tvDialogCaptionConfirmation = confirmationDialog.findViewById(R.id.tvDialogCaption);
+        confirmationDialogConfirmButton = confirmationDialog.findViewById(R.id.confirmButton);
+        confirmationDialogCancelButton = confirmationDialog.findViewById(R.id.cancelButton);
+        confirmationDialogProgressBar = confirmationDialog.findViewById(R.id.dialogProgressBar);
+
+        confirmationDialogCloseImage.setOnClickListener(view -> confirmationDialog.dismiss());
+
+        confirmationDialogCancelButton.setOnClickListener(view -> confirmationDialog.dismiss());
+
+        confirmationDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT);
+        confirmationDialog.getWindow().setBackgroundDrawable(AppCompatResources.getDrawable(myContext, R.drawable.corner_top_white_layout));
+        confirmationDialog.getWindow().getAttributes().windowAnimations = R.style.animBottomSlide;
+        confirmationDialog.getWindow().setGravity(Gravity.BOTTOM);
+    }
+
     private void setDialogScreenEnabled(boolean value) {
         transferDialog.setCanceledOnTouchOutside(value);
         transferDialog.setCancelable(value);
@@ -488,20 +536,34 @@ public class IWalletActivity extends AppCompatActivity {
         tlReferenceNumber.setEnabled(value);
         submitButton2.setEnabled(value);
 
+        confirmationDialog.setCanceledOnTouchOutside(value);
+        confirmationDialog.setCancelable(value);
+        confirmationDialogConfirmButton.setEnabled(value);
+        confirmationDialogCancelButton.setEnabled(value);
+
         if(value) {
             dialogCloseImage.getDrawable().setTint(colorRed);
             dialogCloseImage2.getDrawable().setTint(colorRed);
+            confirmationDialogCloseImage.getDrawable().setTint(colorRed);
         }
         else {
             dialogCloseImage.getDrawable().setTint(colorInitial);
             dialogCloseImage2.getDrawable().setTint(colorInitial);
+            confirmationDialogCloseImage.getDrawable().setTint(colorInitial);
         }
     }
 
     private void generateTransactionId(int sender) {
-        dialogProgressBar.setVisibility(View.VISIBLE);
-        dialogProgressBar2.setVisibility(View.VISIBLE);
+        if(isConfirmationDialogEnabled)
+            confirmationDialogProgressBar.setVisibility(View.VISIBLE);
+        else {
+            dialogProgressBar.setVisibility(View.VISIBLE);
+            dialogProgressBar2.setVisibility(View.VISIBLE);
+        }
         setDialogScreenEnabled(false);
+
+        tlReferenceNumber.setStartIconTintList(cslInitial);
+        tlAmount.setStartIconTintList(cslInitial);
 
         isGeneratingTransactionId = false;
         usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -555,26 +617,42 @@ public class IWalletActivity extends AppCompatActivity {
                 ).show();
 
                 isGeneratingTransactionId = false;
-
+                
+                if(isConfirmationDialogEnabled)
+                    confirmationDialogProgressBar.setVisibility(View.GONE);
+                else {
+                    dialogProgressBar.setVisibility(View.GONE);
+                    dialogProgressBar2.setVisibility(View.GONE);
+                }
                 setDialogScreenEnabled(true);
             }
         });
     }
 
-    private void submitRequest(String wtId) {
+    private void submitRequest(String tId) {
         setDialogScreenEnabled(false);
         tlMobileNumber.setStartIconTintList(cslInitial);
         tlAmount.setStartIconTintList(cslInitial);
 
-        IWalletTransaction transaction = new IWalletTransaction(wtId,
+        IWalletTransaction transaction = new IWalletTransaction(tId,
                 new DateTimeToString().getDateAndTime(), "Transfer", amount);
         transaction.setMobileNumber(mobileNumber);
-        addTransactionToDatabase(transaction, wtId);
+        addTransactionToDatabase(transaction, tId);
     }
 
-    private void addTransactionToDatabase(IWalletTransaction transaction, String wtId) {
+    private void submitReferenceNumber(String tId) {
+        setDialogScreenEnabled(false);
+        tlReferenceNumber.setStartIconTintList(cslInitial);
+
+        IWalletTransaction transaction = new IWalletTransaction(tId,
+                new DateTimeToString().getDateAndTime(), "Top-up", 0);
+        transaction.setReferenceNumber(referenceNumberValue);
+        addTransactionToDatabase(transaction, tId);
+    }
+
+    private void addTransactionToDatabase(IWalletTransaction transaction, String tId) {
         String category = transaction.getCategory();
-        usersRef.child(userId).child("iWalletTransactionList").child(wtId).setValue(transaction).
+        usersRef.child(userId).child("iWalletTransactionList").child(tId).setValue(transaction).
                 addOnCompleteListener(task -> {
                     if(task.isSuccessful()) {
                         String[] iWalletSplit = tvIWallet.getText().toString().split("₱");
@@ -582,23 +660,28 @@ public class IWalletActivity extends AppCompatActivity {
                             if(category.equals("Transfer")) {
                                 double iWallet = Double.parseDouble(iWalletSplit[1]);
                                 double newIWallet = iWallet - amount;
-                                usersRef.child(userId).child("iWallet").setValue(newIWallet);
+                                usersRef.child(userId).child("iwallet").setValue(newIWallet);
 
                                 Toast.makeText(
                                         myContext,
-                                        "Successfully requested for transfer." +
+                                        "Successfully requested for transfer.\n" +
                                                 "It will take at least 24 hours to take effect.",
                                         Toast.LENGTH_LONG
                                 ).show();
+
+                                transferDialog.dismiss();
                             }
                             else if(category.equals("Top-up")) {
                                 Toast.makeText(
                                         myContext,
-                                        "Successfully submitted the reference number." +
+                                        "Successfully submitted the reference number.\n" +
                                                 "It will take at least 24 hours to take effect.",
                                         Toast.LENGTH_LONG
                                 ).show();
+
+                                dialog.dismiss();
                             }
+                            confirmationDialog.dismiss();
                         }
                     }
                     else {
@@ -612,11 +695,22 @@ public class IWalletActivity extends AppCompatActivity {
                             ).show();
                         }
                     }
-                    dialogProgressBar.setVisibility(View.GONE);
-                    dialogProgressBar2.setVisibility(View.GONE);
+
+                    if(isConfirmationDialogEnabled)
+                        confirmationDialogProgressBar.setVisibility(View.GONE);
+                    else {
+                        dialogProgressBar.setVisibility(View.GONE);
+                        dialogProgressBar2.setVisibility(View.GONE);
+                    }
                     setDialogScreenEnabled(true);
-                    transferDialog.dismiss();
-                    dialog.dismiss();
+
+                    tlReferenceNumber.setStartIconTintList(cslInitial);
+                    tlReferenceNumber.clearFocus();
+                    tlReferenceNumber.requestFocus();
+
+                    tlAmount.setStartIconTintList(cslInitial);
+                    tlAmount.clearFocus();
+                    tlAmount.requestFocus();
                 });
     }
 

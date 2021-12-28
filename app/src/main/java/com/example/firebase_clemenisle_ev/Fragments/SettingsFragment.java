@@ -95,7 +95,7 @@ public class SettingsFragment extends Fragment {
 
                 Toast.makeText(
                         myContext,
-                        "Failed to get the current user",
+                        "Failed to get the current user. Account logged out.",
                         Toast.LENGTH_LONG
                 ).show();
             }
@@ -141,7 +141,7 @@ public class SettingsFragment extends Fragment {
 
     private void checkIfDriver() {
         progressBar.setVisibility(View.VISIBLE);
-        firebaseDatabase.getReference("users").child(userId).child("driver").
+        firebaseDatabase.getReference("users").child(userId).child("role").child("driver").
                 addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {

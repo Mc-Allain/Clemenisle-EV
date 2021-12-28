@@ -250,7 +250,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
 
                 Toast.makeText(
                         myContext,
-                        "Failed to get the current user",
+                        "Failed to get the current user. Account logged out.",
                         Toast.LENGTH_LONG
                 ).show();
             }
@@ -864,6 +864,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                                 Toast.LENGTH_LONG
                         ).show();
                         dialog3.dismiss();
+                        selectedDialogOption.dismiss();
                     }
                     else {
                         Toast.makeText(

@@ -2,8 +2,8 @@ package com.example.firebase_clemenisle_ev.Classes;
 
 public class AppMetaData {
 
-    String newlyAddedFeatures =  "● Income Data Added";
-    double currentVersion = 0.4;
+    String newlyAddedFeatures =  "● Optimization";
+    double currentVersion = 0.41;
     boolean isDeveloper = false;
 
     public AppMetaData() {

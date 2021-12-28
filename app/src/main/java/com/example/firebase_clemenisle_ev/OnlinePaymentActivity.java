@@ -112,10 +112,21 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
 
     boolean inDriverModule;
 
+    Dialog confirmationDialog;
+    ImageView confirmationDialogCloseImage;
+    TextView tvDialogTitleConfirmation, tvDialogCaptionConfirmation;
+    Button confirmationDialogConfirmButton, confirmationDialogCancelButton;
+    ProgressBar confirmationDialogProgressBar;
+
+    boolean isConfirmationDialogEnabled;
+
     private void initSharedPreferences() {
         SharedPreferences sharedPreferences = myContext
                 .getSharedPreferences("login", Context.MODE_PRIVATE);
         isLoggedIn = sharedPreferences.getBoolean("isLoggedIn", false);
+
+        sharedPreferences = getSharedPreferences("preferences", Context.MODE_PRIVATE);
+        isConfirmationDialogEnabled = sharedPreferences.getBoolean("isConfirmationDialogEnabled", true);
     }
 
     private void sendLoginPreferences() {
@@ -174,6 +185,7 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
         initSharedPreferences();
         initAddReferenceNumberDialog();
         iniIWalletPaymentDialog();
+        initConfirmationDialog();
 
         firebaseAuth = FirebaseAuth.getInstance();
         if(isLoggedIn) {
@@ -185,7 +197,7 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
 
                 Toast.makeText(
                         myContext,
-                        "Failed to get the current user",
+                        "Failed to get the current user. Account logged out.",
                         Toast.LENGTH_LONG
                 ).show();
             }
@@ -264,13 +276,20 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
         tlAmount.setEnabled(value);
         submitButton2.setEnabled(value);
 
+        confirmationDialog.setCanceledOnTouchOutside(value);
+        confirmationDialog.setCancelable(value);
+        confirmationDialogConfirmButton.setEnabled(value);
+        confirmationDialogCancelButton.setEnabled(value);
+
         if(value) {
             dialogCloseImage.getDrawable().setTint(colorRed);
             dialogCloseImage2.getDrawable().setTint(colorRed);
+            confirmationDialogCloseImage.getDrawable().setTint(colorRed);
         }
         else {
             dialogCloseImage.getDrawable().setTint(colorInitial);
             dialogCloseImage2.getDrawable().setTint(colorInitial);
+            confirmationDialogCloseImage.getDrawable().setTint(colorInitial);
         }
     }
 
@@ -317,17 +336,26 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
         });
 
         submitButton.setOnClickListener(view -> {
-            if (submitPressedTime + 2500 > System.currentTimeMillis()) {
-                submitToast.cancel();
-
-                if(!inDriverModule) submitReferenceNumber();
-            } else {
-                submitToast = Toast.makeText(myContext,
-                        "Press again to submit", Toast.LENGTH_SHORT);
-                submitToast.show();
+            if(isConfirmationDialogEnabled) {
+                openConfirmationDialog("Add Reference Number",
+                        "Do you want to submit the Reference Number of " + referenceNumberValue + "?" );
+                confirmationDialogConfirmButton.setOnClickListener(view1 -> {
+                    if(!inDriverModule) submitReferenceNumber();
+                });
             }
+            else {
+                if (submitPressedTime + 2500 > System.currentTimeMillis()) {
+                    submitToast.cancel();
 
-            submitPressedTime = System.currentTimeMillis();
+                    if(!inDriverModule) submitReferenceNumber();
+                } else {
+                    submitToast = Toast.makeText(myContext,
+                            "Press again to submit", Toast.LENGTH_SHORT);
+                    submitToast.show();
+                }
+
+                submitPressedTime = System.currentTimeMillis();
+            }
         });
 
         dialogCloseImage.setOnClickListener(view -> dialog.dismiss());
@@ -348,8 +376,11 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
     }
 
     private void submitReferenceNumber() {
+        if(isConfirmationDialogEnabled)
+            confirmationDialogProgressBar.setVisibility(View.VISIBLE);
+        else dialogProgressBar.setVisibility(View.VISIBLE);
         setDialogScreenEnabled(false);
-        dialogProgressBar.setVisibility(View.VISIBLE);
+
         tlReferenceNumber.setStartIconTintList(cslInitial);
 
         if(isReferenceNumberExisting(referenceNumberValue)) {
@@ -359,8 +390,10 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
                     Toast.LENGTH_LONG
             ).show();
 
+            if(isConfirmationDialogEnabled)
+                confirmationDialogProgressBar.setVisibility(View.GONE);
+            else dialogProgressBar.setVisibility(View.GONE);
             setDialogScreenEnabled(true);
-            dialogProgressBar.setVisibility(View.GONE);
             return;
         }
 
@@ -381,11 +414,12 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
 
     private void addReferenceNumberToDatabase(ReferenceNumber referenceNumber, String rnId, int sender) {
         DatabaseReference rnRef = usersRef.child(userId).child("bookingList").child(bookingId).
-                child("referenceNumberList").child(rnId);
+                child("onlinePaymentList").child(rnId);
         rnRef.setValue(referenceNumber).addOnCompleteListener(task -> {
             if(task.isSuccessful()) {
                 dialog.dismiss();
                 dialog2.dismiss();
+                confirmationDialog.dismiss();
 
                 if(sender == 0) {
                     Toast.makeText(
@@ -395,9 +429,12 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
                     ).show();
                 }
                 else if(sender == 1) {
+                    String amountValue = "₱" + amount;
+                    if(amountValue.split("\\.")[1].length() == 1) amountValue += 0;
+
                     Toast.makeText(
                             myContext,
-                            "Successfully paid using iWallet. Amount: ₱" + amount,
+                            "Successfully paid using iWallet. Amount: " + amountValue,
                             Toast.LENGTH_SHORT
                     ).show();
                 }
@@ -413,9 +450,22 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
                     ).show();
                 }
             }
-            dialogProgressBar.setVisibility(View.GONE);
-            dialogProgressBar2.setVisibility(View.GONE);
+
+            if(isConfirmationDialogEnabled)
+                confirmationDialogProgressBar.setVisibility(View.GONE);
+            else {
+                dialogProgressBar.setVisibility(View.GONE);
+                dialogProgressBar2.setVisibility(View.GONE);
+            }
             setDialogScreenEnabled(true);
+
+            tlReferenceNumber.setStartIconTintList(cslInitial);
+            tlReferenceNumber.clearFocus();
+            tlReferenceNumber.requestFocus();
+
+            tlAmount.setStartIconTintList(cslInitial);
+            tlAmount.clearFocus();
+            tlAmount.requestFocus();
         });
     }
 
@@ -502,17 +552,27 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
         });
 
         submitButton2.setOnClickListener(view -> {
-            if (submitPressedTime + 2500 > System.currentTimeMillis()) {
-                submitToast.cancel();
+            if(isConfirmationDialogEnabled) {
+                String amountValue = "₱" + amount;
+                if(amountValue.split("\\.")[1].length() == 1) amountValue += 0;
 
-                if(!inDriverModule) generateTransactionId();
-            } else {
-                submitToast = Toast.makeText(myContext,
-                        "Press again to submit", Toast.LENGTH_SHORT);
-                submitToast.show();
+                openConfirmationDialog("Use IWallet as Payment",
+                        "Do you want to pay " + amountValue + "?" );
+                confirmationDialogConfirmButton.setOnClickListener(view1 -> generateTransactionId());
             }
+            else {
+                if (submitPressedTime + 2500 > System.currentTimeMillis()) {
+                    submitToast.cancel();
 
-            submitPressedTime = System.currentTimeMillis();
+                    if(!inDriverModule) generateTransactionId();
+                } else {
+                    submitToast = Toast.makeText(myContext,
+                            "Press again to submit", Toast.LENGTH_SHORT);
+                    submitToast.show();
+                }
+
+                submitPressedTime = System.currentTimeMillis();
+            }
         });
 
         dialogCloseImage2.setOnClickListener(view -> dialog2.dismiss());
@@ -525,9 +585,12 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
     }
 
     private void generateTransactionId() {
-        dialogProgressBar.setVisibility(View.VISIBLE);
-        dialogProgressBar2.setVisibility(View.VISIBLE);
+        if(isConfirmationDialogEnabled)
+            confirmationDialogProgressBar.setVisibility(View.VISIBLE);
+        else dialogProgressBar2.setVisibility(View.VISIBLE);
         setDialogScreenEnabled(false);
+
+        tlAmount.setStartIconTintList(cslInitial);
 
         isGeneratingTransactionId = false;
         usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -581,16 +644,15 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
 
                 isGeneratingTransactionId = false;
 
+                if(isConfirmationDialogEnabled)
+                    confirmationDialogProgressBar.setVisibility(View.GONE);
+                else dialogProgressBar2.setVisibility(View.GONE);
                 setDialogScreenEnabled(true);
             }
         });
     }
 
     private void submitIWalletPayment(String transactionId) {
-        setDialogScreenEnabled(false);
-        dialogProgressBar2.setVisibility(View.VISIBLE);
-        tlAmount.setStartIconTintList(cslInitial);
-
         String rnId = getRNID();
 
         ReferenceNumber referenceNumber = new ReferenceNumber(rnId,
@@ -611,7 +673,7 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
                 addOnCompleteListener(task -> {
                     if(task.isSuccessful()) {
                         double newIWallet = iWalletAmount - amount;
-                        usersRef.child(userId).child("iWallet").setValue(newIWallet);
+                        usersRef.child(userId).child("iwallet").setValue(newIWallet);
                     }
                     else {
                         if(task.getException() != null) {
@@ -624,9 +686,41 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
                             ).show();
                         }
                     }
-                    dialogProgressBar2.setVisibility(View.GONE);
+
+                    if(isConfirmationDialogEnabled)
+                        confirmationDialogProgressBar.setVisibility(View.GONE);
+                    else dialogProgressBar2.setVisibility(View.GONE);
                     setDialogScreenEnabled(true);
                 });
+    }
+
+    private void openConfirmationDialog(String title, String caption) {
+        tvDialogTitleConfirmation.setText(title);
+        tvDialogCaptionConfirmation.setText(caption);
+        confirmationDialog.show();
+    }
+
+    private void initConfirmationDialog() {
+        confirmationDialog = new Dialog(myContext);
+        confirmationDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        confirmationDialog.setContentView(R.layout.dialog_confirmation_layout);
+
+        confirmationDialogCloseImage = confirmationDialog.findViewById(R.id.dialogCloseImage);
+        tvDialogTitleConfirmation = confirmationDialog.findViewById(R.id.tvDialogTitle);
+        tvDialogCaptionConfirmation = confirmationDialog.findViewById(R.id.tvDialogCaption);
+        confirmationDialogConfirmButton = confirmationDialog.findViewById(R.id.confirmButton);
+        confirmationDialogCancelButton = confirmationDialog.findViewById(R.id.cancelButton);
+        confirmationDialogProgressBar = confirmationDialog.findViewById(R.id.dialogProgressBar);
+
+        confirmationDialogCloseImage.setOnClickListener(view -> confirmationDialog.dismiss());
+
+        confirmationDialogCancelButton.setOnClickListener(view -> confirmationDialog.dismiss());
+
+        confirmationDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT);
+        confirmationDialog.getWindow().setBackgroundDrawable(AppCompatResources.getDrawable(myContext, R.drawable.corner_top_white_layout));
+        confirmationDialog.getWindow().getAttributes().windowAnimations = R.style.animBottomSlide;
+        confirmationDialog.getWindow().setGravity(Gravity.BOTTOM);
     }
 
     private void openHelp() {

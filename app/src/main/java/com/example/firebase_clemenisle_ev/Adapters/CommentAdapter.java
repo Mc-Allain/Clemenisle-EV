@@ -17,6 +17,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.firebase_clemenisle_ev.Classes.Comment;
 import com.example.firebase_clemenisle_ev.Classes.DateTimeDifference;
+import com.example.firebase_clemenisle_ev.Classes.OtherComment;
 import com.example.firebase_clemenisle_ev.Classes.SimpleTouristSpot;
 import com.example.firebase_clemenisle_ev.Classes.User;
 import com.example.firebase_clemenisle_ev.LoginActivity;
@@ -215,7 +216,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
                 driverImage.setVisibility(View.GONE);
                 likerImage.setVisibility(View.GONE);
 
-                if(user.isOwner()) {
+                if(user.getRole().isOwner()) {
                     badgeLayout.setVisibility(View.VISIBLE);
                     ownerImage.setVisibility(View.VISIBLE);
                     ownerImage.setOnLongClickListener(view -> {
@@ -227,7 +228,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
                         return false;
                     });
                 }
-                if(user.isDeveloper()) {
+                if(user.getRole().isDeveloper()) {
                     badgeLayout.setVisibility(View.VISIBLE);
                     developerImage.setVisibility(View.VISIBLE);
                     developerImage.setOnLongClickListener(view -> {
@@ -239,7 +240,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
                         return false;
                     });
                 }
-                if(user.isAdmin()) {
+                if(user.getRole().isAdmin()) {
                     badgeLayout.setVisibility(View.VISIBLE);
                     adminImage.setVisibility(View.VISIBLE);
                     adminImage.setOnLongClickListener(view -> {
@@ -251,7 +252,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
                         return false;
                     });
                 }
-                if(user.isDriver()) {
+                if(user.getRole().isDriver()) {
                     badgeLayout.setVisibility(View.VISIBLE);
                     driverImage.setVisibility(View.VISIBLE);
                     driverImage.setOnLongClickListener(view -> {
@@ -308,9 +309,9 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
 
             int upVotes = 0, downVotes = 0;
             for(User user1 : users) {
-                List<Comment> upVotedComments = user1.getUpVotedComments();
-                for(Comment comment : upVotedComments) {
-                    if(comment.getId().equals(spotId) && comment.getUserId().equals(user.getId())) {
+                List<OtherComment> upVotedComments = user1.getUpVotedComments();
+                for(OtherComment otherComment : upVotedComments) {
+                    if(otherComment.getSpotId().equals(spotId) && otherComment.getSenderUserId().equals(user.getId())) {
                         upVotes++;
 
                         if(user1.getId().equals(userId)) {
@@ -321,9 +322,9 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
                     }
                 }
 
-                List<Comment> downVotedComments = user1.getDownVotedComments();
-                for(Comment comment : downVotedComments) {
-                    if(comment.getId().equals(spotId) && comment.getUserId().equals(user.getId())) {
+                List<OtherComment> downVotedComments = user1.getDownVotedComments();
+                for(OtherComment otherComment : downVotedComments) {
+                    if(otherComment.getSpotId().equals(spotId) && otherComment.getSenderUserId().equals(user.getId())) {
                         downVotes++;
 
                         if(user1.getId().equals(userId)) {
@@ -335,9 +336,9 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
                 }
 
                 if(user1.getId().equals(userId)) {
-                    List<Comment> reportedComments = user1.getReportedComments();
-                    for(Comment comment : reportedComments) {
-                        if(comment.getId().equals(spotId) && comment.getUserId().equals(user.getId())) {
+                    List<OtherComment> reportedComments = user1.getReportedComments();
+                    for(OtherComment otherComment : reportedComments) {
+                        if(otherComment.getSpotId().equals(spotId) && otherComment.getSenderUserId().equals(user.getId())) {
                             reportImage.setEnabled(false);
                             reportImage.getDrawable().setTint(colorInitial);
                             upVoteImage.setEnabled(false);
@@ -399,7 +400,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
                     setOnScreenEnabled(false, reportImage, deactivateImage, appealImage, editImage,
                             upVoteImage, downVoteImage);
                     onActionButtonClickedListener.
-                            upVoteImageOnClick(spotId, user.getId(), finalCommentRecord,
+                            upVoteImageOnClick(spotId, user.getId(), finalCommentRecord.getTimestamp(),
                                     finalUpVoted, finalDownVoted);
                 }
             });
@@ -418,7 +419,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
                         setOnScreenEnabled(false, reportImage, deactivateImage, appealImage, editImage,
                                 upVoteImage, downVoteImage);
                         onActionButtonClickedListener.
-                                downVoteImageOnClick(spotId, user.getId(), finalCommentRecord,
+                                downVoteImageOnClick(spotId, user.getId(), finalCommentRecord.getTimestamp(),
                                         finalUpVoted, finalDownVoted);
                     }
                 }
@@ -438,7 +439,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
                 if(userId == null) loginPrompt();
                 else {
                     onActionButtonClickedListener.
-                            reportImageOnClick(spotId, user.getId(), finalCommentRecord);
+                            reportImageOnClick(spotId, user.getId(), finalCommentRecord.getTimestamp());
                 }
             });
         }
@@ -517,10 +518,10 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
         void editImageOnClick();
         void appealImageOnClick();
         void deactivateImageOnClick();
-        void reportImageOnClick(String spotId, String senderUserId, Comment comment);
-        void upVoteImageOnClick(String spotId, String senderUserId, Comment comment,
+        void reportImageOnClick(String spotId, String senderUserId, String timestamp);
+        void upVoteImageOnClick(String spotId, String senderUserId, String timestamp,
                                 boolean isUpVoted, boolean isDownVoted);
-        void downVoteImageOnClick(String spotId, String senderUserId, Comment comment,
+        void downVoteImageOnClick(String spotId, String senderUserId, String timestamp,
                                   boolean isUpVoted, boolean isDownVoted);
     }
 

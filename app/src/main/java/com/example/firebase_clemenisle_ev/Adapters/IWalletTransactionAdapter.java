@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -101,7 +100,6 @@ public class IWalletTransactionAdapter extends RecyclerView.Adapter<IWalletTrans
                 if(value == 0) {
                     tvTransactionStatus.setTextColor(colorOrange);
                     tvTransactionStatus.setText(pendingText);
-                    tvTransactionStatus.setTypeface(tvTransactionStatus.getTypeface(), Typeface.ITALIC);
 
                     tvPendingReferenceNumber.setVisibility(View.VISIBLE);
                     tvPendingReferenceNumber.setText(referenceNumber);
@@ -109,7 +107,6 @@ public class IWalletTransactionAdapter extends RecyclerView.Adapter<IWalletTrans
                 else {
                     tvTransactionStatus.setTextColor(colorBlue);
                     tvTransactionStatus.setText(referenceNumber);
-                    tvTransactionStatus.setTypeface(tvTransactionStatus.getTypeface(), Typeface.NORMAL);
                 }
             }
         }
@@ -127,19 +124,16 @@ public class IWalletTransactionAdapter extends RecyclerView.Adapter<IWalletTrans
             if(!valid) {
                 tvTransactionStatus.setTextColor(colorRed);
                 tvTransactionStatus.setText(defaultInvalidMNText);
-                tvTransactionStatus.setTypeface(tvTransactionStatus.getTypeface(), Typeface.ITALIC);
             }
             else {
                 if(referenceNumber == null) {
                     tvTransactionStatus.setTextColor(colorOrange);
                     tvTransactionStatus.setText(pendingText);
-                    tvTransactionStatus.setTypeface(tvTransactionStatus.getTypeface(), Typeface.ITALIC);
                 }
                 else {
                     referenceNumber = "#" + referenceNumber;
                     tvTransactionStatus.setTextColor(colorBlue);
                     tvTransactionStatus.setText(referenceNumber);
-                    tvTransactionStatus.setTypeface(tvTransactionStatus.getTypeface(), Typeface.NORMAL);
                 }
             }
         }
@@ -158,7 +152,6 @@ public class IWalletTransactionAdapter extends RecyclerView.Adapter<IWalletTrans
                 tvTransactionStatus.setVisibility(View.VISIBLE);
                 tvTransactionStatus.setTextColor(colorBlue);
                 tvTransactionStatus.setText(bookingId);
-                tvTransactionStatus.setTypeface(tvTransactionStatus.getTypeface(), Typeface.NORMAL);
 
                 backgroundLayout.setOnClickListener(view -> {
                     if(bookingId.equals(selectedBookingId)) ((Activity) myContext).onBackPressed();

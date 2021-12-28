@@ -11,11 +11,12 @@ public class User {
     private final List<SimpleTouristSpot> likedSpots = new ArrayList<>();
     private final List<Booking> bookingList = new ArrayList<>();
     private final List<Comment> comments = new ArrayList<>();
-    private final List<Comment> upVotedComments = new ArrayList<>();
-    private final List<Comment> downVotedComments = new ArrayList<>();
-    private final List<Comment> reportedComments = new ArrayList<>();
+    private final List<OtherComment> upVotedComments = new ArrayList<>();
+    private final List<OtherComment> downVotedComments = new ArrayList<>();
+    private final List<OtherComment> reportedComments = new ArrayList<>();
     private final List<Booking> taskList = new ArrayList<>();
-    private boolean developer, admin, driver, owner;
+    private Role role = new Role();
+    private Permission permission = new Permission();
     private String plateNumber = null;
     private double iWallet;
     private final List<IWalletTransaction> transactionList = new ArrayList<>();
@@ -75,8 +76,8 @@ public class User {
                 if(dataSnapshot1.hasChildren()) {
                     for(DataSnapshot dataSnapshot2 : dataSnapshot1.getChildren()) {
                         if(dataSnapshot2.hasChildren()) {
-                            Comment comment = dataSnapshot2.getValue(Comment.class);
-                            upVotedComments.add(comment);
+                            OtherComment otherComment = dataSnapshot2.getValue(OtherComment.class);
+                            upVotedComments.add(otherComment);
                         }
                     }
                 }
@@ -90,8 +91,8 @@ public class User {
                 if(dataSnapshot1.hasChildren()) {
                     for(DataSnapshot dataSnapshot2 : dataSnapshot1.getChildren()) {
                         if(dataSnapshot2.hasChildren()) {
-                            Comment comment = dataSnapshot2.getValue(Comment.class);
-                            downVotedComments.add(comment);
+                            OtherComment otherComment = dataSnapshot2.getValue(OtherComment.class);
+                            downVotedComments.add(otherComment);
                         }
                     }
                 }
@@ -105,8 +106,8 @@ public class User {
                 if(dataSnapshot1.hasChildren()) {
                     for(DataSnapshot dataSnapshot2 : dataSnapshot1.getChildren()) {
                         if(dataSnapshot2.hasChildren()) {
-                            Comment comment = dataSnapshot2.getValue(Comment.class);
-                            reportedComments.add(comment);
+                            OtherComment otherComment = dataSnapshot2.getValue(OtherComment.class);
+                            reportedComments.add(otherComment);
                         }
                     }
                 }
@@ -124,19 +125,16 @@ public class User {
             }
         }
 
-        if(dataSnapshot.child("developer").exists())
-            developer = dataSnapshot.child("developer").getValue(Boolean.class);
-        if(dataSnapshot.child("admin").exists())
-            admin = dataSnapshot.child("admin").getValue(Boolean.class);
-        if(dataSnapshot.child("driver").exists())
-            driver = dataSnapshot.child("driver").getValue(Boolean.class);
-        if(dataSnapshot.child("owner").exists())
-            owner = dataSnapshot.child("owner").getValue(Boolean.class);
+        if(dataSnapshot.child("role").exists())
+            role = dataSnapshot.child("role").getValue(Role.class);
+
+        if(dataSnapshot.child("permission").exists())
+            permission = dataSnapshot.child("permission").getValue(Permission.class);
 
         plateNumber = dataSnapshot.child("plateNumber").getValue(String.class);
 
-        if(dataSnapshot.child("iWallet").exists())
-            iWallet = dataSnapshot.child("iWallet").getValue(Double.class);
+        if(dataSnapshot.child("iwallet").exists())
+            iWallet = dataSnapshot.child("iwallet").getValue(Double.class);
 
         transactionList.clear();
         DataSnapshot transactionListRef = dataSnapshot.child("iWalletTransactionList");
@@ -218,15 +216,15 @@ public class User {
         return comments;
     }
 
-    public List<Comment> getUpVotedComments() {
+    public List<OtherComment> getUpVotedComments() {
         return upVotedComments;
     }
 
-    public List<Comment> getDownVotedComments() {
+    public List<OtherComment> getDownVotedComments() {
         return downVotedComments;
     }
 
-    public List<Comment> getReportedComments() {
+    public List<OtherComment> getReportedComments() {
         return reportedComments;
     }
 
@@ -234,20 +232,12 @@ public class User {
         return taskList;
     }
 
-    public boolean isDeveloper() {
-        return developer;
+    public Role getRole() {
+        return role;
     }
 
-    public boolean isAdmin() {
-        return admin;
-    }
-
-    public boolean isDriver() {
-        return driver;
-    }
-
-    public boolean isOwner() {
-        return owner;
+    public Permission getPermission() {
+        return permission;
     }
 
     public String getPlateNumber() {

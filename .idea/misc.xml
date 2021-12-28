@@ -81,6 +81,7 @@
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/custom_income_data_year_layout.xml" value="0.29814814814814816" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/custom_income_transaction_layout.xml" value="0.33" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/custom_iwallet_list_layout.xml" value="0.5" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/custom_iwallet_transaction_layout.xml" value="0.2490740740740741" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/custom_iwallet_transaction_list_layout.xml" value="0.5" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/custom_liked_spot_layout.xml" value="0.2916666666666667" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/custom_map_place_layout.xml" value="0.32222222222222224" />
@@ -97,7 +98,7 @@
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/custom_tourist_spot_layout.xml" value="0.33" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/custom_tourist_spot_layout_list.xml" value="0.5" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/custom_user_comment_layout.xml" value="0.5" />
-        <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/custom_user_profile_comment_layout.xml" value="0.2898148148148148" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/custom_user_profile_comment_layout.xml" value="0.33" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/custom_vrs_layout.xml" value="0.1859375" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/dialog_all_spot_layout.xml" value="0.32407407407407407" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/FirebaseClemenisleEV/app/src/main/res/layout/dialog_app_version_info_layout.xml" value="0.23425925925925925" />
