@@ -8,30 +8,65 @@
     tools:context=".RouteActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/buttonLayout2"
+        android:id="@+id/buttonLayout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:background="@color/white"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
         android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@+id/buttonLayout"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
+
+        <Button
+            android:id="@+id/onlinePaymentButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:fontFamily="@font/ubuntu"
+            android:text="Online Payment"
+            android:textAllCaps="false"
+            app:cornerRadius="20dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/cancelButton"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/cancelButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:backgroundTint="@color/red"
+            android:fontFamily="@font/ubuntu"
+            android:text="Cancel Booking"
+            android:textAllCaps="false"
+            android:visibility="gone"
+            app:cornerRadius="20dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/dropOffButton"
+            app:layout_constraintStart_toEndOf="@+id/onlinePaymentButton"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <Button
             android:id="@+id/dropOffButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
+            android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:layout_marginEnd="16dp"
             android:layout_marginBottom="8dp"
             android:fontFamily="@font/ubuntu"
             android:text="Drop-off"
             android:textAllCaps="false"
+            android:visibility="gone"
             app:cornerRadius="20dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/cancelButton"
             app:layout_constraintTop_toTopOf="parent" />
 
         <View
@@ -49,7 +84,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:background="@color/gainsboro"
-        app:layout_constraintBottom_toTopOf="@+id/buttonLayout2"
+        app:layout_constraintBottom_toTopOf="@+id/buttonLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/bookingInfoLayout" />
@@ -797,60 +832,6 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/image_loading_placeholder" />
         </androidx.constraintlayout.widget.ConstraintLayout>
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/buttonLayout"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:background="@color/white"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
-
-        <Button
-            android:id="@+id/onlinePaymentButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp"
-            android:fontFamily="@font/ubuntu"
-            android:text="Online Payment"
-            android:textAllCaps="false"
-            app:cornerRadius="20dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/cancelButton"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <Button
-            android:id="@+id/cancelButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="8dp"
-            android:backgroundTint="@color/red"
-            android:fontFamily="@font/ubuntu"
-            android:text="Cancel Booking"
-            android:textAllCaps="false"
-            app:cornerRadius="20dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/onlinePaymentButton"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <View
-            style="@style/line_color"
-            android:layout_width="0dp"
-            android:layout_height="1dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

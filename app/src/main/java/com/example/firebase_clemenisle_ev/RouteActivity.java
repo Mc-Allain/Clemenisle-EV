@@ -89,7 +89,7 @@ public class RouteActivity extends AppCompatActivity implements
             tvLocateEnd, tvViewQR, tvChat, tvDriver, tvPass, tvStop, tvCheck, tvRate, tvRemarks, tvLog,
             tvViewMessage, tvViewRemarks, tvViewReason;
     RecyclerView routeView;
-    ConstraintLayout buttonLayout, buttonLayout2, bookingInfoLayout, bookingInfoButtonLayout,
+    ConstraintLayout buttonLayout, bookingInfoLayout, bookingInfoButtonLayout,
             userInfoLayout, driverInfoLayout, timeInfoLayout, contentLayout;
     Button cancelButton, onlinePaymentButton, dropOffButton;
     ProgressBar progressBar;
@@ -248,8 +248,6 @@ public class RouteActivity extends AppCompatActivity implements
         tvPrice = findViewById(R.id.tvPrice);
         tvStartStation2 = findViewById(R.id.tvStartStation2);
         tvEndStation2 = findViewById(R.id.tvEndStation2);
-        tvLocate = findViewById(R.id.tvLocate);
-        tvLocateEnd = findViewById(R.id.tvLocateEnd);
         tvLog = findViewById(R.id.tvLog);
 
         tvViewMessage = findViewById(R.id.tvViewMessage);
@@ -259,13 +257,16 @@ public class RouteActivity extends AppCompatActivity implements
         routeView = findViewById(R.id.routeView);
         buttonLayout = findViewById(R.id.buttonLayout);
         bookingInfoLayout = findViewById(R.id.bookingInfoLayout);
-        bookingInfoButtonLayout = findViewById(R.id.bookingInfoButtonLayout);
-        cancelButton = findViewById(R.id.cancelButton);
         onlinePaymentButton = findViewById(R.id.onlinePaymentButton);
-        moreImage = findViewById(R.id.moreImage);
-        locateImage = findViewById(R.id.locateImage);
-        locateEndImage = findViewById(R.id.locateEndImage);
+        cancelButton = findViewById(R.id.cancelButton);
+        dropOffButton = findViewById(R.id.dropOffButton);
 
+        bookingInfoButtonLayout = findViewById(R.id.bookingInfoButtonLayout);
+        moreImage = findViewById(R.id.moreImage);
+        tvLocate = findViewById(R.id.tvLocate);
+        locateImage = findViewById(R.id.locateImage);
+        tvLocateEnd = findViewById(R.id.tvLocateEnd);
+        locateEndImage = findViewById(R.id.locateEndImage);
         tvViewQR = findViewById(R.id.tvViewQR);
         viewQRImage = findViewById(R.id.viewQRImage);
         tvChat = findViewById(R.id.tvChat);
@@ -286,9 +287,6 @@ public class RouteActivity extends AppCompatActivity implements
         reloadImage = findViewById(R.id.reloadImage);
         paidImage = findViewById(R.id.paidImage);
         progressBar = findViewById(R.id.progressBar);
-
-        buttonLayout2 = findViewById(R.id.buttonLayout2);
-        dropOffButton = findViewById(R.id.dropOffButton);
 
         myContext = RouteActivity.this;
         myResources = getResources();
@@ -1353,7 +1351,7 @@ public class RouteActivity extends AppCompatActivity implements
 
                             if (driverUserId.equals(user.getId()) || ongoingTaskList.size() > 0) {
                                 if(ongoingTaskList.size() > 0) {
-                                    takeTask = "Currently Unavailable";
+                                    takeTask = "You have an Ongoing Service";
                                     tvDriver.setText(takeTask);
 
                                     tvDriver.setVisibility(View.VISIBLE);
@@ -1427,7 +1425,7 @@ public class RouteActivity extends AppCompatActivity implements
                                 chatImage.setOnClickListener(view -> openChat());
 
                                 if(ongoingTaskList.size() > 0) {
-                                    takeTask = "Currently Unavailable";
+                                    takeTask = "You have an Ongoing Service";
                                     tvDriver.setText(takeTask);
 
                                     tvDriver.setVisibility(View.VISIBLE);
@@ -1781,7 +1779,7 @@ public class RouteActivity extends AppCompatActivity implements
         int color = 0;
 
         buttonLayout.setVisibility(View.VISIBLE);
-        buttonLayout2.setVisibility(View.GONE);
+        dropOffButton.setVisibility(View.GONE);
         cancelButton.setVisibility(View.GONE);
 
         if(inDriverModule) onlinePaymentButton.setText("Passenger's Online Payment");
@@ -1804,7 +1802,7 @@ public class RouteActivity extends AppCompatActivity implements
                 if(!inDriverModule && isShowBookingAlertEnabled) dialog.show();
                 break;
             case "Ongoing":
-                if(inDriverModule) buttonLayout2.setVisibility(View.VISIBLE);
+                if(inDriverModule) dropOffButton.setVisibility(View.VISIBLE);
             case "Completed":
                 color = myResources.getColor(R.color.blue);
                 break;

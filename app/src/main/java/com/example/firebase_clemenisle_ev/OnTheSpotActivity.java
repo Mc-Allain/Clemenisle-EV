@@ -262,8 +262,6 @@ public class OnTheSpotActivity extends AppCompatActivity {
         tvPrice = findViewById(R.id.tvPrice);
         tvOriginLocation2 = findViewById(R.id.tvOriginLocation2);
         tvDestinationSpot2 = findViewById(R.id.tvDestinationSpot2);
-        tvLocate = findViewById(R.id.tvLocate);
-        tvLocateDestination = findViewById(R.id.tvLocateDestination);
         tvLog = findViewById(R.id.tvLog);
 
         tvViewMessage = findViewById(R.id.tvViewMessage);
@@ -272,12 +270,14 @@ public class OnTheSpotActivity extends AppCompatActivity {
 
         buttonLayout = findViewById(R.id.buttonLayout);
         bookingInfoLayout = findViewById(R.id.bookingInfoLayout);
-        bookingInfoButtonLayout = findViewById(R.id.bookingInfoButtonLayout);
         cancelButton = findViewById(R.id.cancelButton);
         moreImage = findViewById(R.id.moreImage);
+
+        bookingInfoButtonLayout = findViewById(R.id.bookingInfoButtonLayout);
+        tvLocate = findViewById(R.id.tvLocate);
         locateImage = findViewById(R.id.locateImage);
         locateDestinationImage = findViewById(R.id.locateDestinationImage);
-
+        tvLocateDestination = findViewById(R.id.tvLocateDestination);
         tvViewQR = findViewById(R.id.tvViewQR);
         viewQRImage = findViewById(R.id.viewQRImage);
         tvChat = findViewById(R.id.tvChat);
@@ -1418,7 +1418,7 @@ public class OnTheSpotActivity extends AppCompatActivity {
 
                             if (driverUserId.equals(user.getId()) || ongoingTaskList.size() > 0) {
                                 if(ongoingTaskList.size() > 0) {
-                                    takeTask = "Currently Unavailable";
+                                    takeTask = "You have an Ongoing Service";
                                     tvDriver.setText(takeTask);
 
                                     tvDriver.setVisibility(View.VISIBLE);
@@ -1492,7 +1492,7 @@ public class OnTheSpotActivity extends AppCompatActivity {
                                 chatImage.setOnClickListener(view -> openChat());
 
                                 if(ongoingTaskList.size() > 0) {
-                                    takeTask = "Currently Unavailable";
+                                    takeTask = "You have an Ongoing Service";
                                     tvDriver.setText(takeTask);
 
                                     tvDriver.setVisibility(View.VISIBLE);

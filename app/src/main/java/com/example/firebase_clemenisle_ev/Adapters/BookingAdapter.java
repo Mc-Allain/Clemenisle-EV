@@ -1282,7 +1282,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
 
                             if (userId.equals(user.getId()) || ongoingTaskList.size() > 0) {
                                 if(ongoingTaskList.size() > 0) {
-                                    takeTask = "Currently Unavailable";
+                                    takeTask = "You have an Ongoing Service";
                                     tvDriver.setText(takeTask);
 
                                     tvDriver.setVisibility(View.VISIBLE);
@@ -1359,7 +1359,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                                         openChat(true, bookingId, taskDriverUserId));
 
                                 if(ongoingTaskList.size() > 0) {
-                                    takeTask = "Currently Unavailable";
+                                    takeTask = "You have an Ongoing Service";
                                     tvDriver.setText(takeTask);
 
                                     tvDriver.setVisibility(View.VISIBLE);
