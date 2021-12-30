@@ -33,6 +33,7 @@ public class HelpActivity extends AppCompatActivity {
 
     private final static String firebaseURL = FirebaseURL.getFirebaseURL();
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance(firebaseURL);
+    DatabaseReference usersRef;
     FirebaseAuth firebaseAuth;
     FirebaseUser firebaseUser;
 
@@ -51,8 +52,6 @@ public class HelpActivity extends AppCompatActivity {
     boolean isLoggedIn = false;
 
     String helpEntry, helpEntryValue;
-
-    DatabaseReference usersRef;
 
     private void initSharedPreferences() {
         SharedPreferences sharedPreferences = getSharedPreferences("login", Context.MODE_PRIVATE);

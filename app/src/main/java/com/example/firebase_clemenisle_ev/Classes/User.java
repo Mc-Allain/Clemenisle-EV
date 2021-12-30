@@ -23,6 +23,7 @@ public class User {
     private double amountToRemit = 0, amountToClaim = 0, incomeShare = 0;
     private final List<IncomeTransaction> amountToRemitTransactionList = new ArrayList<>();
     private final List<IncomeTransaction> amountToClaimTransactionList = new ArrayList<>();
+    private int appRating = 0;
 
     public User() {
     }
@@ -175,6 +176,9 @@ public class User {
                 }
             }
         }
+
+        if(dataSnapshot.child("appRating").exists())
+            appRating = dataSnapshot.child("appRating").getValue(Integer.class);
     }
 
     public User(String firstName, String id, String lastName, String middleName) {
@@ -270,5 +274,9 @@ public class User {
 
     public List<IncomeTransaction> getAmountToClaimTransactionList() {
         return amountToClaimTransactionList;
+    }
+
+    public int getAppRating() {
+        return appRating;
     }
 }

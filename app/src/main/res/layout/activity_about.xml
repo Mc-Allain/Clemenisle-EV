@@ -66,6 +66,179 @@
             android:layout_height="wrap_content">
 
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/appRatingLayout"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginTop="16dp"
+                android:background="@color/white"
+                app:layout_constraintEnd_toEndOf="@+id/toolsLayout"
+                app:layout_constraintStart_toStartOf="@+id/toolsLayout"
+                app:layout_constraintTop_toBottomOf="@+id/toolsLayout">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/loginAppRateLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toTopOf="@+id/rateAppButton"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent">
+
+                    <Button
+                        android:id="@+id/loginButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="16dp"
+                        android:text="Log in"
+                        android:textAllCaps="false"
+                        app:cornerRadius="20dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
+
+                    <TextView
+                        android:id="@+id/tvLoginPrompt2"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginEnd="8dp"
+                        android:fontFamily="@font/ubuntu"
+                        android:text="Please log in to rate the app."
+                        android:textColor="@color/black"
+                        app:layout_constraintBottom_toBottomOf="@+id/loginButton"
+                        app:layout_constraintEnd_toStartOf="@+id/loginButton"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/loginButton" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <Button
+                    android:id="@+id/rateAppButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:text="Rate the App"
+                    android:textAllCaps="false"
+                    app:cornerRadius="20dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent" />
+
+                <View
+                    style="@style/line_color"
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="24dp"
+                    app:layout_constraintBottom_toTopOf="@id/loginAppRateLayout"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/star1Image" />
+
+                <ImageView
+                    android:id="@+id/star1Image"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="24dp"
+                    android:padding="4dp"
+                    app:layout_constraintEnd_toStartOf="@+id/star2Image"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/appRatingTitleLayout"
+                    app:srcCompat="@drawable/ic_baseline_star_outline_24"
+                    app:tint="@color/orange" />
+
+                <ImageView
+                    android:id="@+id/star2Image"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:padding="4dp"
+                    app:layout_constraintEnd_toStartOf="@+id/star3Image"
+                    app:layout_constraintStart_toEndOf="@+id/star1Image"
+                    app:layout_constraintTop_toTopOf="@+id/star1Image"
+                    app:srcCompat="@drawable/ic_baseline_star_outline_24"
+                    app:tint="@color/orange" />
+
+                <ImageView
+                    android:id="@+id/star3Image"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:padding="4dp"
+                    app:layout_constraintEnd_toStartOf="@+id/star4Image"
+                    app:layout_constraintStart_toEndOf="@+id/star2Image"
+                    app:layout_constraintTop_toTopOf="@+id/star2Image"
+                    app:srcCompat="@drawable/ic_baseline_star_outline_24"
+                    app:tint="@color/orange" />
+
+                <ImageView
+                    android:id="@+id/star4Image"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:padding="4dp"
+                    app:layout_constraintEnd_toStartOf="@+id/star5Image"
+                    app:layout_constraintStart_toEndOf="@+id/star3Image"
+                    app:layout_constraintTop_toTopOf="@+id/star3Image"
+                    app:srcCompat="@drawable/ic_baseline_star_outline_24"
+                    app:tint="@color/orange" />
+
+                <ImageView
+                    android:id="@+id/star5Image"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_marginEnd="16dp"
+                    android:padding="4dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/star4Image"
+                    app:layout_constraintTop_toTopOf="@+id/star4Image"
+                    app:srcCompat="@drawable/ic_baseline_star_outline_24"
+                    app:tint="@color/orange" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/appRatingTitleLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <TextView
+                        android:id="@+id/tvAppRating"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginBottom="8dp"
+                        android:fontFamily="@font/ubuntu"
+                        android:text="App Ratings"
+                        android:textColor="@color/black"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/tvAppRating2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:fontFamily="@font/ubuntu"
+                        android:text="Rated by 0 user"
+                        android:textColor="@color/initial"
+                        app:layout_constraintBottom_toBottomOf="@+id/tvAppRating"
+                        app:layout_constraintStart_toEndOf="@+id/tvAppRating"
+                        app:layout_constraintTop_toTopOf="@+id/tvAppRating" />
+
+                    <View
+                        style="@style/line_color"
+                        android:layout_width="0dp"
+                        android:layout_height="1dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/newlyAddedFeaturesLayout"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -155,7 +328,7 @@
                 android:background="@color/white"
                 app:layout_constraintEnd_toEndOf="@+id/toolsLayout"
                 app:layout_constraintStart_toStartOf="@+id/toolsLayout"
-                app:layout_constraintTop_toBottomOf="@+id/toolsLayout">
+                app:layout_constraintTop_toBottomOf="@+id/appRatingLayout">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/aboutAppTitleLayout"
@@ -208,14 +381,6 @@
                     app:layout_constraintTop_toBottomOf="@id/aboutAppTitleLayout"
                     app:maxCollapsedLines="3">
 
-                    <TextView
-                        android:id="@id/expandable_text"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:ellipsize="end"
-                        android:fontFamily="@font/ubuntu"
-                        android:textColor="@color/black" />
-
                     <ImageButton
                         android:id="@id/expand_collapse"
                         android:layout_width="wrap_content"
@@ -224,6 +389,14 @@
                         android:background="@android:color/transparent"
                         android:paddingEnd="8dp"
                         app:tint="@color/black" />
+
+                    <TextView
+                        android:id="@id/expandable_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:fontFamily="@font/ubuntu"
+                        android:textColor="@color/black" />
 
                 </com.ms.square.android.expandabletextview.ExpandableTextView>
             </androidx.constraintlayout.widget.ConstraintLayout>

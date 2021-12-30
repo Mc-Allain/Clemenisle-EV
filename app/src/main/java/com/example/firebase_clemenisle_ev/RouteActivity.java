@@ -103,7 +103,7 @@ public class RouteActivity extends AppCompatActivity implements
     Context myContext;
     Resources myResources;
 
-    int colorGreen, colorInitial, colorBlue, colorRed;
+    int colorGreen, colorInitial, colorBlue, colorRed, colorOrange;
     ColorStateList cslInitial, cslBlue;
 
     String userId, driverUserId, taskDriverUserId;
@@ -297,6 +297,7 @@ public class RouteActivity extends AppCompatActivity implements
         colorInitial = myResources.getColor(R.color.initial);
         colorBlue = myResources.getColor(R.color.blue);
         colorRed = myResources.getColor(R.color.red);
+        colorOrange = myResources.getColor(R.color.orange);
 
         cslInitial = ColorStateList.valueOf(myResources.getColor(R.color.initial));
         cslBlue = ColorStateList.valueOf(myResources.getColor(R.color.blue));
@@ -486,14 +487,19 @@ public class RouteActivity extends AppCompatActivity implements
     }
 
     private void setDialogScreenEnabled(boolean value) {
-        dialog.setCanceledOnTouchOutside(value);
-        dialog.setCancelable(value);
+        dialog2.setCanceledOnTouchOutside(value);
+        dialog2.setCancelable(value);
         tlReason.setEnabled(value);
         dialogSubmitButton.setEnabled(value);
 
-        dialog2.setCanceledOnTouchOutside(value);
-        dialog2.setCancelable(value);
+        dialog3.setCanceledOnTouchOutside(value);
+        dialog3.setCancelable(value);
         tlRemarks.setEnabled(value);
+        star1Image.setClickable(value);
+        star2Image.setClickable(value);
+        star3Image.setClickable(value);
+        star4Image.setClickable(value);
+        star5Image.setClickable(value);
         dialogSubmitButton2.setEnabled(value);
 
         dialog4.setCanceledOnTouchOutside(value);
@@ -507,16 +513,26 @@ public class RouteActivity extends AppCompatActivity implements
         confirmationDialogCancelButton.setEnabled(value);
 
         if(value) {
-            dialogCloseImage.getDrawable().setTint(colorRed);
             dialogCloseImage2.getDrawable().setTint(colorRed);
+            dialogCloseImage3.getDrawable().setTint(colorRed);
             dialogCloseImage4.getDrawable().setTint(colorRed);
             confirmationDialogCloseImage.getDrawable().setTint(colorRed);
+            star1Image.getDrawable().setTint(colorOrange);
+            star2Image.getDrawable().setTint(colorOrange);
+            star3Image.getDrawable().setTint(colorOrange);
+            star4Image.getDrawable().setTint(colorOrange);
+            star5Image.getDrawable().setTint(colorOrange);
         }
         else {
-            dialogCloseImage.getDrawable().setTint(colorInitial);
             dialogCloseImage2.getDrawable().setTint(colorInitial);
+            dialogCloseImage3.getDrawable().setTint(colorInitial);
             dialogCloseImage4.getDrawable().setTint(colorInitial);
             confirmationDialogCloseImage.getDrawable().setTint(colorInitial);
+            star1Image.getDrawable().setTint(colorInitial);
+            star2Image.getDrawable().setTint(colorInitial);
+            star3Image.getDrawable().setTint(colorInitial);
+            star4Image.getDrawable().setTint(colorInitial);
+            star5Image.getDrawable().setTint(colorInitial);
         }
     }
 

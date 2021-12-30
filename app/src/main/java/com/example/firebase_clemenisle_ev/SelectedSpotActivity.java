@@ -986,7 +986,7 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
             else commentProgressBar.setVisibility(View.VISIBLE);
 
             setCommentOnScreenEnabled(false);
-            OtherComment otherComment = new OtherComment(spotId, senderUserId);
+            OtherComment otherComment = new OtherComment(senderUserId, spotId);
 
             upVotedCommentsRef.child(spotId).child(senderUserId).removeValue();
             downVotedCommentsRef.child(spotId).child(senderUserId).setValue(otherComment);
@@ -1028,7 +1028,7 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
                                    boolean isUpVoted, boolean isDownVoted) {
         setCommentOnScreenEnabled(false);
         commentProgressBar.setVisibility(View.VISIBLE);
-        OtherComment otherComment = new OtherComment(spotId, senderUserId);
+        OtherComment otherComment = new OtherComment(senderUserId, spotId);
 
         if(isUpVoted) upVotedCommentsRef.child(spotId).child(senderUserId).removeValue()
                 .addOnCompleteListener(task -> {
@@ -1048,7 +1048,7 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
                                      boolean isUpVoted, boolean isDownVoted) {
         setCommentOnScreenEnabled(false);
         commentProgressBar.setVisibility(View.VISIBLE);
-        OtherComment otherComment = new OtherComment(spotId, senderUserId);
+        OtherComment otherComment = new OtherComment(senderUserId, spotId);
 
         if(isUpVoted) upVotedCommentsRef.child(spotId).child(senderUserId).removeValue();
         if(isDownVoted) downVotedCommentsRef.child(spotId).child(senderUserId).removeValue()

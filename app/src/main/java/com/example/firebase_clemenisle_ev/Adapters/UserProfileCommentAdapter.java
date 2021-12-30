@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.firebase_clemenisle_ev.Classes.Comment;
+import com.example.firebase_clemenisle_ev.Classes.DateTimeDifference;
 import com.example.firebase_clemenisle_ev.Classes.DetailedTouristSpot;
 import com.example.firebase_clemenisle_ev.Classes.FirebaseURL;
 import com.example.firebase_clemenisle_ev.Classes.OtherComment;
@@ -94,6 +95,8 @@ public class UserProfileCommentAdapter extends RecyclerView.Adapter<UserProfileC
 
             backgroundLayout.setPadding(0, 0, 0, dpToPx(8));
 
+            DateTimeDifference dateTimeDifference = new DateTimeDifference(timestamp);
+            timestamp = dateTimeDifference.getResult();
             tvTimestamp.setText(timestamp);
             extvComment.setText(value);
 
@@ -308,6 +311,8 @@ public class UserProfileCommentAdapter extends RecyclerView.Adapter<UserProfileC
                                 }
                             }
 
+                            DateTimeDifference dateTimeDifference = new DateTimeDifference(timestamp);
+                            timestamp = dateTimeDifference.getResult();
                             tvTimestamp.setText(timestamp);
                             extvComment.setText(value);
 

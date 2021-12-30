@@ -86,7 +86,7 @@ public class HomeFragment extends Fragment implements
     String userId;
     User user;
 
-    boolean listMode = true, isLoggedIn = false;
+    boolean listMode = false, isLoggedIn = false;
     boolean isResponseError = true;
 
     String defaultLogText = "No Record";
@@ -97,7 +97,7 @@ public class HomeFragment extends Fragment implements
     private void initSharedPreferences() {
         SharedPreferences sharedPreferences = myContext
                 .getSharedPreferences("viewMode", Context.MODE_PRIVATE);
-        listMode = sharedPreferences.getBoolean("listMode", true);
+        listMode = sharedPreferences.getBoolean("listMode", false);
 
         sharedPreferences = myContext
                 .getSharedPreferences("login", Context.MODE_PRIVATE);
