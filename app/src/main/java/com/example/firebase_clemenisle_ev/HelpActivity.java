@@ -38,7 +38,7 @@ public class HelpActivity extends AppCompatActivity {
     FirebaseUser firebaseUser;
 
     ConstraintLayout helpEntryInputLayout, loginHelpLayout, userEntryLayout;
-    TextView tvUserEntry2, tvFAQ;
+    TextView tvUserEntry2, tvFAQ, tvAppRatingPrompt;
     EditText etHelpEntry;
     ImageView editImage;
     Button submitButton, loginButton;
@@ -79,6 +79,7 @@ public class HelpActivity extends AppCompatActivity {
         tvUserEntry2 = findViewById(R.id.tvUserEntry2);
         tvFAQ = findViewById(R.id.tvFAQ);
         etHelpEntry = findViewById(R.id.etHelpEntry);
+        tvAppRatingPrompt = findViewById(R.id.tvAppRatingPrompt);
         editImage = findViewById(R.id.editImage);
         submitButton = findViewById(R.id.submitButton);
         loginButton = findViewById(R.id.loginButton);
@@ -161,6 +162,11 @@ public class HelpActivity extends AppCompatActivity {
                 "Coming soon…",
                 Toast.LENGTH_SHORT
         ).show());
+
+        tvAppRatingPrompt.setOnClickListener(view -> {
+            Intent intent = new Intent(myContext, AboutActivity.class);
+            myContext.startActivity(intent);
+        });
     }
 
     private void setOnScreenEnabled(boolean value) {

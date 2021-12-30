@@ -24,7 +24,7 @@ public class WebViewActivity extends AppCompatActivity {
 
         String link = "https://mc-allain.github.io/Clemenisle-EV-Web/";
         if(toUpdate) link = "https://mc-allain.github.io/Clemenisle-EV-Web/";
-        if(toPrivacyNotice) link = "https://mc-allain.github.io/Clemenisle-EV-Web/privacy_notice.html";
+        if(toPrivacyNotice) link = "https://mc-allain.github.io/Clemenisle-EV-Web/privacy_policy.html";
 
         webView = findViewById(R.id.webView);
         webView.loadUrl(link);

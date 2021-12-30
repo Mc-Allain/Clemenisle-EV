@@ -205,6 +205,7 @@ public class MainActivity extends AppCompatActivity {
             if(firebaseUser == null) {
                 firebaseAuth.signOut();
                 sendLoginPreferences();
+                isLoggedIn = false;
 
                 Toast.makeText(
                         myContext,
