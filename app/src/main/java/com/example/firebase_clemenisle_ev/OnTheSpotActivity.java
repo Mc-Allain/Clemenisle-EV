@@ -94,7 +94,7 @@ public class OnTheSpotActivity extends AppCompatActivity {
             tvBookingId, tvSchedule, tvTypeName, tvPrice, tvOriginLocation2, tvDestinationSpot2,
             tvLocate, tvLocateDestination, tvViewQR, tvChat, tvDriver, tvPass, tvStop, tvCheck, tvRate, tvRemarks, tvLog,
             tvViewMessage, tvViewRemarks, tvViewReason;
-    ConstraintLayout buttonLayout, buttonLayout2, bookingInfoLayout, bookingInfoButtonLayout,
+    ConstraintLayout buttonLayout, bookingInfoLayout, bookingInfoButtonLayout,
             userInfoLayout, driverInfoLayout, timeInfoLayout, contentLayout;
     Button cancelButton, dropOffButton;
     FrameLayout mapLayout;
@@ -306,7 +306,6 @@ public class OnTheSpotActivity extends AppCompatActivity {
         tvMapSettings = findViewById(R.id.tvMapSettings);
         mapSettingsImage = findViewById(R.id.mapSettingsImage);
 
-        buttonLayout2 = findViewById(R.id.buttonLayout2);
         dropOffButton = findViewById(R.id.dropOffButton);
 
         myContext = OnTheSpotActivity.this;
@@ -1876,7 +1875,7 @@ public class OnTheSpotActivity extends AppCompatActivity {
         int color = 0;
 
         buttonLayout.setVisibility(View.GONE);
-        buttonLayout2.setVisibility(View.GONE);
+        dropOffButton.setVisibility(View.GONE);
 
         switch (status) {
             case "Pending":
@@ -1894,7 +1893,7 @@ public class OnTheSpotActivity extends AppCompatActivity {
                 if(isShowBookingAlertEnabled && !inDriverModule) dialog.show();
                 break;
             case "Ongoing":
-                if(inDriverModule) buttonLayout2.setVisibility(View.VISIBLE);
+                if(inDriverModule) dropOffButton.setVisibility(View.VISIBLE);
             case "Completed":
                 color = myResources.getColor(R.color.blue);
                 break;
