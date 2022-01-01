@@ -37,7 +37,7 @@ import com.example.firebase_clemenisle_ev.Classes.BookingType;
 import com.example.firebase_clemenisle_ev.Classes.Capture;
 import com.example.firebase_clemenisle_ev.Classes.DateTimeToString;
 import com.example.firebase_clemenisle_ev.Classes.FirebaseURL;
-import com.example.firebase_clemenisle_ev.Classes.ReferenceNumber;
+import com.example.firebase_clemenisle_ev.Classes.OnlinePayment;
 import com.example.firebase_clemenisle_ev.Classes.Route;
 import com.example.firebase_clemenisle_ev.Classes.Station;
 import com.example.firebase_clemenisle_ev.Classes.User;
@@ -1983,10 +1983,10 @@ public class RouteActivity extends AppCompatActivity implements
                     }
 
                     if(inDriverModule) {
-                        List<ReferenceNumber> referenceNumberList = booking.getReferenceNumberList();
+                        List<OnlinePayment> onlinePaymentList = booking.getReferenceNumberList();
 
-                        for(ReferenceNumber referenceNumber : referenceNumberList) {
-                            if(referenceNumber != null) creditedAmount += referenceNumber.getValue();
+                        for(OnlinePayment onlinePayment : onlinePaymentList) {
+                            if(onlinePayment != null) creditedAmount += onlinePayment.getValue();
                         }
 
                         refundedAmount = booking.getRefundedAmount();

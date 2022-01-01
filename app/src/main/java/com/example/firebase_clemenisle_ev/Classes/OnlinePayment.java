@@ -1,15 +1,15 @@
 package com.example.firebase_clemenisle_ev.Classes;
 
-public class ReferenceNumber {
+public class OnlinePayment {
 
     String id, referenceNumber, timestamp;
     double value;
     boolean valid = true, iWalletUsed = false, notified = true;
 
-    public ReferenceNumber() {
+    public OnlinePayment() {
     }
 
-    public ReferenceNumber(String id, String timestamp, double value) {
+    public OnlinePayment(String id, String timestamp, double value) {
         this.id = id;
         this.timestamp = timestamp;
         this.value = value;

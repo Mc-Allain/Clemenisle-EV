@@ -22,7 +22,7 @@ public class Booking {
     private final List<Chat> chats = new ArrayList<>();
     private String previousDriverUserId;
 
-    List<ReferenceNumber> referenceNumberList = new ArrayList<>();
+    List<OnlinePayment> onlinePaymentList = new ArrayList<>();
     double refundedAmount;
 
     String pickUpTime = null, dropOffTime = null;
@@ -123,13 +123,13 @@ public class Booking {
             this.read = dataSnapshot.child("read").getValue(Boolean.class);
         this.previousDriverUserId = dataSnapshot.child("previousDriverUserId").getValue(String.class);
 
-        referenceNumberList.clear();
+        onlinePaymentList.clear();
         DataSnapshot referenceNumberSnapshot = dataSnapshot.child("onlinePaymentList");
         if(referenceNumberSnapshot.exists()) {
             for(DataSnapshot dataSnapshot1 : referenceNumberSnapshot.getChildren()) {
                 if(dataSnapshot1.hasChildren()) {
-                    ReferenceNumber referenceNumber = dataSnapshot1.getValue(ReferenceNumber.class);
-                    referenceNumberList.add(referenceNumber);
+                    OnlinePayment onlinePayment = dataSnapshot1.getValue(OnlinePayment.class);
+                    onlinePaymentList.add(onlinePayment);
                 }
             }
         }
@@ -241,8 +241,8 @@ public class Booking {
         this.previousDriverUserId = previousDriverUserId;
     }
 
-    public List<ReferenceNumber> getReferenceNumberList() {
-        return referenceNumberList;
+    public List<OnlinePayment> getReferenceNumberList() {
+        return onlinePaymentList;
     }
 
     public double getRefundedAmount() {

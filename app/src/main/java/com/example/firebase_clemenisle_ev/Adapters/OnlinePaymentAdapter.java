@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.firebase_clemenisle_ev.Classes.DateTimeDifference;
-import com.example.firebase_clemenisle_ev.Classes.ReferenceNumber;
+import com.example.firebase_clemenisle_ev.Classes.OnlinePayment;
 import com.example.firebase_clemenisle_ev.R;
 
 import java.util.List;
@@ -17,9 +17,9 @@ import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class ReferenceNumberAdapter extends RecyclerView.Adapter<ReferenceNumberAdapter.ViewHolder> {
+public class OnlinePaymentAdapter extends RecyclerView.Adapter<OnlinePaymentAdapter.ViewHolder> {
 
-    List<ReferenceNumber> referenceNumberList;
+    List<OnlinePayment> onlinePaymentList;
     String status;
     boolean isCompletePayment = false, inDriverModule;
     LayoutInflater inflater;
@@ -29,8 +29,8 @@ public class ReferenceNumberAdapter extends RecyclerView.Adapter<ReferenceNumber
 
     OnInitiatePaymentListener onInitiatePaymentListener;
 
-    public ReferenceNumberAdapter(Context context, List<ReferenceNumber> referenceNumberList, boolean inDriverModule) {
-        this.referenceNumberList = referenceNumberList;
+    public OnlinePaymentAdapter(Context context, List<OnlinePayment> onlinePaymentList, boolean inDriverModule) {
+        this.onlinePaymentList = onlinePaymentList;
         this.inDriverModule = inDriverModule;
         this.inflater = LayoutInflater.from(context);
     }
@@ -71,13 +71,13 @@ public class ReferenceNumberAdapter extends RecyclerView.Adapter<ReferenceNumber
         else if(position >= 2) {
             referenceNumberLayout.setVisibility(View.VISIBLE);
 
-            ReferenceNumber referenceNumber = referenceNumberList.get(position-2);
-            String timestamp = referenceNumber.getTimestamp();
-            double value = referenceNumber.getValue();
-            boolean isValid = referenceNumber.isValid();
+            OnlinePayment onlinePayment = onlinePaymentList.get(position-2);
+            String timestamp = onlinePayment.getTimestamp();
+            double value = onlinePayment.getValue();
+            boolean isValid = onlinePayment.isValid();
 
-            String referenceNumberValue = "#" + referenceNumber.getReferenceNumber();
-            boolean isIWalletUsed = referenceNumber.isiWalletUsed();
+            String referenceNumberValue = "#" + onlinePayment.getReferenceNumber();
+            boolean isIWalletUsed = onlinePayment.isiWalletUsed();
             if(isIWalletUsed) referenceNumberValue = "iWallet";
 
             tvReferenceNumber.setText(referenceNumberValue);
@@ -131,7 +131,7 @@ public class ReferenceNumberAdapter extends RecyclerView.Adapter<ReferenceNumber
 
     @Override
     public int getItemCount() {
-        return referenceNumberList.size() + 2;
+        return onlinePaymentList.size() + 2;
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {

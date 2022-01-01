@@ -35,7 +35,7 @@ import com.example.firebase_clemenisle_ev.Classes.Chat;
 import com.example.firebase_clemenisle_ev.Classes.DateTimeToString;
 import com.example.firebase_clemenisle_ev.Classes.FirebaseURL;
 import com.example.firebase_clemenisle_ev.Classes.IWalletTransaction;
-import com.example.firebase_clemenisle_ev.Classes.ReferenceNumber;
+import com.example.firebase_clemenisle_ev.Classes.OnlinePayment;
 import com.example.firebase_clemenisle_ev.Classes.User;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -281,13 +281,13 @@ public class MainActivity extends AppCompatActivity {
                 if(snapshot.exists()) {
                     User user = new User(snapshot);
                     for(Booking booking : user.getBookingList()) {
-                        List<ReferenceNumber> referenceNumberList1 =
+                        List<OnlinePayment> onlinePaymentList1 =
                                 booking.getReferenceNumberList();
 
                         creditedAmount = 0;
-                        for(ReferenceNumber referenceNumber : referenceNumberList1) {
-                            if(referenceNumber != null)
-                                creditedAmount += referenceNumber.getValue();
+                        for(OnlinePayment onlinePayment : onlinePaymentList1) {
+                            if(onlinePayment != null)
+                                creditedAmount += onlinePayment.getValue();
                         }
 
                         price = booking.getBookingType().getPrice();
@@ -375,16 +375,16 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void refund(double refundAmount, double refundedAmount, String wtId, String bookingId) {
+    private void refund(double refundAmount, double refundedAmount, String tId, String bookingId) {
         if(!isRefunded) return;
         isRefunded = false;
 
-        IWalletTransaction transaction = new IWalletTransaction(wtId,
+        IWalletTransaction transaction = new IWalletTransaction(tId,
                 new DateTimeToString().getDateAndTime(), "Refund", refundAmount);
         transaction.setBookingId(bookingId);
 
         usersRef.child(userId).child("iwallet").setValue(iWallet + refundAmount);
-        usersRef.child(userId).child("iWalletTransactionList").child(wtId).setValue(transaction);
+        usersRef.child(userId).child("iWalletTransactionList").child(tId).setValue(transaction);
         usersRef.child(userId).child("bookingList").child(bookingId).child("refundedAmount").
                 setValue(refundAmount + refundedAmount).addOnCompleteListener(task -> isRefunded = true);
     }
@@ -687,11 +687,11 @@ public class MainActivity extends AppCompatActivity {
 
         if((booking.getStatus().equals("Pending") || booking.getStatus().equals("Booked")) &&
                 !inDriverModule) {
-            List<ReferenceNumber> referenceNumberList = booking.getReferenceNumberList();
-            for(ReferenceNumber referenceNumber : referenceNumberList) {
-                boolean isNotified = referenceNumber.isNotified();
+            List<OnlinePayment> onlinePaymentList = booking.getReferenceNumberList();
+            for(OnlinePayment onlinePayment : onlinePaymentList) {
+                boolean isNotified = onlinePayment.isNotified();
                 if(!isNotified) {
-                    showCreditedRNNotification(booking, referenceNumber);
+                    showCreditedRNNotification(booking, onlinePayment);
                 }
             }
         }
@@ -1098,14 +1098,14 @@ public class MainActivity extends AppCompatActivity {
         notificationManager.notify(1, builder.build());
     }
 
-    private void showCreditedRNNotification(Booking booking, ReferenceNumber referenceNumber) {
+    private void showCreditedRNNotification(Booking booking, OnlinePayment onlinePayment) {
         NotificationManager notificationManager = getNotificationManager(booking.getId());
         Bitmap icon = BitmapFactory.decodeResource(myResources, R.drawable.front_icon);
 
-        String value = "₱" + referenceNumber.getValue();
+        String value = "₱" + onlinePayment.getValue();
         if(value.split("\\.")[1].length() == 1) value += 0;
 
-        String referenceNumberValue = referenceNumber.getReferenceNumber();
+        String referenceNumberValue = onlinePayment.getReferenceNumber();
         String content = value + " has been credited to #" + referenceNumberValue + ".";
         if(referenceNumberValue == null) content = "You paid " + value + " in your booking.";
 
@@ -1134,7 +1134,7 @@ public class MainActivity extends AppCompatActivity {
         notificationManager.notify(1, builder.build());
 
         usersRef.child(userId).child("bookingList").child(booking.getId()).
-                child("onlinePaymentList").child(referenceNumber.getId()).
+                child("onlinePaymentList").child(onlinePayment.getId()).
                 child("notified").setValue(true);
     }
 

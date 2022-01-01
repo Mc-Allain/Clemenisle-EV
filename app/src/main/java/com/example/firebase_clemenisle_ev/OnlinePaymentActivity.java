@@ -21,12 +21,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.example.firebase_clemenisle_ev.Adapters.ReferenceNumberAdapter;
+import com.example.firebase_clemenisle_ev.Adapters.OnlinePaymentAdapter;
 import com.example.firebase_clemenisle_ev.Classes.Booking;
 import com.example.firebase_clemenisle_ev.Classes.DateTimeToString;
 import com.example.firebase_clemenisle_ev.Classes.FirebaseURL;
 import com.example.firebase_clemenisle_ev.Classes.IWalletTransaction;
-import com.example.firebase_clemenisle_ev.Classes.ReferenceNumber;
+import com.example.firebase_clemenisle_ev.Classes.OnlinePayment;
 import com.example.firebase_clemenisle_ev.Classes.User;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
@@ -48,7 +48,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class OnlinePaymentActivity extends AppCompatActivity implements ReferenceNumberAdapter.OnInitiatePaymentListener {
+public class OnlinePaymentActivity extends AppCompatActivity implements OnlinePaymentAdapter.OnInitiatePaymentListener {
 
     private final static String firebaseURL = FirebaseURL.getFirebaseURL();
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance(firebaseURL);
@@ -69,9 +69,9 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
     String bookingId;
     boolean fromIWallet;
 
-    List<ReferenceNumber> referenceNumberList = new ArrayList<>();
+    List<OnlinePayment> onlinePaymentList = new ArrayList<>();
     List<String> referenceNumberValueList = new ArrayList<>();
-    ReferenceNumberAdapter referenceNumberAdapter;
+    OnlinePaymentAdapter onlinePaymentAdapter;
 
     List<IWalletTransaction> transactionList = new ArrayList<>();
 
@@ -223,9 +223,9 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
         LinearLayoutManager linearLayout =
                 new LinearLayoutManager(myContext, LinearLayoutManager.VERTICAL, false);
         referenceNumberView.setLayoutManager(linearLayout);
-        referenceNumberAdapter = new ReferenceNumberAdapter(myContext, referenceNumberList, inDriverModule);
-        referenceNumberView.setAdapter(referenceNumberAdapter);
-        referenceNumberAdapter.setInitiatePaymentListener(this);
+        onlinePaymentAdapter = new OnlinePaymentAdapter(myContext, onlinePaymentList, inDriverModule);
+        referenceNumberView.setAdapter(onlinePaymentAdapter);
+        onlinePaymentAdapter.setInitiatePaymentListener(this);
 
         helpImage.setOnClickListener(view -> openHelp());
         tvHelp.setOnClickListener(view -> openHelp());
@@ -397,25 +397,25 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
             return;
         }
 
-        String rnId = getRNID();
+        String opId = getOpId();
 
-        ReferenceNumber referenceNumber = new ReferenceNumber(rnId,
+        OnlinePayment onlinePayment = new OnlinePayment(opId,
                 new DateTimeToString().getDateAndTime(), 0);
-        referenceNumber.setReferenceNumber(referenceNumberValue);
+        onlinePayment.setReferenceNumber(referenceNumberValue);
 
-        if(!inDriverModule) addReferenceNumberToDatabase(referenceNumber, rnId, 0);
+        if(!inDriverModule) addOnlinePayment(onlinePayment, opId, 0);
     }
 
-    private String getRNID() {
-        String rnIdSuffix = String.valueOf(referenceNumberList.size() + 1);
-        if(rnIdSuffix.length() == 1) rnIdSuffix = "0" + rnIdSuffix;
-        return "RN" + rnIdSuffix;
+    private String getOpId() {
+        String opIdSuffix = String.valueOf(onlinePaymentList.size() + 1);
+        if(opIdSuffix.length() == 1) opIdSuffix = "0" + opIdSuffix;
+        return "OP" + opIdSuffix;
     }
 
-    private void addReferenceNumberToDatabase(ReferenceNumber referenceNumber, String rnId, int sender) {
+    private void addOnlinePayment(OnlinePayment onlinePayment, String opId, int sender) {
         DatabaseReference rnRef = usersRef.child(userId).child("bookingList").child(bookingId).
-                child("onlinePaymentList").child(rnId);
-        rnRef.setValue(referenceNumber).addOnCompleteListener(task -> {
+                child("onlinePaymentList").child(opId);
+        rnRef.setValue(onlinePayment).addOnCompleteListener(task -> {
             if(task.isSuccessful()) {
                 dialog.dismiss();
                 dialog2.dismiss();
@@ -653,27 +653,28 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
     }
 
     private void submitIWalletPayment(String transactionId) {
-        String rnId = getRNID();
+        String opId = getOpId();
 
-        ReferenceNumber referenceNumber = new ReferenceNumber(rnId,
+        OnlinePayment onlinePayment = new OnlinePayment(opId,
                 new DateTimeToString().getDateAndTime(), amount);
-        referenceNumber.setiWalletUsed(true);
-        referenceNumber.setNotified(false);
+        onlinePayment.setiWalletUsed(true);
+        onlinePayment.setNotified(false);
 
-        if(!inDriverModule) addReferenceNumberToDatabase(referenceNumber, rnId, 1);
-        if(!inDriverModule) addToTransactionList(transactionId);
+        if(!inDriverModule) addToTransactionList(transactionId, onlinePayment, opId);
     }
 
-    private void addToTransactionList(String wtId) {
-        IWalletTransaction transaction = new IWalletTransaction(wtId,
+    private void addToTransactionList(String tId, OnlinePayment onlinePayment, String opId) {
+        IWalletTransaction transaction = new IWalletTransaction(tId,
                 new DateTimeToString().getDateAndTime(), "Payment", amount);
         transaction.setBookingId(bookingId);
 
-        usersRef.child(userId).child("iWalletTransactionList").child(wtId).setValue(transaction).
+        usersRef.child(userId).child("iWalletTransactionList").child(tId).setValue(transaction).
                 addOnCompleteListener(task -> {
                     if(task.isSuccessful()) {
                         double newIWallet = iWalletAmount - amount;
                         usersRef.child(userId).child("iwallet").setValue(newIWallet);
+
+                        addOnlinePayment(onlinePayment, opId, 1);
                     }
                     else {
                         if(task.getException() != null) {
@@ -685,12 +686,12 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
                                     Toast.LENGTH_LONG
                             ).show();
                         }
-                    }
 
-                    if(isConfirmationDialogEnabled)
-                        confirmationDialogProgressBar.setVisibility(View.GONE);
-                    else dialogProgressBar2.setVisibility(View.GONE);
-                    setDialogScreenEnabled(true);
+                        if(isConfirmationDialogEnabled)
+                            confirmationDialogProgressBar.setVisibility(View.GONE);
+                        else dialogProgressBar2.setVisibility(View.GONE);
+                        setDialogScreenEnabled(true);
+                    }
                 });
     }
 
@@ -764,7 +765,7 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
                 StringBuilder helpText = new StringBuilder("Current iWallet Amount: ");
                 boolean isPaid = false;
 
-                referenceNumberList.clear();
+                onlinePaymentList.clear();
                 referenceNumberValueList.clear();
 
                 if(snapshot.exists()) {
@@ -781,17 +782,17 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
                         }
 
                         for(Booking booking : bookingList) {
-                            List<ReferenceNumber> referenceNumberList1 =
+                            List<OnlinePayment> onlinePaymentList1 =
                                     booking.getReferenceNumberList();
 
-                            for(ReferenceNumber referenceNumber : referenceNumberList1) {
-                                if(referenceNumber != null) {
-                                    referenceNumberValueList.add(referenceNumber.getReferenceNumber());
+                            for(OnlinePayment onlinePayment : onlinePaymentList1) {
+                                if(onlinePayment != null) {
+                                    referenceNumberValueList.add(onlinePayment.getReferenceNumber());
 
                                     if(user.getId().equals(userId) && booking.getId().equals(bookingId)) {
-                                        creditedAmount += referenceNumber.getValue();
+                                        creditedAmount += onlinePayment.getValue();
 
-                                        referenceNumberList.add(referenceNumber);
+                                        onlinePaymentList.add(onlinePayment);
                                     }
                                 }
                             }
@@ -815,14 +816,14 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
 
                 balance = price - creditedAmount;
                 if(balance <= 0) {
-                    referenceNumberAdapter.setCompletePayment(true);
+                    onlinePaymentAdapter.setCompletePayment(true);
                     balance = 0;
 
                     if(!isPaid && !inDriverModule) usersRef.child(userId).child("bookingList").child(bookingId).
                             child("paid").setValue(true);
                 }
                 else {
-                    referenceNumberAdapter.setCompletePayment(false);
+                    onlinePaymentAdapter.setCompletePayment(false);
 
                     if(isPaid && !inDriverModule) usersRef.child(userId).child("bookingList").child(bookingId).
                             child("paid").setValue(false);
@@ -846,7 +847,7 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
                 tvBalance2.setText(balanceText);
                 tvRefundedAmount2.setText(refundedAmountText);
 
-                referenceNumberAdapter.setStatus(status);
+                onlinePaymentAdapter.setStatus(status);
 
                 helpText.append("\nAmount to Pay: ").append(priceText);
                 tlAmount.setHelperText(helpText.toString());
@@ -867,7 +868,7 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
 
                 tvLog.setLayoutParams(layoutParams);
 
-                Collections.sort(referenceNumberList, (referenceNumber, t1) -> {
+                Collections.sort(onlinePaymentList, (referenceNumber, t1) -> {
                     DateTimeToString dateTimeToString = new DateTimeToString();
                     dateTimeToString.setFormattedSchedule(referenceNumber.getTimestamp());
                     String rnTS = dateTimeToString.getDateNo(true) + " " +
@@ -879,7 +880,7 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
                     return rnTS1.compareToIgnoreCase(rnTS);
                 });
 
-                if(referenceNumberList.size() > 0) finishLoading();
+                if(onlinePaymentList.size() > 0) finishLoading();
                 else errorLoading(defaultLogText);
             }
 
@@ -914,7 +915,7 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
     }
 
     private void finishLoading() {
-        referenceNumberAdapter.notifyDataSetChanged();
+        onlinePaymentAdapter.notifyDataSetChanged();
 
         tvLog.setVisibility(View.GONE);
         reloadImage.setVisibility(View.GONE);
@@ -922,8 +923,8 @@ public class OnlinePaymentActivity extends AppCompatActivity implements Referenc
     }
 
     private void errorLoading(String error) {
-        referenceNumberList.clear();
-        referenceNumberAdapter.notifyDataSetChanged();
+        onlinePaymentList.clear();
+        onlinePaymentAdapter.notifyDataSetChanged();
 
         tvLog.setText(error);
         tvLog.setVisibility(View.VISIBLE);
