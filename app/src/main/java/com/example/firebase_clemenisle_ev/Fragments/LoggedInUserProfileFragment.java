@@ -3,6 +3,7 @@ package com.example.firebase_clemenisle_ev.Fragments;
 import android.Manifest;
 import android.app.Activity;
 import android.app.Dialog;
+import android.app.NotificationManager;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -238,6 +239,9 @@ public class LoggedInUserProfileFragment extends Fragment {
         editor.putBoolean("isLoggedIn", false);
         editor.putBoolean("isRemembered", false);
         editor.apply();
+
+        NotificationManager notificationManager = (NotificationManager) myContext.getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.cancelAll();
     }
 
     @Override

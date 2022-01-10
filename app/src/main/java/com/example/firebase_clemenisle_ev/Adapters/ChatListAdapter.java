@@ -165,7 +165,8 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
             Intent intent = new Intent(myContext, ChatActivity.class);
             intent.putExtra("taskId", taskId);
             intent.putExtra("inDriverModule", inDriverModule);
-            if(!inDriverModule) intent.putExtra("driverUserId", driverUserId);
+            if(inDriverModule) intent.putExtra("passengerUserId", endPointUserId);
+            else intent.putExtra("driverUserId", driverUserId);
             myContext.startActivity(intent);
         });
     }

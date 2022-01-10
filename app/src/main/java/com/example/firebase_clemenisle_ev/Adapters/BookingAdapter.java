@@ -1,6 +1,7 @@
 package com.example.firebase_clemenisle_ev.Adapters;
 
 import android.app.Dialog;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -182,6 +183,9 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
         editor.putBoolean("isLoggedIn", false);
         editor.putBoolean("isRemembered", false);
         editor.apply();
+
+        NotificationManager notificationManager = (NotificationManager) myContext.getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.cancelAll();
     }
 
     public BookingAdapter(Context context, List<Booking> bookingList) {
@@ -943,6 +947,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                 }
 
                 String taskDriverUserId = getDriverUserId(bookingId);
+                String passengerUserId = getPassengerUserId(bookingId);
 
                 tvViewMessage.setVisibility(View.GONE);
                 tvViewReason.setVisibility(View.GONE);
@@ -1005,9 +1010,9 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                         chatImage.setVisibility(View.VISIBLE);
 
                         tvChat.setOnClickListener(view ->
-                                openChat(false, bookingId, taskDriverUserId));
+                                openChat(false, bookingId, taskDriverUserId, passengerUserId));
                         chatImage.setOnClickListener(view ->
-                                openChat(false, bookingId, taskDriverUserId));
+                                openChat(false, bookingId, taskDriverUserId, passengerUserId));
                     }
                     else if((status.equals("Cancelled") || status.equals("Failed")) &&
                             (remarks == null || remarks.length() == 0)) {
@@ -1052,11 +1057,12 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
         myContext.startActivity(intent);
     }
 
-    private void openChat(boolean inDriverModule, String taskId, String taskDriverUserId) {
+    private void openChat(boolean inDriverModule, String taskId, String taskDriverUserId, String passengerUserId) {
         Intent intent = new Intent(myContext, ChatActivity.class);
         intent.putExtra("taskId", taskId);
         intent.putExtra("inDriverModule", inDriverModule);
-        if(!inDriverModule) intent.putExtra("driverUserId", taskDriverUserId);
+        if(inDriverModule) intent.putExtra("passengerUserId", passengerUserId);
+        else intent.putExtra("driverUserId", taskDriverUserId);
         myContext.startActivity(intent);
     }
 
@@ -1259,7 +1265,8 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                     }
                     catch (Exception ignored) {}
 
-                    String taskDriverUserId = getDriverUserId(booking.getId());
+                    String taskDriverUserId = getDriverUserId(bookingId);
+                    String passengerUserId = getPassengerUserId(bookingId);
 
                     String takeTask = "Take Task";
                     tvDriver.setText(takeTask);
@@ -1321,9 +1328,9 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                             chatImage.setVisibility(View.VISIBLE);
 
                             tvChat.setOnClickListener(view ->
-                                    openChat(true, bookingId, taskDriverUserId));
+                                    openChat(true, bookingId, taskDriverUserId, passengerUserId));
                             chatImage.setOnClickListener(view ->
-                                    openChat(true, bookingId, taskDriverUserId));
+                                    openChat(true, bookingId, taskDriverUserId, passengerUserId));
 
                             tvDriver.setVisibility(View.GONE);
                             driverImage.setVisibility(View.GONE);
@@ -1354,9 +1361,9 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                                 chatImage.setVisibility(View.VISIBLE);
 
                                 tvChat.setOnClickListener(view ->
-                                        openChat(true, bookingId, taskDriverUserId));
+                                        openChat(true, bookingId, taskDriverUserId, passengerUserId));
                                 chatImage.setOnClickListener(view ->
-                                        openChat(true, bookingId, taskDriverUserId));
+                                        openChat(true, bookingId, taskDriverUserId, passengerUserId));
 
                                 if(ongoingTaskList.size() > 0) {
                                     takeTask = "You have an Ongoing Service";

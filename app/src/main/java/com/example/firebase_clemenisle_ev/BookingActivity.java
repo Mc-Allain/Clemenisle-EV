@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -357,6 +358,9 @@ public class BookingActivity extends AppCompatActivity implements
         editor.putBoolean("isLoggedIn", false);
         editor.putBoolean("isRemembered", false);
         editor.apply();
+
+        NotificationManager notificationManager = (NotificationManager) myContext.getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.cancelAll();
     }
 
     @Override

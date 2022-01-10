@@ -1,5 +1,6 @@
 package com.example.firebase_clemenisle_ev.Fragments;
 
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
@@ -77,6 +78,9 @@ public class PendingListFragment extends Fragment implements BookingAdapter.OnAc
         editor.putBoolean("isLoggedIn", false);
         editor.putBoolean("isRemembered", false);
         editor.apply();
+
+        NotificationManager notificationManager = (NotificationManager) myContext.getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.cancelAll();
     }
 
     @Override

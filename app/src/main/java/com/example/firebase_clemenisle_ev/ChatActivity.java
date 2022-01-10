@@ -1,5 +1,6 @@
 package com.example.firebase_clemenisle_ev;
 
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -96,6 +97,9 @@ public class ChatActivity extends AppCompatActivity {
         editor.putBoolean("isLoggedIn", false);
         editor.putBoolean("isRemembered", false);
         editor.apply();
+
+        NotificationManager notificationManager = (NotificationManager) myContext.getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.cancelAll();
     }
 
     @Override
@@ -154,13 +158,24 @@ public class ChatActivity extends AppCompatActivity {
                 ).show();
             }
             else {
-                if(inDriverModule) driverUserId = firebaseUser.getUid();
+                if(inDriverModule) {
+                    driverUserId = firebaseUser.getUid();
+                    passengerUserId = intent.getStringExtra("passengerUserId");
+                }
                 else {
                     driverUserId = intent.getStringExtra("driverUserId");
                     passengerUserId = firebaseUser.getUid();
                 }
                 userId = firebaseUser.getUid();
             }
+        }
+        else {
+            Toast.makeText(
+                    myContext,
+                    "You must logged in to access this information",
+                    Toast.LENGTH_LONG
+            ).show();
+            onBackPressed();
         }
 
         getUsers();
@@ -315,7 +330,6 @@ public class ChatActivity extends AppCompatActivity {
                                         driverInfoLayout.setVisibility(View.VISIBLE);
                                     }
 
-                                    driverUserId = user.getId();
                                     driverProfileImg = user.getProfileImage();
                                     driverFullName = fullName;
                                     initialMessage = task.getMessage();
@@ -326,31 +340,32 @@ public class ChatActivity extends AppCompatActivity {
                             }
                         }
 
-                        List<Booking> bookingList = user.getBookingList();
-                        for(Booking booking : bookingList) {
-                            if(booking.getId().equals(taskId)) {
-                                String fullName = "<b>" + user.getLastName() + "</b>, " + user.getFirstName();
-                                if(user.getMiddleName().length() > 0) fullName += " " + user.getMiddleName();
+                        if(user.getId().equals(passengerUserId)) {
+                            List<Booking> bookingList = user.getBookingList();
+                            for(Booking booking : bookingList) {
+                                if(booking.getId().equals(taskId)) {
+                                    String fullName = "<b>" + user.getLastName() + "</b>, " + user.getFirstName();
+                                    if(user.getMiddleName().length() > 0) fullName += " " + user.getMiddleName();
 
-                                if(inDriverModule) {
-                                    tvUserFullName.setText(fromHtml(fullName));
+                                    if(inDriverModule) {
+                                        tvUserFullName.setText(fromHtml(fullName));
 
-                                    try {
-                                        Glide.with(myContext).load(user.getProfileImage())
-                                                .placeholder(R.drawable.image_loading_placeholder)
-                                                .into(profileImage);
+                                        try {
+                                            Glide.with(myContext).load(user.getProfileImage())
+                                                    .placeholder(R.drawable.image_loading_placeholder)
+                                                    .into(profileImage);
+                                        }
+                                        catch (Exception ignored) {}
+
+                                        userInfoLayout.setVisibility(View.VISIBLE);
                                     }
-                                    catch (Exception ignored) {}
 
-                                    userInfoLayout.setVisibility(View.VISIBLE);
+                                    passengerProfileImg = user.getProfileImage();
+                                    initialMessage = booking.getMessage();
+                                    bookingTimestamp = booking.getTimestamp();
+
+                                    break;
                                 }
-
-                                passengerUserId = user.getId();
-                                passengerProfileImg = user.getProfileImage();
-                                initialMessage = booking.getMessage();
-                                bookingTimestamp = booking.getTimestamp();
-
-                                break;
                             }
                         }
                     }

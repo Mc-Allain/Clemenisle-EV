@@ -346,6 +346,14 @@ public class RouteActivity extends AppCompatActivity implements
                 else userId = firebaseUser.getUid();
             }
         }
+        else {
+            Toast.makeText(
+                    myContext,
+                    "You must logged in to access this information",
+                    Toast.LENGTH_LONG
+            ).show();
+            onBackPressed();
+        }
 
         bookingListRef = usersRef.child(userId).child("bookingList").child(bookingId);
 
@@ -1194,7 +1202,8 @@ public class RouteActivity extends AppCompatActivity implements
         intent.putExtra("taskId", bookingId);
         intent.putExtra("inDriverModule", inDriverModule);
         getDriverUserId();
-        if(!inDriverModule) intent.putExtra("driverUserId", taskDriverUserId);
+        if(inDriverModule) intent.putExtra("passengerUserId", getPassengerUserId());
+        else intent.putExtra("driverUserId", taskDriverUserId);
         myContext.startActivity(intent);
     }
 

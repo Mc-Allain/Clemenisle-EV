@@ -1,6 +1,7 @@
 package com.example.firebase_clemenisle_ev;
 
 import android.app.Dialog;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -137,6 +138,9 @@ public class OnlinePaymentActivity extends AppCompatActivity implements OnlinePa
         editor.putBoolean("isLoggedIn", false);
         editor.putBoolean("isRemembered", false);
         editor.apply();
+
+        NotificationManager notificationManager = (NotificationManager) myContext.getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.cancelAll();
     }
 
     @Override
@@ -211,6 +215,14 @@ public class OnlinePaymentActivity extends AppCompatActivity implements OnlinePa
                     userId = firebaseUser.getUid();
                 }
             }
+        }
+        else {
+            Toast.makeText(
+                    myContext,
+                    "You must logged in to access this information",
+                    Toast.LENGTH_LONG
+            ).show();
+            onBackPressed();
         }
 
         try {

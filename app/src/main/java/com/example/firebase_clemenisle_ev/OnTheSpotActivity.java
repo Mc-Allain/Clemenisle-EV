@@ -365,6 +365,14 @@ public class OnTheSpotActivity extends AppCompatActivity {
                 else userId = firebaseUser.getUid();
             }
         }
+        else {
+            Toast.makeText(
+                    myContext,
+                    "You must logged in to access this information",
+                    Toast.LENGTH_LONG
+            ).show();
+            onBackPressed();
+        }
 
         getBookingData();
 
@@ -1181,12 +1189,25 @@ public class OnTheSpotActivity extends AppCompatActivity {
         }
     }
 
+    private String getPassengerUserId() {
+        for(User user : users) {
+            List<Booking> bookingList = user.getBookingList();
+            for(Booking booking : bookingList) {
+                if(booking.getId().equals(bookingId)) {
+                    return user.getId();
+                }
+            }
+        }
+        return null;
+    }
+
     private void openChat() {
         Intent intent = new Intent(myContext, ChatActivity.class);
         intent.putExtra("taskId", bookingId);
         intent.putExtra("inDriverModule", inDriverModule);
         getDriverUserId();
-        if(!inDriverModule) intent.putExtra("driverUserId", taskDriverUserId);
+        if(inDriverModule) intent.putExtra("passengerUserId", getPassengerUserId());
+        else intent.putExtra("driverUserId", taskDriverUserId);
         myContext.startActivity(intent);
     }
 

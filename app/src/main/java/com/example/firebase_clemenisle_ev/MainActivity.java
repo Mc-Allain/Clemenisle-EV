@@ -168,6 +168,9 @@ public class MainActivity extends AppCompatActivity {
         editor.putBoolean("isLoggedIn", false);
         editor.putBoolean("isRemembered", false);
         editor.apply();
+
+        NotificationManager notificationManager = (NotificationManager) myContext.getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.cancelAll();
     }
 
     @Override
@@ -944,6 +947,7 @@ public class MainActivity extends AppCompatActivity {
             builder.setPriority(Notification.PRIORITY_HIGH);
 
         Intent notificationIntent = new Intent(myContext, RouteActivity.class);
+        notificationIntent.putExtra("notificationUserId", userId);
         notificationIntent.putExtra("bookingId", booking.getId());
         notificationIntent.putExtra("inDriverModule", false);
 
@@ -974,6 +978,7 @@ public class MainActivity extends AppCompatActivity {
             builder.setPriority(Notification.PRIORITY_HIGH);
 
         Intent notificationIntent = new Intent(myContext, RouteActivity.class);
+        notificationIntent.putExtra("notificationUserId", userId);
         notificationIntent.putExtra("bookingId", task.getId());
         notificationIntent.putExtra("inDriverModule", true);
         notificationIntent.putExtra("status", task.getStatus());
@@ -1006,10 +1011,15 @@ public class MainActivity extends AppCompatActivity {
             builder.setPriority(Notification.PRIORITY_HIGH);
 
         Intent notificationIntent = new Intent(myContext, ChatActivity.class);
+        notificationIntent.putExtra("notificationUserId", userId);
         notificationIntent.putExtra("taskId", task.getId());
         notificationIntent.putExtra("inDriverModule", inDriverModule);
 
-        if(!inDriverModule) {
+        if(inDriverModule) {
+            String passengerUserId = getPassengerUserId(task.getId());
+            notificationIntent.putExtra("passengerUserId", passengerUserId);
+        }
+        else {
             String taskDriverUserId = getDriverUserId(task.getId());
             notificationIntent.putExtra("driverUserId", taskDriverUserId);
         }
@@ -1087,6 +1097,7 @@ public class MainActivity extends AppCompatActivity {
             notificationIntent.putExtra("isLatest", false);
         }
 
+        notificationIntent.putExtra("notificationUserId", userId);
         notificationIntent.putExtra("bookingId", booking.getId());
         notificationIntent.putExtra("inDriverModule", false);
 
@@ -1122,8 +1133,8 @@ public class MainActivity extends AppCompatActivity {
         if(Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
             builder.setPriority(Notification.PRIORITY_HIGH);
 
-        Intent notificationIntent;
-        notificationIntent = new Intent(myContext, OnlinePaymentActivity.class);
+        Intent notificationIntent = new Intent(myContext, OnlinePaymentActivity.class);
+        notificationIntent.putExtra("notificationUserId", userId);
         notificationIntent.putExtra("bookingId", booking.getId());
 
         PendingIntent pendingIntent = PendingIntent.getActivity(
@@ -1170,8 +1181,8 @@ public class MainActivity extends AppCompatActivity {
         if(Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
             builder.setPriority(Notification.PRIORITY_HIGH);
 
-        Intent notificationIntent;
-        notificationIntent = new Intent(myContext, IWalletActivity.class);
+        Intent notificationIntent = new Intent(myContext, IWalletActivity.class);
+        notificationIntent.putExtra("notificationUserId", userId);
 
         PendingIntent pendingIntent = PendingIntent.getActivity(
                 myContext, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT
