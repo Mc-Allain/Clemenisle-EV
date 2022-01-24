@@ -15,29 +15,29 @@ public class DateTimeDifference {
         int yearNow = Integer.parseInt(dateTimeToString.getYear());
 
         dateTimeToString.setFormattedSchedule(timestamp);
-        String chatDateAndTime = dateTimeToString.getDateAndTime();
-        String chatDate = dateTimeToString.getDate();
-        String chatTime = dateTimeToString.getTime(false);
-        int chatMin = Integer.parseInt(dateTimeToString.getMin());
-        int chatHour = Integer.parseInt(dateTimeToString.getRawHour());
-        int chatDay = Integer.parseInt(dateTimeToString.getDay());
-        int chatMonth = Integer.parseInt(dateTimeToString.getMonthNo());
-        int chatYear = Integer.parseInt(dateTimeToString.getYear());
-        int chatMaxDay = dateTimeToString.getMaximumDaysInMonthOfYear();
-        String chatDateNoYear = chatDay + " " + dateTimeToString.getMonth();
+        String iDateAndTime = dateTimeToString.getDateAndTime();
+        String iDate = dateTimeToString.getDate();
+        String iTime = dateTimeToString.getTime(false);
+        int iMin = Integer.parseInt(dateTimeToString.getMin());
+        int iHour = Integer.parseInt(dateTimeToString.getRawHour());
+        int iDay = Integer.parseInt(dateTimeToString.getDay());
+        int iMonth = Integer.parseInt(dateTimeToString.getMonthNo());
+        int iYear = Integer.parseInt(dateTimeToString.getYear());
+        int maxDay = dateTimeToString.getMaximumDaysInMonthOfYear();
+        String iDateNoYear = iDay + " " + dateTimeToString.getMonth();
 
-        if(dateNow.equals(chatDate)) {
-            if(timeNow.equals(chatTime)) timestamp = "Just now";
+        if(dateNow.equals(iDate)) {
+            if(timeNow.equals(iTime)) timestamp = "Just now";
             else {
-                int hrDifference = hourNow - chatHour;
-                if(chatHour > hourNow) hrDifference = hourNow + 24 - chatHour;
+                int hrDifference = hourNow - iHour;
+                if(iHour > hourNow) hrDifference = hourNow + 24 - iHour;
 
                 if(hrDifference == 0 || hrDifference == 1) {
                     int minDifference;
-                    if(minNow > chatMin)
-                        minDifference = minNow - chatMin;
+                    if(minNow > iMin)
+                        minDifference = minNow - iMin;
                     else {
-                        minDifference = minNow + 60 - chatMin;
+                        minDifference = minNow + 60 - iMin;
                         if(minDifference < 60) hrDifference--;
                     }
 
@@ -48,24 +48,22 @@ public class DateTimeDifference {
                     }
                 }
                 else if(hrDifference < 12) timestamp = hrDifference + " hours ago";
-                else timestamp = chatTime;
+                else timestamp = iTime;
             }
         }
         else {
-            yearDifference = yearNow - chatYear;
-            monthDifference = monthNow - chatMonth;
-            if(chatMonth > monthNow) monthDifference = monthNow + 12 - chatMonth;
+            yearDifference = yearNow - iYear;
+            monthDifference = monthNow - iMonth;
+            if(iMonth > monthNow) monthDifference = monthNow + 12 * yearDifference - iMonth;
 
-            if(monthDifference == 0 || monthDifference == 1 && yearDifference == 0) {
-                if(dayNow > chatDay)
-                    dayDifference = dayNow - chatDay;
-                else dayDifference = dayNow + chatMaxDay - chatDay;
+            if(dayNow > iDay)
+                dayDifference = dayNow - iDay;
+            else dayDifference = dayNow + maxDay * monthDifference - iDay;
 
-                if(dayDifference == 1) timestamp = "Yesterday | " + chatTime;
-                else if(dayDifference < 7) timestamp = dayDifference + " days ago | " + chatTime;
-                else timestamp = chatDateNoYear + " | " + chatTime;
-            }
-            else timestamp = chatDateAndTime;
+            if(dayDifference == 1) timestamp = "Yesterday | " + iTime;
+            else if(dayDifference < 7) timestamp = dayDifference + " days ago | " + iTime;
+            else if(monthDifference == 0) timestamp = iDateNoYear + " | " + iTime;
+            else timestamp = iDateAndTime;
         }
         this.timestamp = timestamp;
     }

@@ -133,7 +133,6 @@ public class DateTimeToString {
 
     public int getMaximumDaysInMonthOfYear() {
         if(dateSplit.length == 3) {
-
             int rawMonth = Integer.parseInt(dateSplit[1]);
             if(isDefaultDate) rawMonth--;
 

@@ -185,7 +185,7 @@ public class IncomeDataActivity extends AppCompatActivity {
                     }
                     incomeThisYear += task.getBookingType().getPrice();
                 }
-                else if(monthDifference == 1 && dayDifference < 7)
+                else if(dayDifference < 7)
                     incomeThisWeek += task.getBookingType().getPrice();
                 totalIncome += task.getBookingType().getPrice();
             }
