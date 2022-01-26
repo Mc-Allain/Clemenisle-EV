@@ -34,7 +34,7 @@ public class AmountToRemitActivity extends AppCompatActivity {
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance(firebaseURL);
     DatabaseReference usersRef;
 
-    TextView tvAmountToRemit, tvLog, tvBadge;
+    TextView tvAmountToRemit, tvRemittedAmount, tvTotalAmount, tvLog, tvBadge;
     ImageView reloadImage;
     RecyclerView transactionView;
     ProgressBar progressBar;
@@ -56,6 +56,8 @@ public class AmountToRemitActivity extends AppCompatActivity {
         setContentView(R.layout.activity_amount_to_remit);
 
         tvAmountToRemit = findViewById(R.id.tvAmountToRemit);
+        tvRemittedAmount = findViewById(R.id.tvRemittedAmount);
+        tvTotalAmount = findViewById(R.id.tvTotalAmount);
         tvLog = findViewById(R.id.tvLog);
         tvBadge = findViewById(R.id.tvBadge);
         reloadImage = findViewById(R.id.reloadImage);
@@ -116,6 +118,20 @@ public class AmountToRemitActivity extends AppCompatActivity {
         String valueText = "₱" + user.getAmountToRemit();
         if(valueText.split("\\.")[1].length() == 1) valueText += 0;
         tvAmountToRemit.setText(valueText);
+
+        double remittedAmount = 0;
+        for(IncomeTransaction transaction : transactionList)
+            remittedAmount += transaction.getValue();
+
+        valueText = "₱" + remittedAmount;
+        if(valueText.split("\\.")[1].length() == 1) valueText += 0;
+        tvRemittedAmount.setText(valueText);
+
+        double totalAmount = user.getAmountToRemit() + remittedAmount;
+
+        valueText = "₱" + totalAmount;
+        if(valueText.split("\\.")[1].length() == 1) valueText += 0;
+        tvTotalAmount.setText(valueText);
 
         tvBadge.setText(String.valueOf(transactionList.size()));
 

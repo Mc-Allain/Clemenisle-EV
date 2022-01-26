@@ -35,7 +35,7 @@ public class AmountToClaimActivity extends AppCompatActivity {
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance(firebaseURL);
     DatabaseReference usersRef;
 
-    TextView tvIncomeShare, tvAmountToClaim, tvLog, tvBadge;
+    TextView tvIncomeShare, tvAmountToClaim, tvClaimedAmount, tvTotalAmount, tvLog, tvBadge;
     ImageView reloadImage;
     RecyclerView transactionView;
     ProgressBar progressBar;
@@ -58,6 +58,8 @@ public class AmountToClaimActivity extends AppCompatActivity {
 
         tvIncomeShare = findViewById(R.id.tvIncomeShare);
         tvAmountToClaim = findViewById(R.id.tvAmountToClaim);
+        tvClaimedAmount = findViewById(R.id.tvClaimedAmount);
+        tvTotalAmount = findViewById(R.id.tvTotalAmount);
         tvLog = findViewById(R.id.tvLog);
         tvBadge = findViewById(R.id.tvBadge);
         reloadImage = findViewById(R.id.reloadImage);
@@ -131,6 +133,20 @@ public class AmountToClaimActivity extends AppCompatActivity {
         String valueText = "₱" + user.getAmountToClaim();
         if(valueText.split("\\.")[1].length() == 1) valueText += 0;
         tvAmountToClaim.setText(valueText);
+
+        double claimedAmount = 0;
+        for(IncomeTransaction transaction : transactionList)
+            claimedAmount += transaction.getValue();
+
+        valueText = "₱" + claimedAmount;
+        if(valueText.split("\\.")[1].length() == 1) valueText += 0;
+        tvClaimedAmount.setText(valueText);
+
+        double totalAmount = user.getAmountToClaim() + claimedAmount;
+
+        valueText = "₱" + totalAmount;
+        if(valueText.split("\\.")[1].length() == 1) valueText += 0;
+        tvTotalAmount.setText(valueText);
 
         tvBadge.setText(String.valueOf(transactionList.size()));
 
