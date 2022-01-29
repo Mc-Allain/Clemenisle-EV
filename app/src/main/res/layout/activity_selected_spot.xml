@@ -432,61 +432,43 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/commentTitleLayout">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/commentView"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:background="@color/gainsboro"
+        <ImageView
+            android:id="@+id/reloadImage"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:padding="0dp"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="@+id/tvLog"
+            app:layout_constraintStart_toStartOf="@+id/tvLog"
+            app:layout_constraintTop_toBottomOf="@+id/tvLog" />
+
+        <ProgressBar
+            android:id="@+id/commentProgressBar"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="40dp"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/loginCommentLayout" />
+            app:layout_constraintTop_toTopOf="parent" />
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/loginCommentLayout"
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/tvLog"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginEnd="16dp"
+            android:fontFamily="@font/ubuntu"
+            android:text="No Comment\nPlease make yours the first one"
+            android:textAlignment="center"
+            android:textColor="@color/initial"
+            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/userCommentLayout">
-
-            <Button
-                android:id="@+id/loginButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="16dp"
-                android:text="Log in"
-                android:textAllCaps="false"
-                app:cornerRadius="20dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/tvLoginPrompt"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginBottom="8dp"
-                android:fontFamily="@font/ubuntu"
-                android:text="Please log in to comment."
-                android:textColor="@color/black"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/loginButton"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <View
-                android:id="@+id/loginCommentLayoutLine1"
-                style="@style/line_color"
-                android:layout_width="0dp"
-                android:layout_height="1dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
+            app:layout_constraintTop_toTopOf="@+id/commentView" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/commentInputLayout"
@@ -549,6 +531,52 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/loginCommentLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/userCommentLayout">
+
+            <Button
+                android:id="@+id/loginButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:text="Log in"
+                android:textAllCaps="false"
+                app:cornerRadius="20dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tvLoginPrompt"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="8dp"
+                android:fontFamily="@font/ubuntu"
+                android:text="Please log in to comment."
+                android:textColor="@color/black"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/loginButton"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <View
+                android:id="@+id/loginCommentLayoutLine1"
+                style="@style/line_color"
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -821,43 +849,316 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <ImageView
-            android:id="@+id/reloadImage"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:padding="0dp"
-            android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="@+id/tvLog"
-            app:layout_constraintStart_toStartOf="@+id/tvLog"
-            app:layout_constraintTop_toBottomOf="@+id/tvLog" />
-
-        <TextView
-            android:id="@+id/tvLog"
-            android:layout_width="0dp"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/selectedCommentLayout"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="24dp"
-            android:layout_marginEnd="16dp"
-            android:fontFamily="@font/ubuntu"
-            android:text="No Comment\nPlease make yours the first one"
-            android:textAlignment="center"
-            android:textColor="@color/initial"
-            android:visibility="gone"
+            android:background="@color/white"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/commentView" />
+            app:layout_constraintTop_toBottomOf="@+id/loginCommentLayout">
 
-        <ProgressBar
-            android:id="@+id/commentProgressBar"
-            style="?android:attr/progressBarStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="40dp"
-            android:visibility="gone"
+            <View
+                android:id="@+id/selectedCommentLayoutLine1"
+                style="@style/line_color"
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/selectedCommentTitleLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <TextView
+                    android:id="@+id/tvSelectedUserCommentTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:fontFamily="@font/ubuntu"
+                    android:text="Selected Comment"
+                    android:textColor="@color/black"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <View
+                    android:id="@+id/selectedCommentTitleLayoutLine1"
+                    style="@style/line_color"
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/selectedCommentBackgroundLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/selectedCommentTitleLayout">
+
+                <TextView
+                    android:id="@+id/tvSelectedUserFullName"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:fontFamily="@font/ubuntu"
+                    android:text="User's Full Name"
+                    android:textColor="@color/black"
+                    app:layout_constraintBottom_toBottomOf="@+id/selectedProfileImage"
+                    app:layout_constraintEnd_toStartOf="@+id/selectedActionLayout"
+                    app:layout_constraintStart_toEndOf="@+id/selectedProfileImage"
+                    app:layout_constraintTop_toTopOf="@+id/selectedProfileImage" />
+
+                <TextView
+                    android:id="@+id/tvSelectedCommentStatus"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:fontFamily="@font/ubuntu"
+                    android:paddingBottom="4dp"
+                    android:text="Comment Status"
+                    android:textColor="@color/red"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toEndOf="@+id/selectedActionLayout"
+                    app:layout_constraintStart_toStartOf="@+id/tvSelectedTimestamp"
+                    app:layout_constraintTop_toBottomOf="@+id/tvSelectedTimestamp" />
+
+                <TextView
+                    android:id="@+id/tvSelectedTimestamp"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:fontFamily="@font/ubuntu"
+                    android:paddingBottom="4dp"
+                    android:text="Timestamp"
+                    android:textColor="@color/initial"
+                    app:layout_constraintEnd_toEndOf="@+id/tvSelectedUserFullName"
+                    app:layout_constraintStart_toStartOf="@+id/tvSelectedUserFullName"
+                    app:layout_constraintTop_toBottomOf="@+id/selectedBadgeLayout" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/selectedBadgeLayout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:visibility="gone"
+                    app:layout_constraintStart_toStartOf="@+id/tvSelectedUserFullName"
+                    app:layout_constraintTop_toBottomOf="@+id/tvSelectedUserFullName">
+
+                    <ImageView
+                        android:id="@+id/selectedOwnerImage"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="4dp"
+                        android:visibility="gone"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@id/selectedDeveloperImage"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:srcCompat="@drawable/ic_baseline_business_center_24"
+                        app:tint="@color/orange" />
+
+                    <ImageView
+                        android:id="@+id/selectedDeveloperImage"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="4dp"
+                        android:visibility="gone"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/selectedAdminImage"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:srcCompat="@drawable/ic_baseline_developer_mode_24"
+                        app:tint="@color/orange" />
+
+                    <ImageView
+                        android:id="@+id/selectedAdminImage"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="4dp"
+                        android:visibility="gone"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/selectedDriverImage"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:srcCompat="@drawable/ic_baseline_admin_panel_settings_24"
+                        app:tint="@color/orange" />
+
+                    <ImageView
+                        android:id="@+id/selectedDriverImage"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="4dp"
+                        android:visibility="gone"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/selectedLikerImage"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:srcCompat="@drawable/ic_baseline_electric_rickshaw_24"
+                        app:tint="@color/orange" />
+
+                    <ImageView
+                        android:id="@+id/selectedLikerImage"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:srcCompat="@drawable/ic_baseline_thumb_up_24"
+                        app:tint="@color/orange" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/voteLayout"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="@+id/selectedActionLayout"
+                    app:layout_constraintStart_toStartOf="@+id/selectedProfileImage"
+                    app:layout_constraintTop_toBottomOf="@+id/extvSelectedComment">
+
+                    <ImageView
+                        android:id="@+id/upVoteImage"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:padding="4dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:srcCompat="@drawable/ic_arrow_bar_up"
+                        app:tint="@color/black" />
+
+                    <ImageView
+                        android:id="@+id/downVoteImage"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="4dp"
+                        app:layout_constraintBottom_toBottomOf="@+id/tvUpVotes"
+                        app:layout_constraintStart_toEndOf="@+id/tvUpVotes"
+                        app:layout_constraintTop_toTopOf="@+id/tvUpVotes"
+                        app:srcCompat="@drawable/ic_arrow_bar_down"
+                        app:tint="@color/black" />
+
+                    <TextView
+                        android:id="@+id/tvUpVotes"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0"
+                        android:textColor="@color/black"
+                        app:layout_constraintBottom_toBottomOf="@+id/upVoteImage"
+                        app:layout_constraintStart_toEndOf="@+id/upVoteImage"
+                        app:layout_constraintTop_toTopOf="@+id/upVoteImage" />
+
+                    <TextView
+                        android:id="@+id/tvDownVotes"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0"
+                        android:textColor="@color/black"
+                        app:layout_constraintBottom_toBottomOf="@+id/downVoteImage"
+                        app:layout_constraintStart_toEndOf="@+id/downVoteImage"
+                        app:layout_constraintTop_toTopOf="@+id/downVoteImage" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/selectedActionLayout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    app:layout_constraintBottom_toBottomOf="@+id/selectedProfileImage"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/selectedProfileImage">
+
+                    <ImageView
+                        android:id="@+id/reportImage"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="4dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:srcCompat="@drawable/ic_baseline_report_24"
+                        app:tint="@color/red" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <com.ms.square.android.expandabletextview.ExpandableTextView
+                    android:id="@+id/extvSelectedComment"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="16dp"
+                    app:animAlphaStart="1"
+                    app:animDuration="200"
+                    app:collapseDrawable="@drawable/ic_baseline_expand_less_24"
+                    app:expandDrawable="@drawable/ic_baseline_expand_more_24"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="@+id/tvSelectedUserFullName"
+                    app:layout_constraintTop_toBottomOf="@id/tvSelectedCommentStatus"
+                    app:maxCollapsedLines="3">
+
+                    <TextView
+                        android:id="@id/expandable_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:fontFamily="@font/ubuntu"
+                        android:textColor="@color/black" />
+
+                    <ImageButton
+                        android:id="@id/expand_collapse"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="right|bottom"
+                        android:background="@android:color/transparent"
+                        android:paddingEnd="8dp"
+                        app:tint="@color/black" />
+
+                </com.ms.square.android.expandabletextview.ExpandableTextView>
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/selectedProfileImage"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/image_loading_placeholder"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/commentView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="@color/gainsboro"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@+id/selectedCommentLayout" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

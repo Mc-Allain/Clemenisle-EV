@@ -53,12 +53,8 @@ public class DateTimeDifference {
         }
         else {
             yearDifference = yearNow - iYear;
-            monthDifference = monthNow - iMonth;
-            if(iMonth > monthNow) monthDifference = monthNow + 12 * yearDifference - iMonth;
-
-            if(dayNow > iDay)
-                dayDifference = dayNow - iDay;
-            else dayDifference = dayNow + maxDay * monthDifference - iDay;
+            monthDifference = monthNow + 12 * yearDifference - iMonth;
+            dayDifference = dayNow + maxDay * monthDifference - iDay;
 
             if(dayDifference == 1) timestamp = "Yesterday | " + iTime;
             else if(dayDifference < 7) timestamp = dayDifference + " days ago | " + iTime;

@@ -46,13 +46,14 @@ public class UserProfileCommentAdapter extends RecyclerView.Adapter<UserProfileC
 
     List<Comment> comments;
     List<OtherComment> otherComments;
+    User user;
     LayoutInflater inflater;
 
     Context myContext;
     Resources myResources;
 
     String defaultStatusText = "Foul comment", appealedtext = "(Appealed)",
-            notActiveText = "This comment is not active";
+            reportedStatus = "Reported", notActiveText = "This comment is not active";
 
     public UserProfileCommentAdapter(Context context, List<Comment> comments, List<OtherComment> otherComments) {
         this.comments = comments;
@@ -152,6 +153,7 @@ public class UserProfileCommentAdapter extends RecyclerView.Adapter<UserProfileC
                 intent.putExtra("id", spotId);
                 intent.putExtra("isLoggedIn", true);
                 intent.putExtra("toComment", true);
+                intent.putExtra("selectedSenderId", senderId);
                 myContext.startActivity(intent);
             });
         }
@@ -210,18 +212,18 @@ public class UserProfileCommentAdapter extends RecyclerView.Adapter<UserProfileC
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if(snapshot.exists()) {
                     for(DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                        User user = new User(dataSnapshot);
-                        if(user.getId().equals(senderId)) {
+                        User sender = new User(dataSnapshot);
+                        if(sender.getId().equals(senderId)) {
 
                             try {
-                                Glide.with(myContext).load(user.getProfileImage())
+                                Glide.with(myContext).load(sender.getProfileImage())
                                         .placeholder(R.drawable.image_loading_placeholder)
                                         .into(profileImage);
                             }
                             catch (Exception ignored) {}
 
-                            String fullName = "<b>" + user.getLastName() + "</b>, " + user.getFirstName();
-                            if(user.getMiddleName().length() > 0) fullName += " " + user.getMiddleName();
+                            String fullName = "<b>" + sender.getLastName() + "</b>, " + sender.getFirstName();
+                            if(sender.getMiddleName().length() > 0) fullName += " " + sender.getMiddleName();
                             tvUserFullName.setText(fromHtml(fullName));
 
                             badgeLayout.setVisibility(View.GONE);
@@ -231,7 +233,7 @@ public class UserProfileCommentAdapter extends RecyclerView.Adapter<UserProfileC
                             driverImage.setVisibility(View.GONE);
                             likerImage.setVisibility(View.GONE);
 
-                            if(user.getRole().isOwner()) {
+                            if(sender.getRole().isOwner()) {
                                 badgeLayout.setVisibility(View.VISIBLE);
                                 ownerImage.setVisibility(View.VISIBLE);
                                 ownerImage.setOnLongClickListener(view -> {
@@ -243,7 +245,7 @@ public class UserProfileCommentAdapter extends RecyclerView.Adapter<UserProfileC
                                     return false;
                                 });
                             }
-                            if(user.getRole().isDeveloper()) {
+                            if(sender.getRole().isDeveloper()) {
                                 badgeLayout.setVisibility(View.VISIBLE);
                                 developerImage.setVisibility(View.VISIBLE);
                                 developerImage.setOnLongClickListener(view -> {
@@ -255,7 +257,7 @@ public class UserProfileCommentAdapter extends RecyclerView.Adapter<UserProfileC
                                     return false;
                                 });
                             }
-                            if(user.getRole().isAdmin()) {
+                            if(sender.getRole().isAdmin()) {
                                 badgeLayout.setVisibility(View.VISIBLE);
                                 adminImage.setVisibility(View.VISIBLE);
                                 adminImage.setOnLongClickListener(view -> {
@@ -267,7 +269,7 @@ public class UserProfileCommentAdapter extends RecyclerView.Adapter<UserProfileC
                                     return false;
                                 });
                             }
-                            if(user.getRole().isDriver()) {
+                            if(sender.getRole().isDriver()) {
                                 badgeLayout.setVisibility(View.VISIBLE);
                                 driverImage.setVisibility(View.VISIBLE);
                                 driverImage.setOnLongClickListener(view -> {
@@ -280,7 +282,7 @@ public class UserProfileCommentAdapter extends RecyclerView.Adapter<UserProfileC
                                 });
                             }
 
-                            List<SimpleTouristSpot> likedSpots = user.getLikedSpots();
+                            List<SimpleTouristSpot> likedSpots = sender.getLikedSpots();
                             for(SimpleTouristSpot likedSpot : likedSpots) {
                                 if(likedSpot.getId().equals(spotId)) {
                                     badgeLayout.setVisibility(View.VISIBLE);
@@ -300,7 +302,7 @@ public class UserProfileCommentAdapter extends RecyclerView.Adapter<UserProfileC
                             String value = null, timestamp = null;
                             boolean isDeactivated = false, isFouled = false, isAppealed = false;
 
-                            for(Comment comment : user.getComments()) {
+                            for(Comment comment : sender.getComments()) {
                                 if(comment.getId().equals(spotId)) {
                                     isDeactivated = comment.isDeactivated();
                                     isFouled = comment.isFouled();
@@ -339,6 +341,23 @@ public class UserProfileCommentAdapter extends RecyclerView.Adapter<UserProfileC
                                 else extvComment.setVisibility(View.VISIBLE);
                             }
 
+                            if(user != null) {
+                                List<OtherComment> reportedComments = user.getReportedComments();
+                                for(OtherComment otherComment : reportedComments) {
+                                    if(otherComment.getSpotId().equals(spotId) && otherComment.getSenderUserId().equals(sender.getId())) {
+                                        tvCommentStatus.setVisibility(View.VISIBLE);
+
+                                        String status = reportedStatus;
+
+                                        if(isFouled) status = defaultStatusText;
+                                        else if(isDeactivated) status = notActiveText + " | " + reportedStatus;
+
+                                        tvCommentStatus.setText(status);
+                                        break;
+                                    }
+                                }
+                            }
+
                             return;
                         }
                     }
@@ -363,6 +382,11 @@ public class UserProfileCommentAdapter extends RecyclerView.Adapter<UserProfileC
         else {
             return Html.fromHtml(html);
         }
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+        notifyDataSetChanged();
     }
 
     @Override

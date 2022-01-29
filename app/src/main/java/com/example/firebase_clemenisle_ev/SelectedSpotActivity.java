@@ -78,7 +78,7 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
     ImageView thumbnail, likeImage, visitImage, bookImage, commentImage,
             moreImage, i360Image, locateImage, homeImage, reloadImage;
     TextView tvName, tvStation, tvLikes, tvVisits, tvBooks, tvComments,
-            tvNearSpot, tv360Image, tvLocate, tvTimestamp, tvLog;
+            tvNearSpot, tv360Image, tvLocate, tvLog;
     ExpandableTextView extvDescription;
     ConstraintLayout  backgroundLayout, buttonLayout, connectingLayout;
     ScrollView scrollView;
@@ -96,10 +96,23 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
     ImageView sendImage, commentArrowImage;
 
     ConstraintLayout userCommentLayout, badgeLayout;
-    TextView tvUserFullName, tvCommentStatus;
+    TextView tvUserFullName, tvCommentStatus, tvTimestamp;
     ExpandableTextView extvComment;
     ImageView profileImage, editImage, appealImage, deactivateImage;
     ImageView developerImage, adminImage, driverImage, likerImage, ownerImage;
+
+    ConstraintLayout selectedCommentLayout, selectedBadgeLayout;
+    TextView tvSelectedUserFullName, tvSelectedCommentStatus, tvSelectedTimestamp;
+    ExpandableTextView extvSelectedComment;
+    ImageView selectedProfileImage, reportImage;
+    ImageView selectedDeveloperImage, selectedAdminImage, selectedDriverImage, selectedLikerImage, selectedOwnerImage;
+    TextView tvUpVotes, tvDownVotes;
+    ImageView upVoteImage, downVoteImage;
+
+    int upVotes, downVotes;
+    boolean isUpVoted, isDownVoted;
+
+    boolean isReported = false;
 
     RecyclerView commentView;
     ProgressBar commentProgressBar;
@@ -107,7 +120,7 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
     Context myContext;
     Resources myResources;
 
-    int colorBlue, colorInitial, colorRed;
+    int colorBlue, colorInitial, colorRed, colorBlack;
 
     String userId;
 
@@ -123,7 +136,7 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
 
     NearSpotAdapter nearSpotAdapter;
 
-    User user;
+    User user, selectedUser;
     List<SimpleTouristSpot> likedSpots = new ArrayList<>();
     SimpleTouristSpot selectedSpot;
 
@@ -148,13 +161,13 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
 
     String defaultLogText = "No Comment\nPlease make yours the first one";
 
-    Comment currentUserComment;
+    Comment currentUserComment, selectedComment;
 
     String inputComment, commentValue;
     boolean isUserCommentExist = true;
 
     String defaultStatusText = "Foul comment", appealedText = "(Appealed)",
-            notActiveText = "This comment is not active";
+            reportedStatus = "Reported", notActiveText = "This comment is not active";
 
     long deactivatePressedTime;
     Toast deactivateToast;
@@ -166,8 +179,6 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
 
     boolean isUpdatingComments = false;
 
-    Toast errorToast;
-
     Dialog confirmationDialog;
     ImageView confirmationDialogCloseImage;
     TextView tvDialogTitleConfirmation, tvDialogCaptionConfirmation;
@@ -175,6 +186,8 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
     ProgressBar confirmationDialogProgressBar;
 
     boolean isConfirmationDialogEnabled;
+
+    String selectedSenderId;
 
     private void initSharedPreferences() {
         SharedPreferences sharedPreferences = myContext.getSharedPreferences("preferences", Context.MODE_PRIVATE);
@@ -259,6 +272,27 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
         driverImage = findViewById(R.id.driverImage);
         likerImage = findViewById(R.id.likerImage);
 
+        selectedCommentLayout = findViewById(R.id.selectedCommentLayout);
+        tvSelectedUserFullName = findViewById(R.id.tvSelectedUserFullName);
+        tvSelectedTimestamp = findViewById(R.id.tvSelectedTimestamp);
+        tvSelectedCommentStatus = findViewById(R.id.tvSelectedCommentStatus);
+        extvSelectedComment = findViewById(R.id.extvSelectedComment);
+        selectedProfileImage = findViewById(R.id.selectedProfileImage);
+        reportImage = findViewById(R.id.reportImage);
+
+        selectedBadgeLayout = findViewById(R.id.selectedBadgeLayout);
+        selectedOwnerImage = findViewById(R.id.selectedOwnerImage);
+        selectedDeveloperImage = findViewById(R.id.selectedDeveloperImage);
+        selectedAdminImage = findViewById(R.id.selectedAdminImage);
+        selectedDriverImage = findViewById(R.id.selectedDriverImage);
+        selectedLikerImage = findViewById(R.id.selectedLikerImage);
+
+        tvUpVotes = findViewById(R.id.tvUpVotes);
+        tvDownVotes = findViewById(R.id.tvDownVotes);
+
+        upVoteImage = findViewById(R.id.upVoteImage);
+        downVoteImage = findViewById(R.id.downVoteImage);
+
         commentView = findViewById(R.id.commentView);
         commentProgressBar = findViewById(R.id.commentProgressBar);
 
@@ -274,11 +308,13 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
         colorBlue = myResources.getColor(R.color.blue);
         colorInitial = myResources.getColor(R.color.initial);
         colorRed = myResources.getColor(R.color.red);
+        colorBlack = myResources.getColor(R.color.black);
 
         Intent intent = getIntent();
         id = intent.getStringExtra("id");
         isLoggedIn = intent.getBooleanExtra("isLoggedIn", false);
         toComment = intent.getBooleanExtra("toComment", false);
+        selectedSenderId = intent.getStringExtra("selectedSenderId");
 
         isOnScreen = true;
         commentShowingAnimation = defaultValueForAnimation;
@@ -815,11 +851,13 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
         deactivateImage.setEnabled(value);
         appealImage.setEnabled(value);
         editImage.setEnabled(value);
+        reportImage.setEnabled(value);
 
         if(!value) {
             deactivateImage.getDrawable().setTint(colorInitial);
             appealImage.getDrawable().setTint(colorInitial);
             editImage.getDrawable().setTint(colorInitial);
+            reportImage.getDrawable().setTint(colorInitial);
         }
     }
 
@@ -956,16 +994,16 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
     }
 
     @Override
-    public void reportImageOnClick(String spotId, String senderUserId, String timestamp) {
+    public void reportImageOnClick(String spotId, String senderUserId) {
         if(isConfirmationDialogEnabled) {
             openConfirmationDialog("Report Comment", "Do you want to report the comment?");
-            confirmationDialogConfirmButton.setOnClickListener(view -> setReportedComment(spotId, senderUserId, timestamp));
+            confirmationDialogConfirmButton.setOnClickListener(view -> setReportedComment(spotId, senderUserId));
         }
         else {
             if(reportPressedTime + 2500 > System.currentTimeMillis() && isReportClicked) {
                 reportToast.cancel();
 
-                setReportedComment(spotId, senderUserId, timestamp);
+                setReportedComment(spotId, senderUserId);
 
                 isReportClicked = false;
             }
@@ -981,7 +1019,7 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
         }
     }
 
-    private void setReportedComment(String spotId, String senderUserId, String timestamp) {
+    private void setReportedComment(String spotId, String senderUserId) {
         if(!isUpdatingComments) {
             if(isConfirmationDialogEnabled) {
                 confirmationDialogProgressBar.setVisibility(View.VISIBLE);
@@ -1028,8 +1066,7 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
     }
 
     @Override
-    public void upVoteImageOnClick(String spotId, String senderUserId, String timestamp,
-                                   boolean isUpVoted, boolean isDownVoted) {
+    public void upVoteImageOnClick(String spotId, String senderUserId, boolean isUpVoted, boolean isDownVoted) {
         setCommentOnScreenEnabled(false);
         commentProgressBar.setVisibility(View.VISIBLE);
         OtherComment otherComment = new OtherComment(senderUserId, spotId);
@@ -1048,8 +1085,7 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
     }
 
     @Override
-    public void downVoteImageOnClick(String spotId, String senderUserId, String timestamp,
-                                     boolean isUpVoted, boolean isDownVoted) {
+    public void downVoteImageOnClick(String spotId, String senderUserId, boolean isUpVoted, boolean isDownVoted) {
         setCommentOnScreenEnabled(false);
         commentProgressBar.setVisibility(View.VISIBLE);
         OtherComment otherComment = new OtherComment(senderUserId, spotId);
@@ -1130,6 +1166,34 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
                     commentInputLayout.setVisibility(View.VISIBLE);
                     userCommentLayout.setVisibility(View.GONE);
                 }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(
+                        myContext,
+                        error.toString(),
+                        Toast.LENGTH_LONG
+                ).show();
+            }
+        });
+    }
+
+    private void getSelectedComment() {
+        setCommentOnScreenEnabled(false);
+        usersRef.child(selectedSenderId).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(snapshot.exists()) {
+                    selectedUser = new User(snapshot);
+                    Comment comment = snapshot.child("comments").child(id).getValue(Comment.class);
+                    selectedComment = comment;
+
+                    selectedCommentLayout.setVisibility(View.VISIBLE);
+
+                    updateCommentUI(comment);
+                }
+                else selectedCommentLayout.setVisibility(View.GONE);
             }
 
             @Override
@@ -1277,6 +1341,224 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
                     currentDeactivateText = deactivateText;
                 }
             }
+        }
+
+        if(selectedComment != null) {
+            setCommentOnScreenEnabled(true);
+            reportImage.getDrawable().setTint(colorRed);
+
+            if(isOnScreen) {
+                try {
+                    Glide.with(myContext).load(selectedUser.getProfileImage())
+                            .placeholder(R.drawable.image_loading_placeholder)
+                            .into(selectedProfileImage);
+                }
+                catch (Exception ignored) {}
+            }
+
+            String fullName = "<b>" + selectedUser.getLastName() + "</b>, " + selectedUser.getFirstName();
+            if(selectedUser.getMiddleName().length() > 0) fullName += " " + selectedUser.getMiddleName();
+            tvSelectedUserFullName.setText(fromHtml(fullName));
+
+            selectedBadgeLayout.setVisibility(View.GONE);
+            selectedOwnerImage.setVisibility(View.GONE);
+            selectedDeveloperImage.setVisibility(View.GONE);
+            selectedAdminImage.setVisibility(View.GONE);
+            selectedDriverImage.setVisibility(View.GONE);
+
+            if(selectedUser.getRole().isOwner()) {
+                selectedBadgeLayout.setVisibility(View.VISIBLE);
+                selectedOwnerImage.setVisibility(View.VISIBLE);
+                selectedOwnerImage.setOnLongClickListener(view -> {
+                    Toast.makeText(
+                            myContext,
+                            "Owner",
+                            Toast.LENGTH_SHORT
+                    ).show();
+                    return false;
+                });
+            }
+            if(selectedUser.getRole().isDeveloper()) {
+                selectedBadgeLayout.setVisibility(View.VISIBLE);
+                selectedDeveloperImage.setVisibility(View.VISIBLE);
+                selectedDeveloperImage.setOnLongClickListener(view -> {
+                    Toast.makeText(
+                            myContext,
+                            "Developer",
+                            Toast.LENGTH_SHORT
+                    ).show();
+                    return false;
+                });
+            }
+            if(selectedUser.getRole().isAdmin()) {
+                selectedBadgeLayout.setVisibility(View.VISIBLE);
+                selectedAdminImage.setVisibility(View.VISIBLE);
+                selectedAdminImage.setOnLongClickListener(view -> {
+                    Toast.makeText(
+                            myContext,
+                            "Admin",
+                            Toast.LENGTH_SHORT
+                    ).show();
+                    return false;
+                });
+            }
+            if(selectedUser.getRole().isDriver()) {
+                selectedBadgeLayout.setVisibility(View.VISIBLE);
+                selectedDriverImage.setVisibility(View.VISIBLE);
+                selectedDriverImage.setOnLongClickListener(view -> {
+                    Toast.makeText(
+                            myContext,
+                            "Driver",
+                            Toast.LENGTH_SHORT
+                    ).show();
+                    return false;
+                });
+            }
+
+            List<SimpleTouristSpot> likedSpots = selectedUser.getLikedSpots();
+            for(SimpleTouristSpot likedSpot : likedSpots) {
+                if(likedSpot.getId().equals(id)) {
+                    selectedBadgeLayout.setVisibility(View.VISIBLE);
+                    selectedLikerImage.setVisibility(View.VISIBLE);
+                    selectedLikerImage.setOnLongClickListener(view -> {
+                        Toast.makeText(
+                                myContext,
+                                "Liker",
+                                Toast.LENGTH_SHORT
+                        ).show();
+                        return false;
+                    });
+                    break;
+                }
+            }
+
+            String selectedCommentValue = selectedComment.getValue();
+            extvSelectedComment.setText(selectedCommentValue);
+
+            String timestamp = selectedComment.getTimestamp();
+            DateTimeDifference dateTimeDifference = new DateTimeDifference(timestamp);
+            timestamp = dateTimeDifference.getResult();
+            tvSelectedTimestamp.setText(timestamp);
+
+            if(selectedComment.isFouled()) {
+                tvSelectedCommentStatus.setVisibility(View.VISIBLE);
+
+                String status = defaultStatusText;
+
+                tvSelectedCommentStatus.setText(status);
+            }
+            else {
+                tvSelectedCommentStatus.setVisibility(View.GONE);
+
+                if(selectedComment.isDeactivated()) {
+                    tvSelectedCommentStatus.setVisibility(View.VISIBLE);
+                    tvSelectedCommentStatus.setText(notActiveText);
+                }
+                else {
+                    tvSelectedCommentStatus.setVisibility(View.GONE);
+                    tvSelectedCommentStatus.setText(defaultStatusText);
+                }
+            }
+
+            upVoteImage.setEnabled(true);
+            downVoteImage.setEnabled(true);
+            upVoteImage.getDrawable().setTint(colorBlack);
+            downVoteImage.getDrawable().setTint(colorBlack);
+
+            reportImage.setEnabled(true);
+            reportImage.getDrawable().setTint(colorRed);
+
+            int upVotes = 0, downVotes = 0;
+            for(User user1 : users) {
+                List<OtherComment> upVotedComments = user1.getUpVotedComments();
+                for (OtherComment otherComment : upVotedComments) {
+                    if (otherComment.getSpotId().equals(id) && otherComment.getSenderUserId().equals(selectedSenderId)) {
+                        upVotes++;
+
+                        if (user1.getId().equals(userId)) {
+                            upVoteImage.getDrawable().setTint(colorBlue);
+                            isUpVoted = true;
+                        }
+                        break;
+                    }
+                }
+
+                List<OtherComment> downVotedComments = user1.getDownVotedComments();
+                for (OtherComment otherComment : downVotedComments) {
+                    if (otherComment.getSpotId().equals(id) && otherComment.getSenderUserId().equals(selectedSenderId)) {
+                        downVotes++;
+
+                        if (user1.getId().equals(userId)) {
+                            downVoteImage.getDrawable().setTint(colorRed);
+                            isDownVoted = true;
+                        }
+                        break;
+                    }
+                }
+            }
+
+            tvUpVotes.setText(String.valueOf(upVotes));
+            tvDownVotes.setText(String.valueOf(downVotes));
+
+            List<OtherComment> reportedComments = user.getReportedComments();
+            for(OtherComment otherComment : reportedComments) {
+                if(otherComment.getSpotId().equals(id) && otherComment.getSenderUserId().equals(selectedSenderId)) {
+                    reportImage.setEnabled(false);
+                    reportImage.getDrawable().setTint(colorInitial);
+                    upVoteImage.setEnabled(false);
+                    upVoteImage.getDrawable().setTint(colorInitial);
+                    isReported = true;
+
+                    tvSelectedCommentStatus.setVisibility(View.VISIBLE);
+
+                    String status = reportedStatus;
+
+                    if(selectedComment.isFouled()) status = defaultStatusText;
+                    else if(selectedComment.isDeactivated()) status = notActiveText + " | " + reportedStatus;
+
+                    tvSelectedCommentStatus.setText(status);
+                    break;
+                }
+            }
+
+            upVoteImage.setOnLongClickListener(view -> {
+                upVoteImageOnLongClick();
+                return false;
+            });
+
+            downVoteImage.setOnLongClickListener(view -> {
+                downVoteImageOnLongClick();
+                return false;
+            });
+
+            reportImage.setOnLongClickListener(view -> {
+                reportImageOnLongClick();
+                return false;
+            });
+
+            upVoteImage.setOnClickListener(view -> {
+                setCommentOnScreenEnabled(false);
+                upVoteImageOnClick(id, selectedSenderId, isUpVoted, isDownVoted);
+            });
+
+            downVoteImage.setOnClickListener(view -> {
+                if(isReported) {
+                    Toast.makeText(
+                            myContext,
+                            "You cannot remove your down vote in the comment that you reported",
+                            Toast.LENGTH_LONG
+                    ).show();
+                }
+                else {
+                    setCommentOnScreenEnabled(false);
+                    downVoteImageOnClick(id, selectedSenderId, isUpVoted, isDownVoted);
+                }
+            });
+
+            reportImage.setOnClickListener(view -> {
+                setCommentOnScreenEnabled(false);
+                reportImageOnClick(id, selectedSenderId);
+            });
         }
     }
 
@@ -1682,6 +1964,8 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
 
         isLiked = isInLikedSpots(selectedSpot);
         if(userId != null) checkCurrentUserComment();
+        if(selectedSenderId != null) getSelectedComment();
+        else selectedCommentLayout.setVisibility(View.GONE);
 
         int color;
         if(!isLiked) color = myResources.getColor(R.color.black);

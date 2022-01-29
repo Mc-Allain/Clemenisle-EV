@@ -1812,7 +1812,7 @@ public class LoggedInUserProfileFragment extends Fragment {
             catch (Exception ignored) {}
         }
 
-        userProfileCommentAdapter.notifyDataSetChanged();
+        userProfileCommentAdapter.setUser(user);
         commentLayout.setVisibility(View.VISIBLE);
         if(userComments.size() > 0) {
             userCommentArrowImage.setVisibility(View.VISIBLE);
@@ -1824,7 +1824,7 @@ public class LoggedInUserProfileFragment extends Fragment {
         }
         tvCommentBadge.setText(String.valueOf(userComments.size()));
 
-        upVotedCommentAdapter.notifyDataSetChanged();
+        upVotedCommentAdapter.setUser(user);
         upVotedCommentLayout.setVisibility(View.VISIBLE);
         if(upVotedComments.size() > 0) {
             upVotedCommentArrowImage.setVisibility(View.VISIBLE);
@@ -1836,7 +1836,7 @@ public class LoggedInUserProfileFragment extends Fragment {
         }
         tvUpVotedCommentBadge.setText(String.valueOf(upVotedComments.size()));
 
-        downVotedCommentAdapter.notifyDataSetChanged();
+        downVotedCommentAdapter.setUser(user);
         downVotedCommentLayout.setVisibility(View.VISIBLE);
         if(downVotedComments.size() > 0) {
             downVotedCommentArrowImage.setVisibility(View.VISIBLE);
@@ -1848,7 +1848,7 @@ public class LoggedInUserProfileFragment extends Fragment {
         }
         tvDownVotedCommentBadge.setText(String.valueOf(downVotedComments.size()));
 
-        reportedCommentAdapter.notifyDataSetChanged();
+        reportedCommentAdapter.setUser(user);
         reportedCommentLayout.setVisibility(View.VISIBLE);
         if(reportedComments.size() > 0) {
             reportedCommentArrowImage.setVisibility(View.VISIBLE);

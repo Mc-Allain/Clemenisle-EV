@@ -114,7 +114,6 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
                     break;
                 }
             }
-            Comment finalCommentRecord = commentRecord;
 
             setOnScreenEnabled(true, reportImage, deactivateImage, appealImage, editImage,
                     upVoteImage, downVoteImage);
@@ -400,8 +399,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
                     setOnScreenEnabled(false, reportImage, deactivateImage, appealImage, editImage,
                             upVoteImage, downVoteImage);
                     onActionButtonClickedListener.
-                            upVoteImageOnClick(spotId, user.getId(), finalCommentRecord.getTimestamp(),
-                                    finalUpVoted, finalDownVoted);
+                            upVoteImageOnClick(spotId, user.getId(), finalUpVoted, finalDownVoted);
                 }
             });
 
@@ -419,8 +417,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
                         setOnScreenEnabled(false, reportImage, deactivateImage, appealImage, editImage,
                                 upVoteImage, downVoteImage);
                         onActionButtonClickedListener.
-                                downVoteImageOnClick(spotId, user.getId(), finalCommentRecord.getTimestamp(),
-                                        finalUpVoted, finalDownVoted);
+                                downVoteImageOnClick(spotId, user.getId(), finalUpVoted, finalDownVoted);
                     }
                 }
             });
@@ -438,8 +435,9 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
             reportImage.setOnClickListener(view -> {
                 if(userId == null) loginPrompt();
                 else {
-                    onActionButtonClickedListener.
-                            reportImageOnClick(spotId, user.getId(), finalCommentRecord.getTimestamp());
+                    setOnScreenEnabled(false, reportImage, deactivateImage, appealImage, editImage,
+                            upVoteImage, downVoteImage);
+                    onActionButtonClickedListener.reportImageOnClick(spotId, user.getId());
                 }
             });
         }
@@ -518,11 +516,9 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
         void editImageOnClick();
         void appealImageOnClick();
         void deactivateImageOnClick();
-        void reportImageOnClick(String spotId, String senderUserId, String timestamp);
-        void upVoteImageOnClick(String spotId, String senderUserId, String timestamp,
-                                boolean isUpVoted, boolean isDownVoted);
-        void downVoteImageOnClick(String spotId, String senderUserId, String timestamp,
-                                  boolean isUpVoted, boolean isDownVoted);
+        void reportImageOnClick(String spotId, String senderUserId);
+        void upVoteImageOnClick(String spotId, String senderUserId, boolean isUpVoted, boolean isDownVoted);
+        void downVoteImageOnClick(String spotId, String senderUserId, boolean isUpVoted, boolean isDownVoted);
     }
 
     public void setOnActionButtonClickedListener(OnActionButtonClicked onActionButtonClickedListener) {
