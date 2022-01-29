@@ -48,9 +48,51 @@
             android:id="@+id/commentLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:background="@drawable/custom_ripple_effect"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/tvUserFullName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:fontFamily="@font/ubuntu"
+                android:text="User's Full Name"
+                android:textColor="@color/black"
+                app:layout_constraintBottom_toBottomOf="@+id/profileImage"
+                app:layout_constraintEnd_toStartOf="@+id/actionLayout"
+                app:layout_constraintStart_toEndOf="@+id/profileImage"
+                app:layout_constraintTop_toTopOf="@+id/profileImage" />
+
+            <TextView
+                android:id="@+id/tvCommentStatus"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:fontFamily="@font/ubuntu"
+                android:paddingBottom="4dp"
+                android:text="Comment Status"
+                android:textColor="@color/red"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="@+id/actionLayout"
+                app:layout_constraintStart_toStartOf="@+id/tvTimestamp"
+                app:layout_constraintTop_toBottomOf="@+id/tvTimestamp" />
+
+            <TextView
+                android:id="@+id/tvTimestamp"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:fontFamily="@font/ubuntu"
+                android:paddingBottom="4dp"
+                android:text="Timestamp"
+                android:textColor="@color/initial"
+                app:layout_constraintEnd_toEndOf="@+id/tvUserFullName"
+                app:layout_constraintStart_toStartOf="@+id/tvUserFullName"
+                app:layout_constraintTop_toBottomOf="@+id/badgeLayout" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/badgeLayout"
@@ -124,58 +166,6 @@
                     app:tint="@color/orange" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/profileImage"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:scaleType="centerCrop"
-                android:src="@drawable/image_loading_placeholder"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/tvUserFullName"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="8dp"
-                android:fontFamily="@font/ubuntu"
-                android:text="User's Full Name"
-                android:textColor="@color/black"
-                app:layout_constraintBottom_toBottomOf="@+id/profileImage"
-                app:layout_constraintEnd_toStartOf="@+id/actionLayout"
-                app:layout_constraintStart_toEndOf="@+id/profileImage"
-                app:layout_constraintTop_toTopOf="@+id/profileImage" />
-
-            <TextView
-                android:id="@+id/tvCommentStatus"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:fontFamily="@font/ubuntu"
-                android:paddingBottom="4dp"
-                android:text="Comment Status"
-                android:textColor="@color/red"
-                android:visibility="gone"
-                app:layout_constraintEnd_toEndOf="@+id/actionLayout"
-                app:layout_constraintStart_toStartOf="@+id/tvTimestamp"
-                app:layout_constraintTop_toBottomOf="@+id/tvTimestamp" />
-
-            <TextView
-                android:id="@+id/tvTimestamp"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:fontFamily="@font/ubuntu"
-                android:paddingBottom="4dp"
-                android:text="Timestamp"
-                android:textColor="@color/initial"
-                app:layout_constraintEnd_toEndOf="@+id/tvUserFullName"
-                app:layout_constraintStart_toStartOf="@+id/tvUserFullName"
-                app:layout_constraintTop_toBottomOf="@+id/badgeLayout" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/voteLayout"
@@ -303,14 +293,6 @@
                 app:layout_constraintTop_toBottomOf="@id/tvCommentStatus"
                 app:maxCollapsedLines="3">
 
-                <TextView
-                    android:id="@id/expandable_text"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:ellipsize="end"
-                    android:fontFamily="@font/ubuntu"
-                    android:textColor="@color/black" />
-
                 <ImageButton
                     android:id="@id/expand_collapse"
                     android:layout_width="wrap_content"
@@ -320,7 +302,26 @@
                     android:paddingEnd="8dp"
                     app:tint="@color/black" />
 
+                <TextView
+                    android:id="@id/expandable_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:fontFamily="@font/ubuntu"
+                    android:textColor="@color/black" />
+
             </com.ms.square.android.expandabletextview.ExpandableTextView>
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/profileImage"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/image_loading_placeholder"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

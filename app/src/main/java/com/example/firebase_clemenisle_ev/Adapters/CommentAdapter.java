@@ -299,6 +299,8 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
                     downVoteImage.setEnabled(true);
                     upVoteImage.getDrawable().setTint(colorBlack);
                     downVoteImage.getDrawable().setTint(colorBlack);
+
+                    commentLayout.setOnClickListener(view -> onActionButtonClickedListener.commentOnClick(user.getId()));
                 }
             }
             else backgroundLayout.setVisibility(View.GONE);
@@ -519,6 +521,8 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
         void reportImageOnClick(String spotId, String senderUserId);
         void upVoteImageOnClick(String spotId, String senderUserId, boolean isUpVoted, boolean isDownVoted);
         void downVoteImageOnClick(String spotId, String senderUserId, boolean isUpVoted, boolean isDownVoted);
+
+        void commentOnClick(String selectedSenderId);
     }
 
     public void setOnActionButtonClickedListener(OnActionButtonClicked onActionButtonClickedListener) {

@@ -1132,6 +1132,12 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
                 });
     }
 
+    @Override
+    public void commentOnClick(String selectedSenderId) {
+        this.selectedSenderId = selectedSenderId;
+        getSelectedComment();
+    }
+
     private void updateComment() {
         if(!isUpdatingComments) {
             isUpdatingComments = true;
