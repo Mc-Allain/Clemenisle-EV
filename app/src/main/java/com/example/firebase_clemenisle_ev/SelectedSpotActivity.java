@@ -85,7 +85,7 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
     RecyclerView nearSpotView;
     ProgressBar progressBar;
 
-    ConstraintLayout commentTitleLayout, commentLayout, commentBackgroundLayout;
+    ConstraintLayout commentTitleLayout, commentLayout;
     TextView tvCommentSpot;
 
     ConstraintLayout loginCommentLayout;
@@ -95,24 +95,19 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
     EditText etComment;
     ImageView sendImage, commentArrowImage;
 
-    ConstraintLayout userCommentLayout, badgeLayout;
+    ConstraintLayout userCommentLayout, badgeLayout, userCommentTitleLayout, commentBackgroundLayout;
     TextView tvUserFullName, tvCommentStatus, tvTimestamp;
     ExpandableTextView extvComment;
-    ImageView profileImage, editImage, appealImage, deactivateImage;
+    ImageView profileImage, editImage, appealImage, deactivateImage, userCommentArrowImage;
     ImageView developerImage, adminImage, driverImage, likerImage, ownerImage;
 
-    ConstraintLayout selectedCommentLayout, selectedBadgeLayout;
+    ConstraintLayout selectedCommentLayout, selectedBadgeLayout, selectedCommentTitleLayout, selectedCommentBackgroundLayout;
     TextView tvSelectedUserFullName, tvSelectedCommentStatus, tvSelectedTimestamp;
     ExpandableTextView extvSelectedComment;
-    ImageView selectedProfileImage, reportImage;
+    ImageView selectedProfileImage, reportImage, selectedCommentArrowImage;
     ImageView selectedDeveloperImage, selectedAdminImage, selectedDriverImage, selectedLikerImage, selectedOwnerImage;
     TextView tvUpVotes, tvDownVotes;
     ImageView upVoteImage, downVoteImage;
-
-    int upVotes, downVotes;
-    boolean isUpVoted, isDownVoted;
-
-    boolean isReported = false;
 
     RecyclerView commentView;
     ProgressBar commentProgressBar;
@@ -188,6 +183,7 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
     boolean isConfirmationDialogEnabled;
 
     String selectedSenderId;
+    boolean isUserCommentShown = true, isSelectedCommentShown = true;
 
     private void initSharedPreferences() {
         SharedPreferences sharedPreferences = myContext.getSharedPreferences("preferences", Context.MODE_PRIVATE);
@@ -243,7 +239,6 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
         progressBar = findViewById(R.id.progressBar);
 
         commentTitleLayout = findViewById(R.id.commentTitleLayout);
-        commentBackgroundLayout = findViewById(R.id.commentBackgroundLayout);
         commentLayout = findViewById(R.id.commentLayout);
         commentArrowImage = findViewById(R.id.commentArrowImage);
         tvCommentSpot = findViewById(R.id.tvCommentSpot);
@@ -256,6 +251,8 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
         sendImage = findViewById(R.id.sendImage);
 
         userCommentLayout = findViewById(R.id.userCommentLayout);
+        userCommentTitleLayout = findViewById(R.id.userCommentTitleLayout);
+        commentBackgroundLayout = findViewById(R.id.commentBackgroundLayout);
         tvUserFullName = findViewById(R.id.tvUserFullName);
         tvTimestamp = findViewById(R.id.tvTimestamp);
         tvCommentStatus = findViewById(R.id.tvCommentStatus);
@@ -264,6 +261,7 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
         editImage = findViewById(R.id.editImage);
         appealImage = findViewById(R.id.appealImage);
         deactivateImage = findViewById(R.id.deactivateImage);
+        userCommentArrowImage = findViewById(R.id.userCommentArrowImage);
 
         badgeLayout = findViewById(R.id.badgeLayout);
         ownerImage = findViewById(R.id.ownerImage);
@@ -273,12 +271,15 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
         likerImage = findViewById(R.id.likerImage);
 
         selectedCommentLayout = findViewById(R.id.selectedCommentLayout);
+        selectedCommentTitleLayout = findViewById(R.id.selectedCommentTitleLayout);
+        selectedCommentBackgroundLayout = findViewById(R.id.selectedCommentBackgroundLayout);
         tvSelectedUserFullName = findViewById(R.id.tvSelectedUserFullName);
         tvSelectedTimestamp = findViewById(R.id.tvSelectedTimestamp);
         tvSelectedCommentStatus = findViewById(R.id.tvSelectedCommentStatus);
         extvSelectedComment = findViewById(R.id.extvSelectedComment);
         selectedProfileImage = findViewById(R.id.selectedProfileImage);
         reportImage = findViewById(R.id.reportImage);
+        selectedCommentArrowImage = findViewById(R.id.selectedCommentArrowImage);
 
         selectedBadgeLayout = findViewById(R.id.selectedBadgeLayout);
         selectedOwnerImage = findViewById(R.id.selectedOwnerImage);
@@ -504,6 +505,34 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
         appealImage.setOnClickListener(view -> appealImageOnClick());
 
         deactivateImage.setOnClickListener(view -> deactivateImageOnClick());
+
+        userCommentTitleLayout.setOnClickListener(view -> showUserComment());
+
+        selectedCommentTitleLayout.setOnClickListener(view -> showSelectedComment());
+    }
+
+    private void showUserComment() {
+        if(isUserCommentShown) {
+            commentBackgroundLayout.setVisibility(View.GONE);
+            userCommentArrowImage.setImageResource(R.drawable.ic_baseline_expand_more_24);
+        }
+        else {
+            commentBackgroundLayout.setVisibility(View.VISIBLE);
+            userCommentArrowImage.setImageResource(R.drawable.ic_baseline_expand_less_24);
+        }
+        isUserCommentShown = !isUserCommentShown;
+    }
+
+    private void showSelectedComment() {
+        if(isSelectedCommentShown) {
+            selectedCommentBackgroundLayout.setVisibility(View.GONE);
+            selectedCommentArrowImage.setImageResource(R.drawable.ic_baseline_expand_more_24);
+        }
+        else {
+            selectedCommentBackgroundLayout.setVisibility(View.VISIBLE);
+            selectedCommentArrowImage.setImageResource(R.drawable.ic_baseline_expand_less_24);
+        }
+        isSelectedCommentShown = !isSelectedCommentShown;
     }
 
     private void openConfirmationDialog(String title, String caption) {
@@ -1360,6 +1389,8 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
             if(selectedUser.getMiddleName().length() > 0) fullName += " " + selectedUser.getMiddleName();
             tvSelectedUserFullName.setText(fromHtml(fullName));
 
+            boolean isUpVoted = false, isDownVoted = false, isReported = false;
+
             selectedBadgeLayout.setVisibility(View.GONE);
             selectedOwnerImage.setVisibility(View.GONE);
             selectedDeveloperImage.setVisibility(View.GONE);
@@ -1520,6 +1551,8 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
                     break;
                 }
             }
+            boolean finalUpVoted = isUpVoted, finalDownVoted = isDownVoted,
+                    finalReported = isReported;
 
             upVoteImage.setOnLongClickListener(view -> {
                 upVoteImageOnLongClick();
@@ -1538,11 +1571,11 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
 
             upVoteImage.setOnClickListener(view -> {
                 setCommentOnScreenEnabled(false);
-                upVoteImageOnClick(id, selectedSenderId, isUpVoted, isDownVoted);
+                upVoteImageOnClick(id, selectedSenderId, finalUpVoted, finalDownVoted);
             });
 
             downVoteImage.setOnClickListener(view -> {
-                if(isReported) {
+                if(finalReported) {
                     Toast.makeText(
                             myContext,
                             "You cannot remove your down vote in the comment that you reported",
@@ -1551,7 +1584,7 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
                 }
                 else {
                     setCommentOnScreenEnabled(false);
-                    downVoteImageOnClick(id, selectedSenderId, isUpVoted, isDownVoted);
+                    downVoteImageOnClick(id, selectedSenderId, finalUpVoted, finalDownVoted);
                 }
             });
 
