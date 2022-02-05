@@ -424,6 +424,9 @@ public class LoginFragment extends Fragment {
         else if(error.toLowerCase().contains("blocked all requests")) {
             caption = "This device is blocked temporarily. Please try again next time.";
         }
+        else if(error.toLowerCase().contains("has been disabled")) {
+            caption = "The account has been deactivated. Please contact the admin to activate it.";
+        }
         else {
             caption = error;
         }
