@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -217,6 +218,8 @@ public class ChatListActivity extends AppCompatActivity {
                 List<Booking> bookingList = user.getBookingList();
                 for(Booking booking : bookingList) {
                     if(task.getId().equals(booking.getId())) {
+                        Log.d("BookingId->userId", booking.getId() + " " + user.getId());
+
                         List<Chat> chats = task.getChats();
                         Chat chat;
 
