@@ -1229,7 +1229,7 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
 
                     selectedCommentLayout.setVisibility(View.VISIBLE);
 
-                    updateCommentUI(comment);
+                    updateCommentUI(currentUserComment);
                 }
                 else selectedCommentLayout.setVisibility(View.GONE);
             }
@@ -1246,7 +1246,7 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
     }
 
     private void updateCommentUI(Comment comment) {
-        if(comment != null) {
+        if(comment != null && user != null) {
             setCommentOnScreenEnabled(true);
             editImage.getDrawable().setTint(colorBlue);
 
@@ -1547,7 +1547,7 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
             tvUpVotes.setText(String.valueOf(upVotes));
             tvDownVotes.setText(String.valueOf(downVotes));
 
-            List<OtherComment> reportedComments = user.getReportedComments();
+            List<OtherComment> reportedComments = user != null ? user.getReportedComments() : Collections.emptyList();
             for(OtherComment otherComment : reportedComments) {
                 if(otherComment.getSpotId().equals(id) && otherComment.getSenderUserId().equals(selectedSenderId)) {
                     reportImage.setEnabled(false);
@@ -1586,29 +1586,43 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
             });
 
             upVoteImage.setOnClickListener(view -> {
-                setCommentOnScreenEnabled(false);
-                upVoteImageOnClick(id, selectedSenderId, finalUpVoted, finalDownVoted);
+                if(userId == null) loginPrompt();
+                else {
+                    setCommentOnScreenEnabled(false);
+                    upVoteImageOnClick(id, selectedSenderId, finalUpVoted, finalDownVoted);
+                }
             });
 
             downVoteImage.setOnClickListener(view -> {
-                if(finalReported) {
-                    Toast.makeText(
-                            myContext,
-                            "You cannot remove your down vote in the comment that you reported",
-                            Toast.LENGTH_LONG
-                    ).show();
-                }
+                if(userId == null) loginPrompt();
                 else {
-                    setCommentOnScreenEnabled(false);
-                    downVoteImageOnClick(id, selectedSenderId, finalUpVoted, finalDownVoted);
+                    if(finalReported) {
+                        Toast.makeText(
+                                myContext,
+                                "You cannot remove your down vote in the comment that you reported",
+                                Toast.LENGTH_LONG
+                        ).show();
+                    }
+                    else {
+                        setCommentOnScreenEnabled(false);
+                        downVoteImageOnClick(id, selectedSenderId, finalUpVoted, finalDownVoted);
+                    }
                 }
             });
 
             reportImage.setOnClickListener(view -> {
-                setCommentOnScreenEnabled(false);
-                reportImageOnClick(id, selectedSenderId);
+                if(userId == null) loginPrompt();
+                else {
+                    setCommentOnScreenEnabled(false);
+                    reportImageOnClick(id, selectedSenderId);
+                }
             });
         }
+    }
+
+    private void loginPrompt() {
+        Intent intent = new Intent(myContext, LoginActivity.class);
+        myContext.startActivity(intent);
     }
 
     @SuppressWarnings("deprecation")

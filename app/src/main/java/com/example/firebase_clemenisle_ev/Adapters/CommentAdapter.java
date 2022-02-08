@@ -503,8 +503,8 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
     }
 
     private void loginPrompt() {
-        Intent intent1 = new Intent(myContext, LoginActivity.class);
-        myContext.startActivity(intent1);
+        Intent intent = new Intent(myContext, LoginActivity.class);
+        myContext.startActivity(intent);
     }
 
     public interface OnActionButtonClicked {
