@@ -41,7 +41,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
 
     int colorBlue, colorInitial, colorBlack, colorRed;
 
-    String defaultStatusText = "Foul comment", appealedtext = "(Appealed)",
+    String defaultStatusText = "Foul comment", appealedText = "(Appealed)",
             reportedStatus = "Reported", notActiveText = "This comment is not active";
 
     int loadCommentItemPosition = 5, incrementLoadedItems = 5;
@@ -161,7 +161,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
                         if(isAppealed) {
                             appealImage.setEnabled(false);
                             appealImage.getDrawable().setTint(colorInitial);
-                            status = defaultStatusText + " " + appealedtext;
+                            status = defaultStatusText + " " + appealedText;
                         }
                         else appealImage.getDrawable().setTint(colorBlue);
 

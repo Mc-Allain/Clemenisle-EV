@@ -101,7 +101,8 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
     ImageView profileImage, editImage, appealImage, deactivateImage, userCommentArrowImage;
     ImageView developerImage, adminImage, driverImage, likerImage, ownerImage;
 
-    ConstraintLayout selectedCommentLayout, selectedBadgeLayout, selectedCommentTitleLayout, selectedCommentBackgroundLayout;
+    ConstraintLayout selectedCommentLayout, selectedBadgeLayout, selectedCommentTitleLayout,
+            selectedCommentBackgroundLayout, voteLayout;
     TextView tvSelectedUserFullName, tvSelectedCommentStatus, tvSelectedTimestamp;
     ExpandableTextView extvSelectedComment;
     ImageView selectedProfileImage, reportImage, selectedCommentArrowImage;
@@ -287,6 +288,8 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
         selectedAdminImage = findViewById(R.id.selectedAdminImage);
         selectedDriverImage = findViewById(R.id.selectedDriverImage);
         selectedLikerImage = findViewById(R.id.selectedLikerImage);
+
+        voteLayout = findViewById(R.id.voteLayout);
 
         tvUpVotes = findViewById(R.id.tvUpVotes);
         tvDownVotes = findViewById(R.id.tvDownVotes);
@@ -1483,6 +1486,13 @@ public class SelectedSpotActivity extends AppCompatActivity implements CommentAd
                 String status = defaultStatusText;
 
                 tvSelectedCommentStatus.setText(status);
+
+                extvSelectedComment.setVisibility(View.GONE);
+                voteLayout.setVisibility(View.GONE);
+
+                reportImage.setVisibility(View.GONE);
+
+                selectedCommentBackgroundLayout.setPadding(0, 0, 0, dpToPx(12));
             }
             else {
                 tvSelectedCommentStatus.setVisibility(View.GONE);
