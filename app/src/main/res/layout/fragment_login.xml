@@ -31,17 +31,14 @@
                     android:id="@+id/tvError"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
                     android:fontFamily="@font/ubuntu"
-                    android:paddingEnd="16dp"
                     android:text="Unregistered account"
-                    android:textAlignment="textEnd"
                     android:textColor="@color/red"
                     android:visibility="gone"
-                    app:layout_constraintBottom_toBottomOf="@+id/cbRemember"
                     app:layout_constraintEnd_toEndOf="@+id/tlPassword"
-                    app:layout_constraintStart_toEndOf="@+id/cbRemember"
-                    app:layout_constraintTop_toTopOf="@+id/cbRemember" />
+                    app:layout_constraintStart_toStartOf="@+id/cbRemember"
+                    app:layout_constraintTop_toBottomOf="@+id/cbRemember" />
 
                 <TextView
                     android:id="@+id/tvRegister"
@@ -80,7 +77,7 @@
                     android:textColor="@color/black"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="@+id/tvFragmentCaption"
-                    app:layout_constraintTop_toBottomOf="@+id/cbRemember" />
+                    app:layout_constraintTop_toBottomOf="@+id/tvError" />
 
                 <CheckBox
                     android:id="@+id/cbRemember"
