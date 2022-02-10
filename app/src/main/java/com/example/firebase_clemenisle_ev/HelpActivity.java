@@ -39,7 +39,7 @@ public class HelpActivity extends AppCompatActivity {
     FirebaseUser firebaseUser;
 
     ConstraintLayout helpEntryInputLayout, loginHelpLayout, userEntryLayout;
-    TextView tvUserEntry2, tvFAQ, tvAppRatingPrompt;
+    TextView tvUserEntry2, tvFAQ, tvTutorial, tvAppRatingPrompt;
     EditText etHelpEntry;
     ImageView editImage;
     Button submitButton, loginButton;
@@ -82,6 +82,7 @@ public class HelpActivity extends AppCompatActivity {
         userEntryLayout = findViewById(R.id.userEntryLayout);
         tvUserEntry2 = findViewById(R.id.tvUserEntry2);
         tvFAQ = findViewById(R.id.tvFAQ);
+        tvTutorial = findViewById(R.id.tvTutorial);
         etHelpEntry = findViewById(R.id.etHelpEntry);
         tvAppRatingPrompt = findViewById(R.id.tvAppRatingPrompt);
         editImage = findViewById(R.id.editImage);
@@ -166,6 +167,12 @@ public class HelpActivity extends AppCompatActivity {
                 "Coming soon…",
                 Toast.LENGTH_SHORT
         ).show());
+
+        tvTutorial.setOnClickListener(view -> {
+            Intent newIntent = new Intent(myContext, WebViewActivity.class);
+            newIntent.putExtra("toVideoTutorial", true);
+            startActivity(newIntent);
+        });
 
         tvAppRatingPrompt.setOnClickListener(view -> {
             Intent intent = new Intent(myContext, AboutActivity.class);

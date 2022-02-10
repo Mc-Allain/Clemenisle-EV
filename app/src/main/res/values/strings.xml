@@ -68,7 +68,7 @@
         \n● Send your payment based on the amount cost of your booked tour to the numbers showed on the online payment screen.
         \n● Retrieve the transaction\'s reference number and add it in the reference number list.
         \n● Tap on the confirm button and wait for the admin to process your online payment.
-        \n● You can request for a refund if you cancelled your booking or failed to go to the tour.
+        \n● The refund will automatically sent if you cancelled your booking or failed to go to the tour.
     </string>
     <string name="onlinePayment3">
         Avoid paying online if you are being indecisive about

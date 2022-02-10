@@ -790,6 +790,8 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
                                 Toast.LENGTH_LONG
                         ).show();
                         dialog2.dismiss();
+
+                        if(isBookingOptionDialogEnabled) selectedDialogOption.dismiss();
                     }
                     else {
                         Toast.makeText(

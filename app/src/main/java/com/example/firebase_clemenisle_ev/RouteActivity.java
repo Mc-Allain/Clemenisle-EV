@@ -734,6 +734,8 @@ public class RouteActivity extends AppCompatActivity implements
                                 Toast.LENGTH_LONG
                         ).show();
                         dialog3.dismiss();
+
+                        if(isBookingOptionDialogEnabled) dialogOption.dismiss();
                     }
                     else {
                         Toast.makeText(

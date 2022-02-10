@@ -11,7 +11,7 @@ public class WebViewActivity extends AppCompatActivity {
 
     WebView webView;
 
-    boolean toUpdate, toPrivacyNotice;
+    boolean toUpdate, toPrivacyNotice, toVideoTutorial;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,10 +21,12 @@ public class WebViewActivity extends AppCompatActivity {
         Intent intent = getIntent();
         toUpdate = intent.getBooleanExtra("toUpdate", false);
         toPrivacyNotice = intent.getBooleanExtra("toPrivacyNotice", false);
+        toVideoTutorial = intent.getBooleanExtra("toVideoTutorial", false);
 
         String link = "https://mc-allain.github.io/Clemenisle-EV-Web/";
         if(toUpdate) link = "https://mc-allain.github.io/Clemenisle-EV-Web/";
         if(toPrivacyNotice) link = "https://mc-allain.github.io/Clemenisle-EV-Web/privacy_policy.html";
+        if(toVideoTutorial) link = "https://www.youtube.com/playlist?list=PLE_CHrmDUq9lnEaJmQ-jgecjCyhcg6quj";
 
         webView = findViewById(R.id.webView);
         webView.loadUrl(link);
