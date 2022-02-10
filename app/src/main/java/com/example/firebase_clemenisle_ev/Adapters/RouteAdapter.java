@@ -161,12 +161,8 @@ public class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.ViewHolder> 
             visitButton.setEnabled(false);
             onVisitClickListener.setProgressBarToVisible();
 
-            if(visitButton.getText().equals("Mark as visited")) {
-                visitSpot(spotId);
-            }
-            else {
-                unvisitSpot(spotId);
-            }
+            if(visitButton.getText().equals("Mark as visited")) visitSpot(spotId);
+            else unVisitSpot(spotId);
         });
     }
 
@@ -205,7 +201,7 @@ public class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.ViewHolder> 
         usersRef.child("visited").setValue(true);
     }
 
-    private void unvisitSpot(String spotId) {
+    private void unVisitSpot(String spotId) {
         DatabaseReference usersRef = firebaseDatabase.getReference("users").child(userId)
                 .child("bookingList").child(bookingId).child("routeSpots").child(spotId);
         usersRef.child("visited").setValue(false);
