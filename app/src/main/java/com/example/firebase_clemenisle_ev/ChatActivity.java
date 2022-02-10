@@ -415,6 +415,7 @@ public class ChatActivity extends AppCompatActivity {
                             case "Pending":
                                 color = myResources.getColor(R.color.orange);
                                 break;
+                            case "Ongoing":
                             case "Completed":
                                 color = myResources.getColor(R.color.blue);
                                 break;

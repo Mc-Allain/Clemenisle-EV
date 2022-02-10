@@ -28,7 +28,7 @@
         \n● Have fun.
     </string>
     <string name="bookingProcess2">
-        You can only cancel your booking while it is \"Processing\".
+        You can only cancel your booking while it is \"Pending\".
         Once the status becomes \"Booked\", you cannot cancel it anymore.
         Please be sure of your decision and please be polite as always.
     </string>
@@ -48,7 +48,7 @@
         \n● Have fun.
     </string>
     <string name="bookingProcess5">
-        If your booking record is still \"Processing\" for 10 minutes,
+        If your booking record is still \"Pending\" for 10 minutes,
         it will be mark automatically as \"Failed\",
         but you are freely to cancel your booking before then.
         Once the status becomes \"Booked\", you are only able to cancel it
@@ -63,7 +63,7 @@
     <string name="onlinePayment2">
         The online payment is through G-Cash Application.
         \nHere are the steps to process your online payment.
-        \n● Go to the booking record of your desire with a status of \"Processing\" or \"Booked\" in order to access the online payment.
+        \n● Go to the booking record of your desire with a status of \"Pending\" or \"Booked\" in order to access the online payment.
         \n● Tap on the online payment button to go to the online payment screen.
         \n● Send your payment based on the amount cost of your booked tour to the numbers showed on the online payment screen.
         \n● Retrieve the transaction\'s reference number and add it in the reference number list.
