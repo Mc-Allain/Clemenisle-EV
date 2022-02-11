@@ -296,7 +296,7 @@
                 app:expandDrawable="@drawable/ic_baseline_expand_more_24"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tvNearStation"
+                app:layout_constraintTop_toBottomOf="@id/tvStation"
                 app:maxCollapsedLines="3">
 
                 <TextView
