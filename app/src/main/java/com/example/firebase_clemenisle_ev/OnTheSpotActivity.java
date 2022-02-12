@@ -205,6 +205,9 @@ public class OnTheSpotActivity extends AppCompatActivity {
     ConstraintLayout dialogOptionButtonLayout;
     ProgressBar dialogProgressBar4;
 
+    String locateOriginLocationText = "Locate Origin Location",
+            locateDestinationSpotText = "Locate Destination Spot";
+
     TextView tvOpen, tvOnlinePayment;
     ImageView openImage, onlinePaymentImage;
 
@@ -927,6 +930,9 @@ public class OnTheSpotActivity extends AppCompatActivity {
         onlinePaymentImage.setVisibility(View.GONE);
 
         dialogOptionCloseImage.setOnClickListener(view -> dialogOption.dismiss());
+
+        tvLocate.setText(locateOriginLocationText);
+        tvLocateDestination.setText(locateDestinationSpotText);
 
         dialogOption.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
