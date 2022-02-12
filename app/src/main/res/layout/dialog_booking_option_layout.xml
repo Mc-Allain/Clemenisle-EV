@@ -215,6 +215,7 @@
             android:id="@+id/tvRemarks"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:layout_marginEnd="8dp"
             android:fontFamily="@font/ubuntu"
             android:gravity="center_vertical"
             android:text="Remarks"
@@ -222,7 +223,7 @@
             android:textStyle="bold"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="@+id/remarksImage"
-            app:layout_constraintEnd_toEndOf="@+id/tvLocateEnd"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/remarksImage"
             app:layout_constraintTop_toTopOf="@+id/remarksImage" />
 
@@ -230,6 +231,7 @@
             android:id="@+id/tvRate"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:layout_marginEnd="8dp"
             android:fontFamily="@font/ubuntu"
             android:gravity="center_vertical"
             android:text="Rate the Driver"
@@ -237,7 +239,7 @@
             android:textStyle="bold"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="@+id/rateImage"
-            app:layout_constraintEnd_toEndOf="@+id/tvLocateEnd"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/rateImage"
             app:layout_constraintTop_toTopOf="@+id/rateImage" />
 
@@ -245,6 +247,7 @@
             android:id="@+id/tvCheck"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:layout_marginEnd="8dp"
             android:fontFamily="@font/ubuntu"
             android:gravity="center_vertical"
             android:text="Initiate Service"
@@ -252,7 +255,7 @@
             android:textStyle="bold"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="@+id/checkImage"
-            app:layout_constraintEnd_toEndOf="@+id/tvLocateEnd"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/checkImage"
             app:layout_constraintTop_toTopOf="@+id/checkImage" />
 
@@ -260,6 +263,7 @@
             android:id="@+id/tvStop"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:layout_marginEnd="8dp"
             android:fontFamily="@font/ubuntu"
             android:gravity="center_vertical"
             android:text="Stop Request"
@@ -267,7 +271,7 @@
             android:textStyle="bold"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="@+id/stopImage"
-            app:layout_constraintEnd_toEndOf="@+id/tvLocateEnd"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/stopImage"
             app:layout_constraintTop_toTopOf="@+id/stopImage" />
 
@@ -275,6 +279,7 @@
             android:id="@+id/tvPass"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:layout_marginEnd="8dp"
             android:fontFamily="@font/ubuntu"
             android:gravity="center_vertical"
             android:text="Pass Task"
@@ -282,7 +287,7 @@
             android:textStyle="bold"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="@+id/passImage"
-            app:layout_constraintEnd_toEndOf="@+id/tvLocateEnd"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/passImage"
             app:layout_constraintTop_toTopOf="@+id/passImage" />
 
@@ -290,6 +295,7 @@
             android:id="@+id/tvDriver"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:layout_marginEnd="8dp"
             android:fontFamily="@font/ubuntu"
             android:gravity="center_vertical"
             android:text="Take Task"
@@ -297,7 +303,7 @@
             android:textStyle="bold"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="@+id/driverImage"
-            app:layout_constraintEnd_toEndOf="@+id/tvLocateEnd"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/driverImage"
             app:layout_constraintTop_toTopOf="@+id/driverImage" />
 
@@ -305,6 +311,7 @@
             android:id="@+id/tvChat"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:layout_marginEnd="8dp"
             android:fontFamily="@font/ubuntu"
             android:gravity="center_vertical"
             android:text="Chat"
@@ -312,7 +319,7 @@
             android:textStyle="bold"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="@+id/chatImage"
-            app:layout_constraintEnd_toEndOf="@+id/tvLocateEnd"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/chatImage"
             app:layout_constraintTop_toTopOf="@+id/chatImage" />
 
@@ -320,6 +327,7 @@
             android:id="@+id/tvViewQR"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:layout_marginEnd="8dp"
             android:fontFamily="@font/ubuntu"
             android:gravity="center_vertical"
             android:text="View QR Code"
@@ -327,7 +335,7 @@
             android:textStyle="bold"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="@+id/viewQRImage"
-            app:layout_constraintEnd_toEndOf="@+id/tvLocateEnd"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/viewQRImage"
             app:layout_constraintTop_toTopOf="@+id/viewQRImage" />
 
@@ -335,6 +343,7 @@
             android:id="@+id/tvOnlinePayment"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:layout_marginEnd="8dp"
             android:fontFamily="@font/ubuntu"
             android:gravity="center_vertical"
             android:text="Online Payment"
@@ -342,7 +351,7 @@
             android:textStyle="bold"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="@+id/onlinePaymentImage"
-            app:layout_constraintEnd_toEndOf="@+id/tvLocateEnd"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/onlinePaymentImage"
             app:layout_constraintTop_toTopOf="@+id/onlinePaymentImage" />
 
@@ -350,13 +359,14 @@
             android:id="@+id/tvLocateEnd"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:layout_marginEnd="8dp"
             android:fontFamily="@font/ubuntu"
             android:gravity="center_vertical"
             android:text="Locate End Station"
             android:textColor="@color/blue"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="@+id/locateEndImage"
-            app:layout_constraintEnd_toEndOf="@+id/tvLocate"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/locateEndImage"
             app:layout_constraintTop_toTopOf="@+id/locateEndImage" />
 
@@ -379,13 +389,14 @@
             android:id="@+id/tvLocate"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:layout_marginEnd="8dp"
             android:fontFamily="@font/ubuntu"
             android:gravity="center_vertical"
             android:text="Locate Start Station"
             android:textColor="@color/blue"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="@+id/locateImage"
-            app:layout_constraintEnd_toEndOf="@+id/tvOpen"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/locateImage"
             app:layout_constraintTop_toTopOf="@+id/locateImage" />
 
